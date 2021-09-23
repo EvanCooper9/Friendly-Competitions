@@ -1,4 +1,3 @@
-import FirebaseAnalytics
 import FirebaseFirestore
 import Foundation
 import HealthKit
@@ -22,10 +21,11 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
     private var observerQueries = [HKObserverQuery]()
     private var queries = [HKQuery]()
 
+    private var healthStoreQueryTask: Task<[ActivitySummary], Error>?
+
     // MARK: - Public Methods
 
     func addHandler(_ handler: @escaping ([HKActivitySummary]) -> Void) {
-        handler(activitySummaries)
         handlers.append(handler)
     }
 
@@ -35,8 +35,10 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
 
     // MARK: - Private Methods
 
-    @MainActor
     private func requestActivitySummaries() async throws {
+
+        try Task.checkCancellation()
+
         let dateInterval = try await database.collection("competitions")
             .whereField("participants", arrayContains: user.id)
             .getDocuments()
@@ -52,13 +54,19 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
                 )
             }
 
+        try Task.checkCancellation()
+
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             let query = HKActivitySummaryQuery(predicate: self.predicate(for: dateInterval)) { query, hkActivitySummaries, error in
-                Analytics.logEvent("activity_summary_query_complete", parameters: [:])
-
                 if let error = error {
                     continuation.resume(throwing: error)
                     return
+                }
+
+                do {
+                    try Task.checkCancellation()
+                } catch {
+                    continuation.resume(throwing: error)
                 }
 
                 self.activitySummaries = hkActivitySummaries ?? []
@@ -66,6 +74,7 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
 
                 Task {
                     do {
+                        try Task.checkCancellation()
                         try await self.uploadActivitySummaries()
                         continuation.resume()
                     } catch {
@@ -73,7 +82,7 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
                     }
                 }
             }
-            Analytics.logEvent("sending_activity_summary", parameters: [:])
+
             self.healthStore.execute(query)
         }
     }
@@ -111,6 +120,6 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
 
 extension ActivitySummaryManager: HealthKitBackgroundDeliveryReceiving {
     func trigger() async throws {
-        try await requestActivitySummaries()
+        try await self.requestActivitySummaries()
     }
 }

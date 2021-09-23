@@ -3,7 +3,6 @@ import CryptoKit
 import FirebaseAuth
 import SwiftUI
 import FirebaseFirestore
-import FirebaseFirestoreSwift
 import Resolver
 
 struct SignInView: View {

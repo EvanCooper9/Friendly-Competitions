@@ -3,7 +3,7 @@ import SwiftUI
 
 struct ActivityRingView: UIViewRepresentable {
 
-    @Binding var activitySummary: HKActivitySummary?
+    var activitySummary: HKActivitySummary?
 
     func makeUIView(context: Context) -> HKActivityRingView {
         HKActivityRingView()

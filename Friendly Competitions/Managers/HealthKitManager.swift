@@ -1,4 +1,3 @@
-import FirebaseAnalytics
 import HealthKit
 import Resolver
 import UIKit
@@ -52,6 +51,10 @@ final class HealthKitManager: HealthKitManaging {
         Constants.permissionObjectTypes.filter { healthStore.authorizationStatus(for: $0) == .notDetermined }
     }
 
+    private var updateTask: Task<Void, Error>? {
+        willSet { updateTask?.cancel() }
+    }
+
     // MARK: - Public Methods
 
     func requestPermissions(_ completion: @escaping ((Bool, Error?) -> Void)) {
@@ -72,18 +75,19 @@ final class HealthKitManager: HealthKitManaging {
 
     func registerForBackgroundDelivery() {
         guard permissionsNotRequested.isEmpty else { return }
-        for type in Constants.backgroundDeliveryTypes {
-            let query = HKObserverQuery(sampleType: type, predicate: nil) { [weak self] query, completion, error in
+        for sampleType in Constants.backgroundDeliveryTypes {
+            let query = HKObserverQuery(sampleType: sampleType, predicate: nil) { [weak self] query, completion, error in
                 guard let self = self else { return }
-                Analytics.logEvent("query_fired", parameters: ["sample_type": "\(type)"])
-                Task {
-                    for receiver in self.receivers { try await receiver.trigger() }
-                    Analytics.logEvent("receivers_complete", parameters: ["sample_type": "\(type)"])
-                    completion()
+                self.updateTask = Task(priority: .low) {
+                    defer { completion() }
+                    for receiver in self.receivers {
+                        try Task.checkCancellation()
+                        try await receiver.trigger()
+                    }
                 }
             }
             healthStore.execute(query)
-            healthStore.enableBackgroundDelivery(for: type, frequency: .immediate) { _, _ in }
+            healthStore.enableBackgroundDelivery(for: sampleType, frequency: .immediate) { _, _ in }
         }
     }
 

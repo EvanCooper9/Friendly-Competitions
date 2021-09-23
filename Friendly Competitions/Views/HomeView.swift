@@ -1,6 +1,5 @@
 import FirebaseAuth
 import FirebaseFirestore
-import FirebaseFirestoreSwift
 import HealthKit
 import SwiftUI
 import Resolver
@@ -22,44 +21,7 @@ struct HomeView: View {
             VStack(spacing: 0) {
                 List {
                     Section {
-                        HStack {
-                            VStack(alignment: .leading, spacing: 10) {
-                                VStack(alignment: .leading) {
-                                    Text("Move")
-                                    if let activitySummary = viewModel.activitySummary?.activitySummary {
-                                        Text("\(activitySummary.activeEnergyBurned.formatted())/\(activitySummary.activeEnergyBurnedGoal.formatted(.number))")
-                                            .foregroundColor(.red)
-                                            .font(.title3)
-                                    } else {
-                                        Text("—").foregroundColor(.gray).font(.title3)
-                                    }
-                                }
-                                VStack(alignment: .leading) {
-                                    Text("Exercise")
-                                    if let activitySummary = viewModel.activitySummary?.activitySummary {
-                                        Text("\(activitySummary.appleExerciseTime.formatted())/\(activitySummary.appleExerciseTimeGoal.formatted())")
-                                            .foregroundColor(.green)
-                                            .font(.title3)
-                                    } else {
-                                        Text("—").foregroundColor(.gray).font(.title3)
-                                    }
-                                }
-                                VStack(alignment: .leading) {
-                                    Text("Stand")
-                                    if let activitySummary = viewModel.activitySummary?.activitySummary {
-                                        Text("\(activitySummary.appleStandHours.formatted())/\(activitySummary.appleStandHoursGoal.formatted())")
-                                            .foregroundColor(.blue)
-                                            .font(.title3)
-                                    } else {
-                                        Text("—").foregroundColor(.gray).font(.title3)
-                                    }
-                                }
-                            }
-                            Spacer()
-                            ActivityRingView(activitySummary: $viewModel.activitySummary)
-                                .frame(width: 150, height: 150)
-                                .padding([.top, .bottom], 15)
-                        }
+                        ActivitySummaryInfoView(activitySummary: viewModel.activitySummary)
                     } header: {
                         Text("Activity").font(.title3)
                     } footer: {
@@ -68,18 +30,10 @@ struct HomeView: View {
                         }
                     }
                     .textCase(nil)
+
                     Section {
                         ForEach(viewModel.competitions) { competition in
-                            NavigationLink(destination: CompetitionView(competition: competition)) {
-                                HStack {
-                                    Text(competition.name)
-                                    Spacer()
-                                    if competition.pendingParticipants.contains(viewModel.user.id) {
-                                        Text("Invited")
-                                            .foregroundColor(.gray)
-                                    }
-                                }
-                            }
+                            CompetitionListView(competition: competition)
                         }
                     } header: {
                         HStack {
@@ -101,10 +55,11 @@ struct HomeView: View {
                         }
                     }
                     .textCase(nil)
+
                     Section {
                         ForEach(viewModel.friends) { friend in
                             HStack {
-                                ActivityRingView(activitySummary: .constant(friend.tempActivitySummary?.hkActivitySummary))
+                                ActivityRingView(activitySummary: friend.tempActivitySummary?.hkActivitySummary)
                                     .frame(width: 35, height: 35)
                                 Text(friend.name)
                                 Spacer()
@@ -173,12 +128,10 @@ struct HomeView: View {
 
 final class HomeViewModel: ObservableObject {
 
-    @Published var activitySummary: HKActivitySummary?
-    @Published var competitions = [Competition]()
-    @Published var friends = [User]()
-    @Published var friendRequests = [User]()
-    @Published var backgroundDeliveries = OrderedDictionary<String, [Date]>()
-    @Published var backgroundErrors = OrderedDictionary<Date, String>()
+    @Published private(set) var activitySummary: HKActivitySummary?
+    @Published private(set) var competitions = [Competition]()
+    @Published private(set) var friends = [User]()
+    @Published private(set) var friendRequests = [User]()
 
     @LazyInjected private var activitySummaryManager: ActivitySummaryManaging
     @LazyInjected private var database: Firestore
@@ -208,7 +161,7 @@ final class HomeViewModel: ObservableObject {
                     .decoded(asArrayOf: Competition.self)
                     .sorted(by: \.start)
 
-                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) { [weak self] in
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
                     self?.competitions = competitions ?? []
                 }
             }

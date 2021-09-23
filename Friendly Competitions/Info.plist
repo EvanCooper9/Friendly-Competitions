@@ -21,9 +21,5 @@
 	<false/>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>processing</string>
-	</array>
 </dict>
 </plist>

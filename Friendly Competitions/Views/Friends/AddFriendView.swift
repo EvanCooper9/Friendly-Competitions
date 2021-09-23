@@ -1,5 +1,4 @@
 import FirebaseFirestore
-import FirebaseFirestoreSwift
 import SwiftUI
 import Resolver
 import Contacts
@@ -29,12 +28,20 @@ struct AddFriendView: View {
                     } footer: {
                         VStack(alignment: .leading, spacing: 10) {
                             VStack(alignment: .leading, spacing: 5) {
+                                Text("You can search for friends who have an account with us, and have a matching email account in your contacts.")
+                                    .padding(.bottom, 15)
                                 Text("Having trouble?")
-                                Text("• Verify contacts permissions are enabled in device Settings.")
-                                Text("• Verify your email in your profile from the Home screen.")
-                                Button("• Or send an invite link to your friend") {
+                                Text("• Verify contacts permissions are enabled.")
+                                Text("• Verify your email from the Profile screen.")
+                                Button("• Or send an invite link to your friend!") {
                                     guard let inviteLink = URL(string: "friendly-competitions://invite/\(user.id)") else { return }
-                                    let activityVC = UIActivityViewController(activityItems: [inviteLink], applicationActivities: nil)
+                                    let activityVC = UIActivityViewController(
+                                        activityItems: [
+                                            "Add me in Friendly Competitions!",
+                                            inviteLink
+                                        ],
+                                        applicationActivities: nil
+                                    )
 
                                     let keyWindow = UIApplication.shared.connectedScenes
                                             .filter { $0.activationState == .foregroundActive }
