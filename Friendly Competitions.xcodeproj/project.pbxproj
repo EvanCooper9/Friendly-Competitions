@@ -11,6 +11,7 @@
 		C109E4C826E7FF4600AA10C5 /* Decodable+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C109E4C726E7FF4600AA10C5 /* Decodable+Extensions.swift */; };
 		C10EB3EC26E94E2200487F1B /* UserDefaults+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10EB3EA26E94E1B00487F1B /* UserDefaults+Extensions.swift */; };
 		C1185A2526D6717C002E2377 /* ActivitySummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1185A2426D6717C002E2377 /* ActivitySummary.swift */; };
+		C119B03226FE67A300B56703 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = C119B03126FE67A300B56703 /* FirebaseCrashlytics */; };
 		C11F9BF926DD5200008E7298 /* MockContactsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C11F9BF826DD5200008E7298 /* MockContactsProvider.swift */; };
 		C12BA6E426F60B34009DAE38 /* DateInterval+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C12BA6E326F60B34009DAE38 /* DateInterval+Extensions.swift */; };
 		C1386C7E26D566210096E952 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = C1386C7D26D566210096E952 /* FirebaseAuth */; };
@@ -142,6 +143,7 @@
 				C1C8B24726F3FB9C008D6B1B /* HealthKit.framework in Frameworks */,
 				C1C8B24926F3FBA3008D6B1B /* HealthKitUI.framework in Frameworks */,
 				C14634FE26F2D1670028F847 /* OrderedCollections in Frameworks */,
+				C119B03226FE67A300B56703 /* FirebaseCrashlytics in Frameworks */,
 				C1EA986526D6C32400219E84 /* Resolver in Frameworks */,
 				C1EA986B26D6FFBE00219E84 /* FirebaseFirestore in Frameworks */,
 				C1386C7E26D566210096E952 /* FirebaseAuth in Frameworks */,
@@ -394,6 +396,7 @@
 				C1EA986426D6C32400219E84 /* Resolver */,
 				C1EA986A26D6FFBE00219E84 /* FirebaseFirestore */,
 				C14634FD26F2D1670028F847 /* OrderedCollections */,
+				C119B03126FE67A300B56703 /* FirebaseCrashlytics */,
 			);
 			productName = CompyBoi;
 			productReference = C1691DC326D55FCF006FFA30 /* Friendly Competitions.app */;
@@ -778,6 +781,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		C119B03126FE67A300B56703 /* FirebaseCrashlytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C1386C7C26D566210096E952 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCrashlytics;
+		};
 		C1386C7D26D566210096E952 /* FirebaseAuth */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = C1386C7C26D566210096E952 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
