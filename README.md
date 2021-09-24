@@ -1,14 +1,8 @@
-<style>
-td, th {
-   border: none!important;
-}
-</style>
-
 # Friendly Competitions
 
 Compete against groups of friends in fitness. Just like Apple's fitness cometitions but support for multiple participants in a single competition.
 
-<table border:none>
+<table style="border:none">
   <tr>
     <td valign="top"><img src="screenshots/MockUp/11 Pro Max/1.png"></td>
     <td valign="top"><img src="screenshots/MockUp/11 Pro Max/2.png"></td>
