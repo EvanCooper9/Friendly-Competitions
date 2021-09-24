@@ -126,7 +126,7 @@ struct HomeView: View {
     }
 }
 
-final class HomeViewModel: ObservableObject {
+fileprivate final class HomeViewModel: ObservableObject {
 
     @Published private(set) var activitySummary: HKActivitySummary?
     @Published private(set) var competitions = [Competition]()

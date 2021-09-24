@@ -10,7 +10,7 @@ struct SignInView: View {
     @State private var email = ""
     @State private var password = ""
 
-    private let viewModel = WelcomeViewModel()
+    private let viewModel = SignInViewModel()
 
     var body: some View {
         VStack(spacing: 10) {
@@ -20,7 +20,7 @@ struct SignInView: View {
                 .aspectRatio(contentMode: .fit)
             Text("Welcome")
                 .font(.title)
-            Text("Friendly Competitions allows you to compete with friends. Sign in in or Sign up to continue.")
+            Text("Friendly Competitions allows you to compete with friends. Sign in or Sign up to continue.")
                 .multilineTextAlignment(.center)
             Spacer()
             if viewModel.isLoading { ProgressView() }
@@ -33,9 +33,9 @@ struct SignInView: View {
     }
 }
 
-final class WelcomeViewModel: NSObject, ObservableObject {
+fileprivate final class SignInViewModel: NSObject, ObservableObject {
 
-    @Injected var database: Firestore
+    @LazyInjected var database: Firestore
 
     @Published var isLoading = false
 
@@ -95,7 +95,7 @@ final class WelcomeViewModel: NSObject, ObservableObject {
     }
 }
 
-extension WelcomeViewModel: ASAuthorizationControllerDelegate {
+extension SignInViewModel: ASAuthorizationControllerDelegate {
     func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
         guard let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential else {
             return
@@ -155,7 +155,7 @@ extension WelcomeViewModel: ASAuthorizationControllerDelegate {
     }
 }
 
-extension WelcomeViewModel: ASAuthorizationControllerPresentationContextProviding {
+extension SignInViewModel: ASAuthorizationControllerPresentationContextProviding {
     func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
         .init()
     }

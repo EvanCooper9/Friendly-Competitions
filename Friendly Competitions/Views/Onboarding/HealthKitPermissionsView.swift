@@ -4,7 +4,7 @@ import Resolver
 
 struct HealthKitPermissionsView: View {
 
-    @ObservedObject private(set) var viewModel = HealthKitPermissionsViewModel()
+    @ObservedObject private var viewModel = HealthKitPermissionsViewModel()
 
     let done: () -> Void
 
@@ -33,7 +33,7 @@ struct HealthKitPermissionsView: View {
     }
 }
 
-final class HealthKitPermissionsViewModel: ObservableObject {
+fileprivate final class HealthKitPermissionsViewModel: ObservableObject {
 
     @LazyInjected private var healthKitManager: HealthKitManaging
 

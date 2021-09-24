@@ -8,7 +8,7 @@ struct SettingsView: View {
     @EnvironmentObject var user: User
     @EnvironmentObject var database: Firestore
 
-    @ObservedObject var viewModel = SettingsViewModel()
+    @ObservedObject private var viewModel = SettingsViewModel()
 
     @State var presentDeleteAccountAlert = false
 
@@ -69,7 +69,7 @@ struct SettingsView: View {
     }
 }
 
-final class SettingsViewModel: ObservableObject {
+fileprivate final class SettingsViewModel: ObservableObject {
 
     @LazyInjected var database: Firestore
 

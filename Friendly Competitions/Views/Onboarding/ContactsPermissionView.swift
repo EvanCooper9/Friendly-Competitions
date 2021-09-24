@@ -3,7 +3,7 @@ import Contacts
 
 struct ContactsPermissionsView: View {
 
-    @ObservedObject private(set) var viewModel = ContactsPermissionsViewModel()
+    @ObservedObject private var viewModel = ContactsPermissionsViewModel()
 
     let done: () -> Void
 
@@ -32,7 +32,7 @@ struct ContactsPermissionsView: View {
     }
 }
 
-final class ContactsPermissionsViewModel: ObservableObject {
+fileprivate final class ContactsPermissionsViewModel: ObservableObject {
 
     private let contactStore = CNContactStore()
 

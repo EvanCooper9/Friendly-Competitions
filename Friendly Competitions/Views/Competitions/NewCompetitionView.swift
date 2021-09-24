@@ -12,7 +12,7 @@ import Resolver
 struct NewCompetitionView: View {
 
     @Environment(\.presentationMode) var presentationMode
-    @ObservedObject private(set) var viewModel: NewCompetitionViewModel
+    @ObservedObject private var viewModel: NewCompetitionViewModel
 
     @FocusState private var nameIsFocused: Bool
 
@@ -101,7 +101,7 @@ struct NewCompetitionView: View {
     }
 }
 
-final class NewCompetitionViewModel: ObservableObject {
+fileprivate final class NewCompetitionViewModel: ObservableObject {
 
     @Published var name = ""
     @Published var scoringModel = ScoringModel.percentOfGoals

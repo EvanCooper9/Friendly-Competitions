@@ -7,7 +7,7 @@ protocol HealthKitManaging {
     var shouldRequestPermissions: Bool { get }
     func requestPermissions(_ completion: @escaping ((Bool, Error?) -> Void))
     func registerForBackgroundDelivery()
-    func registerBackgroundDeliveryReceiver(_ receiver: HealthKitBackgroundDeliveryReceiving)
+    func registerReceiver(_ receiver: HealthKitBackgroundDeliveryReceiving)
 }
 
 protocol HealthKitBackgroundDeliveryReceiving {
@@ -44,6 +44,7 @@ final class HealthKitManager: HealthKitManaging {
     // MARK: - Private Properties
 
     private let healthStore = HKHealthStore()
+    private var hasRegisteredForBackgroundDelivery = false
     private var handlers = [() async throws -> Void]()
     private var receivers = [HealthKitBackgroundDeliveryReceiving]()
 
@@ -74,7 +75,7 @@ final class HealthKitManager: HealthKitManaging {
     }
 
     func registerForBackgroundDelivery() {
-        guard permissionsNotRequested.isEmpty else { return }
+        guard permissionsNotRequested.isEmpty, !hasRegisteredForBackgroundDelivery else { return }
         for sampleType in Constants.backgroundDeliveryTypes {
             let query = HKObserverQuery(sampleType: sampleType, predicate: nil) { [weak self] query, completion, error in
                 guard let self = self else { return }
@@ -89,9 +90,10 @@ final class HealthKitManager: HealthKitManaging {
             healthStore.execute(query)
             healthStore.enableBackgroundDelivery(for: sampleType, frequency: .immediate) { _, _ in }
         }
+        hasRegisteredForBackgroundDelivery.toggle()
     }
 
-    func registerBackgroundDeliveryReceiver(_ receiver: HealthKitBackgroundDeliveryReceiving) {
+    func registerReceiver(_ receiver: HealthKitBackgroundDeliveryReceiving) {
         receivers.append(receiver)
     }
 }

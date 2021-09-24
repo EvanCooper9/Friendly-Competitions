@@ -10,18 +10,10 @@ extension Resolver.Name {
 
 extension Resolver: ResolverRegistering {
     public static func registerAllServices() {
-        register { resolve(name: .mode) as AuthenticationStoring }
-        register(name: .main) { UserDefaults.standard as AuthenticationStoring }
-        register(name: .mock) { UserDefaults.standard as AuthenticationStoring }
-
         register { resolve(name: .mode) as ActivitySummaryManaging }
         register(name: .main) { ActivitySummaryManager() as ActivitySummaryManaging }
             .scope(.application)
         register(name: .mock) { MockActivitySummaryManager() as ActivitySummaryManaging }
-
-        register { resolve(name: .mode) as BackgroundDeliveryStoring }
-        register(name: .main) { UserDefaults.standard as BackgroundDeliveryStoring }
-        register(name: .mock) { UserDefaults.standard as BackgroundDeliveryStoring }
 
         register { resolve(name: .mode) as ContactsManaging }
         register(name: .main) { ContactsManager() as ContactsManaging }

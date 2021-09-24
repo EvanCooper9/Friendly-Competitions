@@ -34,14 +34,12 @@ struct FriendlyCompetitionsApp: App {
 }
 
 @MainActor
-final class AppModel: ObservableObject {
+private final class AppModel: ObservableObject {
 
     @Published var loading = true
     @Published var currentUser: User?
     @Published var hasCompletedHealthPermissions = false
     @Published var hasCompletedContactsPermissions = false
-
-    private var userHandle: AuthStateDidChangeListenerHandle?
 
     @LazyInjected private var activitySummaryManager: ActivitySummaryManaging
     @LazyInjected private var contactsManager: ContactsManaging
@@ -49,13 +47,16 @@ final class AppModel: ObservableObject {
     @LazyInjected private var healthKitManager: HealthKitManaging
 
     init() {
-        activitySummaryManager.registerForBackgroundDelivery()
-        healthKitManager.registerForBackgroundDelivery()
+        if let firebaseUser = Auth.auth().currentUser {
+            Resolver.register { User(id: firebaseUser.uid, email: firebaseUser.email ?? "", name: firebaseUser.displayName ?? "") }
+            activitySummaryManager.registerForBackgroundDelivery()
+            healthKitManager.registerForBackgroundDelivery()
+        }
 
         hasCompletedHealthPermissions = !healthKitManager.shouldRequestPermissions
         hasCompletedContactsPermissions = !contactsManager.shouldRequestPermissions
 
-        userHandle = Auth.auth().addStateDidChangeListener { [weak self] auth, firebaseUser in
+        Auth.auth().addStateDidChangeListener { [weak self] auth, firebaseUser in
             guard let self = self else { return }
 
             guard let firebaseUser = firebaseUser else {
@@ -63,6 +64,8 @@ final class AppModel: ObservableObject {
                 self.loading = false
                 return
             }
+
+            self.healthKitManager.registerForBackgroundDelivery()
 
             Task {
                 let user = try? await self.database.document("users/\(firebaseUser.uid)")

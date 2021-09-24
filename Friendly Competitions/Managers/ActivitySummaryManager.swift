@@ -16,7 +16,12 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
     @LazyInjected private var database: Firestore
     @LazyInjected private var user: User
 
-    private var activitySummaries = [HKActivitySummary]()
+    private var activitySummaries = [HKActivitySummary]() {
+        didSet {
+            handlers.forEach { $0(activitySummaries) }
+        }
+    }
+
     private var handlers = [([HKActivitySummary]) -> Void]()
     private var observerQueries = [HKObserverQuery]()
     private var queries = [HKQuery]()
@@ -27,10 +32,11 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
 
     func addHandler(_ handler: @escaping ([HKActivitySummary]) -> Void) {
         handlers.append(handler)
+        Task { try? await requestActivitySummaries() }
     }
 
     func registerForBackgroundDelivery() {
-        healthKitManager.registerBackgroundDeliveryReceiver(self)
+        healthKitManager.registerReceiver(self)
     }
 
     // MARK: - Private Methods
@@ -63,18 +69,10 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
                     return
                 }
 
-                do {
-                    try Task.checkCancellation()
-                } catch {
-                    continuation.resume(throwing: error)
-                }
-
-                self.activitySummaries = hkActivitySummaries ?? []
-                self.updateHandlers()
-
                 Task {
                     do {
                         try Task.checkCancellation()
+                        self.activitySummaries = hkActivitySummaries ?? []
                         try await self.uploadActivitySummaries()
                         continuation.resume()
                     } catch {

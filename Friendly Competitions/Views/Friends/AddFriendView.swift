@@ -71,7 +71,7 @@ struct AddFriendView: View {
     }
 }
 
-final class AddFriendViewModel: ObservableObject {
+fileprivate final class AddFriendViewModel: ObservableObject {
 
     // MARK: - Public Properties
 

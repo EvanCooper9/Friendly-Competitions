@@ -7,7 +7,7 @@ struct CompetitionView: View {
     @Environment(\.presentationMode) var presentationMode
     @EnvironmentObject var user: User
 
-    @ObservedObject var viewModel: CompetitionViewModel
+    @ObservedObject private var viewModel: CompetitionViewModel
 
     var detailListItems: [ImmutableListItem] {
         [
@@ -90,7 +90,7 @@ struct CompetitionView: View {
     }
 }
 
-final class CompetitionViewModel: ObservableObject {
+fileprivate final class CompetitionViewModel: ObservableObject {
 
     @Published var competition: Competition
     @Published var participants = [User]()
@@ -113,9 +113,10 @@ final class CompetitionViewModel: ObservableObject {
         database.collection("users")
             .whereField("id", in: competition.participants)
             .getDocuments { snapshot, _ in
-                let participants = snapshot?.documents.decoded(asArrayOf: User.self)
+                let participants = snapshot?.documents.decoded(asArrayOf: User.self) ?? []
                 DispatchQueue.main.async {
-                    self.participants = participants ?? []
+                    self.participants = participants
+                    self.pendingParticipants = participants.filter { competition.pendingParticipants.contains($0.id) }
                     Task {
                         try? await self.updateStandings()
                     }

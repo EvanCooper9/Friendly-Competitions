@@ -12,7 +12,6 @@
 		C10EB3EC26E94E2200487F1B /* UserDefaults+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10EB3EA26E94E1B00487F1B /* UserDefaults+Extensions.swift */; };
 		C1185A2526D6717C002E2377 /* ActivitySummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1185A2426D6717C002E2377 /* ActivitySummary.swift */; };
 		C11F9BF926DD5200008E7298 /* MockContactsProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = C11F9BF826DD5200008E7298 /* MockContactsProvider.swift */; };
-		C12BA6E126F6043A009DAE38 /* AuthenticationStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C12BA6E026F6043A009DAE38 /* AuthenticationStore.swift */; };
 		C12BA6E426F60B34009DAE38 /* DateInterval+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C12BA6E326F60B34009DAE38 /* DateInterval+Extensions.swift */; };
 		C1386C7E26D566210096E952 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = C1386C7D26D566210096E952 /* FirebaseAuth */; };
 		C1386C8226D56CD60096E952 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C1386C8126D56CD60096E952 /* GoogleService-Info.plist */; };
@@ -48,7 +47,6 @@
 		C1ABB21326D6971900716984 /* TimeInterval+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1ABB21226D6971900716984 /* TimeInterval+Extensions.swift */; };
 		C1ABB21526D6987C00716984 /* NewCompetitionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1ABB21426D6987C00716984 /* NewCompetitionView.swift */; };
 		C1C1542326D5DFFD00C6FA9F /* HKActivitySummary+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1C1542226D5DFFD00C6FA9F /* HKActivitySummary+Extensions.swift */; };
-		C1C8B23F26F3FB2A008D6B1B /* BackgroundDeliveryStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C163E30226F2689B00C9EC30 /* BackgroundDeliveryStore.swift */; };
 		C1C8B24226F3FB47008D6B1B /* HealthKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14634F526F2A84B0028F847 /* HealthKitManager.swift */; };
 		C1C8B24326F3FB47008D6B1B /* ActivitySummaryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1401F8D26D97C3D0080F74F /* ActivitySummaryManager.swift */; };
 		C1C8B24426F3FB47008D6B1B /* ContactsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C11F9BF626DD5189008E7298 /* ContactsManager.swift */; };
@@ -86,7 +84,6 @@
 		C1185A2426D6717C002E2377 /* ActivitySummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitySummary.swift; sourceTree = "<group>"; };
 		C11F9BF626DD5189008E7298 /* ContactsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsManager.swift; sourceTree = "<group>"; };
 		C11F9BF826DD5200008E7298 /* MockContactsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockContactsProvider.swift; sourceTree = "<group>"; };
-		C12BA6E026F6043A009DAE38 /* AuthenticationStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationStore.swift; sourceTree = "<group>"; };
 		C12BA6E326F60B34009DAE38 /* DateInterval+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DateInterval+Extensions.swift"; sourceTree = "<group>"; };
 		C1386C8126D56CD60096E952 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		C1386C8426D583590096E952 /* HealthKitPermissionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitPermissionsView.swift; sourceTree = "<group>"; };
@@ -102,7 +99,6 @@
 		C15522A526E7971900FE0DA7 /* FirestoreTransactionHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreTransactionHelper.swift; sourceTree = "<group>"; };
 		C15522A726E7973A00FE0DA7 /* DocumentReference+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DocumentReference+Extensions.swift"; sourceTree = "<group>"; };
 		C163E30026F2344D00C9EC30 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
-		C163E30226F2689B00C9EC30 /* BackgroundDeliveryStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundDeliveryStore.swift; sourceTree = "<group>"; };
 		C1691DC326D55FCF006FFA30 /* Friendly Competitions.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Friendly Competitions.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C1691DC626D55FCF006FFA30 /* FriendlyCompetitionsApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendlyCompetitionsApp.swift; sourceTree = "<group>"; };
 		C1691DCA26D55FCF006FFA30 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -166,13 +162,14 @@
 			path = Extensions;
 			sourceTree = "<group>";
 		};
-		C12BA6E226F604B0009DAE38 /* Store */ = {
+		C119B03026FE610100B56703 /* Components */ = {
 			isa = PBXGroup;
 			children = (
-				C12BA6E026F6043A009DAE38 /* AuthenticationStore.swift */,
-				C163E30226F2689B00C9EC30 /* BackgroundDeliveryStore.swift */,
+				C1E4AB9726FCC8BD00B1AF12 /* ActivitySummaryInfoView.swift */,
+				C1E4AB9926FCC96500B1AF12 /* CompetitionListView.swift */,
+				C1401F8A26D94D1C0080F74F /* ImmutableListItem.swift */,
 			);
-			path = Store;
+			path = Components;
 			sourceTree = "<group>";
 		};
 		C1386C8326D580910096E952 /* Onboarding */ = {
@@ -233,7 +230,6 @@
 				C11193AD26E7C5C6003B7EB3 /* Extensions */,
 				C1DA90AA26F63C2500B0E2D3 /* Managers */,
 				C1884E4C26D59E2300C21014 /* Models */,
-				C12BA6E226F604B0009DAE38 /* Store */,
 				C1ABB20C26D6839900716984 /* Views */,
 				C1691DCC26D55FCF006FFA30 /* Preview Content */,
 			);
@@ -305,10 +301,8 @@
 			children = (
 				C1884E4726D5894000C21014 /* HomeView.swift */,
 				C1401F8826D933560080F74F /* SettingsView.swift */,
-				C1401F8A26D94D1C0080F74F /* ImmutableListItem.swift */,
-				C1E4AB9726FCC8BD00B1AF12 /* ActivitySummaryInfoView.swift */,
-				C1E4AB9926FCC96500B1AF12 /* CompetitionListView.swift */,
 				C1F7DFF226D7F77900B46F91 /* Competitions */,
+				C119B03026FE610100B56703 /* Components */,
 				C1F7DFF326D7F78300B46F91 /* Friends */,
 				C1386C8326D580910096E952 /* Onboarding */,
 				C1884E4926D58AC800C21014 /* UIKit Wrappers */,
@@ -484,7 +478,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C12BA6E126F6043A009DAE38 /* AuthenticationStore.swift in Sources */,
 				C1691DDB26D560C5006FFA30 /* SignInWithAppleButton.swift in Sources */,
 				C109E4C026E7F52E00AA10C5 /* Encodable+Extensions.swift in Sources */,
 				C1691DC726D55FCF006FFA30 /* FriendlyCompetitionsApp.swift in Sources */,
@@ -503,7 +496,6 @@
 				C109E4C826E7FF4600AA10C5 /* Decodable+Extensions.swift in Sources */,
 				C1EA986926D6E8C900219E84 /* CompetitionView.swift in Sources */,
 				C1ABB21326D6971900716984 /* TimeInterval+Extensions.swift in Sources */,
-				C1C8B23F26F3FB2A008D6B1B /* BackgroundDeliveryStore.swift in Sources */,
 				C1185A2526D6717C002E2377 /* ActivitySummary.swift in Sources */,
 				C1EA986726D6DBAA00219E84 /* Date+Extensions.swift in Sources */,
 				C15522A626E7971900FE0DA7 /* FirestoreTransactionHelper.swift in Sources */,
