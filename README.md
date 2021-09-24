@@ -8,7 +8,7 @@ td, th {
 }
 </style>
 
-<table>
+<table border:none>
   <tr>
     <td valign="top"><img src="screenshots/MockUp/11 Pro Max/1.png"></td>
     <td valign="top"><img src="screenshots/MockUp/11 Pro Max/2.png"></td>
