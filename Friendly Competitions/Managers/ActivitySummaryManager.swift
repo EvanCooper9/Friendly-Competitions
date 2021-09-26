@@ -97,7 +97,7 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
         try activitySummaries
             .map(\.activitySummary)
             .forEach { activitySummary in
-                let documentId = activitySummary.date.formatted(date: .numeric, time: .omitted)
+                let documentId = DateFormatter.dateDashed.string(from: activitySummary.date)
                 let document = self.database.document("users/\(self.user.id)/activitySummaries/\(documentId)")
                 let _ = try batch.setDataEncodable(activitySummary, forDocument: document)
             }

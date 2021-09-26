@@ -2,21 +2,21 @@ import SwiftUI
 import Contacts
 import Resolver
 
-struct ContactsPermissionsView: View {
+struct NotificationPermissionsView: View {
 
-    @ObservedObject private var viewModel = ContactsPermissionsViewModel()
+    @ObservedObject private var viewModel = NotificationPermissionsViewModel()
 
     let done: () -> Void
 
     var body: some View {
         VStack(spacing: 10) {
             Spacer()
-            Image(systemName: "person.text.rectangle")
+            Image(systemName: "app.badge")
                 .foregroundColor(.pink)
                 .font(.system(size: 100))
-            Text("Contacts Permissions")
+            Text("Notification Permissions")
                 .font(.title)
-            Text("We need access to your contacts so you can find your friends!")
+            Text("So you can stay up to date")
                 .multilineTextAlignment(.center)
             Spacer()
             Button(action: { viewModel.requestAccess(completion: done) }) {
@@ -33,13 +33,12 @@ struct ContactsPermissionsView: View {
     }
 }
 
-fileprivate final class ContactsPermissionsViewModel: ObservableObject {
+fileprivate final class NotificationPermissionsViewModel: ObservableObject {
 
-    private let contactStore = CNContactStore()
-    @LazyInjected private var contactsManager: ContactsManaging
+    @LazyInjected private var notificationManager: NotificationManaging
 
     func requestAccess(completion: @escaping () -> Void) {
-        contactStore.requestAccess(for: .contacts) { authorized, _ in
+        notificationManager.requestPermissions { _, _ in
             DispatchQueue.main.async {
                 completion()
             }
@@ -47,10 +46,10 @@ fileprivate final class ContactsPermissionsViewModel: ObservableObject {
     }
 }
 
-struct ContactsPermissionsView_Previews: PreviewProvider {
+struct NotificationPermissionsView_Previews: PreviewProvider {
     static var previews: some View {
         TabView {
-            ContactsPermissionsView(done: {})
+            NotificationPermissionsView(done: {})
         }
         .tabViewStyle(.page(indexDisplayMode: .always))
     }

@@ -76,9 +76,9 @@ fileprivate final class SettingsViewModel: ObservableObject {
     @Published var statsListItems: [ImmutableListItem] = [
         .other(image: nil, description: "Total competitions", value: ""),
         .other(image: nil, description: "Active competitions", value: ""),
-        .other(image: nil, description: "🥇 Golds", value: ""),
-        .other(image: nil, description: "🥈 Silvers", value: ""),
-        .other(image: nil, description: "🥉 Bronzes", value: "")
+        .other(image: nil, description: "🥇 Gold", value: ""),
+        .other(image: nil, description: "🥈 Silver", value: ""),
+        .other(image: nil, description: "🥉 Bronze", value: "")
     ]
 
 
@@ -120,9 +120,9 @@ fileprivate final class SettingsViewModel: ObservableObject {
             self.statsListItems = [
                 .other(image: nil, description: "Total competitions", value: "\(totalCompetitions)"),
                 .other(image: nil, description: "Active competitions", value: "\(activeCompetitions)"),
-                .other(image: nil, description: "🥇 Golds", value: "\(counts[1] ?? 0)"),
-                .other(image: nil, description: "🥈 Silvers", value: "\(counts[2] ?? 0)"),
-                .other(image: nil, description: "🥉 Bronzes", value: "\(counts[3] ?? 0)")
+                .other(image: nil, description: "🥇 Gold", value: "\(counts[1] ?? 0)"),
+                .other(image: nil, description: "🥈 Silver", value: "\(counts[2] ?? 0)"),
+                .other(image: nil, description: "🥉 Bronze", value: "\(counts[3] ?? 0)")
             ]
         }
     }

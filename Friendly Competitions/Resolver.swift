@@ -41,6 +41,10 @@ extension Resolver: ResolverRegistering {
             return database
         }
 
+        register { resolve(name: .mode) as NotificationManaging }
+        register(name: .main) { NotificationManager() as NotificationManaging }
+        register(name: .mock) { NotificationManager() as NotificationManaging }
+
         register { resolve(name: .mode) as User }
             .scope(.application)
         if let firebaseUser = Auth.auth().currentUser {

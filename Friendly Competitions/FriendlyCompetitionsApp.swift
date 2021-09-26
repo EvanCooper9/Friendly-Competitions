@@ -7,6 +7,7 @@ import Resolver
 @main
 struct FriendlyCompetitionsApp: App {
 
+    @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @ObservedObject private var appModel: AppModel
 
     init() {
@@ -23,6 +24,8 @@ struct FriendlyCompetitionsApp: App {
                     HealthKitPermissionsView(done: { appModel.healthPermissionsComplete() })
                 } else if !appModel.hasCompletedContactsPermissions {
                     ContactsPermissionsView(done: { appModel.contactsPermissionsComplete() })
+                } else if !appModel.hasCompletedNotificationPermissions {
+                    NotificationPermissionsView(done: { appModel.notificationPermissionsComplete() })
                 } else {
                     HomeView().environmentObject(user)
                 }
@@ -40,11 +43,13 @@ private final class AppModel: ObservableObject {
     @Published var currentUser: User?
     @Published var hasCompletedHealthPermissions = false
     @Published var hasCompletedContactsPermissions = false
+    @Published var hasCompletedNotificationPermissions = false
 
     @LazyInjected private var activitySummaryManager: ActivitySummaryManaging
     @LazyInjected private var contactsManager: ContactsManaging
     @LazyInjected private var database: Firestore
     @LazyInjected private var healthKitManager: HealthKitManaging
+    @LazyInjected private var notificationManager: NotificationManaging
 
     init() {
         if let firebaseUser = Auth.auth().currentUser {
@@ -55,6 +60,10 @@ private final class AppModel: ObservableObject {
 
         hasCompletedHealthPermissions = !healthKitManager.shouldRequestPermissions
         hasCompletedContactsPermissions = !contactsManager.shouldRequestPermissions
+
+        notificationManager.shouldRequestPermissions { shouldRequestPermissions in
+            DispatchQueue.main.async { [weak self] in self?.hasCompletedNotificationPermissions = !shouldRequestPermissions }
+        }
 
         Auth.auth().addStateDidChangeListener { [weak self] auth, firebaseUser in
             guard let self = self else { return }
@@ -87,5 +96,11 @@ private final class AppModel: ObservableObject {
 
     func contactsPermissionsComplete() {
         hasCompletedContactsPermissions = !contactsManager.shouldRequestPermissions
+    }
+
+    func notificationPermissionsComplete() {
+        notificationManager.shouldRequestPermissions { shouldRequestPermissions in
+            DispatchQueue.main.async { [weak self] in self?.hasCompletedNotificationPermissions = !shouldRequestPermissions }
+        }
     }
 }

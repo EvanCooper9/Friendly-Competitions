@@ -146,15 +146,17 @@ fileprivate final class HomeViewModel: ObservableObject {
             }
         }
 
-        database.document("users/\(user.id)")
-            .addSnapshotListener { _, _ in
-                Task(priority: .high) { [weak self] in
-                    try? await self?.updateFriends()
-                    try? await self?.updateFriendRequests()
+        let userListener = database.document("users/\(user.id)")
+            .addSnapshotListener { [weak self] snapshot, _ in
+                guard let self = self, let user = try? snapshot?.decoded(as: User.self) else { return }
+                self.user = user
+                Task(priority: .high) {
+                    try? await self.updateFriends()
+                    try? await self.updateFriendRequests()
                 }
             }
 
-        database.collection("competitions")
+        let competitionListener = database.collection("competitions")
             .whereField("participants", arrayContains: user.id)
             .addSnapshotListener { snapshot, _ in
                 let competitions = snapshot?.documents
@@ -165,6 +167,8 @@ fileprivate final class HomeViewModel: ObservableObject {
                     self?.competitions = competitions ?? []
                 }
             }
+
+        listenerRegistrations.append(contentsOf: [userListener, competitionListener])
     }
 
     // MARK: - Public Methods
