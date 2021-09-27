@@ -1,6 +1,7 @@
 import * as functions from "firebase-functions";
 import * as admin from "firebase-admin";
 import * as notifications from "./notifications";
+import * as moment from "moment";
 admin.initializeApp();
 
 const firestore = admin.firestore();
@@ -73,4 +74,49 @@ exports.sendNewCompetitionNotification = functions.firestore
 
                 return Promise.all(notificationPromises);
             });
+    });
+
+exports.scheduledFunction = functions.pubsub.schedule('0 12 * * *')
+    .timeZone("America/Toronto")
+    .onRun(async context => {
+        const yesterday = moment().subtract(1, 'day');
+        
+        const competitionsRef = await firestore.collection("competitions").get();
+        competitionsRef.docs.forEach(async competitionDoc => {
+            const competition = competitionDoc.data();
+            const competitionEnd = moment(competition.end);
+
+            if (!yesterday.isSame(competitionEnd, 'day')) {
+                return;
+            }
+
+            const standingsRef = await firestore.collection(`competitions/${competition.id}/standings`).get();
+            const standings = standingsRef.docs.map(doc => {
+                return doc.data();
+            })
+
+            function nth(n: number){
+                return["st","nd","rd"][((n+90)%100-10)%10-1]||"th"
+            }
+
+            const notifications = competition.participants.map((participantId: string) => {
+                const standing = standings.find(standing => {
+                    return standing.userId == participantId
+                })
+
+                if (standing == null) {
+                    return;
+                }
+
+                const rank = standing.rank;
+
+                return notifications.sendNotifications(
+                    participantId,
+                    "Friendly Competitions",
+                    `Completion complete! You placed ${nth(rank)} in ${competition.name}!`
+                );
+            })
+        })
+
+        return null;
     });

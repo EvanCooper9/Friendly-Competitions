@@ -38,6 +38,6 @@ extension NotificationManager: MessagingDelegate {
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
         guard let fcmToken = fcmToken, !user.notificationTokens.contains(fcmToken) else { return }
         user.notificationTokens.append(fcmToken)
-        try? database.document("users/\(user.id)").setData(["notificationTokens": user.notificationTokens])
+        database.document("users/\(user.id)").updateData(["notificationTokens": user.notificationTokens])
     }
 }
