@@ -52,8 +52,10 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
             .decoded(asArrayOf: Competition.self)
             .filter { $0.isActive && !$0.pendingParticipants.contains(user.id) }
             .reduce(DateInterval()) { dateInterval, competition in
-                let yesterday = Date.now.addingTimeInterval(-1.days)
-                let tomorrow = Date.now.addingTimeInterval(1.days)
+                let components = Calendar.current.dateComponents([.year, .month, .day], from: .now)
+                let now = Calendar.current.date(from: components) ?? .now
+                let yesterday = now.addingTimeInterval(-1.days)
+                let tomorrow = now.addingTimeInterval(1.days)
                 return .init(
                     start: [dateInterval.start, competition.start, yesterday].min() ?? yesterday,
                     end: [dateInterval.end, competition.end, tomorrow].max() ?? tomorrow
