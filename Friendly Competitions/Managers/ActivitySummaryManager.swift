@@ -45,18 +45,19 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
 
         try Task.checkCancellation()
 
+        let components = Calendar.current.dateComponents([.year, .month, .day], from: .now)
+        let now = Calendar.current.date(from: components) ?? .now
+        let yesterday = now.addingTimeInterval(-1.days)
+        let tomorrow = now.addingTimeInterval(1.days)
+
         let dateInterval = try await database.collection("competitions")
             .whereField("participants", arrayContains: user.id)
             .getDocuments()
             .documents
             .decoded(asArrayOf: Competition.self)
             .filter { $0.isActive && !$0.pendingParticipants.contains(user.id) }
-            .reduce(DateInterval()) { dateInterval, competition in
-                let components = Calendar.current.dateComponents([.year, .month, .day], from: .now)
-                let now = Calendar.current.date(from: components) ?? .now
-                let yesterday = now.addingTimeInterval(-1.days)
-                let tomorrow = now.addingTimeInterval(1.days)
-                return .init(
+            .reduce(DateInterval(start: yesterday, end: tomorrow)) { dateInterval, competition in
+                .init(
                     start: [dateInterval.start, competition.start, yesterday].min() ?? yesterday,
                     end: [dateInterval.end, competition.end, tomorrow].max() ?? tomorrow
                 )
