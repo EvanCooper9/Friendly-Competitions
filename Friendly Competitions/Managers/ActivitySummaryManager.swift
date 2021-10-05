@@ -66,7 +66,12 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
         try Task.checkCancellation()
 
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-            let query = HKActivitySummaryQuery(predicate: self.predicate(for: dateInterval)) { query, hkActivitySummaries, error in
+            let query = HKActivitySummaryQuery(predicate: self.predicate(for: dateInterval)) { [weak self] query, hkActivitySummaries, error in
+                guard let self = self else {
+                    continuation.resume()
+                    return
+                }
+
                 if let error = error {
                     continuation.resume(throwing: error)
                     return
@@ -84,14 +89,7 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
                 }
             }
 
-            self.healthStore.execute(query)
-        }
-    }
-
-    private func updateHandlers() {
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            self.handlers.forEach { $0(self.activitySummaries) }
+            healthStore.execute(query)
         }
     }
 
@@ -101,10 +99,9 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
             .map(\.activitySummary)
             .forEach { activitySummary in
                 let documentId = DateFormatter.dateDashed.string(from: activitySummary.date)
-                let document = self.database.document("users/\(self.user.id)/activitySummaries/\(documentId)")
+                let document = database.document("users/\(user.id)/activitySummaries/\(documentId)")
                 let _ = try batch.setDataEncodable(activitySummary, forDocument: document)
             }
-
         try await batch.commit()
     }
 
@@ -121,6 +118,6 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
 
 extension ActivitySummaryManager: HealthKitBackgroundDeliveryReceiving {
     func trigger() async throws {
-        try await self.requestActivitySummaries()
+        try await requestActivitySummaries()
     }
 }
