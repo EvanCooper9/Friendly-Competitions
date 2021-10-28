@@ -43,6 +43,7 @@ extension Resolver: ResolverRegistering {
 
         register { resolve(name: .mode) as NotificationManaging }
         register(name: .main) { NotificationManager() as NotificationManaging }
+            .scope(.application)
         register(name: .mock) { NotificationManager() as NotificationManaging }
 
         register { resolve(name: .mode) as User }

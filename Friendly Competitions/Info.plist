@@ -17,8 +17,8 @@
 			</array>
 		</dict>
 	</array>
-	<key>FirebaseMessagingAutoInitEnabled</key>
-	<false/>
+	<key>FirebaseAppDelegateProxyEnabled</key>
+	<true/>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 </dict>

@@ -20,15 +20,7 @@ struct FriendlyCompetitionsApp: App {
             if appModel.loading {
                 ProgressView().progressViewStyle(.circular)
             } else if let user = appModel.currentUser {
-                if !appModel.hasCompletedHealthPermissions {
-                    HealthKitPermissionsView(done: { appModel.healthPermissionsComplete() })
-                } else if !appModel.hasCompletedContactsPermissions {
-                    ContactsPermissionsView(done: { appModel.contactsPermissionsComplete() })
-                } else if !appModel.hasCompletedNotificationPermissions {
-                    NotificationPermissionsView(done: { appModel.notificationPermissionsComplete() })
-                } else {
-                    HomeView().environmentObject(user)
-                }
+                HomeView().environmentObject(user)
             } else {
                 SignInView()
             }
@@ -58,13 +50,6 @@ private final class AppModel: ObservableObject {
             healthKitManager.registerForBackgroundDelivery()
         }
 
-        hasCompletedHealthPermissions = !healthKitManager.shouldRequestPermissions
-        hasCompletedContactsPermissions = !contactsManager.shouldRequestPermissions
-
-        notificationManager.shouldRequestPermissions { shouldRequestPermissions in
-            DispatchQueue.main.async { [weak self] in self?.hasCompletedNotificationPermissions = !shouldRequestPermissions }
-        }
-
         Auth.auth().addStateDidChangeListener { [weak self] auth, firebaseUser in
             guard let self = self else { return }
 
@@ -87,20 +72,6 @@ private final class AppModel: ObservableObject {
                     self.currentUser = user
                 }
             }
-        }
-    }
-
-    func healthPermissionsComplete() {
-        hasCompletedHealthPermissions = !healthKitManager.shouldRequestPermissions
-    }
-
-    func contactsPermissionsComplete() {
-        hasCompletedContactsPermissions = !contactsManager.shouldRequestPermissions
-    }
-
-    func notificationPermissionsComplete() {
-        notificationManager.shouldRequestPermissions { shouldRequestPermissions in
-            DispatchQueue.main.async { [weak self] in self?.hasCompletedNotificationPermissions = !shouldRequestPermissions }
         }
     }
 }

@@ -76,36 +76,44 @@ exports.sendNewCompetitionNotification = functions.firestore
             });
     });
 
-exports.scheduledFunction = functions.pubsub.schedule('0 12 * * *')
+exports.scheduledFunction = functions.pubsub.schedule("every day 12:00")
     .timeZone("America/Toronto")
     .onRun(async context => {
-        const yesterday = moment().subtract(1, 'day');
+        const yesterday = moment().utc().subtract(1, "day");
         
         const competitionsRef = await firestore.collection("competitions").get();
-        competitionsRef.docs.forEach(async competitionDoc => {
+
+        const competitionPromises = competitionsRef.docs.map(async competitionDoc => {
             const competition = competitionDoc.data();
             const competitionEnd = moment(competition.end);
 
-            if (!yesterday.isSame(competitionEnd, 'day')) {
+            if (yesterday.dayOfYear() != competitionEnd.dayOfYear() || yesterday.year() != competitionEnd.year()) {
                 return;
             }
+
+            console.log(`Sending standing notification for competition: ${competition.name}`);
 
             const standingsRef = await firestore.collection(`competitions/${competition.id}/standings`).get();
             const standings = standingsRef.docs.map(doc => {
                 return doc.data();
-            })
+            });
 
-            function nth(n: number){
-                return["st","nd","rd"][((n+90)%100-10)%10-1]||"th"
+            /**
+             * Returns a ordinal representation for a given number
+             * @param {number} n number to get ordinal string for
+             * @return {string} ordinal representation of number
+             */
+            function nth(n: number) {
+                return ["st", "nd", "rd"][((n+90)%100-10)%10-1] || "th";
             }
 
-            const notifications = competition.participants.map((participantId: string) => {
+            const notificationPromises = competition.participants.map((participantId: string) => {
                 const standing = standings.find(standing => {
-                    return standing.userId == participantId
-                })
+                    return standing.userId == participantId;
+                });
 
                 if (standing == null) {
-                    return;
+                    return Promise.resolve();
                 }
 
                 const rank = standing.rank;
@@ -113,10 +121,12 @@ exports.scheduledFunction = functions.pubsub.schedule('0 12 * * *')
                 return notifications.sendNotifications(
                     participantId,
                     "Friendly Competitions",
-                    `Completion complete! You placed ${nth(rank)} in ${competition.name}!`
+                    `Completion complete! You placed ${rank}${nth(rank)} in ${competition.name}!`
                 );
-            })
-        })
+            });
 
-        return null;
+            return Promise.all(notificationPromises);
+        });
+
+        return Promise.all(competitionPromises);
     });
