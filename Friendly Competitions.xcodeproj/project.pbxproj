@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		C109E4C026E7F52E00AA10C5 /* Encodable+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C109E4BF26E7F52E00AA10C5 /* Encodable+Extensions.swift */; };
 		C109E4C826E7FF4600AA10C5 /* Decodable+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C109E4C726E7FF4600AA10C5 /* Decodable+Extensions.swift */; };
+		C10E5541272B3BB70053BBA6 /* Permission.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10E5540272B3BB70053BBA6 /* Permission.swift */; };
+		C10E5543272B3BCF0053BBA6 /* PermissionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10E5542272B3BCF0053BBA6 /* PermissionView.swift */; };
+		C10E5548272B47080053BBA6 /* XCAssets+Generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10E5547272B47080053BBA6 /* XCAssets+Generated.swift */; };
 		C10EB3EC26E94E2200487F1B /* UserDefaults+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10EB3EA26E94E1B00487F1B /* UserDefaults+Extensions.swift */; };
 		C1185A2526D6717C002E2377 /* ActivitySummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1185A2426D6717C002E2377 /* ActivitySummary.swift */; };
 		C119B03226FE67A300B56703 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = C119B03126FE67A300B56703 /* FirebaseCrashlytics */; };
@@ -16,7 +19,6 @@
 		C12BA6E426F60B34009DAE38 /* DateInterval+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C12BA6E326F60B34009DAE38 /* DateInterval+Extensions.swift */; };
 		C1386C7E26D566210096E952 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = C1386C7D26D566210096E952 /* FirebaseAuth */; };
 		C1386C8226D56CD60096E952 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C1386C8126D56CD60096E952 /* GoogleService-Info.plist */; };
-		C1386C8526D583590096E952 /* HealthKitPermissionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1386C8426D583590096E952 /* HealthKitPermissionsView.swift */; };
 		C1401F8726D921960080F74F /* Sequence+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1401F8626D921960080F74F /* Sequence+Extensions.swift */; };
 		C1401F8926D933560080F74F /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1401F8826D933560080F74F /* SettingsView.swift */; };
 		C1401F8B26D94D1C0080F74F /* ImmutableListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1401F8A26D94D1C0080F74F /* ImmutableListItem.swift */; };
@@ -42,11 +44,13 @@
 		C1884E4826D5894000C21014 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1884E4726D5894000C21014 /* HomeView.swift */; };
 		C1884E4E26D59E3100C21014 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1884E4D26D59E3000C21014 /* User.swift */; };
 		C1884E5426D5A40E00C21014 /* Competition.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1884E5326D5A40E00C21014 /* Competition.swift */; };
+		C19EAFE3272B30E0008BCFDD /* PermissionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C19EAFE2272B30E0008BCFDD /* PermissionsView.swift */; };
 		C1A4696826DA7F5400254105 /* MockActivitySummaryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A4696726DA7F5400254105 /* MockActivitySummaryManager.swift */; };
 		C1A4696A26DA823C00254105 /* Resolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A4696926DA823C00254105 /* Resolver.swift */; };
 		C1ABB20E26D683BA00716984 /* AddFriendView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1ABB20D26D683BA00716984 /* AddFriendView.swift */; };
 		C1ABB21326D6971900716984 /* TimeInterval+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1ABB21226D6971900716984 /* TimeInterval+Extensions.swift */; };
 		C1ABB21526D6987C00716984 /* NewCompetitionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1ABB21426D6987C00716984 /* NewCompetitionView.swift */; };
+		C1B2F4E4272B505C0028449F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1B2F4E3272B505C0028449F /* AppDelegate.swift */; };
 		C1C1542326D5DFFD00C6FA9F /* HKActivitySummary+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1C1542226D5DFFD00C6FA9F /* HKActivitySummary+Extensions.swift */; };
 		C1C8B24226F3FB47008D6B1B /* HealthKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14634F526F2A84B0028F847 /* HealthKitManager.swift */; };
 		C1C8B24326F3FB47008D6B1B /* ActivitySummaryManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1401F8D26D97C3D0080F74F /* ActivitySummaryManager.swift */; };
@@ -61,8 +65,9 @@
 		C1EA986926D6E8C900219E84 /* CompetitionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1EA986826D6E8C900219E84 /* CompetitionView.swift */; };
 		C1EA986B26D6FFBE00219E84 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = C1EA986A26D6FFBE00219E84 /* FirebaseFirestore */; };
 		C1EA986F26D7141F00219E84 /* Firestore+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1EA986E26D7141F00219E84 /* Firestore+Extensions.swift */; };
-		C1F7DFF126D7F0DA00B46F91 /* ContactsPermissionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F7DFF026D7F0DA00B46F91 /* ContactsPermissionView.swift */; };
 		C1F7DFF526D8010A00B46F91 /* CollectionReference+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F7DFF426D8010A00B46F91 /* CollectionReference+Extensions.swift */; };
+		C1F9D7CD26FF871A00B25651 /* NotificationManaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F9D7CC26FF871A00B25651 /* NotificationManaging.swift */; };
+		C1F9D7CF26FF874800B25651 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = C1F9D7CE26FF874800B25651 /* FirebaseMessaging */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -81,13 +86,15 @@
 /* Begin PBXFileReference section */
 		C109E4BF26E7F52E00AA10C5 /* Encodable+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Encodable+Extensions.swift"; sourceTree = "<group>"; };
 		C109E4C726E7FF4600AA10C5 /* Decodable+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Decodable+Extensions.swift"; path = "../Foundation/Decodable+Extensions.swift"; sourceTree = "<group>"; };
+		C10E5540272B3BB70053BBA6 /* Permission.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Permission.swift; sourceTree = "<group>"; };
+		C10E5542272B3BCF0053BBA6 /* PermissionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionView.swift; sourceTree = "<group>"; };
+		C10E5547272B47080053BBA6 /* XCAssets+Generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "XCAssets+Generated.swift"; sourceTree = "<group>"; };
 		C10EB3EA26E94E1B00487F1B /* UserDefaults+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserDefaults+Extensions.swift"; sourceTree = "<group>"; };
 		C1185A2426D6717C002E2377 /* ActivitySummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitySummary.swift; sourceTree = "<group>"; };
 		C11F9BF626DD5189008E7298 /* ContactsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsManager.swift; sourceTree = "<group>"; };
 		C11F9BF826DD5200008E7298 /* MockContactsProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockContactsProvider.swift; sourceTree = "<group>"; };
 		C12BA6E326F60B34009DAE38 /* DateInterval+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DateInterval+Extensions.swift"; sourceTree = "<group>"; };
 		C1386C8126D56CD60096E952 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
-		C1386C8426D583590096E952 /* HealthKitPermissionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitPermissionsView.swift; sourceTree = "<group>"; };
 		C1401F8626D921960080F74F /* Sequence+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sequence+Extensions.swift"; sourceTree = "<group>"; };
 		C1401F8826D933560080F74F /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		C1401F8A26D94D1C0080F74F /* ImmutableListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImmutableListItem.swift; sourceTree = "<group>"; };
@@ -116,11 +123,13 @@
 		C1884E4726D5894000C21014 /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		C1884E4D26D59E3000C21014 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		C1884E5326D5A40E00C21014 /* Competition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Competition.swift; sourceTree = "<group>"; };
+		C19EAFE2272B30E0008BCFDD /* PermissionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionsView.swift; sourceTree = "<group>"; };
 		C1A4696726DA7F5400254105 /* MockActivitySummaryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockActivitySummaryManager.swift; sourceTree = "<group>"; };
 		C1A4696926DA823C00254105 /* Resolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Resolver.swift; sourceTree = "<group>"; };
 		C1ABB20D26D683BA00716984 /* AddFriendView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddFriendView.swift; sourceTree = "<group>"; };
 		C1ABB21226D6971900716984 /* TimeInterval+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimeInterval+Extensions.swift"; sourceTree = "<group>"; };
 		C1ABB21426D6987C00716984 /* NewCompetitionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCompetitionView.swift; sourceTree = "<group>"; };
+		C1B2F4E3272B505C0028449F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C1C1542226D5DFFD00C6FA9F /* HKActivitySummary+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HKActivitySummary+Extensions.swift"; sourceTree = "<group>"; };
 		C1C8B24626F3FB9C008D6B1B /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
 		C1C8B24826F3FBA3008D6B1B /* HealthKitUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKitUI.framework; path = System/Library/Frameworks/HealthKitUI.framework; sourceTree = SDKROOT; };
@@ -131,8 +140,8 @@
 		C1EA986626D6DBAA00219E84 /* Date+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extensions.swift"; sourceTree = "<group>"; };
 		C1EA986826D6E8C900219E84 /* CompetitionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionView.swift; sourceTree = "<group>"; };
 		C1EA986E26D7141F00219E84 /* Firestore+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Firestore+Extensions.swift"; sourceTree = "<group>"; };
-		C1F7DFF026D7F0DA00B46F91 /* ContactsPermissionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactsPermissionView.swift; sourceTree = "<group>"; };
 		C1F7DFF426D8010A00B46F91 /* CollectionReference+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CollectionReference+Extensions.swift"; sourceTree = "<group>"; };
+		C1F9D7CC26FF871A00B25651 /* NotificationManaging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManaging.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -140,6 +149,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C1F9D7CF26FF874800B25651 /* FirebaseMessaging in Frameworks */,
 				C1C8B24726F3FB9C008D6B1B /* HealthKit.framework in Frameworks */,
 				C1C8B24926F3FBA3008D6B1B /* HealthKitUI.framework in Frameworks */,
 				C14634FE26F2D1670028F847 /* OrderedCollections in Frameworks */,
@@ -153,6 +163,24 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		C10E5544272B44B30053BBA6 /* Permissions */ = {
+			isa = PBXGroup;
+			children = (
+				C10E5540272B3BB70053BBA6 /* Permission.swift */,
+				C19EAFE2272B30E0008BCFDD /* PermissionsView.swift */,
+				C10E5542272B3BCF0053BBA6 /* PermissionView.swift */,
+			);
+			path = Permissions;
+			sourceTree = "<group>";
+		};
+		C10E5546272B46990053BBA6 /* SwiftGen */ = {
+			isa = PBXGroup;
+			children = (
+				C10E5547272B47080053BBA6 /* XCAssets+Generated.swift */,
+			);
+			path = SwiftGen;
+			sourceTree = "<group>";
+		};
 		C11193AD26E7C5C6003B7EB3 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
@@ -177,9 +205,8 @@
 		C1386C8326D580910096E952 /* Onboarding */ = {
 			isa = PBXGroup;
 			children = (
+				C10E5544272B44B30053BBA6 /* Permissions */,
 				C1691DDD26D561D5006FFA30 /* SignInView.swift */,
-				C1386C8426D583590096E952 /* HealthKitPermissionsView.swift */,
-				C1F7DFF026D7F0DA00B46F91 /* ContactsPermissionView.swift */,
 			);
 			path = Onboarding;
 			sourceTree = "<group>";
@@ -228,11 +255,13 @@
 				C1386C8126D56CD60096E952 /* GoogleService-Info.plist */,
 				C1E6406226F4395200E3E70A /* FriendlyCompetitions.entitlements */,
 				C1691DC626D55FCF006FFA30 /* FriendlyCompetitionsApp.swift */,
+				C1B2F4E3272B505C0028449F /* AppDelegate.swift */,
 				C1A4696926DA823C00254105 /* Resolver.swift */,
 				C11193AD26E7C5C6003B7EB3 /* Extensions */,
 				C1DA90AA26F63C2500B0E2D3 /* Managers */,
 				C1884E4C26D59E2300C21014 /* Models */,
 				C1ABB20C26D6839900716984 /* Views */,
+				C10E5546272B46990053BBA6 /* SwiftGen */,
 				C1691DCC26D55FCF006FFA30 /* Preview Content */,
 			);
 			path = "Friendly Competitions";
@@ -340,6 +369,7 @@
 				C1401F8D26D97C3D0080F74F /* ActivitySummaryManager.swift */,
 				C11F9BF626DD5189008E7298 /* ContactsManager.swift */,
 				C14634F526F2A84B0028F847 /* HealthKitManager.swift */,
+				C1F9D7CC26FF871A00B25651 /* NotificationManaging.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -380,6 +410,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = C1691DD126D55FCF006FFA30 /* Build configuration list for PBXNativeTarget "Friendly Competitions" */;
 			buildPhases = (
+				C10E5545272B46730053BBA6 /* SwiftGen */,
 				C1691DBF26D55FCF006FFA30 /* Sources */,
 				C1691DC026D55FCF006FFA30 /* Frameworks */,
 				C1691DC126D55FCF006FFA30 /* Resources */,
@@ -397,6 +428,7 @@
 				C1EA986A26D6FFBE00219E84 /* FirebaseFirestore */,
 				C14634FD26F2D1670028F847 /* OrderedCollections */,
 				C119B03126FE67A300B56703 /* FirebaseCrashlytics */,
+				C1F9D7CE26FF874800B25651 /* FirebaseMessaging */,
 			);
 			productName = CompyBoi;
 			productReference = C1691DC326D55FCF006FFA30 /* Friendly Competitions.app */;
@@ -454,6 +486,24 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
+		C10E5545272B46730053BBA6 /* SwiftGen */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = SwiftGen;
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ $(arch) == \"arm64\" ]; then\n    arch -x86_64 /opt/homebrew/bin/swiftgen\nelse \n    swiftgen\nfi\n";
+		};
 		C1DA90AD26F65D6000B0E2D3 /* Firebase Crashlytics */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -494,16 +544,19 @@
 				C15522A026E793DA00FE0DA7 /* ActivitySummary+Mock.swift in Sources */,
 				C12BA6E426F60B34009DAE38 /* DateInterval+Extensions.swift in Sources */,
 				C1884E5426D5A40E00C21014 /* Competition.swift in Sources */,
+				C1F9D7CD26FF871A00B25651 /* NotificationManaging.swift in Sources */,
 				C1F7DFF526D8010A00B46F91 /* CollectionReference+Extensions.swift in Sources */,
 				C1EA986226D6B5EB00219E84 /* Array+Extensions.swift in Sources */,
+				C10E5541272B3BB70053BBA6 /* Permission.swift in Sources */,
 				C109E4C826E7FF4600AA10C5 /* Decodable+Extensions.swift in Sources */,
 				C1EA986926D6E8C900219E84 /* CompetitionView.swift in Sources */,
+				C19EAFE3272B30E0008BCFDD /* PermissionsView.swift in Sources */,
 				C1ABB21326D6971900716984 /* TimeInterval+Extensions.swift in Sources */,
+				C10E5543272B3BCF0053BBA6 /* PermissionView.swift in Sources */,
 				C1185A2526D6717C002E2377 /* ActivitySummary.swift in Sources */,
 				C1EA986726D6DBAA00219E84 /* Date+Extensions.swift in Sources */,
 				C15522A626E7971900FE0DA7 /* FirestoreTransactionHelper.swift in Sources */,
 				C16ADDD426D9125C00E34E04 /* Int+Extensions.swift in Sources */,
-				C1386C8526D583590096E952 /* HealthKitPermissionsView.swift in Sources */,
 				C1401F8B26D94D1C0080F74F /* ImmutableListItem.swift in Sources */,
 				C1401F8726D921960080F74F /* Sequence+Extensions.swift in Sources */,
 				C1EA986F26D7141F00219E84 /* Firestore+Extensions.swift in Sources */,
@@ -516,13 +569,14 @@
 				C15522A826E7973A00FE0DA7 /* DocumentReference+Extensions.swift in Sources */,
 				C1C1542326D5DFFD00C6FA9F /* HKActivitySummary+Extensions.swift in Sources */,
 				C1401F8926D933560080F74F /* SettingsView.swift in Sources */,
-				C1F7DFF126D7F0DA00B46F91 /* ContactsPermissionView.swift in Sources */,
+				C1B2F4E4272B505C0028449F /* AppDelegate.swift in Sources */,
 				C1E4AB9A26FCC96500B1AF12 /* CompetitionListView.swift in Sources */,
 				C16ADDD226D9123600E34E04 /* ScoringModel.swift in Sources */,
 				C15522A426E7943A00FE0DA7 /* DocumentSnapshot+Extensions.swift in Sources */,
 				C1A4696A26DA823C00254105 /* Resolver.swift in Sources */,
 				C1C8B24326F3FB47008D6B1B /* ActivitySummaryManager.swift in Sources */,
 				C1ABB20E26D683BA00716984 /* AddFriendView.swift in Sources */,
+				C10E5548272B47080053BBA6 /* XCAssets+Generated.swift in Sources */,
 				C184A6E426D8792D007CEF9B /* Timestamp+Extensions.swift in Sources */,
 				C1E4AB9826FCC8BD00B1AF12 /* ActivitySummaryInfoView.swift in Sources */,
 				C16ADDD626D9126800E34E04 /* JSONDecoder+Extensions.swift in Sources */,
@@ -680,7 +734,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.evancooper.FriendlyCompetitions;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -720,7 +774,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.0;
+				MARKETING_VERSION = 1.1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.evancooper.FriendlyCompetitions;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -805,6 +859,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = C1386C7C26D566210096E952 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseFirestore;
+		};
+		C1F9D7CE26FF874800B25651 /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C1386C7C26D566210096E952 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

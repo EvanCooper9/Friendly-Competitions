@@ -3,8 +3,6 @@ import FirebaseFirestore
 import HealthKit
 import SwiftUI
 import Resolver
-import WatchConnectivity
-import OrderedCollections
 
 struct HomeView: View {
 
@@ -77,11 +75,13 @@ struct HomeView: View {
                                 Spacer()
                                 Button("Accept", action: { viewModel.accept(friendRequest) })
                                     .foregroundColor(.blue)
+                                    .buttonStyle(.borderless)
                                 Text("/")
                                     .fontWeight(.ultraLight)
                                 Button("Decline", action: { viewModel.decline(friendRequest) })
                                     .foregroundColor(.red)
                                     .padding(.trailing, 10)
+                                    .buttonStyle(.borderless)
                             }
                         }
                     } header: {
@@ -118,6 +118,7 @@ struct HomeView: View {
         .sheet(isPresented: $presentSettings) { SettingsView() }
         .sheet(isPresented: $presentSearchFriendsSheet) { AddFriendView(sharedFriendId: sharedFriendId) }
         .sheet(isPresented: $presentNewCompetition) { NewCompetitionView(friends: viewModel.friends) }
+        .sheet(isPresented: $viewModel.shouldPresentPermissions) { PermissionsView() }
         .onOpenURL { url in
             guard url.absoluteString.contains("invite") else { return }
             sharedFriendId = url.lastPathComponent
@@ -132,9 +133,13 @@ fileprivate final class HomeViewModel: ObservableObject {
     @Published private(set) var competitions = [Competition]()
     @Published private(set) var friends = [User]()
     @Published private(set) var friendRequests = [User]()
+    @Published var shouldPresentPermissions = false
 
     @LazyInjected private var activitySummaryManager: ActivitySummaryManaging
+    @LazyInjected private var contactsManager: ContactsManaging
     @LazyInjected private var database: Firestore
+    @LazyInjected private var healthKitManager: HealthKitManaging
+    @LazyInjected private var notificationManager: NotificationManaging
     @LazyInjected var user: User
 
     private var listenerRegistrations = [ListenerRegistration]()
@@ -146,15 +151,17 @@ fileprivate final class HomeViewModel: ObservableObject {
             }
         }
 
-        database.document("users/\(user.id)")
-            .addSnapshotListener { _, _ in
-                Task(priority: .high) { [weak self] in
-                    try? await self?.updateFriends()
-                    try? await self?.updateFriendRequests()
+        let userListener = database.document("users/\(user.id)")
+            .addSnapshotListener { [weak self] snapshot, _ in
+                guard let self = self, let user = try? snapshot?.decoded(as: User.self) else { return }
+                self.user = user
+                Task(priority: .high) {
+                    try? await self.updateFriends()
+                    try? await self.updateFriendRequests()
                 }
             }
 
-        database.collection("competitions")
+        let competitionListener = database.collection("competitions")
             .whereField("participants", arrayContains: user.id)
             .addSnapshotListener { snapshot, _ in
                 let competitions = snapshot?.documents
@@ -165,6 +172,16 @@ fileprivate final class HomeViewModel: ObservableObject {
                     self?.competitions = competitions ?? []
                 }
             }
+
+        listenerRegistrations.append(contentsOf: [userListener, competitionListener])
+
+        let health = healthKitManager.shouldRequestPermissions
+        let contacts = contactsManager.shouldRequestPermissions
+        notificationManager.shouldRequestPermissions { [weak self] notifications in
+            DispatchQueue.main.async {
+                self?.shouldPresentPermissions = health || contacts || notifications
+            }
+        }
     }
 
     // MARK: - Public Methods

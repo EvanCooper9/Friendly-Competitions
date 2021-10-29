@@ -45,16 +45,19 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
 
         try Task.checkCancellation()
 
+        let components = Calendar.current.dateComponents([.year, .month, .day], from: .now)
+        let now = Calendar.current.date(from: components) ?? .now
+        let yesterday = now.addingTimeInterval(-1.days)
+        let tomorrow = now.addingTimeInterval(1.days)
+
         let dateInterval = try await database.collection("competitions")
             .whereField("participants", arrayContains: user.id)
             .getDocuments()
             .documents
             .decoded(asArrayOf: Competition.self)
             .filter { $0.isActive && !$0.pendingParticipants.contains(user.id) }
-            .reduce(DateInterval()) { dateInterval, competition in
-                let yesterday = Date.now.addingTimeInterval(-1.days)
-                let tomorrow = Date.now.addingTimeInterval(1.days)
-                return .init(
+            .reduce(DateInterval(start: yesterday, end: tomorrow)) { dateInterval, competition in
+                .init(
                     start: [dateInterval.start, competition.start, yesterday].min() ?? yesterday,
                     end: [dateInterval.end, competition.end, tomorrow].max() ?? tomorrow
                 )
@@ -63,7 +66,12 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
         try Task.checkCancellation()
 
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-            let query = HKActivitySummaryQuery(predicate: self.predicate(for: dateInterval)) { query, hkActivitySummaries, error in
+            let query = HKActivitySummaryQuery(predicate: self.predicate(for: dateInterval)) { [weak self] query, hkActivitySummaries, error in
+                guard let self = self else {
+                    continuation.resume()
+                    return
+                }
+
                 if let error = error {
                     continuation.resume(throwing: error)
                     return
@@ -81,14 +89,7 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
                 }
             }
 
-            self.healthStore.execute(query)
-        }
-    }
-
-    private func updateHandlers() {
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            self.handlers.forEach { $0(self.activitySummaries) }
+            healthStore.execute(query)
         }
     }
 
@@ -97,11 +98,10 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
         try activitySummaries
             .map(\.activitySummary)
             .forEach { activitySummary in
-                let documentId = activitySummary.date.formatted(date: .numeric, time: .omitted)
-                let document = self.database.document("users/\(self.user.id)/activitySummaries/\(documentId)")
+                let documentId = DateFormatter.dateDashed.string(from: activitySummary.date)
+                let document = database.document("users/\(user.id)/activitySummaries/\(documentId)")
                 let _ = try batch.setDataEncodable(activitySummary, forDocument: document)
             }
-
         try await batch.commit()
     }
 
@@ -118,6 +118,6 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
 
 extension ActivitySummaryManager: HealthKitBackgroundDeliveryReceiving {
     func trigger() async throws {
-        try await self.requestActivitySummaries()
+        try await requestActivitySummaries()
     }
 }

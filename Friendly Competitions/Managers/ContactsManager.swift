@@ -3,6 +3,7 @@ import Contacts
 protocol ContactsManaging {
     var contacts: [CNContact] { get }
     var shouldRequestPermissions: Bool { get }
+    func requestPermissions(completion: @escaping (Bool) -> Void)
 }
 
 final class ContactsManager: ContactsManaging {
@@ -17,4 +18,14 @@ final class ContactsManager: ContactsManaging {
     }
 
     var shouldRequestPermissions: Bool { CNContactStore.authorizationStatus(for: .contacts) == .notDetermined }
+
+    private let contactStore = CNContactStore()
+
+    func requestPermissions(completion: @escaping (Bool) -> Void) {
+        contactStore.requestAccess(for: .contacts) { authorized, _ in
+            DispatchQueue.main.async {
+                completion(authorized)
+            }
+        }
+    }
 }

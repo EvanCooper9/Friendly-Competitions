@@ -7,6 +7,7 @@ import Resolver
 @main
 struct FriendlyCompetitionsApp: App {
 
+    @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @ObservedObject private var appModel: AppModel
 
     init() {
@@ -19,13 +20,7 @@ struct FriendlyCompetitionsApp: App {
             if appModel.loading {
                 ProgressView().progressViewStyle(.circular)
             } else if let user = appModel.currentUser {
-                if !appModel.hasCompletedHealthPermissions {
-                    HealthKitPermissionsView(done: { appModel.healthPermissionsComplete() })
-                } else if !appModel.hasCompletedContactsPermissions {
-                    ContactsPermissionsView(done: { appModel.contactsPermissionsComplete() })
-                } else {
-                    HomeView().environmentObject(user)
-                }
+                HomeView().environmentObject(user)
             } else {
                 SignInView()
             }
@@ -38,11 +33,8 @@ private final class AppModel: ObservableObject {
 
     @Published var loading = true
     @Published var currentUser: User?
-    @Published var hasCompletedHealthPermissions = false
-    @Published var hasCompletedContactsPermissions = false
 
     @LazyInjected private var activitySummaryManager: ActivitySummaryManaging
-    @LazyInjected private var contactsManager: ContactsManaging
     @LazyInjected private var database: Firestore
     @LazyInjected private var healthKitManager: HealthKitManaging
 
@@ -52,9 +44,6 @@ private final class AppModel: ObservableObject {
             activitySummaryManager.registerForBackgroundDelivery()
             healthKitManager.registerForBackgroundDelivery()
         }
-
-        hasCompletedHealthPermissions = !healthKitManager.shouldRequestPermissions
-        hasCompletedContactsPermissions = !contactsManager.shouldRequestPermissions
 
         Auth.auth().addStateDidChangeListener { [weak self] auth, firebaseUser in
             guard let self = self else { return }
@@ -79,13 +68,5 @@ private final class AppModel: ObservableObject {
                 }
             }
         }
-    }
-
-    func healthPermissionsComplete() {
-        hasCompletedHealthPermissions = !healthKitManager.shouldRequestPermissions
-    }
-
-    func contactsPermissionsComplete() {
-        hasCompletedContactsPermissions = !contactsManager.shouldRequestPermissions
     }
 }
