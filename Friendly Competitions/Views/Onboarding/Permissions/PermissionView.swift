@@ -11,7 +11,7 @@ struct PermissionView: View {
 
     let permission: Permission
     let canRequestPermission: Bool
-    let permissionRequestClosure: (() -> Void)?
+    var permissionRequestClosure: (() -> Void)? = nil
 
     var body: some View {
         HStack(spacing: 15) {
@@ -37,12 +37,6 @@ struct PermissionView: View {
             .disabled(!canRequestPermission)
         }
         .padding([.top, .bottom], 5)
-    }
-
-    init(permission: Permission, canRequestPermission: Bool, permissionRequestClosure: (() -> Void)? = nil) {
-        self.permission = permission
-        self.canRequestPermission = canRequestPermission
-        self.permissionRequestClosure = permissionRequestClosure
     }
 }
 

@@ -33,15 +33,10 @@ private final class AppModel: ObservableObject {
 
     @Published var loading = true
     @Published var currentUser: User?
-    @Published var hasCompletedHealthPermissions = false
-    @Published var hasCompletedContactsPermissions = false
-    @Published var hasCompletedNotificationPermissions = false
 
     @LazyInjected private var activitySummaryManager: ActivitySummaryManaging
-    @LazyInjected private var contactsManager: ContactsManaging
     @LazyInjected private var database: Firestore
     @LazyInjected private var healthKitManager: HealthKitManaging
-    @LazyInjected private var notificationManager: NotificationManaging
 
     init() {
         if let firebaseUser = Auth.auth().currentUser {
