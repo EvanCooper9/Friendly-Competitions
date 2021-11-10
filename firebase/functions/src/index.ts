@@ -39,9 +39,12 @@ exports.sendIncomingFriendRequestNotification = functions.firestore
 exports.sendNewCompetitionNotification = functions.firestore
     .document("competitions/{competitionId}")
     .onCreate(async snapshot => {
-        const creatorPromise = await firestore.doc(`users/${snapshot.data().participants[0]}`).get();
+
+        const competition = snapshot.data();
+        const pendingParticipants: string[] = competition.pendingParticipants;
+        const creatorId = competition.participants.filter((x: string) => !pendingParticipants.includes(x))[0];
+        const creatorPromise = await firestore.doc(`users/${creatorId}`).get();
         const creator = creatorPromise.data();
-        const pendingParticipants: string[] = snapshot.data().pendingParticipants;
 
         if (creator == null) {
             return;
@@ -120,8 +123,8 @@ exports.scheduledFunction = functions.pubsub.schedule("every day 12:00")
 
                 return notifications.sendNotifications(
                     participantId,
-                    "Friendly Competitions",
-                    `Completion complete! You placed ${rank}${nth(rank)} in ${competition.name}!`
+                    "Competition complete!",
+                    `You placed ${rank}${nth(rank)} in ${competition.name}!`
                 );
             });
 
