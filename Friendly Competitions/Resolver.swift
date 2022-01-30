@@ -1,3 +1,4 @@
+import Firebase
 import FirebaseAuth
 import FirebaseFirestore
 import Resolver
@@ -10,19 +11,10 @@ extension Resolver.Name {
 
 extension Resolver: ResolverRegistering {
     public static func registerAllServices() {
-        register { resolve(name: .mode) as ActivitySummaryManaging }
-        register(name: .main) { ActivitySummaryManager() as ActivitySummaryManaging }
+        register { resolve(name: .mode) as AnyHealthKitManager }
+        register(name: .main) { HealthKitManager() as AnyHealthKitManager }
             .scope(.application)
-        register(name: .mock) { MockActivitySummaryManager() as ActivitySummaryManaging }
-
-        register { resolve(name: .mode) as ContactsManaging }
-        register(name: .main) { ContactsManager() as ContactsManaging }
-        register(name: .mock) { MockContactsManager() as ContactsManaging }
-
-        register { resolve(name: .mode) as HealthKitManaging }
-        register(name: .main) { HealthKitManager() as HealthKitManaging }
-            .scope(.application)
-        register(name: .mock) { HealthKitManager() as HealthKitManaging }
+        register(name: .mock) { AnyHealthKitManager() as AnyHealthKitManager }
 
         register { resolve(name: .mode) as Firestore }
         register(Firestore.self, name: .main) {
@@ -53,6 +45,6 @@ extension Resolver: ResolverRegistering {
                 User(id: firebaseUser.uid, email: firebaseUser.email ?? "", name: firebaseUser.displayName ?? "")
             }
         }
-        register(name: .mock) { User.mock }
+        register(name: .mock) { User.evan }
     }
 }

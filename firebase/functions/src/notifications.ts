@@ -17,6 +17,9 @@ function sendNotifications(userId: string, title: string, body: string): Promise
             }
 
             const tokens: string[] = user.notificationTokens;
+            if (tokens == null) {
+                return Promise.resolve([]);
+            }
 
             const notifications = tokens.map(token => {
                 return sendNotification(token, title, body);

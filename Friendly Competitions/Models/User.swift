@@ -1,13 +1,27 @@
 import Foundation
 
+struct Record {
+    let totalCompetitions: Int
+    let golds: Int
+    let silvers: Int
+    let bronzes: Int
+}
+
+enum Role: String, Codable {
+    case general
+    case developer
+}
+
 final class User: Codable, Identifiable {
+
     let id: String
     let email: String
     var name: String
     var friends: [String]
     let incomingFriendRequests: [String]
     let outgoingFriendRequests: [String]
-    var notificationTokens: [String]
+    var notificationTokens: [String]?
+    var role: Role?
 
     var tempActivitySummary: ActivitySummary? = nil
 

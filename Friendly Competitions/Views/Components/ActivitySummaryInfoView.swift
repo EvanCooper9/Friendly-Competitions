@@ -46,3 +46,9 @@ struct ActivitySummaryInfoView: View {
         }
     }
 }
+
+struct ActivitySummaryInfoView_Previews: PreviewProvider {
+    static var previews: some View {
+        ActivitySummaryInfoView(activitySummary: ActivitySummary.mock.hkActivitySummary)
+    }
+}

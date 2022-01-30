@@ -1,5 +1,5 @@
 extension User {
-    static var mock: User {
+    static var evan: User {
         .init(
             id: "abc",
             email: "evan@test.com",
@@ -18,6 +18,6 @@ extension User {
 
 extension Array where Element == User {
     static var mock: [User] {
-        [.mock]
+        [.evan]
     }
 }

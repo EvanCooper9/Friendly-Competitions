@@ -11,7 +11,7 @@ extension Date {
     }
 
     var isToday: Bool {
-        Calendar.current.compare(self, to: .nowLocal, toGranularity: .day) == .orderedSame
+        Calendar.current.isDate(self, equalTo: .now, toGranularity: .day)
     }
 
     func encodedToString(with formatter: DateFormatter = .full) -> String {

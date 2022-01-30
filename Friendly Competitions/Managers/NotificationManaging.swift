@@ -5,8 +5,8 @@ import UserNotifications
 import UIKit
 
 protocol NotificationManaging {
-    func shouldRequestPermissions(_ completion: @escaping (Bool) -> Void)
-    func requestPermissions(_ completion: @escaping (Bool, Error?) -> Void)
+    func permissionStatus(_ completion: @escaping (PermissionStatus) -> Void)
+    func requestPermissions(_ completion: @escaping (PermissionStatus) -> Void)
 }
 
 final class NotificationManager: NSObject, NotificationManaging {
@@ -19,19 +19,20 @@ final class NotificationManager: NSObject, NotificationManaging {
         setupNotifications()
     }
 
-    func shouldRequestPermissions(_ completion: @escaping (Bool) -> Void) {
+    func permissionStatus(_ completion: @escaping (PermissionStatus) -> Void) {
         UNUserNotificationCenter.current().getNotificationSettings { [weak self] settings in
             if settings.authorizationStatus == .authorized { self?.setupNotifications() }
-            completion(settings.authorizationStatus == .notDetermined)
+            completion(settings.authorizationStatus.permissionStatus)
         }
     }
 
-    func requestPermissions(_ completion: @escaping (Bool, Error?) -> Void) {
+    func requestPermissions(_ completion: @escaping (PermissionStatus) -> Void) {
         UNUserNotificationCenter.current().requestAuthorization(
             options: [.alert, .badge, .sound],
             completionHandler: { [weak self] granted, error in
-                if granted { self?.setupNotifications() }
-                completion(granted, error)
+                guard let self = self else { return }
+                if granted { self.setupNotifications() }
+                self.permissionStatus { completion($0) }
             }
         )
     }
@@ -66,5 +67,20 @@ extension NotificationManager: UNUserNotificationCenterDelegate {
         // With swizzling disabled you must let Messaging know about the message, for Analytics
 //        let userInfo = response.notification.request.content.userInfo
 //        Messaging.messaging().appDidReceiveMessage(userInfo)
+    }
+}
+
+extension UNAuthorizationStatus {
+    var permissionStatus: PermissionStatus {
+        switch self {
+        case .notDetermined:
+            return .notDetermined
+        case .denied:
+            return .denied
+        case .authorized, .provisional, .ephemeral:
+            return .authorized
+        @unknown default:
+            return .notDetermined
+        }
     }
 }

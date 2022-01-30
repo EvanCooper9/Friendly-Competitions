@@ -2,8 +2,8 @@ import Contacts
 
 protocol ContactsManaging {
     var contacts: [CNContact] { get }
-    var shouldRequestPermissions: Bool { get }
-    func requestPermissions(completion: @escaping (Bool) -> Void)
+    var permissionStatus: PermissionStatus { get }
+    func requestPermissions(completion: @escaping (PermissionStatus) -> Void)
 }
 
 final class ContactsManager: ContactsManaging {
@@ -17,15 +17,31 @@ final class ContactsManager: ContactsManaging {
         return contacts ?? []
     }
 
-    var shouldRequestPermissions: Bool { CNContactStore.authorizationStatus(for: .contacts) == .notDetermined }
+    var permissionStatus: PermissionStatus { CNContactStore.authorizationStatus(for: .contacts).permissionStatus }
 
     private let contactStore = CNContactStore()
 
-    func requestPermissions(completion: @escaping (Bool) -> Void) {
-        contactStore.requestAccess(for: .contacts) { authorized, _ in
+    func requestPermissions(completion: @escaping (PermissionStatus) -> Void) {
+        contactStore.requestAccess(for: .contacts) { [weak self] authorized, _ in
+            guard let self = self else { return }
             DispatchQueue.main.async {
-                completion(authorized)
+                completion(self.permissionStatus)
             }
+        }
+    }
+}
+
+extension CNAuthorizationStatus {
+    var permissionStatus: PermissionStatus {
+        switch self {
+        case .notDetermined:
+            return .notDetermined
+        case .denied:
+            return .denied
+        case .authorized, .restricted:
+            return .authorized
+        @unknown default:
+            return .notDetermined
         }
     }
 }

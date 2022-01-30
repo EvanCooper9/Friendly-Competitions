@@ -1,42 +1,27 @@
+import Firebase
 import FirebaseFirestore
 import Foundation
 import HealthKit
 import Resolver
 
-protocol ActivitySummaryManaging {
-    func addHandler(_ handler: @escaping ([HKActivitySummary]) -> Void)
-    func registerForBackgroundDelivery()
+class AnyActivitySummaryManager: ObservableObject {
+    @Published var activitySummaries = [HKActivitySummary]()
 }
 
-final class ActivitySummaryManager: ActivitySummaryManaging {
+final class ActivitySummaryManager: AnyActivitySummaryManager {
 
-    private let healthStore = HKHealthStore()
+    // MARK: - Private Properties
 
-    @LazyInjected private var healthKitManager: HealthKitManaging
-    @LazyInjected private var database: Firestore
-    @LazyInjected private var user: User
+    @Injected private var healthKitManager: AnyHealthKitManager
+    @Injected private var database: Firestore
+    @Injected private var user: User
 
-    private var activitySummaries = [HKActivitySummary]() {
-        didSet {
-            handlers.forEach { $0(activitySummaries) }
-        }
-    }
+    // MARK: - Lifecycle
 
-    private var handlers = [([HKActivitySummary]) -> Void]()
-    private var observerQueries = [HKObserverQuery]()
-    private var queries = [HKQuery]()
-
-    private var healthStoreQueryTask: Task<[ActivitySummary], Error>?
-
-    // MARK: - Public Methods
-
-    func addHandler(_ handler: @escaping ([HKActivitySummary]) -> Void) {
-        handlers.append(handler)
-        Task { try? await requestActivitySummaries() }
-    }
-
-    func registerForBackgroundDelivery() {
-        healthKitManager.registerReceiver(self)
+    override init() {
+        super.init()
+        healthKitManager.registerBackgroundDeliveryReceiver(self)
+        healthKitManager.registerForBackgroundDelivery()
     }
 
     // MARK: - Private Methods
@@ -89,7 +74,7 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
                 }
             }
 
-            healthStore.execute(query)
+            healthKitManager.execute(query)
         }
     }
 

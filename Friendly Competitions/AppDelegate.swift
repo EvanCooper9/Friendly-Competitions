@@ -28,7 +28,9 @@ extension AppDelegate: MessagingDelegate {
                 .getDocument()
                 .decoded(as: User.self)
 
-            guard !user.notificationTokens.contains(fcmToken) else { return }
+            print("fcmToken: \(fcmToken)")
+            guard user.notificationTokens?.contains(fcmToken) == false else { return }
+            user.notificationTokens = user.notificationTokens?.appending(fcmToken) ?? [fcmToken]
             try await database.document("users/\(userId)").updateDataEncodable(user)
         }
     }
