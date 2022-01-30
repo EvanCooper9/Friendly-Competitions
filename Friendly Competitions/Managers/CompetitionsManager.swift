@@ -35,9 +35,9 @@ class AnyCompetitionsManager: ObservableObject {
         competitions.append(competition)
     }
 
-    private(set) var didListen = false
-    func listen() {
-        didListen = true
+    private(set) var didSetup = false
+    func setup(with user: User) {
+        didSetup = true
     }
 }
 
@@ -46,9 +46,15 @@ final class CompetitionsManager: AnyCompetitionsManager {
     // MARK: - Private Properties
 
     @LazyInjected private var database: Firestore
-    @LazyInjected private var user: User
+
+    private var user: User!
 
     // MARK: - Public Methods
+
+    override func setup(with user: User) {
+        self.user = user
+        listen()
+    }
 
     override func accept(_ competition: Competition) {
         var competition = competition
@@ -85,7 +91,9 @@ final class CompetitionsManager: AnyCompetitionsManager {
         }
     }
 
-    override func listen() {
+    // MARK: - Private Methods
+
+    private func listen() {
         database.collection("competitions")
             .whereField("participants", arrayContains: user.id)
             .addSnapshotListener { snapshot, error in
@@ -105,8 +113,6 @@ final class CompetitionsManager: AnyCompetitionsManager {
                 }
             }
     }
-
-    // MARK: - Private Methods
 
     private func updateStandings(for competitions: [Competition]) async throws {
         try await withThrowingTaskGroup(of: (Competition.ID, [Competition.Standing])?.self) { group in

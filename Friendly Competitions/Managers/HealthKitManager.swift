@@ -9,13 +9,9 @@ class AnyHealthKitManager: ObservableObject {
 
     var permissionStatus: PermissionStatus { .authorized }
 
-    func execute(_ query: HKQuery) {
+    func execute(_ query: HKQuery) {}
 
-    }
-
-    func requestPermissions(_ completion: @escaping (PermissionStatus) -> Void) {
-
-    }
+    func requestPermissions(_ completion: @escaping (PermissionStatus) -> Void) {}
 
     private(set) var didRegisterForBackgroundDelivery = false
     func registerForBackgroundDelivery() {
@@ -73,13 +69,6 @@ final class HealthKitManager: AnyHealthKitManager {
         willSet { updateTask?.cancel() }
     }
 
-    // MARK: - Lifecycle
-
-    override init() {
-        super.init()
-        registerForBackgroundDelivery()
-    }
-
     // MARK: - Public Methods
 
     override func execute(_ query: HKQuery) {
@@ -106,7 +95,13 @@ final class HealthKitManager: AnyHealthKitManager {
     }
 
     override func registerForBackgroundDelivery() {
-        guard notDeterminedPermissions.isEmpty, !hasRegisteredForBackgroundDelivery else { return }
+        guard notDeterminedPermissions.isEmpty else { return }
+        guard !hasRegisteredForBackgroundDelivery else {
+            for receiver in backgroundDeliverReceivers {
+                Task { try await receiver.trigger() }
+            }
+            return
+        }
         for sampleType in Constants.backgroundDeliveryTypes {
             let query = HKObserverQuery(sampleType: sampleType, predicate: nil) { [weak self] query, completion, error in
                 guard let self = self else { return }

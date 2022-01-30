@@ -4,10 +4,10 @@ import FirebaseFirestore
 import SwiftUI
 import Resolver
 
-struct Settings: View {
+struct Profile: View {
 
     @EnvironmentObject private var user: User
-    @StateObject private var viewModel = SettingsViewModel()
+    @StateObject private var viewModel = ProfileViewModel()
     @State private var presentDeleteAccountAlert = false
 
     var body: some View {
@@ -43,19 +43,21 @@ struct Settings: View {
             }
             .font(.footnote)
         }
-        .alert("Are you sure? This cannot be undone.", isPresented: $presentDeleteAccountAlert, actions: {
+        .confirmationDialog(
+            "Are you sure? This cannot be undone.",
+            isPresented: $presentDeleteAccountAlert,
+            titleVisibility: .visible
+        ) {
+            Button("Yes", role: .destructive, action: viewModel.deleteAccount)
             Button("Cancel", role: .cancel) {}
-            Button("Confim", role: .destructive, action: viewModel.deleteAccount)
-        }, message: {
-            Text("You cannot undo this action.")
-        })
+        }
     }
 }
 
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
         Resolver.Name.mode = .mock
-        return Settings()
+        return Profile()
             .environmentObject(User.evan)
     }
 }

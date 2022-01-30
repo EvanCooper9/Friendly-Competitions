@@ -1,79 +1,79 @@
 import Combine
 import Firebase
 import FirebaseFirestore
-import HealthKit
 import Resolver
 
-final class HomeViewModel: ObservableObject {
+class AnyFriendsManager: ObservableObject {
 
-    @Published private(set) var activitySummary: HKActivitySummary?
-    @Published private(set) var friends = [User]()
-    @Published private(set) var friendRequests = [User]()
-    @Published var shouldPresentPermissions = false
+    @Published var friends = [User]()
+    @Published var friendRequests = [User]()
+
+    func setup(with user: User) {}
+    func acceptFriendRequest(from: User) {}
+    func declineFriendRequest(from: User) {}
+    func delete(friend: User) {}
+}
+
+final class FriendsManager: AnyFriendsManager {
 
     @LazyInjected private var database: Firestore
-    @LazyInjected var user: User
 
-    init() {
-//        let health = healthKitManager.permissionStatus == .notDetermined
-//        let contacts = contactsManager.permissionStatus == .notDetermined
-//        notificationManager.permissionStatus { [weak self] notifications in
-//            DispatchQueue.main.async {
-//                self?.shouldPresentPermissions = health || contacts || (notifications == .notDetermined)
-//            }
-//        }
-    }
-
+    private var user: User!
+    
     // MARK: - Public Methods
 
-    func accept(_ friendRequest: User) {
-        let batch = database.batch()
+    override func setup(with user: User) {
+        self.user = user
+        Task {
+            try await updateFriends()
+            try await updateFriendRequests()
+        }
+    }
 
+    override func acceptFriendRequest(from friendRequest: User) {
+        friends.append(friendRequest)
+        friendRequests.remove(friendRequest)
+
+        let batch = database.batch()
         let userDocument = database.document("users/\(user.id)")
         let myRequests = user.incomingFriendRequests.removing(friendRequest.id)
         let myFriends = user.friends.appending(friendRequest.id)
         batch.updateData(["incomingFriendRequests": myRequests], forDocument: userDocument)
         batch.updateData(["friends": myFriends], forDocument: userDocument)
-
         let requestorDocument = database.document("users/\(friendRequest.id)")
         let theirRequests = friendRequest.outgoingFriendRequests.removing(user.id)
         let theirFriends = friendRequest.friends.appending(user.id)
         batch.updateData(["outgoingFriendRequests": theirRequests], forDocument: requestorDocument)
         batch.updateData(["friends": theirFriends], forDocument: requestorDocument)
-
         batch.commit()
     }
 
-    func decline(_ friendRequest: User) {
-        let batch = database.batch()
+    override func declineFriendRequest(from friendRequest: User) {
+        friendRequests.remove(friendRequest)
 
+        let batch = database.batch()
         let myRequests = user.incomingFriendRequests.removing(friendRequest.id)
         batch.updateData(["incomingFriendRequests": myRequests], forDocument: database.document("users/\(user.id)"))
-
         let theirRequests = friendRequest.outgoingFriendRequests.removing(user.id)
         batch.updateData(["outgoingFriendRequests": theirRequests], forDocument: database.document("users/\(friendRequest.id)"))
-
         batch.commit()
     }
 
-    func delete(friendsAtIndex indexSet: IndexSet) {
-        guard let index = indexSet.first else { return }
-        let friend = friends[index]
+    override func delete(friend: User) {
+        friends.remove(friend)
 
         let batch = database.batch()
-
         let myFriends = user.friends.removing(friend.id)
         batch.updateData(["friends": myFriends], forDocument: database.document("users/\(user.id)"))
-
         let theirFriends = friend.friends.removing(user.id)
         batch.updateData(["friends": theirFriends], forDocument: database.document("users/\(friend.id)"))
-
         batch.commit()
     }
 
     // MARK: - Private Methods
 
     private func updateFriends() async throws {
+        print(user.friends)
         guard !user.friends.isEmpty else {
             DispatchQueue.main.async { [weak self] in
                 self?.friends = []
@@ -87,25 +87,43 @@ final class HomeViewModel: ObservableObject {
             .documents
             .decoded(asArrayOf: User.self)
 
-        for (index, friend) in friends.enumerated() {
-            friends[index].tempActivitySummary = try await database
-                .collection("users/\(friend.id)/activitySummaries")
-                .whereField("date", isEqualTo: DateFormatter.dateDashed.string(from: .now))
-                .getDocuments()
-                .documents
-                .first?
-                .decoded(as: ActivitySummary.self)
-        }
-
         DispatchQueue.main.async { [weak self] in
-            self?.friends = friends
+            guard let self = self else { return }
+            self.friends = friends
+            Task { [self] in try await self.updateFriendActivitySummaries() }
+        }
+    }
+
+    private func updateFriendActivitySummaries() async throws {
+        try await withThrowingTaskGroup(of: (User, ActivitySummary?).self) { group in
+            friends.forEach { friend in
+                group.addTask { [weak self] in
+                    let activitySummary = try await self?.database
+                        .collection("users/\(friend.id)/activitySummaries")
+                        .whereField("date", isEqualTo: DateFormatter.dateDashed.string(from: .now))
+                        .getDocuments()
+                        .documents
+                        .first?
+                        .decoded(as: ActivitySummary.self)
+                    return (friend, activitySummary)
+                }
+            }
+
+            var friends = [User]()
+            for try await (friend, activitySummary) in group {
+                friend.tempActivitySummary = activitySummary
+                friends.append(friend)
+            }
+            DispatchQueue.main.async { [weak self, friends] in
+                self?.friends = friends
+            }
         }
     }
 
     private func updateFriendRequests() async throws {
         guard !user.incomingFriendRequests.isEmpty else {
-            DispatchQueue.main.async {
-                self.friendRequests = []
+            DispatchQueue.main.async { [weak self] in
+                self?.friendRequests = []
             }
             return
         }
@@ -116,9 +134,8 @@ final class HomeViewModel: ObservableObject {
             .documents
             .decoded(asArrayOf: User.self)
 
-        DispatchQueue.main.async {
-            self.friendRequests = friendRequests
+        DispatchQueue.main.async { [weak self] in
+            self?.friendRequests = friendRequests
         }
     }
 }
-

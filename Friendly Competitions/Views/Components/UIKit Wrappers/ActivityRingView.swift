@@ -10,7 +10,7 @@ struct ActivityRingView: UIViewRepresentable {
     }
 
     func updateUIView(_ uiView: HKActivityRingView, context: Context) {
-        uiView.activitySummary = activitySummary
+        uiView.setActivitySummary(activitySummary, animated: true)
     }
 }
 

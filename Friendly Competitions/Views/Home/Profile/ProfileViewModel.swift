@@ -2,10 +2,10 @@ import Firebase
 import FirebaseFirestore
 import Resolver
 
-final class SettingsViewModel: ObservableObject {
+final class ProfileViewModel: ObservableObject {
 
-    @LazyInjected private var database: Firestore
-    @LazyInjected private var user: User
+    @Injected private var database: Firestore
+    @Injected private var user: User
 
     func deleteAccount() {
         Task {

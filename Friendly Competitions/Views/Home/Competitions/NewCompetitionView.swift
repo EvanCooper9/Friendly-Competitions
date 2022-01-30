@@ -2,14 +2,13 @@ import SwiftUI
 
 struct NewCompetitionView: View {
 
-    let friends: [User]
     @State private var competition = Competition()
 
     @Environment(\.presentationMode) private var presentationMode
     @EnvironmentObject private var competitionManager: AnyCompetitionsManager
+    @EnvironmentObject private var friendsManager: AnyFriendsManager
+    @EnvironmentObject private var user: User
     @State private var presentAddFriends = false
-
-    private let calendar = Calendar.current
 
     private var createDisabled: Bool {
         competition.name.isEmpty || competition.pendingParticipants.isEmpty
@@ -32,6 +31,7 @@ struct NewCompetitionView: View {
 
             Section {
                 Button("Create") {
+                    competition.participants.append(user.id)
                     competitionManager.create(competition)
                     presentationMode.wrappedValue.dismiss()
                 }
@@ -99,7 +99,7 @@ struct NewCompetitionView: View {
     private var friendsView: some View {
         Section("Invite friends") {
             List {
-                if friends.isEmpty {
+                if friendsManager.friends.isEmpty {
                     LazyHStack {
                         Text("Nothing here, yet!")
                         Button("Add friends.") { presentAddFriends.toggle() }
@@ -107,7 +107,7 @@ struct NewCompetitionView: View {
                     .padding(.vertical, 6)
                 }
 
-                ForEach(friends) { friend in
+                ForEach(friendsManager.friends) { friend in
                     HStack {
                         Text(friend.name)
                         Spacer()
@@ -127,13 +127,23 @@ struct NewCompetitionView: View {
     }
 
     private func dateRange(startingFrom date: Date) -> PartialRangeFrom<Date> {
-        let components = calendar.dateComponents([.year, .month, .day], from: date)
-        return PartialRangeFrom<Date>(calendar.date(from: components)!)
+        let components = Calendar.current.dateComponents([.year, .month, .day], from: date)
+        return PartialRangeFrom<Date>(Calendar.current.date(from: components)!)
     }
 }
 
 struct NewCompetitionView_Previews: PreviewProvider {
+
+    private static let competitionsManager = AnyCompetitionsManager()
+    private static let friendsManager: AnyFriendsManager = {
+        let friendsManager = AnyFriendsManager()
+        friendsManager.friends = [.gabby]
+        return friendsManager
+    }()
+
     static var previews: some View {
-        NewCompetitionView(friends: [])
+        NewCompetitionView()
+            .environmentObject(competitionsManager)
+            .environmentObject(friendsManager)
     }
 }

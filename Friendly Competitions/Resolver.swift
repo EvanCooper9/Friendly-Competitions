@@ -11,10 +11,17 @@ extension Resolver.Name {
 
 extension Resolver: ResolverRegistering {
     public static func registerAllServices() {
+        register { resolve(name: .mode) as AnyActivitySummaryManager }
+        register(name: .main) { ActivitySummaryManager() as AnyActivitySummaryManager }.scope(.application)
+
+        register { resolve(name: .mode) as AnyCompetitionsManager }
+        register(name: .main) { CompetitionsManager() as AnyCompetitionsManager }.scope(.application)
+
+        register { resolve(name: .mode) as AnyFriendsManager }
+        register(name: .main) { FriendsManager() as AnyFriendsManager }.scope(.application)
+
         register { resolve(name: .mode) as AnyHealthKitManager }
-        register(name: .main) { HealthKitManager() as AnyHealthKitManager }
-            .scope(.application)
-        register(name: .mock) { AnyHealthKitManager() as AnyHealthKitManager }
+        register(name: .main) { HealthKitManager() as AnyHealthKitManager }.scope(.application)
 
         register { resolve(name: .mode) as Firestore }
         register(Firestore.self, name: .main) {
@@ -40,11 +47,6 @@ extension Resolver: ResolverRegistering {
 
         register { resolve(name: .mode) as User }
             .scope(.application)
-        if let firebaseUser = Auth.auth().currentUser {
-            register(name: .main) {
-                User(id: firebaseUser.uid, email: firebaseUser.email ?? "", name: firebaseUser.displayName ?? "")
-            }
-        }
         register(name: .mock) { User.evan }
     }
 }

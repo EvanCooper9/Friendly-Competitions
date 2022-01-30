@@ -20,6 +20,17 @@ extension Competition {
             end: .now.addingTimeInterval(2.days)
         )
     }
+
+    static var mockOld: Competition {
+        .init(
+            name: "Oldie bug a goodie",
+            participants: [User.evan.id, User.gabby.id],
+            pendingParticipants: [],
+            scoringModel: .percentOfGoals,
+            start: .now.addingTimeInterval(-5.days),
+            end: .now.addingTimeInterval(-4.days)
+        )
+    }
 }
 
 extension Competition.Standing {

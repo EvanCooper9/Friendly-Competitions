@@ -8,28 +8,25 @@ import Resolver
 struct FriendlyCompetitions: App {
 
     @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
-    @ObservedObject private var appModel: AppModel
-    @StateObject private var activitySummaryManager: AnyActivitySummaryManager = ActivitySummaryManager()
-    @StateObject private var competitionsManager: AnyCompetitionsManager = CompetitionsManager()
-    @StateObject private var healthKitManager: AnyHealthKitManager = HealthKitManager()
+
+    @StateObject private var activitySummaryManager = Resolver.resolve(AnyActivitySummaryManager.self)
+    @StateObject private var competitionsManager = Resolver.resolve(AnyCompetitionsManager.self)
+    @StateObject private var friendsManager = Resolver.resolve(AnyFriendsManager.self)
+    @StateObject private var healthKitManager = Resolver.resolve(AnyHealthKitManager.self)
+    @StateObject private var appModel = AppModel()
 
     init() {
         FirebaseApp.configure()
-        appModel = .init()
     }
 
     var body: some Scene {
         WindowGroup {
-            if appModel.loading {
-                ProgressView().progressViewStyle(.circular)
-            } else if let user = appModel.currentUser {
-                HomeView()
+            if let user = appModel.currentUser {
+                Home()
                     .environmentObject(user)
                     .environmentObject(activitySummaryManager)
                     .environmentObject(competitionsManager)
-                    .onAppear {
-                        competitionsManager.listen()
-                    }
+                    .environmentObject(friendsManager)
             } else {
                 SignInView()
             }
@@ -37,60 +34,59 @@ struct FriendlyCompetitions: App {
     }
 }
 
-@MainActor
 private final class AppModel: ObservableObject {
 
-    @Published var loading = true
-    @Published var currentUser: User?
+    @Published("currentUser") var currentUser: User? = nil {
+        didSet { setupManagers() }
+    }
 
     private var userListener: ListenerRegistration? {
         willSet { userListener?.remove() }
     }
 
+    @LazyInjected private var activitySummaryManager: AnyActivitySummaryManager
+    @LazyInjected private var competitionsManager: AnyCompetitionsManager
+    @LazyInjected private var friendsManager: AnyFriendsManager
     @LazyInjected private var database: Firestore
     @LazyInjected private var healthKitManager: AnyHealthKitManager
 
     init() {
-        if let firebaseUser = Auth.auth().currentUser {
-            currentUser = User(id: firebaseUser.uid, email: firebaseUser.email ?? "", name: firebaseUser.displayName ?? "")
-            Resolver.register { self.currentUser }
-            listenForUser()
+        if let user = currentUser {
+            Resolver.register { user }
         }
 
+        setupManagers()
+        listenForAuth()
+    }
+
+    private func setupManagers() {
+        guard let user = currentUser else { return }
+        activitySummaryManager.setup(with: user)
+        competitionsManager.setup(with: user)
+        friendsManager.setup(with: user)
+    }
+
+    private func listenForAuth() {
         Auth.auth().addStateDidChangeListener { [weak self] auth, firebaseUser in
             guard let self = self else { return }
 
-            guard let firebaseUser = firebaseUser else {
+            guard firebaseUser != nil else {
                 self.currentUser = nil
-                self.loading = false
+                self.userListener = nil
                 return
             }
 
-            self.healthKitManager.registerForBackgroundDelivery()
-
-            Task { [weak self] in
-                guard let self = self else { return }
-                let user = try? await self.database.document("users/\(firebaseUser.uid)")
-                    .getDocument()
-                    .decoded(as: User.self)
-
-                self.listenForUser()
-
-                DispatchQueue.main.async {
-                    Resolver.register { user }
-                    self.loading = false
-                    self.currentUser = user
-                }
-            }
+            self.listenForUser()
         }
     }
 
     private func listenForUser() {
-        guard let user = currentUser else { return }
-        userListener = database.document("users/\(user.id)")
+        guard let userId = Auth.auth().currentUser?.uid else { return }
+        userListener = database.document("users/\(userId)")
             .addSnapshotListener { [weak self] snapshot, _ in
                 guard let self = self, let user = try? snapshot?.decoded(as: User.self) else { return }
                 DispatchQueue.main.async {
+                    Resolver.register { user }
                     self.currentUser = user
                 }
             }

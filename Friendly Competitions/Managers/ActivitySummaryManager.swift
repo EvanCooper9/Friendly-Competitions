@@ -5,7 +5,8 @@ import HealthKit
 import Resolver
 
 class AnyActivitySummaryManager: ObservableObject {
-    @Published var activitySummaries = [HKActivitySummary]()
+    @Published var activitySummary: HKActivitySummary?
+    func setup(with user: User) {}
 }
 
 final class ActivitySummaryManager: AnyActivitySummaryManager {
@@ -14,12 +15,13 @@ final class ActivitySummaryManager: AnyActivitySummaryManager {
 
     @Injected private var healthKitManager: AnyHealthKitManager
     @Injected private var database: Firestore
-    @Injected private var user: User
 
-    // MARK: - Lifecycle
+    private var user: User!
 
-    override init() {
-        super.init()
+    // MARK: - Public Methods
+
+    override func setup(with user: User) {
+        self.user = user
         healthKitManager.registerBackgroundDeliveryReceiver(self)
         healthKitManager.registerForBackgroundDelivery()
     }
@@ -65,8 +67,11 @@ final class ActivitySummaryManager: AnyActivitySummaryManager {
                 Task {
                     do {
                         try Task.checkCancellation()
-                        self.activitySummaries = hkActivitySummaries ?? []
-                        try await self.uploadActivitySummaries()
+                        let activitySummary = hkActivitySummaries?.first(where: \.isToday)
+                        DispatchQueue.main.async {
+                            self.activitySummary = activitySummary
+                        }
+                        try await self.upload(activitySummaries: hkActivitySummaries ?? [])
                         continuation.resume()
                     } catch {
                         continuation.resume(throwing: error)
@@ -78,7 +83,7 @@ final class ActivitySummaryManager: AnyActivitySummaryManager {
         }
     }
 
-    private func uploadActivitySummaries() async throws {
+    private func upload(activitySummaries: [HKActivitySummary]) async throws {
         let batch = database.batch()
         try activitySummaries
             .map(\.activitySummary)
