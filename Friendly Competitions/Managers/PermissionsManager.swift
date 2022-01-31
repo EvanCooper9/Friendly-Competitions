@@ -2,29 +2,47 @@ import Combine
 import Foundation
 import Resolver
 
-final class PermissionsViewModel: ObservableObject {
-
+class AnyPermissionsManager: ObservableObject {
+    @Published var requiresPermission = false
     @Published var permissionStatus = [Permission: PermissionStatus]()
+    func request(_ permission: Permission) { }
+}
 
-    @LazyInjected private var contactsManager: ContactsManaging
+final class PermissionsManager: AnyPermissionsManager {
+
+    // MARK: - Public Properties
+
+    override var permissionStatus: [Permission: PermissionStatus] {
+        didSet {
+            updateRequiresPermission()
+        }
+    }
+
+    // MARK: - Private Properties
+
     @LazyInjected private var healthKitManager: AnyHealthKitManager
     @LazyInjected private var notificationManager: NotificationManaging
 
-    init() {
+    // MARK: - Lifecycle
+
+    override init() {
+        super.init()
         permissionStatus = [
             .health: healthKitManager.permissionStatus,
-            .notifications: .notDetermined,
-            .contacts: contactsManager.permissionStatus
+            .notifications: .authorized
         ]
 
         notificationManager.permissionStatus { [weak self] permissionStatus in
             DispatchQueue.main.async {
                 self?.permissionStatus[.notifications] = permissionStatus
+                self?.updateRequiresPermission()
             }
         }
     }
 
-    func request(_ permission: Permission) {
+    // MARK: - Public Methods
+
+    override func request(_ permission: Permission) {
         switch permission {
         case .health:
             healthKitManager.requestPermissions { [weak self] permissionStatus in
@@ -34,16 +52,20 @@ final class PermissionsViewModel: ObservableObject {
             notificationManager.requestPermissions { [weak self] permissionStatus in
                 self?.updateRequestedPermission(permission, permissionStatus)
             }
-        case .contacts:
-            contactsManager.requestPermissions { [weak self] permissionStatus in
-                self?.updateRequestedPermission(permission, permissionStatus)
-            }
         }
     }
+
+    // MARK: - Private Methods
 
     private func updateRequestedPermission(_ permission: Permission, _ permissionStatus: PermissionStatus) {
         DispatchQueue.main.async { [weak self] in
             self?.permissionStatus[permission] = permissionStatus
+        }
+    }
+
+    private func updateRequiresPermission() {
+        requiresPermission = permissionStatus.contains { _, status in
+            status == .notDetermined
         }
     }
 }

@@ -1,7 +1,6 @@
 enum Permission: String, CaseIterable, Identifiable {
     case health
     case notifications
-    case contacts
 
     var id: String { rawValue }
 
@@ -11,8 +10,6 @@ enum Permission: String, CaseIterable, Identifiable {
             return "Health"
         case .notifications:
             return "Notifications"
-        case .contacts:
-            return "Contacts"
         }
     }
 
@@ -22,8 +19,6 @@ enum Permission: String, CaseIterable, Identifiable {
             return "So we can count score"
         case .notifications:
             return "So you can stay up to date"
-        case .contacts:
-            return "So you can find friends"
         }
     }
 
@@ -33,8 +28,6 @@ enum Permission: String, CaseIterable, Identifiable {
             return Asset.health.name
         case .notifications:
             return Asset.notifications.name
-        case .contacts:
-            return Asset.contacts.name
         }
     }
 }

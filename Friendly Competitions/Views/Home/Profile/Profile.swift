@@ -5,27 +5,29 @@ import SwiftUI
 import Resolver
 
 struct Profile: View {
-
+    
     @EnvironmentObject private var user: User
     @StateObject private var viewModel = ProfileViewModel()
     @State private var presentDeleteAccountAlert = false
-
+    
     var body: some View {
         ZStack(alignment: .bottom) {
             List {
-                Section("Profile") {
-                    ImmutableListItemView(value: user.name, valueType: .name)
-                    ImmutableListItemView(value: user.email, valueType: .email)
+                UserInfoSection(user: user)
+                
+                let stats = user.statistics ?? .zero
+                Section("Stats") {
+                    StatisticsView(statistics: stats)
                 }
-
+                
                 Section {
                     Button(action: { try? Auth.auth().signOut() }) {
                         Label("Sign out", systemImage: "person.crop.circle.badge.minus")
                     }
                 }
-
+                
                 Section {
-                    Button(action: { presentDeleteAccountAlert.toggle() }) {
+                    Button(toggling: $presentDeleteAccountAlert) {
                         Label("Delete account", systemImage: "trash")
                     }
                     .foregroundColor(.red)
@@ -35,7 +37,7 @@ struct Profile: View {
             }
             .navigationTitle("Profile")
             .embeddedInNavigationView()
-
+            
             VStack {
                 Text("Made with ❤️ by")
                     .foregroundColor(.gray)

@@ -9,36 +9,19 @@ struct Participant: Identifiable {
 }
 
 class AnyCompetitionsManager: ObservableObject {
+
     @Published var competitions = [Competition]()
     @Published var standings = [Competition.ID : [Competition.Standing]]()
     @Published var participants = [Competition.ID: [Participant]]()
     @Published var pendingParticipants = [Competition.ID : [Participant]]()
 
-    private(set) var didAccept = [Competition.ID: Bool]()
-    func accept(_ competition: Competition) {
-        didAccept[competition.id] = true
-    }
-
-    private(set) var didLeave = [Competition.ID: Bool]()
-    func leave(_ competition: Competition) {
-        didLeave[competition.id] = true
-        competitions.remove(competition)
-    }
-
-    private(set) var didDelete = [Competition.ID: Bool]()
-    func delete(_ competition: Competition) {
-        didDelete[competition.id] = true
-        competitions.remove(competition)
-    }
-
-    func create(_ competition: Competition) {
-        competitions.append(competition)
-    }
-
-    private(set) var didSetup = false
-    func setup(with user: User) {
-        didSetup = true
-    }
+    func setup(with user: User) {}
+    func accept(_ competition: Competition) {}
+    func create(_ competition: Competition) {}
+    func decline(_ competition: Competition) {}
+    func delete(_ competition: Competition) {}
+    func invite(_ user: User, to competition: Competition) {}
+    func leave(_ competition: Competition) {}
 }
 
 final class CompetitionsManager: AnyCompetitionsManager {
@@ -59,11 +42,9 @@ final class CompetitionsManager: AnyCompetitionsManager {
     override func accept(_ competition: Competition) {
         var competition = competition
         competition.pendingParticipants.remove(user.id)
-        competition.participants.append(user.id)
-        guard let index = competitions.firstIndex(where: { $0.id == competition.id }) else { return }
-        competitions[index] = competition
-        Task { [weak self, competition] in
-            try await self?.database.document("competitions/\(competition.id)").updateDataEncodable(competition)
+        if !competition.participants.contains(user.id) {
+            competition.participants.append(user.id)
+            update(competition: competition)
         }
     }
 
@@ -72,6 +53,37 @@ final class CompetitionsManager: AnyCompetitionsManager {
         Task { [weak self] in
             try await self?.database.document("competitions/\(competition.id)").setDataEncodable(competition)
         }
+    }
+
+    override func decline(_ competition: Competition) {
+        var competition = competition
+        competition.pendingParticipants.remove(user.id)
+        update(competition: competition)
+    }
+
+    override func delete(_ competition: Competition) {
+        competitions.remove(competition)
+        standings[competition.id] = nil
+        Task { [weak self] in
+            guard let self = self else { return }
+            let batch = self.database.batch()
+            try await self.database
+                .collection("competitions/\(competition.id)/standings")
+                .getDocuments()
+                .documents
+                .map(\.documentID)
+                .forEach { standingId in
+                    batch.deleteDocument(self.database.document("competitions/\(competition.id)/standings/\(standingId)"))
+                }
+            batch.deleteDocument(self.database.document("competitions/\(competition.id)"))
+            try await batch.commit()
+        }
+    }
+
+    override func invite(_ user: User, to competition: Competition) {
+        var competition = competition
+        competition.pendingParticipants.append(user.id)
+        update(competition: competition)
     }
 
     override func leave(_ competition: Competition) {
@@ -83,25 +95,20 @@ final class CompetitionsManager: AnyCompetitionsManager {
         }
     }
 
-    override func delete(_ competition: Competition) {
-        competitions.remove(competition)
-        standings[competition.id] = nil
-        Task { [weak self] in
-            try await self?.database.document("competitions/\(competition.id)").delete()
+    // MARK: - Private Methods
+
+    private func update(competition: Competition) {
+        guard let index = competitions.firstIndex(where: { $0.id == competition.id }) else { return }
+        competitions[index] = competition
+        Task { [weak self, competition] in
+            try await self?.database.document("competitions/\(competition.id)").updateDataEncodable(competition)
         }
     }
-
-    // MARK: - Private Methods
 
     private func listen() {
         database.collection("competitions")
             .whereField("participants", arrayContains: user.id)
             .addSnapshotListener { snapshot, error in
-                if let error = error {
-                    print(error)
-                    return
-                }
-
                 let competitions = snapshot?.documents.decoded(asArrayOf: Competition.self) ?? []
                 Task { [weak self] in
                     try await self?.updateStandings(for: competitions)

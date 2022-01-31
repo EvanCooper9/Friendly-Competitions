@@ -1,5 +1,6 @@
 import Firebase
 import FirebaseFirestore
+import FirebaseFunctions
 import Foundation
 import HealthKit
 import Resolver
@@ -13,6 +14,7 @@ final class ActivitySummaryManager: AnyActivitySummaryManager {
 
     // MARK: - Private Properties
 
+    @Injected private var competitionsManager: AnyCompetitionsManager
     @Injected private var healthKitManager: AnyHealthKitManager
     @Injected private var database: Firestore
 
@@ -29,9 +31,6 @@ final class ActivitySummaryManager: AnyActivitySummaryManager {
     // MARK: - Private Methods
 
     private func requestActivitySummaries() async throws {
-
-        try Task.checkCancellation()
-
         let components = Calendar.current.dateComponents([.year, .month, .day], from: .now)
         let now = Calendar.current.date(from: components) ?? .now
         let yesterday = now.addingTimeInterval(-1.days)
@@ -50,8 +49,6 @@ final class ActivitySummaryManager: AnyActivitySummaryManager {
                 )
             }
 
-        try Task.checkCancellation()
-
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             let query = HKActivitySummaryQuery(predicate: self.predicate(for: dateInterval)) { [weak self] query, hkActivitySummaries, error in
                 guard let self = self else {
@@ -64,14 +61,19 @@ final class ActivitySummaryManager: AnyActivitySummaryManager {
                     return
                 }
 
+                let activitySummary = hkActivitySummaries?.first(where: \.isToday)
+                DispatchQueue.main.async {
+                    self.activitySummary = activitySummary
+                }
+
                 Task {
                     do {
-                        try Task.checkCancellation()
-                        let activitySummary = hkActivitySummaries?.first(where: \.isToday)
-                        DispatchQueue.main.async {
-                            self.activitySummary = activitySummary
-                        }
                         try await self.upload(activitySummaries: hkActivitySummaries ?? [])
+                        if !self.competitionsManager.competitions.isEmpty {
+                            try await Functions.functions()
+                                .httpsCallable("updateCompetitionStandings")
+                                .call(["userId": self.user.id])
+                        }
                         continuation.resume()
                     } catch {
                         continuation.resume(throwing: error)

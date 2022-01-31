@@ -45,6 +45,7 @@ struct ImmutableListItemView: View {
             Spacer()
             Text(value)
                 .foregroundColor(.gray)
+                .lineLimit(1)
         }
     }
 }

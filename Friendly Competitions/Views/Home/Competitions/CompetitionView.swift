@@ -8,6 +8,7 @@ struct CompetitionView: View {
 
     @Environment(\.presentationMode) private var presentationMode
     @EnvironmentObject private var competitionsManager: AnyCompetitionsManager
+    @EnvironmentObject private var friendsManager: AnyFriendsManager
     @EnvironmentObject private var user: User
 
     private enum Action {
@@ -15,6 +16,7 @@ struct CompetitionView: View {
     }
     @State private var showAreYouSure = false
     @State private var actionRequiringConfirmation: Action?
+    @State private var showInviteFriend = false
 
     var body: some View {
         VStack {
@@ -79,19 +81,24 @@ struct CompetitionView: View {
                 Button("Accept invite") {
                     competitionsManager.accept(competition)
                 }
+                Button("Decline invite") {
+                    competitionsManager.decline(competition)
+                }
+                .foregroundColor(.red)
             } else {
+                Button(toggling: $showInviteFriend) {
+                    Label("Invite a friend", systemImage: "person.crop.circle.badge.plus")
+                }
                 Button {
                     actionRequiringConfirmation = .leave
                 } label: {
                     Label("Leave competition", systemImage: "person.crop.circle.badge.minus")
-                        .font(.body.bold())
                         .foregroundColor(.red)
                 }
                 Button {
                     actionRequiringConfirmation = .delete
                 } label: {
                     Label("Delete competition", systemImage: "trash")
-                        .font(.body.bold())
                         .foregroundColor(.red)
                 }
             }
@@ -109,9 +116,25 @@ struct CompetitionView: View {
                 case .delete:
                     competitionsManager.delete(competition)
                 }
+                self.actionRequiringConfirmation = nil
                 presentationMode.wrappedValue.dismiss()
             }
-            Button("Cancel", role: .cancel) {}
+            Button("Cancel", role: .cancel) {
+                actionRequiringConfirmation = nil
+            }
+        }
+        .sheet(isPresented: $showInviteFriend) {
+            List {
+                ForEach(friendsManager.friends) { friend in
+                    AddFriendListItem(
+                        friend: friend,
+                        action: .competitionInvite,
+                        disabledIf: competition.pendingParticipants.contains(friend.id)
+                    ) { competitionsManager.invite(friend, to: competition) }
+                }
+            }
+            .navigationTitle("Invite a friend")
+            .embeddedInNavigationView()
         }
     }
 }
@@ -121,9 +144,7 @@ extension Binding {
         .init {
             binding.wrappedValue != nil
         } set: { b in
-            if !b {
-                binding.wrappedValue = nil
-            }
+            // do nothing
         }
     }
 }
@@ -159,6 +180,10 @@ struct CompetitionView_Previews: PreviewProvider {
 
     static var previews: some View {
         CompetitionView(competition: competition)
+            .environmentObject(User.evan)
+            .environmentObject(competitionManager)
+            .embeddedInNavigationView()
+        CompetitionView(competition: .mockInvited)
             .environmentObject(User.evan)
             .environmentObject(competitionManager)
             .embeddedInNavigationView()

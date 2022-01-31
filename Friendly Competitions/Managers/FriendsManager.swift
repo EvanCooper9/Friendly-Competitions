@@ -2,13 +2,17 @@ import Combine
 import Firebase
 import FirebaseFirestore
 import Resolver
+import SwiftUI
 
 class AnyFriendsManager: ObservableObject {
 
     @Published var friends = [User]()
     @Published var friendRequests = [User]()
+    @Published var searchResults = [User]()
+    @Published var searchText = ""
 
     func setup(with user: User) {}
+    func add(friend: User) {}
     func acceptFriendRequest(from: User) {}
     func declineFriendRequest(from: User) {}
     func delete(friend: User) {}
@@ -16,10 +20,28 @@ class AnyFriendsManager: ObservableObject {
 
 final class FriendsManager: AnyFriendsManager {
 
+    // MARK: - Public Properties
+
+    override var searchText: String {
+        didSet {
+            guard !searchText.isEmpty else {
+                searchResults.removeAll()
+                return
+            }
+            searchTask = Task { try await searchUsers() }
+        }
+    }
+
+    // MARK: - Private Properties
+
     @LazyInjected private var database: Firestore
 
     private var user: User!
-    
+
+    private var searchTask: Task<Void, Error>? {
+        willSet { searchTask?.cancel() }
+    }
+
     // MARK: - Public Methods
 
     override func setup(with user: User) {
@@ -30,21 +52,52 @@ final class FriendsManager: AnyFriendsManager {
         }
     }
 
+    override func add(friend: User) {
+        user.outgoingFriendRequests.append(friend.id)
+
+        let batch = database.batch()
+
+        if !user.outgoingFriendRequests.contains(friend.id) {
+            let outgoingFriendRequests = user.outgoingFriendRequests.appending(friend.id)
+            batch.updateData(["outgoingFriendRequests": outgoingFriendRequests], forDocument: database.document("users/\(user.id)"))
+        }
+
+        if !friend.incomingFriendRequests.contains(user.id) {
+            let incomingFriendRequests = friend.incomingFriendRequests.appending(user.id)
+            batch.updateData(["incomingFriendRequests": incomingFriendRequests], forDocument: database.document("users/\(friend.id)"))
+        }
+
+        batch.commit()
+    }
+
     override func acceptFriendRequest(from friendRequest: User) {
         friends.append(friendRequest)
         friendRequests.remove(friendRequest)
 
         let batch = database.batch()
         let userDocument = database.document("users/\(user.id)")
-        let myRequests = user.incomingFriendRequests.removing(friendRequest.id)
-        let myFriends = user.friends.appending(friendRequest.id)
-        batch.updateData(["incomingFriendRequests": myRequests], forDocument: userDocument)
-        batch.updateData(["friends": myFriends], forDocument: userDocument)
         let requestorDocument = database.document("users/\(friendRequest.id)")
-        let theirRequests = friendRequest.outgoingFriendRequests.removing(user.id)
-        let theirFriends = friendRequest.friends.appending(user.id)
-        batch.updateData(["outgoingFriendRequests": theirRequests], forDocument: requestorDocument)
-        batch.updateData(["friends": theirFriends], forDocument: requestorDocument)
+
+        if user.incomingFriendRequests.contains(friendRequest.id) {
+            let myRequests = user.incomingFriendRequests.removing(friendRequest.id)
+            batch.updateData(["incomingFriendRequests": myRequests], forDocument: userDocument)
+        }
+
+        if !user.friends.contains(friendRequest.id) {
+            let myFriends = user.friends.appending(friendRequest.id)
+            batch.updateData(["friends": myFriends], forDocument: userDocument)
+        }
+
+        if friendRequest.outgoingFriendRequests.contains(user.id) {
+            let theirRequests = friendRequest.outgoingFriendRequests.removing(user.id)
+            batch.updateData(["outgoingFriendRequests": theirRequests], forDocument: requestorDocument)
+        }
+
+        if !friendRequest.friends.contains(user.id) {
+            let theirFriends = friendRequest.friends.appending(user.id)
+            batch.updateData(["friends": theirFriends], forDocument: requestorDocument)
+        }
+
         batch.commit()
     }
 
@@ -73,7 +126,6 @@ final class FriendsManager: AnyFriendsManager {
     // MARK: - Private Methods
 
     private func updateFriends() async throws {
-        print(user.friends)
         guard !user.friends.isEmpty else {
             DispatchQueue.main.async { [weak self] in
                 self?.friends = []
@@ -86,6 +138,7 @@ final class FriendsManager: AnyFriendsManager {
             .getDocuments()
             .documents
             .decoded(asArrayOf: User.self)
+            .sorted(by: \.name)
 
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
@@ -100,11 +153,13 @@ final class FriendsManager: AnyFriendsManager {
                 group.addTask { [weak self] in
                     let activitySummary = try await self?.database
                         .collection("users/\(friend.id)/activitySummaries")
-                        .whereField("date", isEqualTo: DateFormatter.dateDashed.string(from: .now))
+//                        .whereField("date", isEqualTo: DateFormatter.dateDashed.string(from: .now))
                         .getDocuments()
                         .documents
-                        .first?
-                        .decoded(as: ActivitySummary.self)
+//                        .decoded(as: ActivitySummary.self)
+                        .decoded(asArrayOf: ActivitySummary.self)
+//                        .first(where: \.date.isToday)
+                        .first
                     return (friend, activitySummary)
                 }
             }
@@ -136,6 +191,26 @@ final class FriendsManager: AnyFriendsManager {
 
         DispatchQueue.main.async { [weak self] in
             self?.friendRequests = friendRequests
+        }
+    }
+
+    private func searchUsers() async throws {
+        let users = try await database.collection("users")
+            .getDocuments()
+            .documents
+            .decoded(asArrayOf: User.self)
+            .filter { someUser in
+                guard someUser.name.contains(searchText) else { return false }
+                return !user.friends
+                    .appending(user.id)
+                    .contains { $0 == someUser.id }
+            }
+            .sorted(by: \.name)
+
+        try Task.checkCancellation()
+
+        DispatchQueue.main.async { [weak self] in
+            self?.searchResults = users
         }
     }
 }

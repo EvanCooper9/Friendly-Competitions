@@ -6,4 +6,13 @@ extension View {
             self
         }
     }
+
+    @ViewBuilder
+    func `if`<V: View>(_ condition: Bool, builder: (Self) -> V) -> some View {
+        if condition {
+            builder(self)
+        } else {
+            self
+        }
+    }
 }

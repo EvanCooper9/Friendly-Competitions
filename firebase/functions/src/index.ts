@@ -20,9 +20,7 @@ interface Standing {
  * @return {boolean} True if the activity summary falls within the competition window
  */
 function shouldComputeScore(activitySummaryDate: number, competitionStart: number, competitionEnd: number): boolean {
-    const value = activitySummaryDate >= competitionStart && activitySummaryDate <= competitionEnd;
-    console.log(`should compute score: ${value} with start: ${competitionStart}, activity summary: ${activitySummaryDate} end: ${competitionEnd}`);
-    return value;
+    return activitySummaryDate >= competitionStart && activitySummaryDate <= competitionEnd;
 }
 
 exports.sendIncomingFriendRequestNotification = functions.firestore
@@ -55,17 +53,12 @@ exports.sendIncomingFriendRequestNotification = functions.firestore
             });
     });
 
-exports.updateCompetitionStandings = functions.firestore
-    .document("users/{userId}/activitySummaries/{activitySummaryDate}")
-    .onWrite(async (change, context) => {
-        const userId = context.params.userId;
-        const activitySummaryDate = Date.parse(context.params.activitySummaryDate);
-
+exports.updateCompetitionStandings = functions.https
+    .onCall(async data => {
+        const userId = data.userId;
         if (userId != "NqduqRO62IfW6RkTq6otUey9xv42") {
             return;
         }
-
-        console.log(`new activity summary data for user ${userId} with date ${activitySummaryDate}`);
 
         const competitionsRef = await firestore.collection("competitions").get();
         const updateCompetitions = competitionsRef.docs.map(async competitionDoc => {
@@ -73,19 +66,9 @@ exports.updateCompetitionStandings = functions.firestore
             if (!competition.participants.includes(userId)) {
                 return null;
             }
-            
-            console.log(`checking if standings need update for competition ${competition.name} / ${competition.id}`);
-            
+                        
             const competitionStart = Date.parse(competition.start);
             const competitionEnd = Date.parse(competition.end);
-
-            // prelim check, don't need to update competition if the activity summary's
-            // date doesn't fit within the active period of the competition
-            if (!shouldComputeScore(activitySummaryDate, competitionStart, competitionEnd)) {
-                console.log(`invalid competition date range ${competition.name} / ${competition.id}`);
-                return null;
-            }
-            console.log(`valid competition date range ${competition.name} / ${competition.id}`);
 
             let totalPoints = 0;
             const activitySummariesRef = await firestore.collection(`users/${userId}/activitySummaries`).get();
@@ -101,7 +84,6 @@ exports.updateCompetitionStandings = functions.firestore
                 const exercise = (activitySummary.appleExerciseTime / activitySummary.appleExerciseTimeGoal) * 100;
                 const stand = (activitySummary.appleStandHours / activitySummary.appleStandHoursGoal) * 100;
                 const points = energy + exercise + stand;
-                console.log(energy, exercise, stand, points);
                 totalPoints += parseInt(`${points}`);
             });
 
@@ -139,11 +121,9 @@ exports.updateCompetitionStandings = functions.firestore
                     return firestore.doc(`competitions/${competition.id}/standings/${standing.userId}`).set(standing);
                 });
             
-            console.log(`finished updating competition ${competition.name} / ${competition.id}`);
             return Promise.all(updateStandings);
         });
 
-        console.log(`finished updates for activity summary for user ${userId} with date ${activitySummaryDate}`);
         return Promise.all(updateCompetitions);
     });
 
@@ -222,7 +202,6 @@ exports.cleanStaleActivitySummaries = functions.pubsub.schedule("every day 02:00
                         return matchingCompetition == null || matchingCompetition == undefined;
                     })
                     .map(activitySummaryDoc => {
-                        console.log(`deleting stale activity summary ${activitySummaryDoc.id}`);
                         return firestore.doc(`users/${user.id}/activitySummaries/${activitySummaryDoc.id}`).delete();
                     });
 
@@ -247,8 +226,6 @@ exports.sendCompetitionCompleteNotifications = functions.pubsub.schedule("every 
                 return;
             }
 
-            console.log(`Sending standing notification for competition: ${competition.name}`);
-
             const standingsRef = await firestore.collection(`competitions/${competition.id}/standings`).get();
             const standings = standingsRef.docs.map(doc => {
                 return doc.data();
@@ -263,22 +240,48 @@ exports.sendCompetitionCompleteNotifications = functions.pubsub.schedule("every 
                 return ["st", "nd", "rd"][((n+90)%100-10)%10-1] || "th";
             }
 
-            const notificationPromises = competition.participants.map((participantId: string) => {
+            const notificationPromises = competition.participants.map(async (participantId: string) => {
                 const standing = standings.find(standing => {
                     return standing.userId == participantId;
                 });
 
                 if (standing == null) {
-                    return Promise.resolve();
+                    return null;
                 }
 
                 const rank = standing.rank;
 
-                return notifications.sendNotifications(
+                const promises: Promise<void>[] = [];
+                if (rank >=1 && rank <= 3) {
+                    const userRef = await firestore.doc(`users/${participantId}`).get();
+                    const user = userRef.data();
+                    if (user != null) {
+                        const statistics = user.statistics;
+                        if (rank == 1) {
+                            statistics.golds += 1;
+                        } else if (rank == 2) {
+                            statistics.silvers += 1;
+                        } else if (rank == 3) {
+                            statistics.bronzes += 1;
+                        }
+                        user.statistics = statistics;
+                        const updateUser = firestore.doc(`users/${participantId}`)
+                            .set(user)
+                            .then(user => {
+                                return; 
+                            });
+                        promises.push(updateUser);
+                    }
+                }
+
+                const nfs = notifications.sendNotifications(
                     participantId,
                     "Competition complete!",
                     `You placed ${rank}${nth(rank)} in ${competition.name}!`
                 );
+                promises.push(nfs);
+                
+                return Promise.all(promises);
             });
 
             return Promise.all(notificationPromises);

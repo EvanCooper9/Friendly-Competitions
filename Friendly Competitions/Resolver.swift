@@ -23,6 +23,9 @@ extension Resolver: ResolverRegistering {
         register { resolve(name: .mode) as AnyHealthKitManager }
         register(name: .main) { HealthKitManager() as AnyHealthKitManager }.scope(.application)
 
+        register { resolve(name: .mode) as AnyPermissionsManager }
+        register(name: .main) { PermissionsManager() as AnyPermissionsManager }.scope(.application)
+
         register { resolve(name: .mode) as Firestore }
         register(Firestore.self, name: .main) {
             let settings = FirestoreSettings()
@@ -32,21 +35,13 @@ extension Resolver: ResolverRegistering {
             return database
         }
         .scope(.application)
-        register(Firestore.self,name: .mock)  {
-            let settings = FirestoreSettings()
-            settings.isPersistenceEnabled = true
-            let database = Firestore.firestore()
-            database.settings = settings
-            return database
-        }
+        register(Firestore.self,name: .mock)  { Firestore.firestore() }
 
         register { resolve(name: .mode) as NotificationManaging }
-        register(name: .main) { NotificationManager() as NotificationManaging }
-            .scope(.application)
+        register(name: .main) { NotificationManager() as NotificationManaging }.scope(.application)
         register(name: .mock) { NotificationManager() as NotificationManaging }
 
-        register { resolve(name: .mode) as User }
-            .scope(.application)
+        register { resolve(name: .mode) as User }.scope(.application)
         register(name: .mock) { User.evan }
     }
 }

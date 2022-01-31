@@ -5,6 +5,7 @@ struct CompetitionListItem: View {
 
     let competition: Competition
 
+    @EnvironmentObject private var competitionsManager: AnyCompetitionsManager
     @EnvironmentObject private var user: User
 
     var body: some View {
@@ -15,8 +16,28 @@ struct CompetitionListItem: View {
                 if competition.pendingParticipants.contains(user.id) {
                     Text("Invited")
                         .foregroundColor(.gray)
-                }
+                } else if competition.ended,
+                          let standings = competitionsManager.standings[competition.id],
+                          let rank = standings.first(where: { $0.userId == user.id })?.rank,
+                          let rankEmoji = rank.rankEmoji {
+                    Text(rankEmoji)
+                } 
             }
+        }
+    }
+}
+
+private extension Int {
+    var rankEmoji: String? {
+        switch self {
+        case 1:
+            return "🥇"
+        case 2:
+            return "🥈"
+        case 3:
+            return "🥉"
+        default:
+            return nil
         }
     }
 }

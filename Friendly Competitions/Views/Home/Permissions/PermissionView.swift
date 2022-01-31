@@ -43,7 +43,6 @@ struct PermissionView_Previews: PreviewProvider {
         VStack {
             PermissionView(permission: .health, status: .notDetermined)
             PermissionView(permission: .notifications, status: .authorized)
-            PermissionView(permission: .contacts, status: .denied)
         }
         .padding()
     }

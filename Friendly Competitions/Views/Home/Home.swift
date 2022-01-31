@@ -2,21 +2,18 @@ import HealthKit
 import SwiftUI
 import Resolver
 
-// TODO: Permissions
-
 struct Home: View {
 
     @EnvironmentObject private var activitySummaryManager: AnyActivitySummaryManager
     @EnvironmentObject private var competitionsManager: AnyCompetitionsManager
     @EnvironmentObject private var friendsManager: AnyFriendsManager
+    @EnvironmentObject private var permissionsManager: AnyPermissionsManager
     @EnvironmentObject private var user: User
 
-    @State private var presentDeveloper = false
+    @State private var presentPermissions = false
     @State private var presentSettings = false
     @State private var presentNewCompetition = false
     @State private var presentSearchFriendsSheet = false
-    @State private var presentConfirmDeleteFriend = false
-    @State private var friendToDelete: User?
     @State private var sharedFriendId: String?
     @AppStorage(#function) var competitionsFiltered = false
 
@@ -31,28 +28,23 @@ struct Home: View {
         }
         .navigationBarTitle(user.name)
         .toolbar {
-            HStack {
-                if user.role == .developer {
-                    Button(action: { presentDeveloper.toggle() }) {
-                        Image(systemName: "hammer.circle")
-                    }
-                }
-                Button(action: { presentSettings.toggle() }) {
-                    Image(systemName: "person.crop.circle")
-                }
+            Button(toggling: $presentSettings) {
+                Image(systemName: "person.crop.circle")
             }
         }
         .embeddedInNavigationView()
-        .sheet(isPresented: $presentDeveloper) { Developer() }
         .sheet(isPresented: $presentSettings) { Profile() }
         .sheet(isPresented: $presentSearchFriendsSheet) { AddFriendView(sharedFriendId: sharedFriendId) }
         .sheet(isPresented: $presentNewCompetition) { NewCompetitionView() }
+        .sheet(isPresented: $presentPermissions) { PermissionsView() }
         .environmentObject(competitionsManager)
         .onOpenURL { url in
             guard url.absoluteString.contains("invite") else { return }
             sharedFriendId = url.lastPathComponent
             presentSearchFriendsSheet = true
         }
+        .onAppear { presentPermissions = permissionsManager.requiresPermission }
+        .onChange(of: permissionsManager.requiresPermission) { presentPermissions = $0 }
     }
 
     private var activitySummary: some View {
@@ -91,7 +83,7 @@ struct Home: View {
                 }
                 .disabled(competitionsManager.competitions.isEmpty)
 
-                Button(action: { presentNewCompetition.toggle() }) {
+                Button(toggling: $presentNewCompetition) {
                     Image(systemName: "plus.circle")
                         .font(.title2)
                 }
@@ -106,18 +98,12 @@ struct Home: View {
     private var friends: some View {
         Section {
             ForEach(friendsManager.friends) { friend in
-                HStack {
-                    ActivityRingView(activitySummary: friend.tempActivitySummary?.hkActivitySummary)
-                        .frame(width: 35, height: 35)
-                    Text(friend.name)
-                    Spacer()
-                }
-                .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                    Button(role: .destructive) {
-                        friendToDelete = friend
-                        presentConfirmDeleteFriend.toggle()
-                    } label: {
-                        Label("Delete", systemImage: "trash")
+                NavigationLink(destination: FriendView(friend: friend)) {
+                    HStack {
+                        ActivityRingView(activitySummary: friend.tempActivitySummary?.hkActivitySummary)
+                            .frame(width: 35, height: 35)
+                        Text(friend.name)
+                        Spacer()
                     }
                 }
             }
@@ -144,7 +130,7 @@ struct Home: View {
                 Text("Friends")
                     .font(.title3)
                 Spacer()
-                Button(action: { presentSearchFriendsSheet.toggle() }) {
+                Button(toggling: $presentSearchFriendsSheet) {
                     Image(systemName: "person.crop.circle.badge.plus")
                         .font(.title2)
                 }
@@ -153,17 +139,6 @@ struct Home: View {
             if friendsManager.friends.isEmpty && friendsManager.friendRequests.isEmpty {
                 Text("Add friends to get started!")
             }
-        }
-        .confirmationDialog(
-            "Are you sure?",
-            isPresented: $presentConfirmDeleteFriend,
-            titleVisibility: .visible
-        ) {
-            Button("Yes", role: .destructive) {
-                guard let friendToDelete = friendToDelete else { return }
-                friendsManager.delete(friend: friendToDelete)
-            }
-            Button("Cancel", role: .cancel) {}
         }
     }
 }
@@ -177,24 +152,39 @@ struct HomeView_Previews: PreviewProvider {
     }()
 
     private static let competitionManager: AnyCompetitionsManager = {
+        let competitions: [Competition] = [.mock, .mockInvited, .mockOld]
         let competitionManager = AnyCompetitionsManager()
-        competitionManager.competitions = [.mock, .mockInvited, .mockOld]
+        competitionManager.competitions = competitions
+        competitionManager.standings = competitions.reduce(into: [:]) { partialResult, competition in
+            partialResult[competition.id] = [.mock(for: .evan)]
+        }
         return competitionManager
     }()
 
     private static let friendsManager: AnyFriendsManager = {
+        let friend = User.gabby
+        friend.tempActivitySummary = .mock
         let friendsManager = AnyFriendsManager()
-        friendsManager.friends = [.gabby]
-        friendsManager.friendRequests = [.gabby]
+        friendsManager.friends = [friend]
+        friendsManager.friendRequests = [friend]
         return friendsManager
     }()
 
+    private static let permissionsManager: AnyPermissionsManager = {
+        let permissionsManager = AnyPermissionsManager()
+        permissionsManager.permissionStatus = [
+            .health: .notDetermined,
+            .notifications: .notDetermined
+        ]
+        return permissionsManager
+    }()
+
     static var previews: some View {
-        Resolver.Name.mode = .mock
-        return Home()
+        Home()
             .environmentObject(User.evan)
             .environmentObject(activitySummaryManager)
             .environmentObject(competitionManager)
             .environmentObject(friendsManager)
+            .environmentObject(permissionsManager)
     }
 }

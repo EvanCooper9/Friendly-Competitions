@@ -2,31 +2,33 @@ import SwiftUI
 
 struct SignInView: View {
 
+    @Environment(\.colorScheme) private var colorScheme
+    @StateObject private var viewModel = SignInViewModel()
     @State private var email = ""
     @State private var password = ""
 
-    private let viewModel = SignInViewModel()
-
     var body: some View {
         VStack(spacing: 10) {
-            Spacer()
-            Text("Friendly Competitions")
-                .font(.largeTitle)
-                .fontWeight(.light)
             Spacer()
             Image("logo")
                 .resizable()
                 .aspectRatio(contentMode: .fit)
                 .padding()
-                .background(
-                    Circle()
-                        .fill(.white)
-                        .shadow(color: .white, radius: 10)
-                )
-            Text("Friendly Competitions allows you to compete against groups of friends in fitness.")
+                .background(content: {
+                    ActivityRingView(activitySummary: nil)
+                        .clipShape(Circle())
+                        .if(!isPreview) { v in
+                            v.shadow(radius: 10)
+                        }
+                })
+            
+            Spacer()
+            Text("Friendly Competitions")
+                .font(.largeTitle)
+                .fontWeight(.light)
+            Text("Compete against groups of friends in fitness.")
                 .fontWeight(.light)
                 .multilineTextAlignment(.center)
-                .padding()
             Spacer()
             if viewModel.isLoading { ProgressView() }
             SignInWithAppleButton()
@@ -35,14 +37,24 @@ struct SignInView: View {
                 .disabled(viewModel.isLoading)
         }
         .padding()
-        .background(Color(red: 242/255, green: 242/255, blue: 247/255))
+        .background(content: {
+            let color: Color = {
+                switch colorScheme {
+                case .dark:
+                    return .black
+                default:
+                    return Color(red: 242/255, green: 242/255, blue: 247/255)
+                }
+            }()
+            color.ignoresSafeArea()
+        })
     }
 }
 
 struct WelcomeView_Previews: PreviewProvider {
     static var previews: some View {
-        Group {
-            SignInView()
-        }
+        SignInView()
+        SignInView()
+            .preferredColorScheme(.dark)
     }
 }

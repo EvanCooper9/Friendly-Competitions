@@ -4,6 +4,8 @@ import FirebaseFirestore
 import SwiftUI
 import Resolver
 
+var isPreview: Bool { ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" }
+
 @main
 struct FriendlyCompetitions: App {
 
@@ -13,6 +15,7 @@ struct FriendlyCompetitions: App {
     @StateObject private var competitionsManager = Resolver.resolve(AnyCompetitionsManager.self)
     @StateObject private var friendsManager = Resolver.resolve(AnyFriendsManager.self)
     @StateObject private var healthKitManager = Resolver.resolve(AnyHealthKitManager.self)
+    @StateObject private var permissionsManager = Resolver.resolve(AnyPermissionsManager.self)
     @StateObject private var appModel = AppModel()
 
     init() {
@@ -27,6 +30,7 @@ struct FriendlyCompetitions: App {
                     .environmentObject(activitySummaryManager)
                     .environmentObject(competitionsManager)
                     .environmentObject(friendsManager)
+                    .environmentObject(permissionsManager)
             } else {
                 SignInView()
             }

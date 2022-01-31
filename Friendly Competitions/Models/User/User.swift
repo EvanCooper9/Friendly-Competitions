@@ -13,26 +13,27 @@ enum Role: String, Codable {
 }
 
 final class User: Codable, Identifiable {
-
     let id: String
     let email: String
-    var name: String
-    var friends: [String]
-    let incomingFriendRequests: [String]
-    let outgoingFriendRequests: [String]
-    var notificationTokens: [String]?
-    var role: Role?
+    let name: String
+    var friends = [String]()
+    var incomingFriendRequests = [String]()
+    var outgoingFriendRequests = [String]()
+    var notificationTokens: [String]? = []
+    var role: Role? = .general
+    var statistics: Statistics? = .zero
 
     var tempActivitySummary: ActivitySummary? = nil
 
-    init(id: String, email: String, name: String, friends: [String] = [], incomingFriendRequests: [String] = [], outgoingFriendRequests: [String] = [], notificationTokens: [String] = []) {
+    var hashId: String {
+        let endIndex = id.index(id.startIndex, offsetBy: 4)
+        return "#" + id[..<endIndex].uppercased()
+    }
+
+    init(id: String, email: String, name: String) {
         self.id = id
         self.email = email
         self.name = name
-        self.friends = friends
-        self.incomingFriendRequests = incomingFriendRequests
-        self.outgoingFriendRequests = outgoingFriendRequests
-        self.notificationTokens = notificationTokens
     }
 }
 

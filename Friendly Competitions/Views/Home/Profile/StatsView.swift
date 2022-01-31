@@ -1,0 +1,35 @@
+import SwiftUI
+
+struct StatisticsView: View {
+    let statistics: Statistics
+
+    var body: some View {
+        StatView(title: "🥇 Gold medals", value: statistics.golds)
+        StatView(title: "🥈 Silver medals", value: statistics.silvers)
+        StatView(title: "🥉 Bronze medals", value: statistics.bronzes)
+    }
+}
+
+struct StatView: View {
+    let title: String
+    let value: Int
+
+    var body: some View {
+        HStack {
+            Text(title)
+            Spacer()
+            Text("\(value)")
+                .foregroundColor(.gray)
+        }
+    }
+}
+
+struct StatisticsView_Previews: PreviewProvider {
+    static var previews: some View {
+        List {
+            Section {
+                StatisticsView(statistics: .mock)
+            }
+        }
+    }
+}

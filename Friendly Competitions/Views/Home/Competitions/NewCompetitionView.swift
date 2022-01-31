@@ -102,7 +102,7 @@ struct NewCompetitionView: View {
                 if friendsManager.friends.isEmpty {
                     LazyHStack {
                         Text("Nothing here, yet!")
-                        Button("Add friends.") { presentAddFriends.toggle() }
+                        Button("Add friends.", toggling: $presentAddFriends)
                     }
                     .padding(.vertical, 6)
                 }

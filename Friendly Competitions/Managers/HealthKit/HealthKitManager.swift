@@ -1,37 +1,21 @@
+import Combine
 import HealthKit
 import Resolver
-
-protocol HealthKitBackgroundDeliveryReceiving {
-    func trigger() async throws
-}
+import SwiftUI
 
 class AnyHealthKitManager: ObservableObject {
-
     var permissionStatus: PermissionStatus { .authorized }
-
     func execute(_ query: HKQuery) {}
-
     func requestPermissions(_ completion: @escaping (PermissionStatus) -> Void) {}
-
-    private(set) var didRegisterForBackgroundDelivery = false
-    func registerForBackgroundDelivery() {
-        didRegisterForBackgroundDelivery = true
-    }
-
-    private(set) var didRegisterBackgroundDeliveryReceiver = false
-    func registerBackgroundDeliveryReceiver(_ backgroundDeliverReceiver: HealthKitBackgroundDeliveryReceiving) {
-        didRegisterBackgroundDeliveryReceiver = true
-    }
+    func registerForBackgroundDelivery() {}
+    func registerBackgroundDeliveryReceiver(_ backgroundDeliverReceiver: HealthKitBackgroundDeliveryReceiving) {}
 }
 
 final class HealthKitManager: AnyHealthKitManager {
 
     private enum Constants {
-
-        static let permissionStoreKey = #function
-
         static var backgroundDeliveryTypes: [HKSampleType] {
-            Self.permissionObjectTypes.compactMap { $0 as? HKSampleType }
+            permissionObjectTypes.compactMap { $0 as? HKSampleType }
         }
 
         static let permissionObjectTypes: [HKObjectType] = [
@@ -49,17 +33,17 @@ final class HealthKitManager: AnyHealthKitManager {
 
     // MARK: - Public Properties
 
-    override var permissionStatus: PermissionStatus {
-        guard notDeterminedPermissions.isEmpty else { return .notDetermined }
-        // https://stackoverflow.com/questions/29076655/healthkit-authorisation-status-is-always-1
-        return UserDefaults.standard.decode(PermissionStatus.self, forKey: Constants.permissionStoreKey) ?? .notDetermined
-    }
+    override var permissionStatus: PermissionStatus { storedPermissionStatus ?? .notDetermined }
 
     // MARK: - Private Properties
 
     private let healthStore = HKHealthStore()
     private var hasRegisteredForBackgroundDelivery = false
     private var backgroundDeliverReceivers = [HealthKitBackgroundDeliveryReceiving]()
+    private var backgroundDeliveryCancellables = Set<AnyCancellable>()
+    private let backgroundDeliveryTrigger = PassthroughSubject<HKObserverQueryCompletionHandler?, Never>()
+
+    @AppStorage("healthKitStoredPermissionStatus") private var storedPermissionStatus: PermissionStatus?
 
     private var notDeterminedPermissions: [HKObjectType] {
         Constants.permissionObjectTypes.filter { healthStore.authorizationStatus(for: $0) == .notDetermined }
@@ -67,6 +51,35 @@ final class HealthKitManager: AnyHealthKitManager {
 
     private var updateTask: Task<Void, Error>? {
         willSet { updateTask?.cancel() }
+    }
+
+    // MARK: - Lifecycle
+
+    override init() {
+        super.init()
+        
+        backgroundDeliveryTrigger
+            .scan(nil, { completionHandlers, completionHandler -> [HKObserverQueryCompletionHandler]? in
+                guard let completionHandler = completionHandler else { return nil }
+                return (completionHandlers ?? []).appending(completionHandler)
+            })
+            .compactMap { $0 }
+            .debounce(for: .seconds(0.1), scheduler: RunLoop.main)
+            .sink { [weak self] completionHandlers in
+                guard let self = self else { return }
+                guard !completionHandlers.isEmpty else {
+                    self.backgroundDeliveryTrigger.send(nil)
+                    return
+                }
+                Task {
+                    for receiver in self.backgroundDeliverReceivers {
+                        try await receiver.trigger()
+                    }
+                    completionHandlers.forEach { $0() }
+                    self.backgroundDeliveryTrigger.send(nil)
+                }
+            }
+            .store(in: &backgroundDeliveryCancellables)
     }
 
     // MARK: - Public Methods
@@ -88,7 +101,9 @@ final class HealthKitManager: AnyHealthKitManager {
                 guard let self = self else { return }
                 self.registerForBackgroundDelivery()
                 let permissionStatus: PermissionStatus = authorized ? .authorized : .denied
-                UserDefaults.standard.encode(permissionStatus, forKey: Constants.permissionStoreKey)
+                DispatchQueue.main.async {
+                    self.storedPermissionStatus = permissionStatus
+                }
                 completion(permissionStatus)
             }
         )
@@ -97,21 +112,14 @@ final class HealthKitManager: AnyHealthKitManager {
     override func registerForBackgroundDelivery() {
         guard notDeterminedPermissions.isEmpty else { return }
         guard !hasRegisteredForBackgroundDelivery else {
-            for receiver in backgroundDeliverReceivers {
-                Task { try await receiver.trigger() }
-            }
+            backgroundDeliveryTrigger.send({})
             return
         }
+
         for sampleType in Constants.backgroundDeliveryTypes {
             let query = HKObserverQuery(sampleType: sampleType, predicate: nil) { [weak self] query, completion, error in
                 guard let self = self else { return }
-                self.updateTask = Task(priority: .low) {
-                    defer { completion() }
-                    for receiver in self.backgroundDeliverReceivers {
-                        try Task.checkCancellation()
-                        try await receiver.trigger()
-                    }
-                }
+                self.backgroundDeliveryTrigger.send(completion)
             }
             healthStore.execute(query)
             healthStore.enableBackgroundDelivery(for: sampleType, frequency: .immediate) { _, _ in }
