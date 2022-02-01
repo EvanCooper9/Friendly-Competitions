@@ -16,6 +16,7 @@ struct FriendlyCompetitions: App {
     @StateObject private var friendsManager = Resolver.resolve(AnyFriendsManager.self)
     @StateObject private var healthKitManager = Resolver.resolve(AnyHealthKitManager.self)
     @StateObject private var permissionsManager = Resolver.resolve(AnyPermissionsManager.self)
+    @StateObject private var userManager = Resolver.resolve(AnyUserManager.self)
     @StateObject private var appModel = AppModel()
 
     init() {
@@ -31,6 +32,7 @@ struct FriendlyCompetitions: App {
                     .environmentObject(competitionsManager)
                     .environmentObject(friendsManager)
                     .environmentObject(permissionsManager)
+                    .environmentObject(userManager)
             } else {
                 SignInView()
             }

@@ -4,13 +4,13 @@ struct StatisticsView: View {
     let statistics: Statistics
 
     var body: some View {
-        StatView(title: "🥇 Gold medals", value: statistics.golds)
-        StatView(title: "🥈 Silver medals", value: statistics.silvers)
-        StatView(title: "🥉 Bronze medals", value: statistics.bronzes)
+        StatisticView(title: "🥇 Gold medals", value: statistics.golds)
+        StatisticView(title: "🥈 Silver medals", value: statistics.silvers)
+        StatisticView(title: "🥉 Bronze medals", value: statistics.bronzes)
     }
 }
 
-struct StatView: View {
+struct StatisticView: View {
     let title: String
     let value: Int
 

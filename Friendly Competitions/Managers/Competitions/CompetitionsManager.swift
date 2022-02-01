@@ -3,11 +3,6 @@ import Firebase
 import FirebaseFirestore
 import Resolver
 
-struct Participant: Identifiable {
-    let id: String
-    let name: String
-}
-
 class AnyCompetitionsManager: ObservableObject {
 
     @Published var competitions = [Competition]()
@@ -83,6 +78,9 @@ final class CompetitionsManager: AnyCompetitionsManager {
     override func invite(_ user: User, to competition: Competition) {
         var competition = competition
         competition.pendingParticipants.append(user.id)
+        var pendingParticipants = pendingParticipants[competition.id] ?? []
+        pendingParticipants.append(.init(from: user))
+        self.pendingParticipants[competition.id] = pendingParticipants
         update(competition: competition)
     }
 
@@ -149,6 +147,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
     private func updateParticipants(for competitions: [Competition]) async throws {
         try await withThrowingTaskGroup(of: (Competition.ID, [Participant])?.self) { group in
             competitions.forEach { competition in
+                guard !competition.participants.isEmpty else { return }
                 group.addTask { [weak self] in
                     guard let self = self else { return nil }
                     let participants = try await self.database
@@ -157,12 +156,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
                         .getDocuments()
                         .documents
                         .decoded(asArrayOf: User.self)
-                        .map { user in
-                            Participant(
-                                id: user.id,
-                                name: user.name
-                            )
-                        }
+                        .map(Participant.init(from:))
                     return (competition.id, participants)
                 }
             }
@@ -181,6 +175,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
     private func updatePendingParticipants(for competitions: [Competition]) async throws {
         try await withThrowingTaskGroup(of: (Competition.ID, [Participant])?.self) { group in
             competitions.forEach { competition in
+                guard !competition.pendingParticipants.isEmpty else { return }
                 group.addTask { [weak self] in
                     guard let self = self else { return nil }
                     let participants = try await self.database
@@ -189,12 +184,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
                         .getDocuments()
                         .documents
                         .decoded(asArrayOf: User.self)
-                        .map { user in
-                            Participant(
-                                id: user.id,
-                                name: user.name
-                            )
-                        }
+                        .map(Participant.init(from:))
                     return (competition.id, participants)
                 }
             }

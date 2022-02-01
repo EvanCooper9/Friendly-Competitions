@@ -4,6 +4,7 @@ enum PermissionStatus: String, Codable {
     case authorized
     case denied
     case notDetermined
+    case done
 
     var buttonTitle: String {
         switch self {
@@ -13,6 +14,8 @@ enum PermissionStatus: String, Codable {
             return "Denied"
         case .notDetermined:
             return "Allow"
+        case .done:
+            return "Done"
         }
     }
 
@@ -24,6 +27,8 @@ enum PermissionStatus: String, Codable {
             return .red
         case .notDetermined:
             return .blue
+        case .done:
+            return .gray
         }
     }
 }

@@ -165,13 +165,13 @@ struct CompetitionView_Previews: PreviewProvider {
         ]
         competitionManager.participants = [
             competition.id: [
-                .init(id: evan.id, name: evan.name),
-                .init(id: gabby.id, name: gabby.name)
+                .init(from: evan),
+                .init(from: gabby)
             ]
         ]
         competitionManager.pendingParticipants = [
             competition.id: [
-                .init(id: gabby.id, name: gabby.name)
+                .init(from: gabby)
             ]
         ]
 

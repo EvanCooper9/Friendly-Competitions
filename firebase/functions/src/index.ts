@@ -116,6 +116,7 @@ exports.updateCompetitionStandings = functions.https
                     }
                     return 0;
                 })
+                .reverse()
                 .map((standing, index) => {
                     standing.rank = index + 1;
                     return firestore.doc(`competitions/${competition.id}/standings/${standing.userId}`).set(standing);

@@ -15,7 +15,7 @@
 		C10EB3EC26E94E2200487F1B /* UserDefaults+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10EB3EA26E94E1B00487F1B /* UserDefaults+Extensions.swift */; };
 		C1185A2526D6717C002E2377 /* ActivitySummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1185A2426D6717C002E2377 /* ActivitySummary.swift */; };
 		C119B03226FE67A300B56703 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = C119B03126FE67A300B56703 /* FirebaseCrashlytics */; };
-		C123C9C527A740FE00375F73 /* StatsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C123C9C427A740FE00375F73 /* StatsView.swift */; };
+		C123C9C527A740FE00375F73 /* StatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C123C9C427A740FE00375F73 /* StatisticsView.swift */; };
 		C123C9C727A74C4100375F73 /* Button+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C123C9C627A74C4000375F73 /* Button+Extensions.swift */; };
 		C123C9C927A74F3500375F73 /* PermissionsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C123C9C827A74F3500375F73 /* PermissionsManager.swift */; };
 		C123C9CB27A8541200375F73 /* AddFriendListItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = C123C9CA27A8541200375F73 /* AddFriendListItem.swift */; };
@@ -24,9 +24,12 @@
 		C123C9D227A875EC00375F73 /* HealthKitBackgroundDeliveryReceiving.swift in Sources */ = {isa = PBXBuildFile; fileRef = C123C9D127A875EC00375F73 /* HealthKitBackgroundDeliveryReceiving.swift */; };
 		C123C9D427A88D3200375F73 /* UserInfoSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = C123C9D327A88D3200375F73 /* UserInfoSection.swift */; };
 		C123C9D627A8989500375F73 /* FirebaseFunctions in Frameworks */ = {isa = PBXBuildFile; productRef = C123C9D527A8989500375F73 /* FirebaseFunctions */; };
+		C123C9D927A8A83300375F73 /* Participant.swift in Sources */ = {isa = PBXBuildFile; fileRef = C123C9D827A8A83300375F73 /* Participant.swift */; };
+		C123C9DB27A8A98800375F73 /* UserManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C123C9DA27A8A98800375F73 /* UserManager.swift */; };
+		C123C9DE27A8AF5100375F73 /* About.swift in Sources */ = {isa = PBXBuildFile; fileRef = C123C9DD27A8AF5100375F73 /* About.swift */; };
+		C123C9E027A8B02300375F73 /* Bundle+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C123C9DF27A8B02300375F73 /* Bundle+Extensions.swift */; };
 		C12BA6E426F60B34009DAE38 /* DateInterval+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C12BA6E326F60B34009DAE38 /* DateInterval+Extensions.swift */; };
 		C12D63F027A4D5B300259237 /* View+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C12D63EF27A4D5B300259237 /* View+Extensions.swift */; };
-		C12D63FB27A5B5DD00259237 /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C12D63FA27A5B5DD00259237 /* ProfileViewModel.swift */; };
 		C12D640427A5EABD00259237 /* SignInViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C12D640327A5EABD00259237 /* SignInViewModel.swift */; };
 		C12D640727A5F2FC00259237 /* CompetitionsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C12D640627A5F2FC00259237 /* CompetitionsManager.swift */; };
 		C1386C7E26D566210096E952 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = C1386C7D26D566210096E952 /* FirebaseAuth */; };
@@ -106,7 +109,7 @@
 		C10E5547272B47080053BBA6 /* XCAssets+Generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "XCAssets+Generated.swift"; sourceTree = "<group>"; };
 		C10EB3EA26E94E1B00487F1B /* UserDefaults+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserDefaults+Extensions.swift"; sourceTree = "<group>"; };
 		C1185A2426D6717C002E2377 /* ActivitySummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitySummary.swift; sourceTree = "<group>"; };
-		C123C9C427A740FE00375F73 /* StatsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatsView.swift; sourceTree = "<group>"; };
+		C123C9C427A740FE00375F73 /* StatisticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsView.swift; sourceTree = "<group>"; };
 		C123C9C627A74C4000375F73 /* Button+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Button+Extensions.swift"; sourceTree = "<group>"; };
 		C123C9C827A74F3500375F73 /* PermissionsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionsManager.swift; sourceTree = "<group>"; };
 		C123C9CA27A8541200375F73 /* AddFriendListItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddFriendListItem.swift; sourceTree = "<group>"; };
@@ -114,9 +117,12 @@
 		C123C9CE27A86E1200375F73 /* Stack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Stack.swift; sourceTree = "<group>"; };
 		C123C9D127A875EC00375F73 /* HealthKitBackgroundDeliveryReceiving.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitBackgroundDeliveryReceiving.swift; sourceTree = "<group>"; };
 		C123C9D327A88D3200375F73 /* UserInfoSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserInfoSection.swift; sourceTree = "<group>"; };
+		C123C9D827A8A83300375F73 /* Participant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Participant.swift; sourceTree = "<group>"; };
+		C123C9DA27A8A98800375F73 /* UserManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserManager.swift; sourceTree = "<group>"; };
+		C123C9DD27A8AF5100375F73 /* About.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = About.swift; sourceTree = "<group>"; };
+		C123C9DF27A8B02300375F73 /* Bundle+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bundle+Extensions.swift"; sourceTree = "<group>"; };
 		C12BA6E326F60B34009DAE38 /* DateInterval+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DateInterval+Extensions.swift"; sourceTree = "<group>"; };
 		C12D63EF27A4D5B300259237 /* View+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extensions.swift"; sourceTree = "<group>"; };
-		C12D63FA27A5B5DD00259237 /* ProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewModel.swift; sourceTree = "<group>"; };
 		C12D640327A5EABD00259237 /* SignInViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInViewModel.swift; sourceTree = "<group>"; };
 		C12D640627A5F2FC00259237 /* CompetitionsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionsManager.swift; sourceTree = "<group>"; };
 		C1386C8126D56CD60096E952 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
@@ -231,6 +237,8 @@
 				C1E4AB9926FCC96500B1AF12 /* CompetitionListItem.swift */,
 				C1401F8A26D94D1C0080F74F /* ImmutableListItemView.swift */,
 				C123C9CE27A86E1200375F73 /* Stack.swift */,
+				C123C9D327A88D3200375F73 /* UserInfoSection.swift */,
+				C123C9CC27A863F100375F73 /* UserHashIDPill.swift */,
 				C1884E4926D58AC800C21014 /* UIKit Wrappers */,
 			);
 			path = Components;
@@ -243,6 +251,23 @@
 				C123C9D127A875EC00375F73 /* HealthKitBackgroundDeliveryReceiving.swift */,
 			);
 			path = HealthKit;
+			sourceTree = "<group>";
+		};
+		C123C9D727A8A81F00375F73 /* Competitions */ = {
+			isa = PBXGroup;
+			children = (
+				C12D640627A5F2FC00259237 /* CompetitionsManager.swift */,
+				C123C9D827A8A83300375F73 /* Participant.swift */,
+			);
+			path = Competitions;
+			sourceTree = "<group>";
+		};
+		C123C9DC27A8AF4700375F73 /* About */ = {
+			isa = PBXGroup;
+			children = (
+				C123C9DD27A8AF5100375F73 /* About.swift */,
+			);
+			path = About;
 			sourceTree = "<group>";
 		};
 		C12D63EE27A4D5A700259237 /* SwiftUI */ = {
@@ -258,10 +283,7 @@
 			isa = PBXGroup;
 			children = (
 				C1401F8826D933560080F74F /* Profile.swift */,
-				C12D63FA27A5B5DD00259237 /* ProfileViewModel.swift */,
-				C123C9D327A88D3200375F73 /* UserInfoSection.swift */,
-				C123C9CC27A863F100375F73 /* UserHashIDPill.swift */,
-				C123C9C427A740FE00375F73 /* StatsView.swift */,
+				C123C9C427A740FE00375F73 /* StatisticsView.swift */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -279,6 +301,7 @@
 			isa = PBXGroup;
 			children = (
 				C1884E4726D5894000C21014 /* Home.swift */,
+				C123C9DC27A8AF4700375F73 /* About */,
 				C1F7DFF226D7F77900B46F91 /* Competitions */,
 				C1F7DFF326D7F78300B46F91 /* Friends */,
 				C10E5544272B44B30053BBA6 /* Permissions */,
@@ -448,12 +471,13 @@
 		C1ABB21126D6970D00716984 /* Foundation */ = {
 			isa = PBXGroup;
 			children = (
-				C1ABB21226D6971900716984 /* TimeInterval+Extensions.swift */,
+				C123C9DF27A8B02300375F73 /* Bundle+Extensions.swift */,
 				C1EA986626D6DBAA00219E84 /* Date+Extensions.swift */,
 				C12BA6E326F60B34009DAE38 /* DateInterval+Extensions.swift */,
 				C16ADDD726D9128F00E34E04 /* DateFormatter+Extensions.swift */,
 				C16ADDD526D9126800E34E04 /* JSONDecoder+Extensions.swift */,
 				C184A6E526D87FD4007CEF9B /* JSONEncoder+Extensions.swift */,
+				C1ABB21226D6971900716984 /* TimeInterval+Extensions.swift */,
 				C10EB3EA26E94E1B00487F1B /* UserDefaults+Extensions.swift */,
 			);
 			path = Foundation;
@@ -471,10 +495,11 @@
 			isa = PBXGroup;
 			children = (
 				C1401F8D26D97C3D0080F74F /* ActivitySummaryManager.swift */,
-				C12D640627A5F2FC00259237 /* CompetitionsManager.swift */,
 				C1E1A9D027A6D9D700E8E360 /* FriendsManager.swift */,
 				C1F9D7CC26FF871A00B25651 /* NotificationManaging.swift */,
 				C123C9C827A74F3500375F73 /* PermissionsManager.swift */,
+				C123C9DA27A8A98800375F73 /* UserManager.swift */,
+				C123C9D727A8A81F00375F73 /* Competitions */,
 				C123C9D027A875D500375F73 /* HealthKit */,
 			);
 			path = Managers;
@@ -651,11 +676,12 @@
 				C12D640427A5EABD00259237 /* SignInViewModel.swift in Sources */,
 				C1691DDB26D560C5006FFA30 /* SignInWithAppleButton.swift in Sources */,
 				C109E4C026E7F52E00AA10C5 /* Encodable+Extensions.swift in Sources */,
+				C123C9DB27A8A98800375F73 /* UserManager.swift in Sources */,
 				C1E1A9D527A7037D00E8E360 /* Published+Extensions.swift in Sources */,
 				C12D640727A5F2FC00259237 /* CompetitionsManager.swift in Sources */,
 				C1691DC726D55FCF006FFA30 /* FriendlyCompetitions.swift in Sources */,
-				C12D63FB27A5B5DD00259237 /* ProfileViewModel.swift in Sources */,
 				C123C9C927A74F3500375F73 /* PermissionsManager.swift in Sources */,
+				C123C9E027A8B02300375F73 /* Bundle+Extensions.swift in Sources */,
 				C1ABB21526D6987C00716984 /* NewCompetitionView.swift in Sources */,
 				C123C9CD27A863F100375F73 /* UserHashIDPill.swift in Sources */,
 				C1691DD926D5603D006FFA30 /* ActivityRingView.swift in Sources */,
@@ -665,11 +691,12 @@
 				C15522A026E793DA00FE0DA7 /* ActivitySummary+Mock.swift in Sources */,
 				C12BA6E426F60B34009DAE38 /* DateInterval+Extensions.swift in Sources */,
 				C16CC40927A73E6E00C26208 /* Statistics.swift in Sources */,
+				C123C9D927A8A83300375F73 /* Participant.swift in Sources */,
 				C1884E5426D5A40E00C21014 /* Competition.swift in Sources */,
 				C12D63F027A4D5B300259237 /* View+Extensions.swift in Sources */,
 				C1F9D7CD26FF871A00B25651 /* NotificationManaging.swift in Sources */,
 				C1D0177D273F63CF00C9EEAE /* PermissionStatus.swift in Sources */,
-				C123C9C527A740FE00375F73 /* StatsView.swift in Sources */,
+				C123C9C527A740FE00375F73 /* StatisticsView.swift in Sources */,
 				C1F7DFF526D8010A00B46F91 /* CollectionReference+Extensions.swift in Sources */,
 				C1EA986226D6B5EB00219E84 /* Array+Extensions.swift in Sources */,
 				C10E5541272B3BB70053BBA6 /* Permission.swift in Sources */,
@@ -677,6 +704,7 @@
 				C1AAE947275AF92C00921E41 /* WithLoadingOverlay.swift in Sources */,
 				C123C9CF27A86E1200375F73 /* Stack.swift in Sources */,
 				C1EA986926D6E8C900219E84 /* CompetitionView.swift in Sources */,
+				C123C9DE27A8AF5100375F73 /* About.swift in Sources */,
 				C19EAFE3272B30E0008BCFDD /* PermissionsView.swift in Sources */,
 				C1ABB21326D6971900716984 /* TimeInterval+Extensions.swift in Sources */,
 				C10E5543272B3BCF0053BBA6 /* PermissionView.swift in Sources */,

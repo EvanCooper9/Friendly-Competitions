@@ -200,7 +200,7 @@ final class FriendsManager: AnyFriendsManager {
             .documents
             .decoded(asArrayOf: User.self)
             .filter { someUser in
-                guard someUser.name.contains(searchText) else { return false }
+                guard someUser.name.lowercased().contains(searchText.lowercased()) else { return false }
                 return !user.friends
                     .appending(user.id)
                     .contains { $0 == someUser.id }

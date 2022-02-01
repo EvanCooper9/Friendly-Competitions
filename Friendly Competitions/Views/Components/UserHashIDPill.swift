@@ -1,10 +1,3 @@
-//
-//  UserHashIDPill.swift
-//  Friendly Competitions
-//
-//  Created by Evan Cooper on 2022-01-31.
-//
-
 import SwiftUI
 
 struct UserHashIDPill: View {

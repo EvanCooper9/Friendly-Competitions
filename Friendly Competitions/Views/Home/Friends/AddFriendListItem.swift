@@ -6,7 +6,7 @@ struct AddFriendListItem: View {
         case competitionInvite
         case friendRequest
 
-        func title(actionCompleted: Bool) -> String {
+        fileprivate func title(actionCompleted: Bool) -> String {
             switch self {
             case .competitionInvite:
                 return actionCompleted ? "Invited" : "Invite"
@@ -21,11 +21,7 @@ struct AddFriendListItem: View {
     let disabledIf: Bool
     let onAction: () -> Void
 
-    @EnvironmentObject private var friendsManager: AnyFriendsManager
-    @EnvironmentObject private var user: User
-
     @State private var requested = false
-
     private var buttonDisabled: Bool { disabledIf || requested }
 
     var body: some View {

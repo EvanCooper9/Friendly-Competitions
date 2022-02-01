@@ -26,6 +26,9 @@ extension Resolver: ResolverRegistering {
         register { resolve(name: .mode) as AnyPermissionsManager }
         register(name: .main) { PermissionsManager() as AnyPermissionsManager }.scope(.application)
 
+        register { resolve(name: .mode) as AnyUserManager }
+        register(name: .main) { UserManager() as AnyUserManager }.scope(.application)
+
         register { resolve(name: .mode) as Firestore }
         register(Firestore.self, name: .main) {
             let settings = FirestoreSettings()

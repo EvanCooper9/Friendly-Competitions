@@ -10,6 +10,7 @@ struct Home: View {
     @EnvironmentObject private var permissionsManager: AnyPermissionsManager
     @EnvironmentObject private var user: User
 
+    @State private var presentAbout = false
     @State private var presentPermissions = false
     @State private var presentSettings = false
     @State private var presentNewCompetition = false
@@ -28,11 +29,17 @@ struct Home: View {
         }
         .navigationBarTitle(user.name)
         .toolbar {
-            Button(toggling: $presentSettings) {
-                Image(systemName: "person.crop.circle")
+            HStack {
+                Button(toggling: $presentAbout) {
+                    Image(systemName: "questionmark.circle")
+                }
+                Button(toggling: $presentSettings) {
+                    Image(systemName: "person.crop.circle")
+                }
             }
         }
         .embeddedInNavigationView()
+        .sheet(isPresented: $presentAbout) { About() }
         .sheet(isPresented: $presentSettings) { Profile() }
         .sheet(isPresented: $presentSearchFriendsSheet) { AddFriendView(sharedFriendId: sharedFriendId) }
         .sheet(isPresented: $presentNewCompetition) { NewCompetitionView() }
