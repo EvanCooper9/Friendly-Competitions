@@ -8,7 +8,6 @@ struct ActivitySummary: Codable, Equatable {
     let appleExerciseTimeGoal: Double
     let appleStandHoursGoal: Double
     let date: Date
-    var createdOn = Date()
 }
 
 extension ActivitySummary {

@@ -1,8 +1,8 @@
 extension Competition {
     static var mock: Competition {
         .init(
-            name: "Get busy 🥵",
-            participants: [User.mock.id, User.gabby.id],
+            name: "Get bussy 🥵",
+            participants: [User.evan.id, User.gabby.id],
             pendingParticipants: [User.gabby.id],
             scoringModel: .percentOfGoals,
             start: .now,
@@ -12,12 +12,23 @@ extension Competition {
 
     static var mockInvited: Competition {
         .init(
-            name: "Super heat 🔥",
-            participants: [User.mock.id, User.gabby.id],
-            pendingParticipants: [User.mock.id],
+            name: "Supa heat 🔥",
+            participants: [User.evan.id, User.gabby.id],
+            pendingParticipants: [User.evan.id],
             scoringModel: .percentOfGoals,
             start: .now,
             end: .now.addingTimeInterval(2.days)
+        )
+    }
+
+    static var mockOld: Competition {
+        .init(
+            name: "Oldie bug a goodie",
+            participants: [User.evan.id, User.gabby.id],
+            pendingParticipants: [],
+            scoringModel: .percentOfGoals,
+            start: .now.addingTimeInterval(-5.days),
+            end: .now.addingTimeInterval(-4.days)
         )
     }
 }
