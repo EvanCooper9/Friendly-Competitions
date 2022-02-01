@@ -30,8 +30,8 @@ struct PermissionsView_Previews: PreviewProvider {
     private static let permissionsManager: AnyPermissionsManager = {
         let permissionsManager = AnyPermissionsManager()
         permissionsManager.permissionStatus = [
-            .health: .notDetermined,
-            .notifications: .denied
+            .health: .done,
+            .notifications: .authorized
         ]
         return permissionsManager
     }()

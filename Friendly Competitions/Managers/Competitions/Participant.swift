@@ -1,4 +1,4 @@
-struct Participant: Identifiable {
+struct Participant: Codable, Identifiable {
     let id: String
     let name: String
 

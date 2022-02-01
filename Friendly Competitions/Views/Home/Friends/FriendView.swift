@@ -13,7 +13,7 @@ struct FriendView: View {
             UserInfoSection(user: friend)
 
             Section {
-                ActivitySummaryInfoView(activitySummary: friend.tempActivitySummary?.hkActivitySummary)
+                ActivitySummaryInfoView(activitySummary: friend.tempActivitySummary)
             } header: {
                 Text("Today's activity")
             } footer: {

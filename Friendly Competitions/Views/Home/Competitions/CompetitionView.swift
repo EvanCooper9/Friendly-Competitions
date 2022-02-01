@@ -42,7 +42,6 @@ struct CompetitionView: View {
                     } else {
                         Text(standing.userId)
                     }
-//                    Text(competitionsManager.participants.first(where: { $0.id == standing.userId })?.name ?? standing.userId)
                     Spacer()
                     Text("\(standing.points)")
                 }
@@ -129,7 +128,7 @@ struct CompetitionView: View {
                     AddFriendListItem(
                         friend: friend,
                         action: .competitionInvite,
-                        disabledIf: competition.pendingParticipants.contains(friend.id)
+                        disabledIf: competition.pendingParticipants.contains(friend.id) || competition.participants.contains(friend.id)
                     ) { competitionsManager.invite(friend, to: competition) }
                 }
             }

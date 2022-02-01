@@ -42,7 +42,7 @@ struct FriendlyCompetitions: App {
 
 private final class AppModel: ObservableObject {
 
-    @Published("currentUser") var currentUser: User? = nil {
+    @Published(storedWithKey: "currentUser") var currentUser: User? = nil {
         didSet { setupManagers() }
     }
 

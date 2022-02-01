@@ -2,26 +2,13 @@ import SwiftUI
 
 struct NewCompetitionView: View {
 
-    @State private var competition = Competition()
+    @State private var editorConfig = NewCompetitionEditorConfig()
 
     @Environment(\.presentationMode) private var presentationMode
     @EnvironmentObject private var competitionManager: AnyCompetitionsManager
     @EnvironmentObject private var friendsManager: AnyFriendsManager
     @EnvironmentObject private var user: User
     @State private var presentAddFriends = false
-
-    private var createDisabled: Bool {
-        competition.name.isEmpty || competition.pendingParticipants.isEmpty
-    }
-
-    private var disabledReason: String? {
-        if competition.name.isEmpty {
-            return "Please enter a name"
-        } else if competition.pendingParticipants.isEmpty {
-            return "Please invite friends"
-        }
-        return nil
-    }
 
     var body: some View {
         Form {
@@ -31,14 +18,14 @@ struct NewCompetitionView: View {
 
             Section {
                 Button("Create") {
-                    competition.participants.append(user.id)
-                    competitionManager.create(competition)
+                    let newCompetition = editorConfig.competition(creator: user)
+                    competitionManager.create(newCompetition)
                     presentationMode.wrappedValue.dismiss()
                 }
-                .disabled(createDisabled)
+                .disabled(editorConfig.createDisabled)
                 .frame(maxWidth: .infinity)
             } footer: {
-                Text(disabledReason ?? "")
+                Text(editorConfig.disabledReason ?? "")
             }
         }
         .navigationTitle("New Competition")
@@ -48,17 +35,17 @@ struct NewCompetitionView: View {
 
     private var details: some View {
         Section("Details") {
-            TextField("Name", text: $competition.name)
+            TextField("Name", text: $editorConfig.name)
             DatePicker(
                 "Starts",
-                selection: $competition.start,
-                in: dateRange(startingFrom: .now.addingTimeInterval(-7.days)),
+                selection: $editorConfig.start,
+                in: dateRange(startingFrom: editorConfig.start),
                 displayedComponents: [.date]
             )
             DatePicker(
                 "Ends",
-                selection: $competition.end,
-                in: dateRange(startingFrom: competition.end),
+                selection: $editorConfig.end,
+                in: dateRange(startingFrom: editorConfig.start),
                 displayedComponents: [.date]
             )
         }
@@ -66,7 +53,7 @@ struct NewCompetitionView: View {
 
     private var scoring: some View {
         Section {
-            Picker("Scoring model", selection: $competition.scoringModel) {
+            Picker("Scoring model", selection: $editorConfig.scoringModel) {
                 ForEach(ScoringModel.allCases) { scoringModel in
                     Text(scoringModel.displayName)
                         .tag(scoringModel)
@@ -111,15 +98,15 @@ struct NewCompetitionView: View {
                     HStack {
                         Text(friend.name)
                         Spacer()
-                        if competition.pendingParticipants.contains(friend.id) {
+                        if editorConfig.invitees.contains(friend.id) {
                             Image(systemName: "checkmark.circle.fill")
                         }
                     }
                     .contentShape(Rectangle())
                     .onTapGesture {
-                        competition.pendingParticipants.contains(friend.id) ?
-                            competition.pendingParticipants.remove(friend.id) :
-                            competition.pendingParticipants.append(friend.id)
+                        editorConfig.invitees.contains(friend.id) ?
+                            editorConfig.invitees.remove(friend.id) :
+                            editorConfig.invitees.append(friend.id)
                     }
                 }
             }

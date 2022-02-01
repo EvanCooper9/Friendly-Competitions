@@ -4,20 +4,11 @@ import Foundation
 private var cancellableSet: Set<AnyCancellable> = []
 
 extension Published where Value: Codable {
-    init(wrappedValue defaultValue: Value, _ key: String, store: UserDefaults? = nil) {
-        let _store: UserDefaults = store ?? .standard
-
-        if let data = _store.data(forKey: key), let value = try? JSONDecoder.shared.decode(Value.self, from: data) {
-            self.init(initialValue: value)
-        } else {
-            self.init(initialValue: defaultValue)
-        }
-
+    init(wrappedValue defaultValue: Value, storedWithKey key: String, store: UserDefaults = .standard) {
+        let data = store.decode(Value.self, forKey: key)
+        self.init(initialValue: data ?? defaultValue)
         projectedValue
-            .sink { newValue in
-                let data = try? JSONEncoder.shared.encode(newValue)
-                _store.set(data, forKey: key)
-            }
+            .sink { store.encode($0, forKey: key) }
             .store(in: &cancellableSet)
     }
 }

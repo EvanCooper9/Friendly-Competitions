@@ -1,3 +1,4 @@
+import Combine
 import Firebase
 import FirebaseFirestore
 import FirebaseFunctions
@@ -6,7 +7,7 @@ import HealthKit
 import Resolver
 
 class AnyActivitySummaryManager: ObservableObject {
-    @Published var activitySummary: HKActivitySummary?
+    @Published var activitySummary: ActivitySummary?
     func setup(with user: User) {}
 }
 
@@ -19,6 +20,37 @@ final class ActivitySummaryManager: AnyActivitySummaryManager {
     @Injected private var database: Firestore
 
     private var user: User!
+
+    private var cancellables = Set<AnyCancellable>()
+    private let upload = PassthroughSubject<[ActivitySummary], Never>()
+    private let query = PassthroughSubject<Void, Never>()
+
+    // MARK: - Lifecycle
+
+    override init() {
+        super.init()
+        upload
+            .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
+            .sink { [weak self] activitySummaries in
+                guard let self = self else { return }
+                Task { [activitySummaries] in
+                    try await self.upload(activitySummaries: activitySummaries)
+                    if !self.competitionsManager.competitions.isEmpty {
+                        try await Functions.functions()
+                            .httpsCallable("updateCompetitionStandings")
+                            .call(["userId": self.user.id])
+                    }
+                }
+            }
+            .store(in: &cancellables)
+
+        query
+            .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
+            .sink {
+                Task { [weak self] in try await self?.requestActivitySummaries() }
+            }
+            .store(in: &cancellables)
+    }
 
     // MARK: - Public Methods
 
@@ -36,12 +68,8 @@ final class ActivitySummaryManager: AnyActivitySummaryManager {
         let yesterday = now.addingTimeInterval(-1.days)
         let tomorrow = now.addingTimeInterval(1.days)
 
-        let dateInterval = try await database.collection("competitions")
-            .whereField("participants", arrayContains: user.id)
-            .getDocuments()
-            .documents
-            .decoded(asArrayOf: Competition.self)
-            .filter { $0.isActive && !$0.pendingParticipants.contains(user.id) }
+        let dateInterval = competitionsManager.competitions
+            .filter { $0.isActive && $0.participants.contains(user.id) }
             .reduce(DateInterval(start: yesterday, end: tomorrow)) { dateInterval, competition in
                 .init(
                     start: [dateInterval.start, competition.start, yesterday].min() ?? yesterday,
@@ -51,44 +79,27 @@ final class ActivitySummaryManager: AnyActivitySummaryManager {
 
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
             let query = HKActivitySummaryQuery(predicate: self.predicate(for: dateInterval)) { [weak self] query, hkActivitySummaries, error in
-                guard let self = self else {
-                    continuation.resume()
-                    return
-                }
-
                 if let error = error {
                     continuation.resume(throwing: error)
                     return
                 }
 
-                let activitySummary = hkActivitySummaries?.first(where: \.isToday)
-                DispatchQueue.main.async {
-                    self.activitySummary = activitySummary
+                let activitySummaries = hkActivitySummaries?.map(\.activitySummary) ?? []
+                self?.upload.send(activitySummaries)
+                DispatchQueue.main.async { [weak self] in
+                    self?.activitySummary = activitySummaries.first(where: \.date.isToday)
                 }
 
-                Task {
-                    do {
-                        try await self.upload(activitySummaries: hkActivitySummaries ?? [])
-                        if !self.competitionsManager.competitions.isEmpty {
-                            try await Functions.functions()
-                                .httpsCallable("updateCompetitionStandings")
-                                .call(["userId": self.user.id])
-                        }
-                        continuation.resume()
-                    } catch {
-                        continuation.resume(throwing: error)
-                    }
-                }
+                continuation.resume()
             }
 
             healthKitManager.execute(query)
         }
     }
 
-    private func upload(activitySummaries: [HKActivitySummary]) async throws {
+    private func upload(activitySummaries: [ActivitySummary]) async throws {
         let batch = database.batch()
         try activitySummaries
-            .map(\.activitySummary)
             .forEach { activitySummary in
                 let documentId = DateFormatter.dateDashed.string(from: activitySummary.date)
                 let document = database.document("users/\(user.id)/activitySummaries/\(documentId)")
@@ -109,7 +120,7 @@ final class ActivitySummaryManager: AnyActivitySummaryManager {
 }
 
 extension ActivitySummaryManager: HealthKitBackgroundDeliveryReceiving {
-    func trigger() async throws {
-        try await requestActivitySummaries()
+    func trigger() {
+        query.send(())
     }
 }

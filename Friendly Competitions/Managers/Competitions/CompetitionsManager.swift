@@ -2,13 +2,14 @@ import Combine
 import Firebase
 import FirebaseFirestore
 import Resolver
+import SwiftUI
 
 class AnyCompetitionsManager: ObservableObject {
 
-    @Published var competitions = [Competition]()
-    @Published var standings = [Competition.ID : [Competition.Standing]]()
-    @Published var participants = [Competition.ID: [Participant]]()
-    @Published var pendingParticipants = [Competition.ID : [Participant]]()
+    @Published(storedWithKey: "competitions") var competitions = [Competition]()
+    @Published(storedWithKey: "standings") var standings = [Competition.ID : [Competition.Standing]]()
+    @Published(storedWithKey: "participants") var participants = [Competition.ID: [Participant]]()
+    @Published(storedWithKey: "pendingParticipants") var pendingParticipants = [Competition.ID : [Participant]]()
 
     func setup(with user: User) {}
     func accept(_ competition: Competition) {}
@@ -129,6 +130,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
                         .getDocuments()
                         .documents
                         .decoded(asArrayOf: Competition.Standing.self)
+                        .sorted(by: \.rank)
                     return (competition.id, standings)
                 }
             }

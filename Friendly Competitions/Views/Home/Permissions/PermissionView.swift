@@ -11,7 +11,7 @@ struct PermissionView: View {
 
     let permission: Permission
     let status: PermissionStatus
-    var permissionRequestClosure: (() -> Void)? = nil
+    var permissionRequestClosure: () -> Void
 
     var body: some View {
         HStack(spacing: 15) {
@@ -28,7 +28,7 @@ struct PermissionView: View {
 
             Button(status.buttonTitle) {
                 guard status == .notDetermined else { return }
-                permissionRequestClosure?()
+                permissionRequestClosure()
             }
             .tint(status.buttonColor)
             .buttonStyle(.bordered)
@@ -41,8 +41,8 @@ struct PermissionView: View {
 struct PermissionView_Previews: PreviewProvider {
     static var previews: some View {
         VStack {
-            PermissionView(permission: .health, status: .notDetermined)
-            PermissionView(permission: .notifications, status: .authorized)
+            PermissionView(permission: .health, status: .notDetermined) {}
+            PermissionView(permission: .notifications, status: .authorized) {}
         }
         .padding()
     }

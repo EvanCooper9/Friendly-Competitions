@@ -179,6 +179,7 @@ struct HomeView_Previews: PreviewProvider {
 
     private static let permissionsManager: AnyPermissionsManager = {
         let permissionsManager = AnyPermissionsManager()
+        permissionsManager.requiresPermission = true
         permissionsManager.permissionStatus = [
             .health: .notDetermined,
             .notifications: .notDetermined

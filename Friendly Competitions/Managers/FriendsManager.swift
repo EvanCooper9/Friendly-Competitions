@@ -6,7 +6,7 @@ import SwiftUI
 
 class AnyFriendsManager: ObservableObject {
 
-    @Published var friends = [User]()
+    @Published(storedWithKey: "friends") var friends = [User]()
     @Published var friendRequests = [User]()
     @Published var searchResults = [User]()
     @Published var searchText = ""
@@ -138,7 +138,7 @@ final class FriendsManager: AnyFriendsManager {
             .getDocuments()
             .documents
             .decoded(asArrayOf: User.self)
-            .sorted(by: \.name)
+            .sorted(by: \.name.first!)
 
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
@@ -151,15 +151,13 @@ final class FriendsManager: AnyFriendsManager {
         try await withThrowingTaskGroup(of: (User, ActivitySummary?).self) { group in
             friends.forEach { friend in
                 group.addTask { [weak self] in
+                    // TODO: use whereIn filter on firestore collection when most users have installed >= 1.1.0
                     let activitySummary = try await self?.database
                         .collection("users/\(friend.id)/activitySummaries")
-//                        .whereField("date", isEqualTo: DateFormatter.dateDashed.string(from: .now))
                         .getDocuments()
                         .documents
-//                        .decoded(as: ActivitySummary.self)
                         .decoded(asArrayOf: ActivitySummary.self)
-//                        .first(where: \.date.isToday)
-                        .first
+                        .first { $0.date.encodedToString().starts(with: DateFormatter.dateDashed.string(from: .now)) }
                     return (friend, activitySummary)
                 }
             }
