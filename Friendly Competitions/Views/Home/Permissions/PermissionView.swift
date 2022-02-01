@@ -1,10 +1,3 @@
-//
-//  PermissionsView.swift
-//  Friendly Competitions
-//
-//  Created by Evan Cooper on 2021-10-28.
-//
-
 import SwiftUI
 
 struct PermissionView: View {
