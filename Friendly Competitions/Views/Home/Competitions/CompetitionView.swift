@@ -124,12 +124,16 @@ struct CompetitionView: View {
         }
         .sheet(isPresented: $showInviteFriend) {
             List {
-                ForEach(friendsManager.friends) { friend in
-                    AddFriendListItem(
-                        friend: friend,
-                        action: .competitionInvite,
-                        disabledIf: competition.pendingParticipants.contains(friend.id) || competition.participants.contains(friend.id)
-                    ) { competitionsManager.invite(friend, to: competition) }
+                Section {
+                    ForEach(friendsManager.friends) { friend in
+                        AddFriendListItem(
+                            friend: friend,
+                            action: .competitionInvite,
+                            disabledIf: competition.pendingParticipants.contains(friend.id) || competition.participants.contains(friend.id)
+                        ) { competitionsManager.invite(friend, to: competition) }
+                    }
+                } footer: {
+                    Text("Friends who join in-progress competitions will have their scores from missed days retroactively uploaded.")
                 }
             }
             .navigationTitle("Invite a friend")
@@ -177,14 +181,22 @@ struct CompetitionView_Previews: PreviewProvider {
         return competitionManager
     }()
 
+    private static let friendsManager: AnyFriendsManager = {
+        let friendsManager = AnyFriendsManager()
+        friendsManager.searchResults = [.gabby]
+        return friendsManager
+    }()
+
     static var previews: some View {
         CompetitionView(competition: competition)
             .environmentObject(User.evan)
             .environmentObject(competitionManager)
+            .environmentObject(friendsManager)
             .embeddedInNavigationView()
         CompetitionView(competition: .mockInvited)
             .environmentObject(User.evan)
             .environmentObject(competitionManager)
+            .environmentObject(friendsManager)
             .embeddedInNavigationView()
     }
 }

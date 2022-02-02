@@ -196,7 +196,8 @@ final class FriendsManager: AnyFriendsManager {
             .documents
             .decoded(asArrayOf: User.self)
             .filter { someUser in
-                someUser.name
+                guard !user.friends.appending(user.id).contains(someUser.id) else { return false }
+                return someUser.name
                     .lowercased()
                     .split(separator: " ")
                     .contains { $0.starts(with: searchText.lowercased()) }
@@ -209,8 +210,4 @@ final class FriendsManager: AnyFriendsManager {
             self?.searchResults = users
         }
     }
-}
-
-extension CollectionReference {
-    
 }
