@@ -66,7 +66,6 @@ final class HealthKitManager: AnyHealthKitManager {
 
     override func requestPermissions(_ completion: @escaping (PermissionStatus) -> Void) {
         guard storedPermissionStatus == .notDetermined || storedPermissionStatus == nil else {
-            print(storedPermissionStatus)
             completion(permissionStatus)
             return
         }

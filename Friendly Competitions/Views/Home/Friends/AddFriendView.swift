@@ -68,6 +68,7 @@ struct AddFriendView_Previews: PreviewProvider {
         let friendsManager = AnyFriendsManager()
         friendsManager.friends = [friend]
         friendsManager.friendRequests = [friend]
+        friendsManager.searchResults = [.gabby, .evan]
         return friendsManager
     }()
 
