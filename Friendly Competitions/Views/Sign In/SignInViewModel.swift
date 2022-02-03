@@ -116,7 +116,7 @@ extension SignInViewModel: ASAuthorizationControllerDelegate {
 
                 if let user = user, let email = appleIDCredential.email {
                     let user = User(id: user.uid, email: email, name: name)
-                    try? self?.database.document("users/\(user.id)").setDataEncodable(user, completion: nil)
+                    try? self?.database.document("users/\(user.id)").updateDataEncodable(user, completion: nil)
                 }
             }
         }

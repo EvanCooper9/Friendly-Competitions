@@ -35,7 +35,6 @@
 		C12D640427A5EABD00259237 /* SignInViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C12D640327A5EABD00259237 /* SignInViewModel.swift */; };
 		C12D640727A5F2FC00259237 /* CompetitionsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C12D640627A5F2FC00259237 /* CompetitionsManager.swift */; };
 		C1386C7E26D566210096E952 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = C1386C7D26D566210096E952 /* FirebaseAuth */; };
-		C1386C8226D56CD60096E952 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C1386C8126D56CD60096E952 /* GoogleService-Info.plist */; };
 		C1401F8726D921960080F74F /* Sequence+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1401F8626D921960080F74F /* Sequence+Extensions.swift */; };
 		C1401F8926D933560080F74F /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1401F8826D933560080F74F /* Profile.swift */; };
 		C1401F8B26D94D1C0080F74F /* ImmutableListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1401F8A26D94D1C0080F74F /* ImmutableListItemView.swift */; };
@@ -76,6 +75,7 @@
 		C1C8B24726F3FB9C008D6B1B /* HealthKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C1C8B24626F3FB9C008D6B1B /* HealthKit.framework */; };
 		C1C8B24926F3FBA3008D6B1B /* HealthKitUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C1C8B24826F3FBA3008D6B1B /* HealthKitUI.framework */; };
 		C1D0177D273F63CF00C9EEAE /* PermissionStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1D0177C273F63CF00C9EEAE /* PermissionStatus.swift */; };
+		C1DB3B5B27AA0AC20074BED1 /* FirebasePerformance in Frameworks */ = {isa = PBXBuildFile; productRef = C1DB3B5A27AA0AC20074BED1 /* FirebasePerformance */; };
 		C1E1A9D127A6D9D700E8E360 /* FriendsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1E1A9D027A6D9D700E8E360 /* FriendsManager.swift */; };
 		C1E1A9D527A7037D00E8E360 /* Published+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1E1A9D427A7037D00E8E360 /* Published+Extensions.swift */; };
 		C1E4AB9826FCC8BD00B1AF12 /* ActivitySummaryInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1E4AB9726FCC8BD00B1AF12 /* ActivitySummaryInfoView.swift */; };
@@ -170,6 +170,7 @@
 		C1C8B24626F3FB9C008D6B1B /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
 		C1C8B24826F3FBA3008D6B1B /* HealthKitUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKitUI.framework; path = System/Library/Frameworks/HealthKitUI.framework; sourceTree = SDKROOT; };
 		C1D0177C273F63CF00C9EEAE /* PermissionStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionStatus.swift; sourceTree = "<group>"; };
+		C1DB3B6027AA0D420074BED1 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		C1E1A9D027A6D9D700E8E360 /* FriendsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendsManager.swift; sourceTree = "<group>"; };
 		C1E1A9D427A7037D00E8E360 /* Published+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Published+Extensions.swift"; sourceTree = "<group>"; };
 		C1E4AB9726FCC8BD00B1AF12 /* ActivitySummaryInfoView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitySummaryInfoView.swift; sourceTree = "<group>"; };
@@ -187,6 +188,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C1DB3B5B27AA0AC20074BED1 /* FirebasePerformance in Frameworks */,
 				C1F9D7CF26FF874800B25651 /* FirebaseMessaging in Frameworks */,
 				C1C8B24726F3FB9C008D6B1B /* HealthKit.framework in Frameworks */,
 				C1C8B24926F3FBA3008D6B1B /* HealthKitUI.framework in Frameworks */,
@@ -373,12 +375,12 @@
 			children = (
 				C1691DCA26D55FCF006FFA30 /* Assets.xcassets */,
 				C163E30026F2344D00C9EC30 /* Info.plist */,
-				C1386C8126D56CD60096E952 /* GoogleService-Info.plist */,
 				C1E6406226F4395200E3E70A /* FriendlyCompetitions.entitlements */,
 				C1691DC626D55FCF006FFA30 /* FriendlyCompetitions.swift */,
 				C1B2F4E3272B505C0028449F /* AppDelegate.swift */,
 				C1A4696926DA823C00254105 /* Resolver.swift */,
 				C11193AD26E7C5C6003B7EB3 /* Extensions */,
+				C1DB3B5D27AA0D090074BED1 /* Firebase */,
 				C1DA90AA26F63C2500B0E2D3 /* Managers */,
 				C1884E4C26D59E2300C21014 /* Models */,
 				C1ABB20C26D6839900716984 /* Views */,
@@ -518,6 +520,31 @@
 			path = Managers;
 			sourceTree = "<group>";
 		};
+		C1DB3B5D27AA0D090074BED1 /* Firebase */ = {
+			isa = PBXGroup;
+			children = (
+				C1DB3B5F27AA0D1A0074BED1 /* Release */,
+				C1DB3B5E27AA0D130074BED1 /* Debug */,
+			);
+			path = Firebase;
+			sourceTree = "<group>";
+		};
+		C1DB3B5E27AA0D130074BED1 /* Debug */ = {
+			isa = PBXGroup;
+			children = (
+				C1DB3B6027AA0D420074BED1 /* GoogleService-Info.plist */,
+			);
+			path = Debug;
+			sourceTree = "<group>";
+		};
+		C1DB3B5F27AA0D1A0074BED1 /* Release */ = {
+			isa = PBXGroup;
+			children = (
+				C1386C8126D56CD60096E952 /* GoogleService-Info.plist */,
+			);
+			path = Release;
+			sourceTree = "<group>";
+		};
 		C1E1A9D627A7076B00E8E360 /* Combine */ = {
 			isa = PBXGroup;
 			children = (
@@ -569,7 +596,7 @@
 				C1691DC026D55FCF006FFA30 /* Frameworks */,
 				C1691DC126D55FCF006FFA30 /* Resources */,
 				C111939126E7B89D003B7EB3 /* Embed Watch Content */,
-				C1DA90AD26F65D6000B0E2D3 /* Firebase Crashlytics */,
+				C1DB3B5C27AA0CF40074BED1 /* Firebase */,
 			);
 			buildRules = (
 			);
@@ -585,6 +612,7 @@
 				C1F9D7CE26FF874800B25651 /* FirebaseMessaging */,
 				C123C9D527A8989500375F73 /* FirebaseFunctions */,
 				C123C9E827A9AF4800375F73 /* Algorithms */,
+				C1DB3B5A27AA0AC20074BED1 /* FirebasePerformance */,
 			);
 			productName = CompyBoi;
 			productReference = C1691DC326D55FCF006FFA30 /* Friendly Competitions.app */;
@@ -636,7 +664,6 @@
 			files = (
 				C1691DCE26D55FCF006FFA30 /* Preview Assets.xcassets in Resources */,
 				C1691DCB26D55FCF006FFA30 /* Assets.xcassets in Resources */,
-				C1386C8226D56CD60096E952 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -661,7 +688,7 @@
 			shellPath = /bin/sh;
 			shellScript = "if [ $(arch) == \"arm64\" ]; then\n    arch -x86_64 /opt/homebrew/bin/swiftgen\nelse \n    swiftgen\nfi\n";
 		};
-		C1DA90AD26F65D6000B0E2D3 /* Firebase Crashlytics */ = {
+		C1DB3B5C27AA0CF40074BED1 /* Firebase */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -669,17 +696,15 @@
 			inputFileListPaths = (
 			);
 			inputPaths = (
-				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}\n",
-				"$(SRCROOT)/$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)\n",
 			);
-			name = "Firebase Crashlytics";
+			name = Firebase;
 			outputFileListPaths = (
 			);
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "\"${BUILD_DIR%Build/*}SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n";
+			shellScript = "rsync -t -r \"${PROJECT_DIR}/Friendly Competitions/Firebase/${CONFIGURATION}/GoogleService-Info.plist\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/GoogleService-Info.plist\" \nFriendly Competitions\nFriendly Competitions\nif [ $? -ne 0 ]; then  \n  echo \"Error copying GoogleService-Info.plist into app\"\nelse\n  echo \"GoogleService-Info.plist copied successfully\"\nfi\n\nif [ \"${ENABLE_PREVIEWS}\" = \"YES\" ]; then\n  echo \"Previews enabled, quitting to prevent 'preview paused'.\"\n  exit 0\nfi\n\n\"${BUILD_DIR%Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n\nexit 0\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -893,7 +918,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Friendly Competitions/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = Competitions;
+				INFOPLIST_KEY_CFBundleDisplayName = "Competitions (DBG)";
 				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "We need access to HealthKit so you can compete against your friends!";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "We need access to HealthKit so you can compete against your friends!";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "We need access to HealthKit so you can compete against your friends!";
@@ -909,7 +934,7 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.evancooper.FriendlyCompetitions;
+				PRODUCT_BUNDLE_IDENTIFIER = com.evancooper.FriendlyCompetitions.debug;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -932,7 +957,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Friendly Competitions/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = Competitions;
+				INFOPLIST_KEY_CFBundleDisplayName = "Competitions (DBG)";
 				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "We need access to HealthKit so you can compete against your friends!";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "We need access to HealthKit so you can compete against your friends!";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "We need access to HealthKit so you can compete against your friends!";
@@ -1040,6 +1065,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = C14634F826F2D1670028F847 /* XCRemoteSwiftPackageReference "swift-collections" */;
 			productName = OrderedCollections;
+		};
+		C1DB3B5A27AA0AC20074BED1 /* FirebasePerformance */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C1386C7C26D566210096E952 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebasePerformance;
 		};
 		C1EA986426D6C32400219E84 /* Resolver */ = {
 			isa = XCSwiftPackageProductDependency;

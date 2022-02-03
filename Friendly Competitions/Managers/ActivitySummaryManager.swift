@@ -7,7 +7,7 @@ import HealthKit
 import Resolver
 
 class AnyActivitySummaryManager: ObservableObject {
-    @Published var activitySummary: ActivitySummary?
+    @Published(storedWithKey: "activitySummary") var activitySummary: ActivitySummary? = nil
     func setup(with user: User) {}
 }
 
@@ -29,6 +29,11 @@ final class ActivitySummaryManager: AnyActivitySummaryManager {
 
     override init() {
         super.init()
+
+        if activitySummary?.date.isToday == false {
+            activitySummary = nil
+        }
+
         upload
             .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
             .sink { [weak self] activitySummaries in
