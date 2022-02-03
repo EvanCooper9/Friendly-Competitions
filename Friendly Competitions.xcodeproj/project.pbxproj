@@ -38,13 +38,13 @@
 		C1401F8726D921960080F74F /* Sequence+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1401F8626D921960080F74F /* Sequence+Extensions.swift */; };
 		C1401F8926D933560080F74F /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1401F8826D933560080F74F /* Profile.swift */; };
 		C1401F8B26D94D1C0080F74F /* ImmutableListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1401F8A26D94D1C0080F74F /* ImmutableListItemView.swift */; };
-		C14634FE26F2D1670028F847 /* OrderedCollections in Frameworks */ = {isa = PBXBuildFile; productRef = C14634FD26F2D1670028F847 /* OrderedCollections */; };
 		C155229C26E793B300FE0DA7 /* User+Mock.swift in Sources */ = {isa = PBXBuildFile; fileRef = C155229B26E793B300FE0DA7 /* User+Mock.swift */; };
 		C155229E26E793C600FE0DA7 /* Competition+Mock.swift in Sources */ = {isa = PBXBuildFile; fileRef = C155229D26E793C600FE0DA7 /* Competition+Mock.swift */; };
 		C15522A026E793DA00FE0DA7 /* ActivitySummary+Mock.swift in Sources */ = {isa = PBXBuildFile; fileRef = C155229F26E793DA00FE0DA7 /* ActivitySummary+Mock.swift */; };
 		C15522A426E7943A00FE0DA7 /* DocumentSnapshot+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C15522A326E7943A00FE0DA7 /* DocumentSnapshot+Extensions.swift */; };
 		C15522A626E7971900FE0DA7 /* FirestoreTransactionHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C15522A526E7971900FE0DA7 /* FirestoreTransactionHelper.swift */; };
 		C15522A826E7973A00FE0DA7 /* DocumentReference+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C15522A726E7973A00FE0DA7 /* DocumentReference+Extensions.swift */; };
+		C155CA5A27AB989D005F49F4 /* Friendly_Competitions_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C155CA5927AB989D005F49F4 /* Friendly_Competitions_Tests.swift */; };
 		C1691DC726D55FCF006FFA30 /* FriendlyCompetitions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1691DC626D55FCF006FFA30 /* FriendlyCompetitions.swift */; };
 		C1691DCB26D55FCF006FFA30 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C1691DCA26D55FCF006FFA30 /* Assets.xcassets */; };
 		C1691DCE26D55FCF006FFA30 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C1691DCD26D55FCF006FFA30 /* Preview Assets.xcassets */; };
@@ -89,6 +89,16 @@
 		C1F9D7CD26FF871A00B25651 /* NotificationManaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F9D7CC26FF871A00B25651 /* NotificationManaging.swift */; };
 		C1F9D7CF26FF874800B25651 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = C1F9D7CE26FF874800B25651 /* FirebaseMessaging */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		C155CA5B27AB989D005F49F4 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = C1691DBB26D55FCF006FFA30 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = C1691DC226D55FCF006FFA30;
+			remoteInfo = "Friendly Competitions";
+		};
+/* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
 		C111939126E7B89D003B7EB3 /* Embed Watch Content */ = {
@@ -140,6 +150,8 @@
 		C15522A326E7943A00FE0DA7 /* DocumentSnapshot+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DocumentSnapshot+Extensions.swift"; sourceTree = "<group>"; };
 		C15522A526E7971900FE0DA7 /* FirestoreTransactionHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreTransactionHelper.swift; sourceTree = "<group>"; };
 		C15522A726E7973A00FE0DA7 /* DocumentReference+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DocumentReference+Extensions.swift"; sourceTree = "<group>"; };
+		C155CA5727AB989D005F49F4 /* Friendly Competitions Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Friendly Competitions Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		C155CA5927AB989D005F49F4 /* Friendly_Competitions_Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Friendly_Competitions_Tests.swift; sourceTree = "<group>"; };
 		C163E30026F2344D00C9EC30 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		C1691DC326D55FCF006FFA30 /* Friendly Competitions.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Friendly Competitions.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C1691DC626D55FCF006FFA30 /* FriendlyCompetitions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendlyCompetitions.swift; sourceTree = "<group>"; };
@@ -184,6 +196,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		C155CA5427AB989D005F49F4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C1691DC026D55FCF006FFA30 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -193,7 +212,6 @@
 				C1C8B24726F3FB9C008D6B1B /* HealthKit.framework in Frameworks */,
 				C1C8B24926F3FBA3008D6B1B /* HealthKitUI.framework in Frameworks */,
 				C123C9D627A8989500375F73 /* FirebaseFunctions in Frameworks */,
-				C14634FE26F2D1670028F847 /* OrderedCollections in Frameworks */,
 				C119B03226FE67A300B56703 /* FirebaseCrashlytics in Frameworks */,
 				C1EA986526D6C32400219E84 /* Resolver in Frameworks */,
 				C1EA986B26D6FFBE00219E84 /* FirebaseFirestore in Frameworks */,
@@ -353,10 +371,19 @@
 			path = Models;
 			sourceTree = "<group>";
 		};
+		C155CA5827AB989D005F49F4 /* Friendly Competitions Tests */ = {
+			isa = PBXGroup;
+			children = (
+				C155CA5927AB989D005F49F4 /* Friendly_Competitions_Tests.swift */,
+			);
+			path = "Friendly Competitions Tests";
+			sourceTree = "<group>";
+		};
 		C1691DBA26D55FCF006FFA30 = {
 			isa = PBXGroup;
 			children = (
 				C1691DC526D55FCF006FFA30 /* Friendly Competitions */,
+				C155CA5827AB989D005F49F4 /* Friendly Competitions Tests */,
 				C1691DC426D55FCF006FFA30 /* Products */,
 				C1691DD526D56024006FFA30 /* Frameworks */,
 			);
@@ -366,6 +393,7 @@
 			isa = PBXGroup;
 			children = (
 				C1691DC326D55FCF006FFA30 /* Friendly Competitions.app */,
+				C155CA5727AB989D005F49F4 /* Friendly Competitions Tests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -587,6 +615,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		C155CA5627AB989D005F49F4 /* Friendly Competitions Tests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = C155CA5D27AB989D005F49F4 /* Build configuration list for PBXNativeTarget "Friendly Competitions Tests" */;
+			buildPhases = (
+				C155CA5327AB989D005F49F4 /* Sources */,
+				C155CA5427AB989D005F49F4 /* Frameworks */,
+				C155CA5527AB989D005F49F4 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				C155CA5C27AB989D005F49F4 /* PBXTargetDependency */,
+			);
+			name = "Friendly Competitions Tests";
+			productName = "Friendly Competitions Tests";
+			productReference = C155CA5727AB989D005F49F4 /* Friendly Competitions Tests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		C1691DC226D55FCF006FFA30 /* Friendly Competitions */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = C1691DD126D55FCF006FFA30 /* Build configuration list for PBXNativeTarget "Friendly Competitions" */;
@@ -607,7 +653,6 @@
 				C1386C7D26D566210096E952 /* FirebaseAuth */,
 				C1EA986426D6C32400219E84 /* Resolver */,
 				C1EA986A26D6FFBE00219E84 /* FirebaseFirestore */,
-				C14634FD26F2D1670028F847 /* OrderedCollections */,
 				C119B03126FE67A300B56703 /* FirebaseCrashlytics */,
 				C1F9D7CE26FF874800B25651 /* FirebaseMessaging */,
 				C123C9D527A8989500375F73 /* FirebaseFunctions */,
@@ -625,9 +670,13 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
-				LastSwiftUpdateCheck = 1300;
+				LastSwiftUpdateCheck = 1320;
 				LastUpgradeCheck = 1300;
 				TargetAttributes = {
+					C155CA5627AB989D005F49F4 = {
+						CreatedOnToolsVersion = 13.2.1;
+						TestTargetID = C1691DC226D55FCF006FFA30;
+					};
 					C1691DC226D55FCF006FFA30 = {
 						CreatedOnToolsVersion = 13.0;
 					};
@@ -645,7 +694,6 @@
 			packageReferences = (
 				C1386C7C26D566210096E952 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				C1EA986326D6C32400219E84 /* XCRemoteSwiftPackageReference "Resolver" */,
-				C14634F826F2D1670028F847 /* XCRemoteSwiftPackageReference "swift-collections" */,
 				C123C9E727A9AF4800375F73 /* XCRemoteSwiftPackageReference "swift-algorithms" */,
 			);
 			productRefGroup = C1691DC426D55FCF006FFA30 /* Products */;
@@ -653,11 +701,19 @@
 			projectRoot = "";
 			targets = (
 				C1691DC226D55FCF006FFA30 /* Friendly Competitions */,
+				C155CA5627AB989D005F49F4 /* Friendly Competitions Tests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		C155CA5527AB989D005F49F4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C1691DC126D55FCF006FFA30 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -709,6 +765,14 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		C155CA5327AB989D005F49F4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				C155CA5A27AB989D005F49F4 /* Friendly_Competitions_Tests.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		C1691DBF26D55FCF006FFA30 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -786,7 +850,53 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		C155CA5C27AB989D005F49F4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = C1691DC226D55FCF006FFA30 /* Friendly Competitions */;
+			targetProxy = C155CA5B27AB989D005F49F4 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin XCBuildConfiguration section */
+		C155CA5E27AB989D005F49F4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = HP22MNWU5C;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.evancooper.Friendly-Competitions-Tests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Friendly Competitions.app/Friendly Competitions";
+			};
+			name = Debug;
+		};
+		C155CA5F27AB989D005F49F4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = HP22MNWU5C;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = "com.evancooper.Friendly-Competitions-Tests";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Friendly Competitions.app/Friendly Competitions";
+			};
+			name = Release;
+		};
 		C1691DCF26D55FCF006FFA30 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -985,6 +1095,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		C155CA5D27AB989D005F49F4 /* Build configuration list for PBXNativeTarget "Friendly Competitions Tests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				C155CA5E27AB989D005F49F4 /* Debug */,
+				C155CA5F27AB989D005F49F4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		C1691DBE26D55FCF006FFA30 /* Build configuration list for PBXProject "Friendly Competitions" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -1022,14 +1141,6 @@
 				minimumVersion = 8.0.0;
 			};
 		};
-		C14634F826F2D1670028F847 /* XCRemoteSwiftPackageReference "swift-collections" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/apple/swift-collections.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 0.0.5;
-			};
-		};
 		C1EA986326D6C32400219E84 /* XCRemoteSwiftPackageReference "Resolver" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/hmlongco/Resolver";
@@ -1060,11 +1171,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = C1386C7C26D566210096E952 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseAuth;
-		};
-		C14634FD26F2D1670028F847 /* OrderedCollections */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = C14634F826F2D1670028F847 /* XCRemoteSwiftPackageReference "swift-collections" */;
-			productName = OrderedCollections;
 		};
 		C1DB3B5A27AA0AC20074BED1 /* FirebasePerformance */ = {
 			isa = XCSwiftPackageProductDependency;
