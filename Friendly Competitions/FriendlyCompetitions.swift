@@ -44,7 +44,7 @@ private final class AppModel: ObservableObject {
 
     @Published(storedWithKey: "currentUser") var currentUser: User? = nil {
         didSet {
-            Crashlytics.crashlytics().setUserID(currentUser.id ?? "none")
+            Crashlytics.crashlytics().setUserID(currentUser?.id ?? "none")
             setupManagers()
         }
     }
