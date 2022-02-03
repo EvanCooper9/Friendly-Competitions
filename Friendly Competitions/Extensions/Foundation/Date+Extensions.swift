@@ -1,11 +1,6 @@
 import Foundation
 
 extension Date {
-
-    static var nowLocal: Date {
-        Date.now.addingTimeInterval(NSTimeZone.default.secondsFromGMT(for: .now))
-    }
-
     func addingTimeInterval(_ timeInterval: Int) -> Date {
         addingTimeInterval(TimeInterval(timeInterval))
     }
@@ -14,7 +9,7 @@ extension Date {
         Calendar.current.isDate(self, equalTo: .now, toGranularity: .day)
     }
 
-    func encodedToString(with formatter: DateFormatter = .full) -> String {
+    func encodedToString(with formatter: DateFormatter = .dateDashed) -> String {
         formatter.string(from: self)
     }
 }
