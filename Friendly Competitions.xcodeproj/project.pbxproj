@@ -44,7 +44,7 @@
 		C15522A426E7943A00FE0DA7 /* DocumentSnapshot+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C15522A326E7943A00FE0DA7 /* DocumentSnapshot+Extensions.swift */; };
 		C15522A626E7971900FE0DA7 /* FirestoreTransactionHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C15522A526E7971900FE0DA7 /* FirestoreTransactionHelper.swift */; };
 		C15522A826E7973A00FE0DA7 /* DocumentReference+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C15522A726E7973A00FE0DA7 /* DocumentReference+Extensions.swift */; };
-		C155CA5A27AB989D005F49F4 /* Friendly_Competitions_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C155CA5927AB989D005F49F4 /* Friendly_Competitions_Tests.swift */; };
+		C155CA6327AB9995005F49F4 /* ArrayTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C155CA6227AB9995005F49F4 /* ArrayTests.swift */; };
 		C1691DC726D55FCF006FFA30 /* FriendlyCompetitions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1691DC626D55FCF006FFA30 /* FriendlyCompetitions.swift */; };
 		C1691DCB26D55FCF006FFA30 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C1691DCA26D55FCF006FFA30 /* Assets.xcassets */; };
 		C1691DCE26D55FCF006FFA30 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C1691DCD26D55FCF006FFA30 /* Preview Assets.xcassets */; };
@@ -151,7 +151,7 @@
 		C15522A526E7971900FE0DA7 /* FirestoreTransactionHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreTransactionHelper.swift; sourceTree = "<group>"; };
 		C15522A726E7973A00FE0DA7 /* DocumentReference+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DocumentReference+Extensions.swift"; sourceTree = "<group>"; };
 		C155CA5727AB989D005F49F4 /* Friendly Competitions Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Friendly Competitions Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		C155CA5927AB989D005F49F4 /* Friendly_Competitions_Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Friendly_Competitions_Tests.swift; sourceTree = "<group>"; };
+		C155CA6227AB9995005F49F4 /* ArrayTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrayTests.swift; sourceTree = "<group>"; };
 		C163E30026F2344D00C9EC30 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 		C1691DC326D55FCF006FFA30 /* Friendly Competitions.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Friendly Competitions.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		C1691DC626D55FCF006FFA30 /* FriendlyCompetitions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendlyCompetitions.swift; sourceTree = "<group>"; };
@@ -374,9 +374,25 @@
 		C155CA5827AB989D005F49F4 /* Friendly Competitions Tests */ = {
 			isa = PBXGroup;
 			children = (
-				C155CA5927AB989D005F49F4 /* Friendly_Competitions_Tests.swift */,
+				C155CA6027AB997D005F49F4 /* Extensions */,
 			);
 			path = "Friendly Competitions Tests";
+			sourceTree = "<group>";
+		};
+		C155CA6027AB997D005F49F4 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				C155CA6127AB998B005F49F4 /* Std Lib */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		C155CA6127AB998B005F49F4 /* Std Lib */ = {
+			isa = PBXGroup;
+			children = (
+				C155CA6227AB9995005F49F4 /* ArrayTests.swift */,
+			);
+			path = "Std Lib";
 			sourceTree = "<group>";
 		};
 		C1691DBA26D55FCF006FFA30 = {
@@ -769,7 +785,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C155CA5A27AB989D005F49F4 /* Friendly_Competitions_Tests.swift in Sources */,
+				C155CA6327AB9995005F49F4 /* ArrayTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
