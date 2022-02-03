@@ -1,17 +1,5 @@
 import Foundation
 
-struct Record {
-    let totalCompetitions: Int
-    let golds: Int
-    let silvers: Int
-    let bronzes: Int
-}
-
-enum Role: String, Codable {
-    case general
-    case developer
-}
-
 final class User: Codable, Identifiable {
     let id: String
     let email: String

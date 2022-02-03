@@ -1,14 +1,6 @@
 import Foundation
 
 struct Competition: Codable, Identifiable, Hashable {
-
-    struct Standing: Codable, Equatable, Identifiable {
-        var id: String { userId }
-        let rank: Int
-        let userId: String
-        let points: Int
-    }
-
     var id = UUID()
     var name = ""
     var participants = [String]()
