@@ -43,7 +43,10 @@ struct FriendlyCompetitions: App {
 private final class AppModel: ObservableObject {
 
     @Published(storedWithKey: "currentUser") var currentUser: User? = nil {
-        didSet { setupManagers() }
+        didSet {
+            Crashlytics.crashlytics().setUserID(currentUser.id ?? "none")
+            setupManagers()
+        }
     }
 
     private var userListener: ListenerRegistration? {
