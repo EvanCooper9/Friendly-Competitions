@@ -3,5 +3,4 @@ extension User {
         case general
         case developer
     }
-
 }

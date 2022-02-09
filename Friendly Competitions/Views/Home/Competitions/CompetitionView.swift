@@ -1,4 +1,5 @@
 import FirebaseFirestore
+import MapKit
 import Resolver
 import SwiftUI
 
@@ -71,17 +72,32 @@ struct CompetitionView: View {
                 value: competition.scoringModel.displayName,
                 valueType: .other(systemImage: "plusminus.circle", description: "Scoring model")
             )
+            if let location = competition.location {
+                VStack {
+                    Label("Location", systemImage: "mappin.circle")
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                    MapView(coordinates: .constant(location))
+                        .frame(height: 200)
+                        .cornerRadius(10)
+                        .padding(.trailing, 8)
+                }
+            }
         }
     }
 
     private var actions: some View {
         Section {
             if competition.pendingParticipants.contains(user.id) {
-                Button("Accept invite") {
+                Button {
                     competitionsManager.accept(competition)
+                } label: {
+                    Label("Accept invite", systemImage: "person.crop.circle.badge.checkmark")
                 }
-                Button("Decline invite") {
+
+                Button {
                     competitionsManager.decline(competition)
+                } label: {
+                    Label("Decline invite", systemImage: "person.crop.circle.badge.xmark")
                 }
                 .foregroundColor(.red)
             } else {

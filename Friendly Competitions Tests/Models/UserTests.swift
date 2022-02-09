@@ -4,13 +4,13 @@ import XCTest
 
 final class UserTests: XCTestCase {
 
-    private let user = User(
-        id: "testing",
-        email: "test@example.com",
-        name: "Test User"
-    )
-
     func testThatHashIdIsCorrect() {
+        let user = User(
+            id: "testing",
+            email: "test@example.com",
+            name: "Test User"
+        )
+
         XCTAssertEqual(user.hashId, "#TEST")
     }
 

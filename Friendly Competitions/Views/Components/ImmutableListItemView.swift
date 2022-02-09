@@ -40,8 +40,7 @@ struct ImmutableListItemView: View {
 
     var body: some View {
         HStack {
-            Image(systemName: valueType.systemImageName)
-            Text(valueType.description)
+            Label(valueType.description, systemImage: valueType.systemImageName)
             Spacer()
             Text(value)
                 .foregroundColor(.gray)

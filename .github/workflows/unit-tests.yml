@@ -12,7 +12,8 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - uses: mikehardy/buildcache-action@v1
+      - name: Restore build cache
+        uses: mikehardy/buildcache-action@v1
       - name: Homebrew
         run: |
           brew bundle
