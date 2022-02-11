@@ -1,14 +1,6 @@
 import Foundation
 
-struct Competition: Codable, Identifiable, Hashable {
-
-    struct Standing: Codable, Equatable, Identifiable {
-        var id: String { userId }
-        let rank: Int
-        let userId: String
-        let points: Int
-    }
-
+struct Competition: Codable, Identifiable {
     var id = UUID()
     var name = ""
     var participants = [String]()
@@ -18,17 +10,14 @@ struct Competition: Codable, Identifiable, Hashable {
     var end = Date.now.addingTimeInterval(7.days)
 }
 
+extension Competition: Equatable {
+    static func == (lhs: Competition, rhs: Competition) -> Bool {
+        lhs.id == rhs.id
+    }
+}
+
 extension Competition {
-
-    var isActive: Bool {
-        started && !ended
-    }
-
-    var started: Bool {
-        Calendar.current.compare(.now, to: start, toGranularity: .day) != .orderedAscending
-    }
-
-    var ended: Bool {
-        Calendar.current.compare(.now, to: end, toGranularity: .day) == .orderedDescending
-    }
+    var isActive: Bool { started && !ended }
+    var started: Bool { Calendar.current.compare(.now, to: start, toGranularity: .day) != .orderedAscending }
+    var ended: Bool { Calendar.current.compare(.now, to: end, toGranularity: .day) == .orderedDescending }
 }

@@ -1,0 +1,49 @@
+name: Run unit tests
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: Unit tests
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Restore build cache
+        uses: mikehardy/buildcache-action@v1
+      - name: Homebrew
+        run: |
+          brew bundle
+      - name: Build
+        run: |
+          scheme="Friendly Competitions"
+          device="iPhone 13 Pro Max"
+          platform="iOS Simulator"
+          if [ "`ls -A | grep -i \\.xcworkspace\$`" ]; then filetype_parameter="workspace" && file_to_build="`ls -A | grep -i \\.xcworkspace\$`"; else filetype_parameter="project" && file_to_build="`ls -A | grep -i \\.xcodeproj\$`"; fi
+          file_to_build=`echo $file_to_build | awk '{$1=$1;print}'`
+          xcodebuild build-for-testing \
+            CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ \
+            -scheme "$scheme" \
+            -"$filetype_parameter" \
+            "$file_to_build" \
+            -destination "platform=$platform,name=iPhone 13 Pro Max"
+      - name: Test
+        env:
+          device: ${{ 'device' }}
+          scheme: ${{ 'scheme' }}
+          platform: ${{ 'platform' }}
+        run: |
+          # xcrun xctrace returns via stderr, not the expected stdout (see https://developer.apple.com/forums/thread/663959)
+          scheme="Friendly Competitions"
+          device="iPhone 13 Pro Max"
+          platform="iOS Simulator"
+          if [ "`ls -A | grep -i \\.xcworkspace\$`" ]; then filetype_parameter="workspace" && file_to_build="`ls -A | grep -i \\.xcworkspace\$`"; else filetype_parameter="project" && file_to_build="`ls -A | grep -i \\.xcodeproj\$`"; fi
+          file_to_build=`echo $file_to_build | awk '{$1=$1;print}'`
+          xcodebuild test-without-building \
+            -scheme "$scheme" \
+            -"$filetype_parameter" \
+            "$file_to_build" \
+            -destination "platform=$platform,name=$device"

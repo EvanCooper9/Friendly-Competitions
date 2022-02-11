@@ -6,11 +6,9 @@ struct NewCompetitionEditorConfig {
     var start = Date.now
     var end = Date.now.addingTimeInterval(7.days)
     var invitees = [String]()
-    var scoringModel = ScoringModel.percentOfGoals
+    var scoringModel = Competition.ScoringModel.percentOfGoals
 
-    var createDisabled: Bool {
-        name.isEmpty || invitees.isEmpty
-    }
+    var createDisabled: Bool { name.isEmpty || invitees.isEmpty }
 
     var disabledReason: String? {
         if name.isEmpty {

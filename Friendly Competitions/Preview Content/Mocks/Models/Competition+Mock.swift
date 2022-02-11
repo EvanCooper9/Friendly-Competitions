@@ -1,7 +1,7 @@
 extension Competition {
     static var mock: Competition {
         .init(
-            name: "Get bussy 🥵",
+            name: "Mock competition",
             participants: [User.evan.id, User.gabby.id],
             pendingParticipants: [User.gabby.id],
             scoringModel: .percentOfGoals,

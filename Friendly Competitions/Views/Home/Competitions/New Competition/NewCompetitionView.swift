@@ -54,7 +54,7 @@ struct NewCompetitionView: View {
     private var scoring: some View {
         Section {
             Picker("Scoring model", selection: $editorConfig.scoringModel) {
-                ForEach(ScoringModel.allCases) { scoringModel in
+                ForEach(Competition.ScoringModel.allCases) { scoringModel in
                     Text(scoringModel.displayName)
                         .tag(scoringModel)
                 }
@@ -65,7 +65,7 @@ struct NewCompetitionView: View {
             NavigationLink("What's this?") {
                 List {
                     Section {
-                        ForEach(ScoringModel.allCases) { scoringModel in
+                        ForEach(Competition.ScoringModel.allCases) { scoringModel in
                             VStack(alignment: .leading, spacing: 5) {
                                 Text(scoringModel.displayName)
                                     .font(.title3)

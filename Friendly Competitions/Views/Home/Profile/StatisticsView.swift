@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct StatisticsView: View {
-    let statistics: Statistics
+    let statistics: User.Statistics
 
     var body: some View {
         StatisticView(title: "🥇 Gold medals", value: statistics.golds)

@@ -1,4 +1,3 @@
-import FirebaseFirestore
 import Resolver
 import SwiftUI
 
@@ -77,11 +76,16 @@ struct CompetitionView: View {
     private var actions: some View {
         Section {
             if competition.pendingParticipants.contains(user.id) {
-                Button("Accept invite") {
+                Button {
                     competitionsManager.accept(competition)
+                } label: {
+                    Label("Accept invite", systemImage: "person.crop.circle.badge.checkmark")
                 }
-                Button("Decline invite") {
+
+                Button {
                     competitionsManager.decline(competition)
+                } label: {
+                    Label("Decline invite", systemImage: "person.crop.circle.badge.xmark")
                 }
                 .foregroundColor(.red)
             } else {
