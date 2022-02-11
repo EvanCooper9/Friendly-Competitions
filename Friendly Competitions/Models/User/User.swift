@@ -8,7 +8,6 @@ final class User: Codable, Identifiable {
     var incomingFriendRequests = [String]()
     var outgoingFriendRequests = [String]()
     var notificationTokens: [String]? = []
-    var role: Role? = .general
     var statistics: Statistics? = .zero
 
     var tempActivitySummary: ActivitySummary? = nil

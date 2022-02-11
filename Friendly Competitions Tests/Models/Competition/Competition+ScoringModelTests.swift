@@ -23,19 +23,4 @@ class Competition_ScoringModelTests: XCTestCase {
             "Every calorie, minute and hour gains 1 point. No daily max."
         )
     }
-
-    func testThatScoreIsCorrect() {
-        let activitySummary = ActivitySummary(
-            activeEnergyBurned: 1,
-            appleExerciseTime: 2,
-            appleStandHours: 3,
-            activeEnergyBurnedGoal: 5,
-            appleExerciseTimeGoal: 5,
-            appleStandHoursGoal: 5,
-            date: .now
-        )
-
-        XCTAssertEqual(Competition.ScoringModel.percentOfGoals.score(for: activitySummary), 120)
-        XCTAssertEqual(Competition.ScoringModel.rawNumbers.score(for: activitySummary), 6)
-    }
 }

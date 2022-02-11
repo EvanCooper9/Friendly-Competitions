@@ -1,5 +1,4 @@
 import Foundation
-import CoreLocation
 
 struct Competition: Codable, Identifiable {
     var id = UUID()
