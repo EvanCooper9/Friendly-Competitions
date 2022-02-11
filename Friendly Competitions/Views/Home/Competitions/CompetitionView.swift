@@ -72,16 +72,6 @@ struct CompetitionView: View {
                 value: competition.scoringModel.displayName,
                 valueType: .other(systemImage: "plusminus.circle", description: "Scoring model")
             )
-            if let location = competition.location {
-                VStack {
-                    Label("Location", systemImage: "mappin.circle")
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                    MapView(coordinates: .constant(location))
-                        .frame(height: 200)
-                        .cornerRadius(10)
-                        .padding(.trailing, 8)
-                }
-            }
         }
     }
 

@@ -9,9 +9,6 @@ struct Competition: Codable, Identifiable {
     var scoringModel = ScoringModel.percentOfGoals
     var start = Date.now
     var end = Date.now.addingTimeInterval(7.days)
-
-    var isPublic = false
-    var location: CLLocationCoordinate2D? = nil
 }
 
 extension Competition: Equatable {

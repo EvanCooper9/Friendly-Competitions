@@ -6,8 +6,7 @@ extension Competition {
             pendingParticipants: [User.gabby.id],
             scoringModel: .percentOfGoals,
             start: .now,
-            end: .now.addingTimeInterval(2.days),
-            location: .init()
+            end: .now.addingTimeInterval(2.days)
         )
     }
 

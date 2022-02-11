@@ -100,7 +100,6 @@
 		C1EA986B26D6FFBE00219E84 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = C1EA986A26D6FFBE00219E84 /* FirebaseFirestore */; };
 		C1EBB16727AD7AF600376E59 /* UserDefaultsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1EBB16627AD7AF600376E59 /* UserDefaultsTests.swift */; };
 		C1EBB16A27AD934100376E59 /* CLLocationCoordinate2D+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1EBB16927AD934100376E59 /* CLLocationCoordinate2D+Extensions.swift */; };
-		C1EBB16C27AD95FB00376E59 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1EBB16B27AD95FB00376E59 /* MapView.swift */; };
 		C1F7DFF526D8010A00B46F91 /* CollectionReference+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F7DFF426D8010A00B46F91 /* CollectionReference+Extensions.swift */; };
 		C1F9D7CD26FF871A00B25651 /* NotificationManaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F9D7CC26FF871A00B25651 /* NotificationManaging.swift */; };
 		C1F9D7CF26FF874800B25651 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = C1F9D7CE26FF874800B25651 /* FirebaseMessaging */; };
@@ -222,7 +221,6 @@
 		C1EA986826D6E8C900219E84 /* CompetitionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionView.swift; sourceTree = "<group>"; };
 		C1EBB16627AD7AF600376E59 /* UserDefaultsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsTests.swift; sourceTree = "<group>"; };
 		C1EBB16927AD934100376E59 /* CLLocationCoordinate2D+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CLLocationCoordinate2D+Extensions.swift"; sourceTree = "<group>"; };
-		C1EBB16B27AD95FB00376E59 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 		C1F7DFF426D8010A00B46F91 /* CollectionReference+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CollectionReference+Extensions.swift"; sourceTree = "<group>"; };
 		C1F9D7CC26FF871A00B25651 /* NotificationManaging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManaging.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -526,7 +524,6 @@
 			children = (
 				C1691DD826D5603D006FFA30 /* ActivityRingView.swift */,
 				C1691DDA26D560C5006FFA30 /* SignInWithAppleButton.swift */,
-				C1EBB16B27AD95FB00376E59 /* MapView.swift */,
 			);
 			path = "UIKit Wrappers";
 			sourceTree = "<group>";
@@ -918,7 +915,6 @@
 				C1884E5426D5A40E00C21014 /* Competition.swift in Sources */,
 				C12D63F027A4D5B300259237 /* View+Extensions.swift in Sources */,
 				C1F9D7CD26FF871A00B25651 /* NotificationManaging.swift in Sources */,
-				C1EBB16C27AD95FB00376E59 /* MapView.swift in Sources */,
 				C1D0177D273F63CF00C9EEAE /* PermissionStatus.swift in Sources */,
 				C123C9C527A740FE00375F73 /* StatisticsView.swift in Sources */,
 				C1F7DFF526D8010A00B46F91 /* CollectionReference+Extensions.swift in Sources */,
