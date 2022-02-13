@@ -75,10 +75,10 @@ final class HealthKitManager: AnyHealthKitManager {
             read: .init(Constants.permissionObjectTypes),
             completion: { [weak self] authorized, error in
                 guard let self = self else { return }
-                self.registerForBackgroundDelivery()
                 let permissionStatus: PermissionStatus = authorized ? .authorized : .denied
                 DispatchQueue.main.async {
                     self.storedPermissionStatus = permissionStatus
+                    self.registerForBackgroundDelivery()
                 }
                 completion(permissionStatus)
             }

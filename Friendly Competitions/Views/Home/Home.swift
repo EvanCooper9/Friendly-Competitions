@@ -4,11 +4,11 @@ import Resolver
 
 struct Home: View {
 
-    @EnvironmentObject private var activitySummaryManager: AnyActivitySummaryManager
-    @EnvironmentObject private var competitionsManager: AnyCompetitionsManager
-    @EnvironmentObject private var friendsManager: AnyFriendsManager
-    @EnvironmentObject private var permissionsManager: AnyPermissionsManager
-    @EnvironmentObject private var user: User
+    @StateObject private var activitySummaryManager = Resolver.resolve(AnyActivitySummaryManager.self)
+    @StateObject private var competitionsManager = Resolver.resolve(AnyCompetitionsManager.self)
+    @StateObject private var friendsManager = Resolver.resolve(AnyFriendsManager.self)
+    @StateObject private var permissionsManager = Resolver.resolve(AnyPermissionsManager.self)
+    @StateObject private var userManager = Resolver.resolve(AnyUserManager.self)
 
     @State private var presentAbout = false
     @State private var presentPermissions = false
@@ -16,7 +16,7 @@ struct Home: View {
     @State private var presentNewCompetition = false
     @State private var presentSearchFriendsSheet = false
     @State private var sharedFriendId: String?
-    @AppStorage(#function) var competitionsFiltered = false
+    @AppStorage("competitionsFiltered") var competitionsFiltered = false
 
     var body: some View {
         List {
@@ -27,7 +27,7 @@ struct Home: View {
             }
             .textCase(nil)
         }
-        .navigationBarTitle(user.name)
+        .navigationBarTitle(userManager.user.name)
         .toolbar {
             HStack {
                 Button(toggling: $presentAbout) {
@@ -44,7 +44,6 @@ struct Home: View {
         .sheet(isPresented: $presentSearchFriendsSheet) { AddFriendView(sharedFriendId: sharedFriendId) }
         .sheet(isPresented: $presentNewCompetition) { NewCompetitionView() }
         .sheet(isPresented: $presentPermissions) { PermissionsView() }
-        .environmentObject(competitionsManager)
         .onOpenURL { url in
             guard url.absoluteString.contains("invite") else { return }
             sharedFriendId = url.lastPathComponent
@@ -52,6 +51,11 @@ struct Home: View {
         }
         .onAppear { presentPermissions = permissionsManager.requiresPermission }
         .onChange(of: permissionsManager.requiresPermission) { presentPermissions = $0 }
+        .environmentObject(activitySummaryManager)
+        .environmentObject(competitionsManager)
+        .environmentObject(friendsManager)
+        .environmentObject(permissionsManager)
+        .environmentObject(userManager)
     }
 
     private var activitySummary: some View {
@@ -187,12 +191,16 @@ struct HomeView_Previews: PreviewProvider {
         return permissionsManager
     }()
 
+    private static let userManager: AnyUserManager = {
+        return AnyUserManager(user: .evan)
+    }()
+
     static var previews: some View {
-        Home()
-            .environmentObject(User.evan)
-            .environmentObject(activitySummaryManager)
-            .environmentObject(competitionManager)
-            .environmentObject(friendsManager)
-            .environmentObject(permissionsManager)
+        Resolver.register { activitySummaryManager as AnyActivitySummaryManager }
+        Resolver.register { competitionManager as AnyCompetitionsManager }
+        Resolver.register { friendsManager as AnyFriendsManager }
+        Resolver.register { permissionsManager as AnyPermissionsManager }
+        Resolver.register { userManager as AnyUserManager }
+        return Home()
     }
 }
