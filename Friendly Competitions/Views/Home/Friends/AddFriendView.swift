@@ -73,8 +73,7 @@ struct AddFriendView_Previews: PreviewProvider {
     }()
 
     static var previews: some View {
-        Resolver.Name.mode = .mock
-        return AddFriendView()
+        AddFriendView()
             .environmentObject(User.evan)
             .environmentObject(friendsManager)
     }

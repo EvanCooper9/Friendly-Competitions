@@ -6,15 +6,14 @@ import Resolver
 
 struct Profile: View {
 
-    @EnvironmentObject private var user: User
     @EnvironmentObject private var userManager: AnyUserManager
     @State private var presentDeleteAccountAlert = false
 
     var body: some View {
         List {
-            UserInfoSection(user: user)
+            UserInfoSection(user: userManager.user)
 
-            let stats = user.statistics ?? .zero
+            let stats = userManager.user.statistics ?? .zero
             Section("Stats") {
                 StatisticsView(statistics: stats)
             }
@@ -45,7 +44,6 @@ struct Profile: View {
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
         Profile()
-            .environmentObject(User.evan)
-            .environmentObject(AnyUserManager())
+            .environmentObject(AnyUserManager(user: .evan))
     }
 }

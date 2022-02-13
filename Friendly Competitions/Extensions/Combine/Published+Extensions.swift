@@ -1,7 +1,7 @@
 import Combine
 import Foundation
 
-private var cancellableSet: Set<AnyCancellable> = []
+private var cancellables: Set<AnyCancellable> = []
 
 extension Published where Value: Codable {
     init(wrappedValue defaultValue: Value, storedWithKey key: String, store: UserDefaults = .standard) {
@@ -9,6 +9,6 @@ extension Published where Value: Codable {
         self.init(initialValue: data ?? defaultValue)
         projectedValue
             .sink { store.encode($0, forKey: key) }
-            .store(in: &cancellableSet)
+            .store(in: &cancellables)
     }
 }

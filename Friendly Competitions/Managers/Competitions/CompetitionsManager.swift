@@ -11,7 +11,6 @@ class AnyCompetitionsManager: ObservableObject {
     @Published(storedWithKey: "participants") var participants = [Competition.ID: [Participant]]()
     @Published(storedWithKey: "pendingParticipants") var pendingParticipants = [Competition.ID : [Participant]]()
 
-    func setup(with user: User) {}
     func accept(_ competition: Competition) {}
     func create(_ competition: Competition) {}
     func decline(_ competition: Competition) {}
@@ -25,15 +24,18 @@ final class CompetitionsManager: AnyCompetitionsManager {
     // MARK: - Private Properties
 
     @LazyInjected private var database: Firestore
+    @LazyInjected private var userManager: AnyUserManager
 
-    private var user: User!
+    private var user: User { userManager.user }
 
-    // MARK: - Public Methods
+    // MARK: - Lifecycle
 
-    override func setup(with user: User) {
-        self.user = user
+    override init() {
+        super.init()
         listen()
     }
+
+    // MARK: - Public Methods
 
     override func accept(_ competition: Competition) {
         var competition = competition

@@ -1,10 +1,15 @@
 import Combine
 import Firebase
-import FirebaseAuth
 import FirebaseFirestore
 import Resolver
 
 class AnyUserManager: ObservableObject {
+    @Published var user: User
+
+    init(user: User) {
+        self.user = user
+    }
+
     func deleteAccount() {}
     func signOut() {}
 }
@@ -12,7 +17,18 @@ class AnyUserManager: ObservableObject {
 final class UserManager: AnyUserManager {
 
     @LazyInjected private var database: Firestore
-    @LazyInjected private var user: User
+
+    private var userListener: ListenerRegistration?
+
+    override init(user: User) {
+        super.init(user: user)
+        listenForUser()
+    }
+
+    deinit {
+        userListener?.remove()
+        userListener = nil
+    }
 
     override func deleteAccount() {
         Task {
@@ -23,5 +39,15 @@ final class UserManager: AnyUserManager {
 
     override func signOut() {
         try? Auth.auth().signOut()
+    }
+
+    private func listenForUser() {
+        userListener = database.document("users/\(user.id)")
+            .addSnapshotListener { [weak self] snapshot, _ in
+                guard let self = self, let user = try? snapshot?.decoded(as: User.self) else { return }
+                DispatchQueue.main.async {
+                    self.user = user
+                }
+            }
     }
 }
