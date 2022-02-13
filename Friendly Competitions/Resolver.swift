@@ -1,5 +1,4 @@
 import Firebase
-import FirebaseAuth
 import FirebaseFirestore
 import Resolver
 
@@ -11,26 +10,16 @@ extension Resolver.Name {
 
 extension Resolver: ResolverRegistering {
     public static func registerAllServices() {
-        register { resolve(name: .mode) as AnyActivitySummaryManager }
-        register(name: .main) { ActivitySummaryManager() as AnyActivitySummaryManager }.scope(.application)
 
-        register { resolve(name: .mode) as AnyCompetitionsManager }
-        register(name: .main) { CompetitionsManager() as AnyCompetitionsManager }.scope(.application)
+        register { ActivitySummaryManager() as AnyActivitySummaryManager }.scope(.application)
+        register { AuthenticationManager() as AnyAuthenticationManager }.scope(.application)
+        register { CompetitionsManager() as AnyCompetitionsManager }.scope(.application)
+        register { FriendsManager() as AnyFriendsManager }.scope(.application)
+        register { HealthKitManager() as AnyHealthKitManager }.scope(.application)
+        register { NotificationManager() as NotificationManaging }.scope(.application)
+        register { PermissionsManager() as AnyPermissionsManager }.scope(.application)
 
-        register { resolve(name: .mode) as AnyFriendsManager }
-        register(name: .main) { FriendsManager() as AnyFriendsManager }.scope(.application)
-
-        register { resolve(name: .mode) as AnyHealthKitManager }
-        register(name: .main) { HealthKitManager() as AnyHealthKitManager }.scope(.application)
-
-        register { resolve(name: .mode) as AnyPermissionsManager }
-        register(name: .main) { PermissionsManager() as AnyPermissionsManager }.scope(.application)
-
-        register { resolve(name: .mode) as AnyUserManager }
-        register(name: .main) { UserManager() as AnyUserManager }.scope(.application)
-
-        register { resolve(name: .mode) as Firestore }
-        register(Firestore.self, name: .main) {
+        register(Firestore.self) {
             let settings = FirestoreSettings()
             settings.isPersistenceEnabled = true
             let database = Firestore.firestore()
@@ -38,13 +27,5 @@ extension Resolver: ResolverRegistering {
             return database
         }
         .scope(.application)
-        register(Firestore.self,name: .mock)  { Firestore.firestore() }
-
-        register { resolve(name: .mode) as NotificationManaging }
-        register(name: .main) { NotificationManager() as NotificationManaging }.scope(.application)
-        register(name: .mock) { NotificationManager() as NotificationManaging }
-
-        register { resolve(name: .mode) as User }.scope(.application)
-        register(name: .mock) { User.evan }
     }
 }

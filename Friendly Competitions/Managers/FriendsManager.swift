@@ -12,7 +12,6 @@ class AnyFriendsManager: ObservableObject {
     @Published var searchResults = [User]()
     @Published var searchText = ""
 
-    func setup(with user: User) {}
     func add(friend: User) {}
     func acceptFriendRequest(from: User) {}
     func declineFriendRequest(from: User) {}
@@ -36,22 +35,26 @@ final class FriendsManager: AnyFriendsManager {
     // MARK: - Private Properties
 
     @LazyInjected private var database: Firestore
-
-    private var user: User!
+    @LazyInjected private var userManager: AnyUserManager
 
     private var searchTask: Task<Void, Error>? {
         willSet { searchTask?.cancel() }
     }
 
-    // MARK: - Public Methods
+    private var user: User { userManager.user }
 
-    override func setup(with user: User) {
-        self.user = user
+    // MARK: - Lifecycle
+
+    override init() {
+        super.init()
         Task {
             try await updateFriends()
             try await updateFriendRequests()
+            try await updateFriendActivitySummaries()
         }
     }
+
+    // MARK: - Public Methods
 
     override func add(friend: User) {
         user.outgoingFriendRequests.append(friend.id)

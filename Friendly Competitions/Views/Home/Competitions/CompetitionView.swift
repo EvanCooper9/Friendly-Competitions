@@ -8,7 +8,7 @@ struct CompetitionView: View {
     @Environment(\.presentationMode) private var presentationMode
     @EnvironmentObject private var competitionsManager: AnyCompetitionsManager
     @EnvironmentObject private var friendsManager: AnyFriendsManager
-    @EnvironmentObject private var user: User
+    @EnvironmentObject private var userManager: AnyUserManager
 
     private enum Action {
         case leave, delete
@@ -75,7 +75,7 @@ struct CompetitionView: View {
 
     private var actions: some View {
         Section {
-            if competition.pendingParticipants.contains(user.id) {
+            if competition.pendingParticipants.contains(userManager.user.id) {
                 Button {
                     competitionsManager.accept(competition)
                 } label: {
@@ -191,16 +191,20 @@ struct CompetitionView_Previews: PreviewProvider {
         return friendsManager
     }()
 
+    private static let userManager: AnyUserManager = {
+        AnyUserManager(user: .evan)
+    }()
+
     static var previews: some View {
         CompetitionView(competition: competition)
-            .environmentObject(User.evan)
             .environmentObject(competitionManager)
             .environmentObject(friendsManager)
+            .environmentObject(userManager)
             .embeddedInNavigationView()
         CompetitionView(competition: .mockInvited)
-            .environmentObject(User.evan)
             .environmentObject(competitionManager)
             .environmentObject(friendsManager)
+            .environmentObject(userManager)
             .embeddedInNavigationView()
     }
 }

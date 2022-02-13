@@ -8,18 +8,18 @@ import Resolver
 
 class AnyActivitySummaryManager: ObservableObject {
     @Published(storedWithKey: "activitySummary") var activitySummary: ActivitySummary? = nil
-    func setup(with user: User) {}
 }
 
 final class ActivitySummaryManager: AnyActivitySummaryManager {
 
     // MARK: - Private Properties
 
-    @Injected private var competitionsManager: AnyCompetitionsManager
-    @Injected private var healthKitManager: AnyHealthKitManager
-    @Injected private var database: Firestore
+    @LazyInjected private var competitionsManager: AnyCompetitionsManager
+    @LazyInjected private var healthKitManager: AnyHealthKitManager
+    @LazyInjected private var database: Firestore
+    @LazyInjected private var userManager: UserManager
 
-    private var user: User!
+    private var user: User { userManager.user }
 
     private var cancellables = Set<AnyCancellable>()
     private let upload = PassthroughSubject<[ActivitySummary], Never>()
@@ -55,12 +55,7 @@ final class ActivitySummaryManager: AnyActivitySummaryManager {
                 Task { [weak self] in try await self?.requestActivitySummaries() }
             }
             .store(in: &cancellables)
-    }
 
-    // MARK: - Public Methods
-
-    override func setup(with user: User) {
-        self.user = user
         healthKitManager.registerBackgroundDeliveryReceiver(self)
         healthKitManager.registerForBackgroundDelivery()
     }
