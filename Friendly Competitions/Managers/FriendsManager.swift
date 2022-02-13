@@ -137,6 +137,7 @@ final class FriendsManager: AnyFriendsManager {
         let friends = try await self.database.collection("users")
             .whereFieldWithChunking("id", in: user.friends)
             .decoded(asArrayOf: User.self)
+            .sorted(by: \.name)
 
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }

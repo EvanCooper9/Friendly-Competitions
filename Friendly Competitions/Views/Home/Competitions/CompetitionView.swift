@@ -89,8 +89,10 @@ struct CompetitionView: View {
                 }
                 .foregroundColor(.red)
             } else {
-                Button(toggling: $showInviteFriend) {
-                    Label("Invite a friend", systemImage: "person.crop.circle.badge.plus")
+                if !competition.ended {
+                    Button(toggling: $showInviteFriend) {
+                        Label("Invite a friend", systemImage: "person.crop.circle.badge.plus")
+                    }
                 }
                 Button {
                     actionRequiringConfirmation = .leave
