@@ -196,7 +196,6 @@ struct HomeView_Previews: PreviewProvider {
     }()
 
     static var previews: some View {
-        Resolver.Name.mode = .mock
         Resolver.register { activitySummaryManager as AnyActivitySummaryManager }
         Resolver.register { competitionManager as AnyCompetitionsManager }
         Resolver.register { friendsManager as AnyFriendsManager }

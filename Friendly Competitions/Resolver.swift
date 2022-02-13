@@ -2,12 +2,6 @@ import Firebase
 import FirebaseFirestore
 import Resolver
 
-extension Resolver.Name {
-    static let main = Self("main")
-    static let mock = Self("mock")
-    static var mode: Resolver.Name = .main
-}
-
 extension Resolver: ResolverRegistering {
     public static func registerAllServices() {
 
