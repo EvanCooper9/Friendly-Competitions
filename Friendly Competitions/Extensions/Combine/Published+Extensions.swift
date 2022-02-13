@@ -1,6 +1,5 @@
 import Combine
 import Foundation
-import SwiftUI
 
 private var cancellables: Set<AnyCancellable> = []
 
