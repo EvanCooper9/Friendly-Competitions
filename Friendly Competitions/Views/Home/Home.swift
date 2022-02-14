@@ -47,7 +47,6 @@ struct Home: View {
         .sheet(isPresented: $presentNewCompetition) { NewCompetitionView() }
         .sheet(isPresented: $presentPermissions) { PermissionsView() }
         .onOpenURL { url in
-            print(url)
             deepLink = .init(from: url)
             switch deepLink {
             case .friendReferral:

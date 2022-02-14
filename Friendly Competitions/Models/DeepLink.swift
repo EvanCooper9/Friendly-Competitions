@@ -4,7 +4,6 @@ enum DeepLink {
     case friendReferral(id: String)
 
     init?(from url: URL) {
-        print(url.path)
         if let inviteId = url.path.string(after: "/invite/") {
             self = .friendReferral(id: inviteId)
         } else {
