@@ -18,6 +18,8 @@ struct Home: View {
     @State private var sharedFriendId: String?
     @AppStorage("competitionsFiltered") var competitionsFiltered = false
 
+    @State private var deepLink: DeepLink?
+
     var body: some View {
         List {
             Group {
@@ -41,16 +43,22 @@ struct Home: View {
         .embeddedInNavigationView()
         .sheet(isPresented: $presentAbout) { About() }
         .sheet(isPresented: $presentSettings) { Profile() }
-        .sheet(isPresented: $presentSearchFriendsSheet) { AddFriendView(sharedFriendId: sharedFriendId) }
+        .sheet(isPresented: $presentSearchFriendsSheet) { AddFriendView() }
         .sheet(isPresented: $presentNewCompetition) { NewCompetitionView() }
         .sheet(isPresented: $presentPermissions) { PermissionsView() }
         .onOpenURL { url in
-            guard url.absoluteString.contains("invite") else { return }
-            sharedFriendId = url.lastPathComponent
-            presentSearchFriendsSheet = true
+            print(url)
+            deepLink = .init(from: url)
+            switch deepLink {
+            case .friendReferral:
+                presentSearchFriendsSheet.toggle()
+            default:
+                break
+            }
         }
         .onAppear { presentPermissions = permissionsManager.requiresPermission }
         .onChange(of: permissionsManager.requiresPermission) { presentPermissions = $0 }
+        .environment(\.deepLink, deepLink)
         .environmentObject(activitySummaryManager)
         .environmentObject(competitionsManager)
         .environmentObject(friendsManager)

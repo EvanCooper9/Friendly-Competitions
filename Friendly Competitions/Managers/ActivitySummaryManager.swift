@@ -17,7 +17,7 @@ final class ActivitySummaryManager: AnyActivitySummaryManager {
     @LazyInjected private var competitionsManager: AnyCompetitionsManager
     @LazyInjected private var healthKitManager: AnyHealthKitManager
     @LazyInjected private var database: Firestore
-    @LazyInjected private var userManager: UserManager
+    @LazyInjected private var userManager: AnyUserManager
 
     private var user: User { userManager.user }
 

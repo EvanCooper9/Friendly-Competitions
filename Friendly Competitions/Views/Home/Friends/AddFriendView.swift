@@ -3,20 +3,28 @@ import Resolver
 
 struct AddFriendView: View {
 
-    var sharedFriendId: String?
-
     @Environment(\.presentationMode) private var presentationMode
+
+    @Environment(\.deepLink) private var deepLink
+    @State private var friendReferral: User?
+
     @EnvironmentObject private var friendsManager: AnyFriendsManager
-    @EnvironmentObject private var user: User
+    @EnvironmentObject private var userManager: AnyUserManager
+
+    private var searchResults: [User] {
+        [friendReferral]
+            .compactMap { $0 }
+            .appending(contentsOf: friendsManager.searchResults)
+    }
 
     var body: some View {
         List {
             Section {
-                ForEach(friendsManager.searchResults) { friend in
+                ForEach(searchResults) { friend in
                     AddFriendListItem(
                         friend: friend,
                         action: .friendRequest,
-                        disabledIf: friend.incomingFriendRequests.contains(user.id)
+                        disabledIf: friend.incomingFriendRequests.contains(userManager.user.id)
                     ) { friendsManager.add(friend: friend) }
                 }
             } footer: {
@@ -29,6 +37,17 @@ struct AddFriendView: View {
         .listStyle(.insetGrouped)
         .searchable(text: $friendsManager.searchText)
         .navigationTitle("Search for Friends")
+        .task {
+            guard case let .friendReferral(referralId) = deepLink else { return }
+            do {
+                let friendReferral = try await friendsManager.user(withId: referralId)
+                DispatchQueue.main.async {
+                    self.friendReferral = friendReferral
+                }
+            } catch {
+                print(error)
+            }
+        }
         .embeddedInNavigationView()
     }
 
@@ -37,7 +56,7 @@ struct AddFriendView: View {
             let activityVC = UIActivityViewController(
                 activityItems: [
                     "Add me in Friendly Competitions!",
-                    "friendly-competitions://invite/\(user.id)"
+                    URL(string: "friendly-competitions.evancooper.tech/invite/\(userManager.user.id)")!
                 ],
                 applicationActivities: nil
             )
@@ -45,12 +64,12 @@ struct AddFriendView: View {
 
             DispatchQueue.main.async {
                 let keyWindow = UIApplication.shared.connectedScenes
-                        .filter { $0.activationState == .foregroundActive }
-                        .compactMap { $0 as? UIWindowScene }
-                        .first?
-                        .windows
-                        .filter(\.isKeyWindow)
-                        .first
+                    .filter { $0.activationState == .foregroundActive }
+                    .compactMap { $0 as? UIWindowScene }
+                    .first?
+                    .windows
+                    .filter(\.isKeyWindow)
+                    .first
 
                 keyWindow?.rootViewController?
                     .topViewController
