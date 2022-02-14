@@ -110,7 +110,8 @@ final class CompetitionsManager: AnyCompetitionsManager {
         database.collection("competitions")
             .whereField("participants", arrayContains: user.id)
             .addSnapshotListener { snapshot, error in
-                let competitions = snapshot?.documents.decoded(asArrayOf: Competition.self) ?? []
+                guard let snapshot = snapshot else { return }
+                let competitions = snapshot.documents.decoded(asArrayOf: Competition.self)
                 Task { [weak self] in
                     try await self?.updateStandings(for: competitions)
                     try await self?.updateParticipants(for: competitions)
