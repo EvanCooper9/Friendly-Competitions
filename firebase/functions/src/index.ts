@@ -78,13 +78,22 @@ exports.updateCompetitionStandings = functions.https
                 if (!shouldComputeScore(activitySummaryDate, competitionStart, competitionEnd)) {
                     return;
                 }
-
+                
                 const activitySummary = activitySummaryDoc.data();
-                const energy = (activitySummary.activeEnergyBurned / activitySummary.activeEnergyBurnedGoal) * 100;
-                const exercise = (activitySummary.appleExerciseTime / activitySummary.appleExerciseTimeGoal) * 100;
-                const stand = (activitySummary.appleStandHours / activitySummary.appleStandHoursGoal) * 100;
-                const points = energy + exercise + stand;
-                totalPoints += parseInt(`${points}`);
+                
+                if (competition.scoringModel == 0) {
+                    const energy = (activitySummary.activeEnergyBurned / activitySummary.activeEnergyBurnedGoal) * 100;
+                    const exercise = (activitySummary.appleExerciseTime / activitySummary.appleExerciseTimeGoal) * 100;
+                    const stand = (activitySummary.appleStandHours / activitySummary.appleStandHoursGoal) * 100;
+                    const points = energy + exercise + stand;
+                    totalPoints += parseInt(`${points}`);
+                } else if (competition.scoringModel == 1) {
+                    const energy = activitySummary.activeEnergyBurned;
+                    const exercise = activitySummary.appleExerciseTime;
+                    const stand = activitySummary.appleStandHours;
+                    const points = energy + exercise + stand;
+                    totalPoints += parseInt(`${points}`);
+                }
             });
 
             const standingsRef = await firestore.collection(`competitions/${competition.id}/standings`).get();
@@ -257,7 +266,10 @@ exports.sendCompetitionCompleteNotifications = functions.pubsub.schedule("every 
                     const userRef = await firestore.doc(`users/${participantId}`).get();
                     const user = userRef.data();
                     if (user != null) {
-                        const statistics = user.statistics;
+                        let statistics = user.statistics;
+                        if (statistics == null) {
+                            statistics = {golds: 0, silvers: 0, bronzes: 0};
+                        }
                         if (rank == 1) {
                             statistics.golds += 1;
                         } else if (rank == 2) {
