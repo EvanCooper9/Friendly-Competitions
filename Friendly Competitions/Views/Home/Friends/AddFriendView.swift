@@ -3,22 +3,42 @@ import Resolver
 
 struct AddFriendView: View {
 
-    var sharedFriendId: String?
+    @State private var friendReferral: User?
 
-    @Environment(\.presentationMode) private var presentationMode
+    @EnvironmentObject private var appState: AppState
     @EnvironmentObject private var friendsManager: AnyFriendsManager
-    @EnvironmentObject private var user: User
+    @EnvironmentObject private var userManager: AnyUserManager
 
     var body: some View {
         List {
+
+            if let friendReferral = friendReferral, friendReferral.id != userManager.user.id {
+                Section("Shared with you") {
+                    AddFriendListItem(
+                        friend: friendReferral,
+                        action: .friendRequest,
+                        disabledIf: friendReferral
+                            .incomingFriendRequests
+                            .appending(contentsOf: friendReferral.friends)
+                            .contains(userManager.user.id)
+                    ) { friendsManager.add(friend: friendReferral) }
+                }
+            }
+
             Section {
                 ForEach(friendsManager.searchResults) { friend in
                     AddFriendListItem(
                         friend: friend,
                         action: .friendRequest,
-                        disabledIf: friend.incomingFriendRequests.contains(user.id)
+                        disabledIf: friend
+                            .incomingFriendRequests
+                            .appending(contentsOf: friend.friends)
+                            .appending(userManager.user.id)
+                            .contains(userManager.user.id)
                     ) { friendsManager.add(friend: friend) }
                 }
+            } header: {
+                Text("Search results")
             } footer: {
                 HStack {
                     Text("Having trouble?")
@@ -29,6 +49,7 @@ struct AddFriendView: View {
         .listStyle(.insetGrouped)
         .searchable(text: $friendsManager.searchText)
         .navigationTitle("Search for Friends")
+        .onAppear(perform: handleDeepLink)
         .embeddedInNavigationView()
     }
 
@@ -37,7 +58,7 @@ struct AddFriendView: View {
             let activityVC = UIActivityViewController(
                 activityItems: [
                     "Add me in Friendly Competitions!",
-                    "friendly-competitions://invite/\(user.id)"
+                    URL(string: "friendly-competitions.evancooper.tech/invite/\(userManager.user.id)")!
                 ],
                 applicationActivities: nil
             )
@@ -45,16 +66,27 @@ struct AddFriendView: View {
 
             DispatchQueue.main.async {
                 let keyWindow = UIApplication.shared.connectedScenes
-                        .filter { $0.activationState == .foregroundActive }
-                        .compactMap { $0 as? UIWindowScene }
-                        .first?
-                        .windows
-                        .filter(\.isKeyWindow)
-                        .first
+                    .filter { $0.activationState == .foregroundActive }
+                    .compactMap { $0 as? UIWindowScene }
+                    .first?
+                    .windows
+                    .filter(\.isKeyWindow)
+                    .first
 
                 keyWindow?.rootViewController?
                     .topViewController
                     .present(activityVC, animated: true, completion: nil)
+            }
+        }
+    }
+
+    private func handleDeepLink() {
+        guard case let .friendReferral(referralId) = appState.deepLink else { return }
+        Task {
+            let friendReferral = try await friendsManager.user(withId: referralId)
+            DispatchQueue.main.async {
+                self.friendReferral = friendReferral
+                self.appState.deepLink = nil
             }
         }
     }

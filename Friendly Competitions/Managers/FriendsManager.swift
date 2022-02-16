@@ -16,6 +16,7 @@ class AnyFriendsManager: ObservableObject {
     func acceptFriendRequest(from: User) {}
     func declineFriendRequest(from: User) {}
     func delete(friend: User) {}
+    func user(withId id: String) async throws -> User? { nil }
 }
 
 final class FriendsManager: AnyFriendsManager {
@@ -125,6 +126,15 @@ final class FriendsManager: AnyFriendsManager {
         let theirFriends = friend.friends.removing(user.id)
         batch.updateData(["friends": theirFriends], forDocument: database.document("users/\(friend.id)"))
         batch.commit()
+    }
+
+    override func user(withId id: String) async throws -> User? {
+        try await database.collection("users")
+            .whereField("id", isEqualTo: id)
+            .getDocuments()
+            .documents
+            .first?
+            .decoded(as: User.self)
     }
 
     // MARK: - Private Methods

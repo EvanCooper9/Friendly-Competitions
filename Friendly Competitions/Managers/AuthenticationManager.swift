@@ -3,9 +3,10 @@ import Firebase
 import FirebaseAuth
 import FirebaseFirestore
 import Resolver
+import SwiftUI
 
 class AnyAuthenticationManager: ObservableObject {
-    @Published(storedWithKey: "loggedIn") var loggedIn = false
+    @AppStorage("loggedIn") var loggedIn = false
 }
 
 final class AuthenticationManager: AnyAuthenticationManager {

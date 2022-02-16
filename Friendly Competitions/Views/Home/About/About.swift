@@ -16,7 +16,11 @@ struct About: View {
         List {
             Section {
                 Button {
-                    guard let windowScene = UIApplication.shared.windows.first?.windowScene else { return }
+                    let windowScene = UIApplication.shared.connectedScenes
+                        .filter { $0.activationState == .foregroundActive }
+                        .compactMap { $0 as? UIWindowScene }
+                        .first
+                    guard let windowScene = windowScene else { return }
                     SKStoreReviewController.requestReview(in: windowScene)
                 } label: {
                     Label("Rate", systemImage: "heart")

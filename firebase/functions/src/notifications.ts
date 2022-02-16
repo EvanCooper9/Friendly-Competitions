@@ -39,7 +39,7 @@ function sendNotifications(userId: string, title: string, body: string): Promise
  * @param {string} body The body of the notification
  * @return {Promise<string[]>} A Promise for the notification being sent
  */
-function sendNotification(fcmToken: string, title: string, body: string): Promise<string> {
+function sendNotification(fcmToken: string, title: string, body: string): Promise<void> {
 
     console.log(`Sending notification to token: ${fcmToken}`);
 
@@ -53,8 +53,11 @@ function sendNotification(fcmToken: string, title: string, body: string): Promis
     
     return admin.messaging().send(notificationPayload)
         .then(messageId => {
-            console.log(`Sent notification with messageId: ${messageId}`);
-            return messageId; 
+            return;
+        })
+        .catch(error => {
+            console.log(`error when sending notification: ${error}`);
+            return;
         });
 }
 
