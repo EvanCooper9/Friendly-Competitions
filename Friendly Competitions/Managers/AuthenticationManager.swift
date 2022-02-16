@@ -11,7 +11,7 @@ class AnyAuthenticationManager: ObservableObject {
 
 final class AuthenticationManager: AnyAuthenticationManager {
 
-    @LazyInjected private var database: Firestore
+    @Injected private var database: Firestore
     
     @Published(storedWithKey: "currentUser") private var currentUser: User? = nil
 

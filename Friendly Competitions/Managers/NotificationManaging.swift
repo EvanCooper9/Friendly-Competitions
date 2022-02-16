@@ -11,8 +11,7 @@ protocol NotificationManaging {
 
 final class NotificationManager: NSObject, NotificationManaging {
 
-    @LazyInjected private var database: Firestore
-    @LazyInjected private var user: User
+    @Injected private var database: Firestore
 
     override init() {
         super.init()

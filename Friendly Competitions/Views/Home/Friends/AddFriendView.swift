@@ -33,12 +33,13 @@ struct AddFriendView: View {
                         disabledIf: friend
                             .incomingFriendRequests
                             .appending(contentsOf: friend.friends)
-                            .appending(userManager.user.id)
                             .contains(userManager.user.id)
                     ) { friendsManager.add(friend: friend) }
                 }
             } header: {
-                Text("Search results")
+                if !friendsManager.searchResults.isEmpty {
+                    Text("Search results")
+                }
             } footer: {
                 HStack {
                     Text("Having trouble?")

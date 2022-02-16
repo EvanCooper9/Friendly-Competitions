@@ -16,7 +16,7 @@ class AnyUserManager: ObservableObject {
 
 final class UserManager: AnyUserManager {
 
-    @LazyInjected private var database: Firestore
+    @Injected private var database: Firestore
 
     private var userListener: ListenerRegistration?
 

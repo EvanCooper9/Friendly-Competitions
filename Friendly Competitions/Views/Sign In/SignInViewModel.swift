@@ -7,7 +7,7 @@ import Resolver
 
 final class SignInViewModel: NSObject, ObservableObject {
 
-    @LazyInjected var database: Firestore
+    @Injected var database: Firestore
 
     @Published var isLoading = false
 
@@ -99,7 +99,9 @@ extension SignInViewModel: ASAuthorizationControllerDelegate {
         // Sign in with Firebase.
         Auth.auth().signIn(with: credential) { [weak self] authResult, error in
 
-            self?.isLoading = false
+            defer {
+                self?.isLoading = false
+            }
 
             if let error = error {
                 // Error. If error.code == .MissingOrInvalidNonce, make sure

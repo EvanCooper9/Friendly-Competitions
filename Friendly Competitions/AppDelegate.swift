@@ -7,7 +7,7 @@ import UIKit
 
 final class AppDelegate: NSObject, UIApplicationDelegate {
 
-    @LazyInjected private var database: Firestore
+    @Injected private var database: Firestore
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         Messaging.messaging().delegate = self
