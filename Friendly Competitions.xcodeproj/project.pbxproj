@@ -701,8 +701,8 @@
 		C1F7DFF326D7F78300B46F91 /* Friends */ = {
 			isa = PBXGroup;
 			children = (
-				C1ABB20D26D683BA00716984 /* AddFriendView.swift */,
 				C123C9CA27A8541200375F73 /* AddFriendListItem.swift */,
+				C1ABB20D26D683BA00716984 /* AddFriendView.swift */,
 				C16CC40527A7332800C26208 /* FriendView.swift */,
 			);
 			path = Friends;

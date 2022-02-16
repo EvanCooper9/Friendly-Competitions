@@ -2,7 +2,13 @@ import HealthKit
 import SwiftUI
 import Resolver
 
+final class AppState: ObservableObject {
+    @Published var deepLink: DeepLink? = nil
+}
+
 struct Home: View {
+
+    @StateObject private var appState = AppState()
 
     @StateObject private var activitySummaryManager = Resolver.resolve(AnyActivitySummaryManager.self)
     @StateObject private var competitionsManager = Resolver.resolve(AnyCompetitionsManager.self)
@@ -47,7 +53,7 @@ struct Home: View {
         .sheet(isPresented: $presentNewCompetition) { NewCompetitionView() }
         .sheet(isPresented: $presentPermissions) { PermissionsView() }
         .onOpenURL { url in
-            deepLink = .init(from: url)
+            appState.deepLink = .init(from: url)
             switch deepLink {
             case .friendReferral:
                 presentSearchFriendsSheet.toggle()
@@ -55,9 +61,8 @@ struct Home: View {
                 break
             }
         }
-        .onAppear { presentPermissions = permissionsManager.requiresPermission }
         .onChange(of: permissionsManager.requiresPermission) { presentPermissions = $0 }
-        .environment(\.deepLink, deepLink)
+        .environmentObject(appState)
         .environmentObject(activitySummaryManager)
         .environmentObject(competitionsManager)
         .environmentObject(friendsManager)

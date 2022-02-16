@@ -5,28 +5,42 @@ struct AddFriendView: View {
 
     @Environment(\.presentationMode) private var presentationMode
 
-    @Environment(\.deepLink) private var deepLink
     @State private var friendReferral: User?
 
+    @EnvironmentObject private var appState: AppState
     @EnvironmentObject private var friendsManager: AnyFriendsManager
     @EnvironmentObject private var userManager: AnyUserManager
 
-    private var searchResults: [User] {
-        [friendReferral]
-            .compactMap { $0 }
-            .appending(contentsOf: friendsManager.searchResults)
-    }
-
     var body: some View {
         List {
+
+            if let friendReferral = friendReferral, friendReferral.id != userManager.user.id {
+                Section("Shared with you") {
+                    AddFriendListItem(
+                        friend: friendReferral,
+                        action: .friendRequest,
+                        disabledIf: friendReferral
+                            .incomingFriendRequests
+                            .appending(contentsOf: friendReferral.friends)
+                            .contains(userManager.user.id)
+                    ) { friendsManager.add(friend: friendReferral) }
+                }
+            }
+
             Section {
-                ForEach(searchResults) { friend in
+                ForEach(friendsManager.searchResults) { friend in
                     AddFriendListItem(
                         friend: friend,
                         action: .friendRequest,
-                        disabledIf: friend.incomingFriendRequests.contains(userManager.user.id)
+                        disabledIf: friend
+                            .incomingFriendRequests
+                            .appending(contentsOf: friend.friends)
+                            .appending(userManager.user.id)
+                            .contains(userManager.user.id)
                     ) { friendsManager.add(friend: friend) }
                 }
+            } header: {
+                Text("Search results")
             } footer: {
                 HStack {
                     Text("Having trouble?")
@@ -37,17 +51,7 @@ struct AddFriendView: View {
         .listStyle(.insetGrouped)
         .searchable(text: $friendsManager.searchText)
         .navigationTitle("Search for Friends")
-        .task {
-            guard case let .friendReferral(referralId) = deepLink else { return }
-            do {
-                let friendReferral = try await friendsManager.user(withId: referralId)
-                DispatchQueue.main.async {
-                    self.friendReferral = friendReferral
-                }
-            } catch {
-                print(error)
-            }
-        }
+        .onAppear(perform: handleDeepLink)
         .embeddedInNavigationView()
     }
 
@@ -74,6 +78,17 @@ struct AddFriendView: View {
                 keyWindow?.rootViewController?
                     .topViewController
                     .present(activityVC, animated: true, completion: nil)
+            }
+        }
+    }
+
+    private func handleDeepLink() {
+        guard case let .friendReferral(referralId) = appState.deepLink else { return }
+        Task {
+            let friendReferral = try await friendsManager.user(withId: referralId)
+            DispatchQueue.main.async {
+                self.friendReferral = friendReferral
+                self.appState.deepLink = nil
             }
         }
     }
