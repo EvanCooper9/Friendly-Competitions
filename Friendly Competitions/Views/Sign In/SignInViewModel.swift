@@ -13,6 +13,11 @@ final class SignInViewModel: NSObject, ObservableObject {
 
     private var currentNonce: String?
 
+    override init() {
+        super.init()
+        try? Auth.auth().signOut()
+    }
+
     func signInWithApple() {
         let nonce = randomNonceString()
         currentNonce = nonce
@@ -108,16 +113,23 @@ extension SignInViewModel: ASAuthorizationControllerDelegate {
                 .compactMap { $0 }
                 .joined(separator: " ")
 
-            if !name.isEmpty {
-                let user = Auth.auth().currentUser
-                let changeRequest = user?.createProfileChangeRequest()
-                changeRequest?.displayName = name
-                changeRequest?.commitChanges(completion: nil)
+            let firebaseUser = Auth.auth().currentUser
 
-                if let user = user, let email = appleIDCredential.email {
-                    let user = User(id: user.uid, email: email, name: name)
-                    try? self?.database.document("users/\(user.id)").updateDataEncodable(user, completion: nil)
-                }
+            let displayName = name.isEmpty ?
+                firebaseUser?.displayName ?? "" :
+                name
+
+            let changeRequest = firebaseUser?.createProfileChangeRequest()
+            changeRequest?.displayName = displayName
+            changeRequest?.commitChanges(completion: nil)
+
+            guard let firebaseUser = firebaseUser, let email = appleIDCredential.email ?? firebaseUser.email else { return }
+            let user = User(id: firebaseUser.uid, email: email, name: displayName)
+            try? self?.database.document("users/\(user.id)").updateDataEncodable(user) { error in
+                guard let nsError = error as NSError?,
+                    nsError.domain == "FIRFirestoreErrorDomain",
+                    nsError.code == 5 else { return }
+                try? self?.database.document("users/\(user.id)").setDataEncodable(user, completion: nil)
             }
         }
     }
