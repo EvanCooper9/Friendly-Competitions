@@ -2,7 +2,13 @@ import HealthKit
 import SwiftUI
 import Resolver
 
+final class AppState: ObservableObject {
+    @Published var deepLink: DeepLink? = nil
+}
+
 struct Home: View {
+
+    @StateObject private var appState = AppState()
 
     @StateObject private var activitySummaryManager = Resolver.resolve(AnyActivitySummaryManager.self)
     @StateObject private var competitionsManager = Resolver.resolve(AnyCompetitionsManager.self)
@@ -17,6 +23,8 @@ struct Home: View {
     @State private var presentSearchFriendsSheet = false
     @State private var sharedFriendId: String?
     @AppStorage("competitionsFiltered") var competitionsFiltered = false
+
+    @State private var deepLink: DeepLink?
 
     var body: some View {
         List {
@@ -41,16 +49,20 @@ struct Home: View {
         .embeddedInNavigationView()
         .sheet(isPresented: $presentAbout) { About() }
         .sheet(isPresented: $presentSettings) { Profile() }
-        .sheet(isPresented: $presentSearchFriendsSheet) { AddFriendView(sharedFriendId: sharedFriendId) }
+        .sheet(isPresented: $presentSearchFriendsSheet) { AddFriendView() }
         .sheet(isPresented: $presentNewCompetition) { NewCompetitionView() }
         .sheet(isPresented: $presentPermissions) { PermissionsView() }
         .onOpenURL { url in
-            guard url.absoluteString.contains("invite") else { return }
-            sharedFriendId = url.lastPathComponent
-            presentSearchFriendsSheet = true
+            appState.deepLink = .init(from: url)
+            switch deepLink {
+            case .friendReferral:
+                presentSearchFriendsSheet.toggle()
+            default:
+                break
+            }
         }
-        .onAppear { presentPermissions = permissionsManager.requiresPermission }
         .onChange(of: permissionsManager.requiresPermission) { presentPermissions = $0 }
+        .environmentObject(appState)
         .environmentObject(activitySummaryManager)
         .environmentObject(competitionsManager)
         .environmentObject(friendsManager)
