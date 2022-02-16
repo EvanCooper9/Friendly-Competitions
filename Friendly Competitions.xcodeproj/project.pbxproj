@@ -14,7 +14,6 @@
 		C10E5548272B47080053BBA6 /* XCAssets+Generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10E5547272B47080053BBA6 /* XCAssets+Generated.swift */; };
 		C10EB3EC26E94E2200487F1B /* UserDefaults+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10EB3EA26E94E1B00487F1B /* UserDefaults+Extensions.swift */; };
 		C114314227B9B6ED00915757 /* DeepLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = C114314127B9B6ED00915757 /* DeepLink.swift */; };
-		C114314427B9C40700915757 /* EnvironmentValues+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C114314327B9C40700915757 /* EnvironmentValues+Extensions.swift */; };
 		C1185A2526D6717C002E2377 /* ActivitySummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1185A2426D6717C002E2377 /* ActivitySummary.swift */; };
 		C119B03226FE67A300B56703 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = C119B03126FE67A300B56703 /* FirebaseCrashlytics */; };
 		C123C9C527A740FE00375F73 /* StatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C123C9C427A740FE00375F73 /* StatisticsView.swift */; };
@@ -137,7 +136,6 @@
 		C10E5547272B47080053BBA6 /* XCAssets+Generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "XCAssets+Generated.swift"; sourceTree = "<group>"; };
 		C10EB3EA26E94E1B00487F1B /* UserDefaults+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserDefaults+Extensions.swift"; sourceTree = "<group>"; };
 		C114314127B9B6ED00915757 /* DeepLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLink.swift; sourceTree = "<group>"; };
-		C114314327B9C40700915757 /* EnvironmentValues+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "EnvironmentValues+Extensions.swift"; sourceTree = "<group>"; };
 		C1185A2426D6717C002E2377 /* ActivitySummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitySummary.swift; sourceTree = "<group>"; };
 		C123C9C427A740FE00375F73 /* StatisticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsView.swift; sourceTree = "<group>"; };
 		C123C9C627A74C4000375F73 /* Button+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Button+Extensions.swift"; sourceTree = "<group>"; };
@@ -339,7 +337,6 @@
 			isa = PBXGroup;
 			children = (
 				C123C9C627A74C4000375F73 /* Button+Extensions.swift */,
-				C114314327B9C40700915757 /* EnvironmentValues+Extensions.swift */,
 				C12D63EF27A4D5B300259237 /* View+Extensions.swift */,
 			);
 			path = SwiftUI;
@@ -886,7 +883,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				C12D640427A5EABD00259237 /* SignInViewModel.swift in Sources */,
-				C114314427B9C40700915757 /* EnvironmentValues+Extensions.swift in Sources */,
 				C1691DDB26D560C5006FFA30 /* SignInWithAppleButton.swift in Sources */,
 				C109E4C026E7F52E00AA10C5 /* Encodable+Extensions.swift in Sources */,
 				C123C9DB27A8A98800375F73 /* UserManager.swift in Sources */,

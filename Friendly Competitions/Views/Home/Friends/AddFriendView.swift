@@ -3,8 +3,6 @@ import Resolver
 
 struct AddFriendView: View {
 
-    @Environment(\.presentationMode) private var presentationMode
-
     @State private var friendReferral: User?
 
     @EnvironmentObject private var appState: AppState
