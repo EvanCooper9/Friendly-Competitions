@@ -61,6 +61,9 @@ struct Home: View {
                 break
             }
         }
+        .onAppear {
+            presentPermissions = permissionsManager.requiresPermission
+        }
         .onChange(of: permissionsManager.requiresPermission) { presentPermissions = $0 }
         .environmentObject(appState)
         .environmentObject(activitySummaryManager)

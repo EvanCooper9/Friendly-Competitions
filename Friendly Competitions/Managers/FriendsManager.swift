@@ -35,8 +35,8 @@ final class FriendsManager: AnyFriendsManager {
 
     // MARK: - Private Properties
 
-    @LazyInjected private var database: Firestore
-    @LazyInjected private var userManager: AnyUserManager
+    @Injected private var database: Firestore
+    @InjectedObject private var userManager: AnyUserManager
 
     private var searchTask: Task<Void, Error>? {
         willSet { searchTask?.cancel() }
@@ -44,15 +44,17 @@ final class FriendsManager: AnyFriendsManager {
 
     private var user: User { userManager.user }
 
+    private var cancellables = Set<AnyCancellable>()
+
     // MARK: - Lifecycle
 
     override init() {
         super.init()
-        Task {
-            try await updateFriends()
-            try await updateFriendRequests()
-            try await updateFriendActivitySummaries()
-        }
+        queueUpdates()
+
+        userManager.$user
+            .sink { [weak self] _ in self?.queueUpdates() }
+            .store(in: &cancellables)
     }
 
     // MARK: - Public Methods
@@ -138,6 +140,14 @@ final class FriendsManager: AnyFriendsManager {
     }
 
     // MARK: - Private Methods
+
+    private func queueUpdates() {
+        Task {
+            try await updateFriends()
+            try await updateFriendRequests()
+            try await updateFriendActivitySummaries()
+        }
+    }
 
     private func updateFriends() async throws {
         guard !user.friends.isEmpty else {

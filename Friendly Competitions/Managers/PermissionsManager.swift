@@ -20,16 +20,17 @@ final class PermissionsManager: AnyPermissionsManager {
 
     // MARK: - Private Properties
 
-    @LazyInjected private var healthKitManager: AnyHealthKitManager
-    @LazyInjected private var notificationManager: NotificationManaging
+    @Injected private var healthKitManager: AnyHealthKitManager
+    @Injected private var notificationManager: NotificationManaging
 
     // MARK: - Lifecycle
 
     override init() {
         super.init()
         permissionStatus = [
-            .health: healthKitManager.permissionStatus,
-            .notifications: .authorized
+            .health: healthKitManager.permissionStatus
+            /// don't set .notifications to not accidentally show permissions modal on launch,
+            /// since it needs to be fetched with a callback
         ]
 
         notificationManager.permissionStatus { [weak self] permissionStatus in

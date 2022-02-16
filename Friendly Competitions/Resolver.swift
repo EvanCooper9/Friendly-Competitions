@@ -4,13 +4,13 @@ import Resolver
 
 extension Resolver: ResolverRegistering {
     public static func registerAllServices() {
-        register { ActivitySummaryManager() as AnyActivitySummaryManager }.scope(.application)
-        register { AuthenticationManager() as AnyAuthenticationManager }.scope(.application)
-        register { CompetitionsManager() as AnyCompetitionsManager }.scope(.application)
-        register { FriendsManager() as AnyFriendsManager }.scope(.application)
-        register { HealthKitManager() as AnyHealthKitManager }.scope(.application)
-        register { NotificationManager() as NotificationManaging }.scope(.application)
-        register { PermissionsManager() as AnyPermissionsManager }.scope(.application)
-        register { Firestore.firestore() }.scope(.application)
+        register { ActivitySummaryManager() as AnyActivitySummaryManager }.scope(.shared)
+        register { AuthenticationManager() as AnyAuthenticationManager }.scope(.shared)
+        register { CompetitionsManager() as AnyCompetitionsManager }.scope(.shared)
+        register { FriendsManager() as AnyFriendsManager }.scope(.shared)
+        register { HealthKitManager() as AnyHealthKitManager }.scope(.shared)
+        register { NotificationManager() as NotificationManaging }.scope(.shared)
+        register { PermissionsManager() as AnyPermissionsManager }.scope(.shared)
+        register { Firestore.firestore() }.scope(.shared)
     }
 }

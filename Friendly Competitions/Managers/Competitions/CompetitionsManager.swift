@@ -23,8 +23,8 @@ final class CompetitionsManager: AnyCompetitionsManager {
 
     // MARK: - Private Properties
 
-    @LazyInjected private var database: Firestore
-    @LazyInjected private var userManager: AnyUserManager
+    @Injected private var database: Firestore
+    @Injected private var userManager: AnyUserManager
 
     private var user: User { userManager.user }
 

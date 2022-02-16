@@ -7,7 +7,7 @@ import UIKit
 
 final class AppDelegate: NSObject, UIApplicationDelegate {
 
-    @LazyInjected private var database: Firestore
+    @Injected private var database: Firestore
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         Messaging.messaging().delegate = self
@@ -28,7 +28,6 @@ extension AppDelegate: MessagingDelegate {
                 .getDocument()
                 .decoded(as: User.self)
 
-            print("fcmToken: \(fcmToken)")
             guard user.notificationTokens?.contains(fcmToken) == false else { return }
             user.notificationTokens = user.notificationTokens?.appending(fcmToken) ?? [fcmToken]
             try await database.document("users/\(userId)").updateDataEncodable(user)

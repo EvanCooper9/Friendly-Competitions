@@ -14,10 +14,10 @@ final class ActivitySummaryManager: AnyActivitySummaryManager {
 
     // MARK: - Private Properties
 
-    @LazyInjected private var competitionsManager: AnyCompetitionsManager
-    @LazyInjected private var healthKitManager: AnyHealthKitManager
-    @LazyInjected private var database: Firestore
-    @LazyInjected private var userManager: AnyUserManager
+    @Injected private var competitionsManager: AnyCompetitionsManager
+    @Injected private var healthKitManager: AnyHealthKitManager
+    @Injected private var database: Firestore
+    @Injected private var userManager: AnyUserManager
 
     private var user: User { userManager.user }
 
