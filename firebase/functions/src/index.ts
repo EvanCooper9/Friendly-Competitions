@@ -56,16 +56,14 @@ exports.sendIncomingFriendRequestNotification = functions.firestore
 exports.updateCompetitionStandings = functions.https
     .onCall(async data => {
         const userId = data.userId;
-        if (userId != "NqduqRO62IfW6RkTq6otUey9xv42") {
-            return;
-        }
 
-        const competitionsRef = await firestore.collection("competitions").get();
+        const competitionsRef = await firestore.collection("competitions")
+            .where("participants", "array-contains", userId)
+            .get();
+
         const updateCompetitions = competitionsRef.docs.map(async competitionDoc => {
             const competition = competitionDoc.data();
-            if (!competition.participants.includes(userId)) {
-                return null;
-            }
+            console.log(`competition: ${competition.name}`);
                         
             const competitionStart = Date.parse(competition.start);
             const competitionEnd = Date.parse(competition.end);
@@ -96,6 +94,8 @@ exports.updateCompetitionStandings = functions.https
                 }
             });
 
+            console.log(`total points: ${totalPoints}`);
+
             const standingsRef = await firestore.collection(`competitions/${competition.id}/standings`).get();
             const standings = standingsRef.docs
                 .map(standingDoc => {
@@ -106,7 +106,7 @@ exports.updateCompetitionStandings = functions.https
                     return standing;
                 });
 
-            const existingStanding = standings.filter(standing => {
+            const existingStanding = standings.find(standing => {
                 return standing.userId == userId;
             });
 
@@ -114,7 +114,7 @@ exports.updateCompetitionStandings = functions.https
                 const standing: Standing = {points: totalPoints, rank: 0, userId: userId}; 
                 standings.push(standing);
             }
-
+            
             const updateStandings = standings
                 .sort((a, b) => {
                     if (a.points < b.points) {

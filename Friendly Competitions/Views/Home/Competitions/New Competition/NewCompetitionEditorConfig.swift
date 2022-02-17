@@ -8,6 +8,9 @@ struct NewCompetitionEditorConfig {
     var invitees = [String]()
     var scoringModel = Competition.ScoringModel.percentOfGoals
 
+    var `public` = true
+    var recurring = false
+
     var createDisabled: Bool { name.isEmpty || invitees.isEmpty }
 
     var disabledReason: String? {

@@ -10,11 +10,11 @@ struct Home: View {
 
     @StateObject private var appState = AppState()
 
-    @StateObject private var activitySummaryManager = Resolver.resolve(AnyActivitySummaryManager.self)
-    @StateObject private var competitionsManager = Resolver.resolve(AnyCompetitionsManager.self)
-    @StateObject private var friendsManager = Resolver.resolve(AnyFriendsManager.self)
-    @StateObject private var permissionsManager = Resolver.resolve(AnyPermissionsManager.self)
-    @StateObject private var userManager = Resolver.resolve(AnyUserManager.self)
+    @EnvironmentObject private var activitySummaryManager: AnyActivitySummaryManager
+    @EnvironmentObject private var competitionsManager: AnyCompetitionsManager
+    @EnvironmentObject private var friendsManager: AnyFriendsManager
+    @EnvironmentObject private var permissionsManager: AnyPermissionsManager
+    @EnvironmentObject private var userManager: AnyUserManager
 
     @State private var presentAbout = false
     @State private var presentPermissions = false
@@ -85,10 +85,10 @@ struct Home: View {
 
     private var competitions: some View {
         Section {
-            let competitions = competitionsManager.competitions
-                .filter { competitionsFiltered ? $0.isActive : true }
-            ForEach(competitions) { competition in
-                CompetitionListItem(competition: competition)
+            ForEach($competitionsManager.competitions) { $competition in
+                if competitionsFiltered ? competition.isActive : true {
+                    CompetitionListItem(competition: $competition)
+                }
             }
         } header: {
             HStack {
@@ -209,11 +209,11 @@ struct HomeView_Previews: PreviewProvider {
     }()
 
     static var previews: some View {
-        Resolver.register { activitySummaryManager as AnyActivitySummaryManager }
-        Resolver.register { competitionManager as AnyCompetitionsManager }
-        Resolver.register { friendsManager as AnyFriendsManager }
-        Resolver.register { permissionsManager as AnyPermissionsManager }
-        Resolver.register { userManager as AnyUserManager }
-        return Home()
+        Home()
+            .environmentObject(activitySummaryManager)
+            .environmentObject(competitionManager)
+            .environmentObject(friendsManager)
+            .environmentObject(permissionsManager)
+            .environmentObject(userManager)
     }
 }

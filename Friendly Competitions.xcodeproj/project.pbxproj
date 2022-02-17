@@ -69,6 +69,10 @@
 		C1884E4826D5894000C21014 /* Home.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1884E4726D5894000C21014 /* Home.swift */; };
 		C1884E4E26D59E3100C21014 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1884E4D26D59E3000C21014 /* User.swift */; };
 		C1884E5426D5A40E00C21014 /* Competition.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1884E5326D5A40E00C21014 /* Competition.swift */; };
+		C19B7F2627BD843000BCA4B9 /* ExploreCompetitions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C19B7F2527BD843000BCA4B9 /* ExploreCompetitions.swift */; };
+		C19B7F2827BD8A5E00BCA4B9 /* HomeContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C19B7F2727BD8A5E00BCA4B9 /* HomeContainer.swift */; };
+		C19B7F2B27BD8C7100BCA4B9 /* FeaturedCompetitionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C19B7F2A27BD8C7100BCA4B9 /* FeaturedCompetitionView.swift */; };
+		C19B7F2D27BDED8B00BCA4B9 /* ExploreCarouselSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = C19B7F2C27BDED8B00BCA4B9 /* ExploreCarouselSection.swift */; };
 		C19EAFE3272B30E0008BCFDD /* PermissionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C19EAFE2272B30E0008BCFDD /* PermissionsView.swift */; };
 		C1A4696A26DA823C00254105 /* Resolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A4696926DA823C00254105 /* Resolver.swift */; };
 		C1AAE944275AEE6F00921E41 /* UIViewController+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AAE943275AEE6F00921E41 /* UIViewController+Extensions.swift */; };
@@ -193,6 +197,10 @@
 		C1884E4726D5894000C21014 /* Home.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Home.swift; sourceTree = "<group>"; };
 		C1884E4D26D59E3000C21014 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		C1884E5326D5A40E00C21014 /* Competition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Competition.swift; sourceTree = "<group>"; };
+		C19B7F2527BD843000BCA4B9 /* ExploreCompetitions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreCompetitions.swift; sourceTree = "<group>"; };
+		C19B7F2727BD8A5E00BCA4B9 /* HomeContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeContainer.swift; sourceTree = "<group>"; };
+		C19B7F2A27BD8C7100BCA4B9 /* FeaturedCompetitionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeaturedCompetitionView.swift; sourceTree = "<group>"; };
+		C19B7F2C27BDED8B00BCA4B9 /* ExploreCarouselSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreCarouselSection.swift; sourceTree = "<group>"; };
 		C19EAFE2272B30E0008BCFDD /* PermissionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionsView.swift; sourceTree = "<group>"; };
 		C1A4696926DA823C00254105 /* Resolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Resolver.swift; sourceTree = "<group>"; };
 		C1AAE943275AEE6F00921E41 /* UIViewController+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Extensions.swift"; sourceTree = "<group>"; };
@@ -363,6 +371,7 @@
 		C12D640127A5EA7A00259237 /* Home */ = {
 			isa = PBXGroup;
 			children = (
+				C19B7F2727BD8A5E00BCA4B9 /* HomeContainer.swift */,
 				C1884E4726D5894000C21014 /* Home.swift */,
 				C123C9DC27A8AF4700375F73 /* About */,
 				C1F7DFF226D7F77900B46F91 /* Competitions */,
@@ -557,6 +566,16 @@
 			path = Mocks;
 			sourceTree = "<group>";
 		};
+		C19B7F2927BD8C5C00BCA4B9 /* Explore */ = {
+			isa = PBXGroup;
+			children = (
+				C19B7F2527BD843000BCA4B9 /* ExploreCompetitions.swift */,
+				C19B7F2C27BDED8B00BCA4B9 /* ExploreCarouselSection.swift */,
+				C19B7F2A27BD8C7100BCA4B9 /* FeaturedCompetitionView.swift */,
+			);
+			path = Explore;
+			sourceTree = "<group>";
+		};
 		C1AAE942275AEE5E00921E41 /* UIKit */ = {
 			isa = PBXGroup;
 			children = (
@@ -690,6 +709,7 @@
 			isa = PBXGroup;
 			children = (
 				C1EA986826D6E8C900219E84 /* CompetitionView.swift */,
+				C19B7F2927BD8C5C00BCA4B9 /* Explore */,
 				C123C9E127A980EA00375F73 /* New Competition */,
 			);
 			path = Competitions;
@@ -900,6 +920,7 @@
 				C184A6E626D87FD4007CEF9B /* JSONEncoder+Extensions.swift in Sources */,
 				C15522A026E793DA00FE0DA7 /* ActivitySummary+Mock.swift in Sources */,
 				C12BA6E426F60B34009DAE38 /* DateInterval+Extensions.swift in Sources */,
+				C19B7F2627BD843000BCA4B9 /* ExploreCompetitions.swift in Sources */,
 				C16CC40927A73E6E00C26208 /* User+Statistics.swift in Sources */,
 				C123C9D927A8A83300375F73 /* Participant.swift in Sources */,
 				C1884E5426D5A40E00C21014 /* Competition.swift in Sources */,
@@ -912,6 +933,7 @@
 				C1EA986226D6B5EB00219E84 /* Array+Extensions.swift in Sources */,
 				C10E5541272B3BB70053BBA6 /* Permission.swift in Sources */,
 				C109E4C826E7FF4600AA10C5 /* Decodable+Extensions.swift in Sources */,
+				C19B7F2D27BDED8B00BCA4B9 /* ExploreCarouselSection.swift in Sources */,
 				C1AAE947275AF92C00921E41 /* WithLoadingOverlay.swift in Sources */,
 				C123C9CF27A86E1200375F73 /* Stack.swift in Sources */,
 				C1EA986926D6E8C900219E84 /* CompetitionView.swift in Sources */,
@@ -928,6 +950,7 @@
 				C1E1A9D127A6D9D700E8E360 /* FriendsManager.swift in Sources */,
 				C1AAE944275AEE6F00921E41 /* UIViewController+Extensions.swift in Sources */,
 				C1401F8726D921960080F74F /* Sequence+Extensions.swift in Sources */,
+				C19B7F2827BD8A5E00BCA4B9 /* HomeContainer.swift in Sources */,
 				C16ADDD826D9128F00E34E04 /* DateFormatter+Extensions.swift in Sources */,
 				C1691DDE26D561D5006FFA30 /* SignInView.swift in Sources */,
 				C155229E26E793C600FE0DA7 /* Competition+Mock.swift in Sources */,
@@ -938,6 +961,7 @@
 				C1C1542326D5DFFD00C6FA9F /* HKActivitySummary+Extensions.swift in Sources */,
 				C114314227B9B6ED00915757 /* DeepLink.swift in Sources */,
 				C123C9D427A88D3200375F73 /* UserInfoSection.swift in Sources */,
+				C19B7F2B27BD8C7100BCA4B9 /* FeaturedCompetitionView.swift in Sources */,
 				C1401F8926D933560080F74F /* Profile.swift in Sources */,
 				C1B2F4E4272B505C0028449F /* AppDelegate.swift in Sources */,
 				C1E4AB9A26FCC96500B1AF12 /* CompetitionListItem.swift in Sources */,

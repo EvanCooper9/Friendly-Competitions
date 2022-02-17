@@ -3,7 +3,7 @@ import SwiftUI
 
 struct CompetitionView: View {
 
-    let competition: Competition
+    @Binding var competition: Competition
 
     @Environment(\.presentationMode) private var presentationMode
     @EnvironmentObject private var competitionsManager: AnyCompetitionsManager
@@ -59,11 +59,11 @@ struct CompetitionView: View {
     private var details: some View {
         Section("Details") {
             ImmutableListItemView(
-                value: competition.start.formatted(date: .complete, time: .omitted),
+                value: competition.start.formatted(date: .abbreviated, time: .omitted),
                 valueType: .date(description: competition.started ? "Started" : "Starts")
             )
             ImmutableListItemView(
-                value: competition.end.formatted(date: .complete, time: .omitted),
+                value: competition.end.formatted(date: .abbreviated, time: .omitted),
                 valueType: .date(description: competition.ended ? "Ended" : "Ends")
             )
             ImmutableListItemView(
@@ -75,41 +75,44 @@ struct CompetitionView: View {
 
     private var actions: some View {
         Section {
-            if competition.pendingParticipants.contains(userManager.user.id) {
-                Button {
-                    competitionsManager.accept(competition)
-                } label: {
-                    Label("Accept invite", systemImage: "person.crop.circle.badge.checkmark")
+            if !competition.ended {
+                Button(toggling: $showInviteFriend) {
+                    Label("Invite a friend", systemImage: "person.crop.circle.badge.plus")
                 }
+            }
 
-                Button {
-                    competitionsManager.decline(competition)
-                } label: {
-                    Label("Decline invite", systemImage: "person.crop.circle.badge.xmark")
-                }
-                .foregroundColor(.red)
-            } else {
-                if !competition.ended {
-                    Button(toggling: $showInviteFriend) {
-                        Label("Invite a friend", systemImage: "person.crop.circle.badge.plus")
-                    }
-                }
+            if competition.participants.contains(userManager.user.id) {
                 Button {
                     actionRequiringConfirmation = .leave
                 } label: {
                     Label("Leave competition", systemImage: "person.crop.circle.badge.minus")
                         .foregroundColor(.red)
                 }
+
+                if competition.public != true {
+                    Button {
+                        actionRequiringConfirmation = .delete
+                    } label: {
+                        Label("Delete competition", systemImage: "trash")
+                            .foregroundColor(.red)
+                    }
+                }
+            } else if competition.pendingParticipants.contains(userManager.user.id) {
+                Label("Accept invite", systemImage: "person.crop.circle.badge.checkmark")
+                    .onTapGesture { competitionsManager.accept(competition) }
+                Label("Decline invite", systemImage: "person.crop.circle.badge.xmark")
+                    .foregroundColor(.red)
+                    .onTapGesture { competitionsManager.decline(competition) }
+            } else {
                 Button {
-                    actionRequiringConfirmation = .delete
+                    competitionsManager.join(competition)
                 } label: {
-                    Label("Delete competition", systemImage: "trash")
-                        .foregroundColor(.red)
+                    Label("Join competition", systemImage: "person.crop.circle.badge.checkmark")
                 }
             }
         }
         .confirmationDialog(
-            "Are you sure? This cannot be undone.",
+            "Are you sure?",
             isPresented: .isNotNil($actionRequiringConfirmation),
             titleVisibility: .visible
         ) {
@@ -198,12 +201,12 @@ struct CompetitionView_Previews: PreviewProvider {
     }()
 
     static var previews: some View {
-        CompetitionView(competition: competition)
+        CompetitionView(competition: .constant(competition))
             .environmentObject(competitionManager)
             .environmentObject(friendsManager)
             .environmentObject(userManager)
             .embeddedInNavigationView()
-        CompetitionView(competition: .mockInvited)
+        CompetitionView(competition: .constant(.mockPublic))
             .environmentObject(competitionManager)
             .environmentObject(friendsManager)
             .environmentObject(userManager)

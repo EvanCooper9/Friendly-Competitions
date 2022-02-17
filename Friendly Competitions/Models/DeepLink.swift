@@ -2,10 +2,13 @@ import Foundation
 
 enum DeepLink {
     case friendReferral(id: String)
+    case competitionInvite(id: String)
 
     init?(from url: URL) {
-        if let inviteId = url.path.string(after: "/invite/") {
+        if let inviteId = url.path.string(after: "/friend/") {
             self = .friendReferral(id: inviteId)
+        } else if let inviteId = url.path.string(after: "/competition/") {
+            self = .competitionInvite(id: inviteId)
         } else {
             return nil
         }

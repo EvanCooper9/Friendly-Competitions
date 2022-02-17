@@ -21,6 +21,17 @@ extension Competition {
         )
     }
 
+    static var mockPublic: Competition {
+        .init(
+            name: "Friendly Competitions: Weekly",
+            participants: [],
+            pendingParticipants: [],
+            scoringModel: .percentOfGoals,
+            start: .now,
+            end: .now.addingTimeInterval(2.days)
+        )
+    }
+
     static var mockOld: Competition {
         .init(
             name: "Oldie bug a goodie",

@@ -3,13 +3,13 @@ import Resolver
 
 struct CompetitionListItem: View {
 
-    let competition: Competition
+    @Binding var competition: Competition
 
     @EnvironmentObject private var competitionsManager: AnyCompetitionsManager
     @EnvironmentObject private var userManager: AnyUserManager
 
     var body: some View {
-        NavigationLink(destination: CompetitionView(competition: competition)) {
+        NavigationLink(destination: CompetitionView(competition: $competition)) {
             HStack {
                 Text(competition.name)
                 Spacer()
@@ -17,9 +17,9 @@ struct CompetitionListItem: View {
                     Text("Invited")
                         .foregroundColor(.gray)
                 } else if competition.ended,
-                          let standings = competitionsManager.standings[competition.id],
-                          let rank = standings.first(where: { $0.userId == userManager.user.id })?.rank,
-                          let rankEmoji = rank.rankEmoji {
+                      let standings = competitionsManager.standings[competition.id],
+                      let rank = standings.first(where: { $0.userId == userManager.user.id })?.rank,
+                      let rankEmoji = rank.rankEmoji {
                     Text(rankEmoji)
                 } 
             }

@@ -11,12 +11,17 @@ class AnyCompetitionsManager: ObservableObject {
     @Published(storedWithKey: "participants") var participants = [Competition.ID: [Participant]]()
     @Published(storedWithKey: "pendingParticipants") var pendingParticipants = [Competition.ID : [Participant]]()
 
+    @Published var publicCompetitions = [Competition]()
+
     func accept(_ competition: Competition) {}
     func create(_ competition: Competition) {}
     func decline(_ competition: Competition) {}
     func delete(_ competition: Competition) {}
     func invite(_ user: User, to competition: Competition) {}
+    func join(_ competition: Competition) {}
     func leave(_ competition: Competition) {}
+
+    func updateStandings() async throws {}
 }
 
 final class CompetitionsManager: AnyCompetitionsManager {
@@ -87,22 +92,43 @@ final class CompetitionsManager: AnyCompetitionsManager {
         update(competition: competition)
     }
 
+    override func join(_ competition: Competition) {
+        var competition = competition
+        competition.participants.append(user.id)
+        update(competition: competition)
+    }
+
     override func leave(_ competition: Competition) {
         var competition = competition
         competition.participants.remove(user.id)
         competitions.remove(competition)
+        standings[competition.id] = nil
+        participants[competition.id] = nil
+        pendingParticipants[competition.id] = nil
         Task { [weak self, competition] in
+            try await self?.database.document("competitions/\(competition.id)/standings/\(user.id)").delete()
             try await self?.database.document("competitions/\(competition.id)").updateDataEncodable(competition)
         }
+    }
+
+    override func updateStandings() async throws {
+        guard !competitions.isEmpty else { return }
+        try await Functions.functions()
+            .httpsCallable("updateCompetitionStandings")
+            .call(["userId": self.user.id])
     }
 
     // MARK: - Private Methods
 
     private func update(competition: Competition) {
-        guard let index = competitions.firstIndex(where: { $0.id == competition.id }) else { return }
-        competitions[index] = competition
+        if let index = competitions.firstIndex(where: { $0.id == competition.id }) {
+            competitions[index] = competition
+        } else if let index = publicCompetitions.firstIndex(where: { $0.id == competition.id }) {
+            publicCompetitions[index] = competition
+        }
         Task { [weak self, competition] in
             try await self?.database.document("competitions/\(competition.id)").updateDataEncodable(competition)
+            try await self?.updateStandings()
         }
     }
 
@@ -121,9 +147,25 @@ final class CompetitionsManager: AnyCompetitionsManager {
                     self?.competitions = competitions
                 }
             }
+
+        database.collection("competitions")
+            .whereField("public", isEqualTo: true)
+            .addSnapshotListener { snapshot, error in
+                guard let snapshot = snapshot else { return }
+                let competitions = snapshot.documents.decoded(asArrayOf: Competition.self)
+                DispatchQueue.main.async { [weak self] in
+                    self?.publicCompetitions = competitions
+                }
+            }
     }
 
     private func updateStandings(for competitions: [Competition]) async throws {
+        guard !competitions.isEmpty else {
+            DispatchQueue.main.async { [weak self] in
+                self?.standings = [:]
+            }
+            return
+        }
         try await withThrowingTaskGroup(of: (Competition.ID, [Competition.Standing])?.self) { group in
             competitions.forEach { competition in
                 group.addTask { [weak self] in
@@ -150,6 +192,12 @@ final class CompetitionsManager: AnyCompetitionsManager {
     }
 
     private func updateParticipants(for competitions: [Competition]) async throws {
+        guard !competitions.isEmpty else {
+            DispatchQueue.main.async { [weak self] in
+                self?.participants = [:]
+            }
+            return
+        }
         try await withThrowingTaskGroup(of: (Competition.ID, [Participant])?.self) { group in
             competitions.forEach { competition in
                 guard !competition.participants.isEmpty else { return }
@@ -175,6 +223,12 @@ final class CompetitionsManager: AnyCompetitionsManager {
     }
 
     private func updatePendingParticipants(for competitions: [Competition]) async throws {
+        guard !competitions.isEmpty else {
+            DispatchQueue.main.async { [weak self] in
+                self?.pendingParticipants = [:]
+            }
+            return
+        }
         try await withThrowingTaskGroup(of: (Competition.ID, [Participant])?.self) { group in
             competitions.forEach { competition in
                 guard !competition.pendingParticipants.isEmpty else { return }

@@ -1,13 +1,17 @@
 import Foundation
 
 struct Competition: Codable, Identifiable {
-    var id = UUID()
+    var id = UUID().uuidString
     var name = ""
     var participants = [String]()
     var pendingParticipants = [String]()
     var scoringModel = ScoringModel.percentOfGoals
     var start = Date.now
     var end = Date.now.addingTimeInterval(7.days)
+
+    var bannerPath: String?
+    var `public`: Bool? = false
+    var recurring: Bool? = false
 }
 
 extension Competition: Equatable {

@@ -40,11 +40,7 @@ final class ActivitySummaryManager: AnyActivitySummaryManager {
                 guard let self = self else { return }
                 Task { [activitySummaries] in
                     try await self.upload(activitySummaries: activitySummaries)
-                    if !self.competitionsManager.competitions.isEmpty {
-                        try await Functions.functions()
-                            .httpsCallable("updateCompetitionStandings")
-                            .call(["userId": self.user.id])
-                    }
+                    try await self.competitionsManager.updateStandings()
                 }
             }
             .store(in: &cancellables)

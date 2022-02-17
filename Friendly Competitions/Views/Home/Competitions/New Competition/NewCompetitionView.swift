@@ -7,18 +7,21 @@ struct NewCompetitionView: View {
     @Environment(\.presentationMode) private var presentationMode
     @EnvironmentObject private var competitionManager: AnyCompetitionsManager
     @EnvironmentObject private var friendsManager: AnyFriendsManager
-    @EnvironmentObject private var user: User
+    @EnvironmentObject private var userManager: AnyUserManager
     @State private var presentAddFriends = false
 
     var body: some View {
         Form {
             details
             scoring
-            friendsView
+
+            if !editorConfig.public {
+                friendsView
+            }
 
             Section {
                 Button("Create") {
-                    let newCompetition = editorConfig.competition(creator: user)
+                    let newCompetition = editorConfig.competition(creator: userManager.user)
                     competitionManager.create(newCompetition)
                     presentationMode.wrappedValue.dismiss()
                 }
@@ -48,6 +51,14 @@ struct NewCompetitionView: View {
                 in: dateRange(startingFrom: editorConfig.start),
                 displayedComponents: [.date]
             )
+            Toggle("Recurring", isOn: $editorConfig.recurring)
+            Toggle("Public", isOn: $editorConfig.public)
+            if editorConfig.public {
+                VStack(alignment: .leading) {
+                    Text("Preview")
+                    FeaturedCompetitionView(competition: editorConfig.competition(creator: userManager.user))
+                }
+            }
         }
     }
 
@@ -128,9 +139,14 @@ struct NewCompetitionView_Previews: PreviewProvider {
         return friendsManager
     }()
 
+    private static let userManager: AnyUserManager = {
+        AnyUserManager(user: .evan)
+    }()
+
     static var previews: some View {
         NewCompetitionView()
             .environmentObject(competitionsManager)
             .environmentObject(friendsManager)
+            .environmentObject(userManager)
     }
 }

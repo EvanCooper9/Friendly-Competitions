@@ -9,6 +9,7 @@ struct About: View {
         static let iconSize = 60.0
         static var iconCornerRadius: Double { iconSize * 0.2237 }
         static let privacyPolicyURL = URL(string: "https://www.termsfeed.com/live/83fffe02-9426-43f1-94ca-aedea5df3d24")!
+        static let bugReportURL = URL(string: "https://github.com/EvanCooper9/Friendly-Competitions/issues/new")!
         static let developerURL = URL(string: "https://evancooper.tech")!
     }
 
@@ -27,6 +28,11 @@ struct About: View {
                 }
                 Link(destination: Constants.privacyPolicyURL) {
                     Label("Privacy policy", systemImage: "hand.raised")
+                }
+                Button {
+                    UIApplication.shared.open(Constants.bugReportURL)
+                } label: {
+                    Label("Report an issue", systemImage: "ladybug")
                 }
             } header: {
                 VStack {
