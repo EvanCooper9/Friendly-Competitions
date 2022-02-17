@@ -24,8 +24,6 @@ struct Home: View {
     @State private var sharedFriendId: String?
     @AppStorage("competitionsFiltered") var competitionsFiltered = false
 
-    @State private var deepLink: DeepLink?
-
     var body: some View {
         List {
             Group {
@@ -53,8 +51,8 @@ struct Home: View {
         .sheet(isPresented: $presentNewCompetition) { NewCompetitionView() }
         .sheet(isPresented: $presentPermissions) { PermissionsView() }
         .onOpenURL { url in
-            appState.deepLink = .init(from: url)
-            switch deepLink {
+            appState.deepLink = DeepLink(from: url)
+            switch appState.deepLink {
             case .friendReferral:
                 presentSearchFriendsSheet.toggle()
             default:
