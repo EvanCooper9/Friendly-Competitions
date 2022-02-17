@@ -11,6 +11,9 @@ struct CompetitionListItem: View {
     var body: some View {
         NavigationLink(destination: CompetitionView(competition: $competition)) {
             HStack {
+                if competition.owner == Bundle.main.id {
+                    AppIcon(size: UIFont.preferredFont(forTextStyle: .body).pointSize)
+                }
                 Text(competition.name)
                 Spacer()
                 if competition.pendingParticipants.contains(userManager.user.id) {

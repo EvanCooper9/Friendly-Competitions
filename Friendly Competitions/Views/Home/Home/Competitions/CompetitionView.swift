@@ -13,6 +13,7 @@ struct CompetitionView: View {
     private enum Action {
         case leave, delete
     }
+
     @State private var showAreYouSure = false
     @State private var actionRequiringConfirmation: Action?
     @State private var showInviteFriend = false
@@ -31,9 +32,11 @@ struct CompetitionView: View {
         .navigationTitle(competition.name)
     }
 
+    @ViewBuilder
     private var standings: some View {
-        Section("Standings") {
-            ForEach(competitionsManager.standings[competition.id] ?? []) { standing in
+        let standings = competitionsManager.standings[competition.id] ?? []
+        Section {
+            ForEach(standings) { standing in
                 HStack {
                     Text(standing.rank.ordinalString ?? "?").bold()
                     if let participant = competitionsManager.participants[competition.id]?.first(where: { $0.id == standing.userId }) {
@@ -44,6 +47,12 @@ struct CompetitionView: View {
                     Spacer()
                     Text("\(standing.points)")
                 }
+            }
+        } header: {
+            Text("Standings")
+        } footer: {
+            if standings.isEmpty {
+                Text("Nothing here, yet.")
             }
         }
     }
@@ -70,6 +79,13 @@ struct CompetitionView: View {
                 value: competition.scoringModel.displayName,
                 valueType: .other(systemImage: "plusminus.circle", description: "Scoring model")
             )
+            if competition.repeats {
+                let repeatInterval = Int(competition.end.timeIntervalSince(competition.start) / 1.days)
+                ImmutableListItemView(
+                    value: "Every \(repeatInterval) days",
+                    valueType: .other(systemImage: "repeat.circle", description: "Restarts")
+                )
+            }
         }
     }
 
@@ -89,7 +105,7 @@ struct CompetitionView: View {
                         .foregroundColor(.red)
                 }
 
-                if competition.public != true {
+                if competition.owner == userManager.user.id {
                     Button {
                         actionRequiringConfirmation = .delete
                     } label: {
@@ -98,11 +114,17 @@ struct CompetitionView: View {
                     }
                 }
             } else if competition.pendingParticipants.contains(userManager.user.id) {
-                Label("Accept invite", systemImage: "person.crop.circle.badge.checkmark")
-                    .onTapGesture { competitionsManager.accept(competition) }
-                Label("Decline invite", systemImage: "person.crop.circle.badge.xmark")
-                    .foregroundColor(.red)
-                    .onTapGesture { competitionsManager.decline(competition) }
+                Button {
+                    competitionsManager.accept(competition)
+                } label: {
+                    Label("Accept invite", systemImage: "person.crop.circle.badge.checkmark")
+                }
+                Button {
+                    competitionsManager.decline(competition)
+                } label: {
+                    Label("Decline invite", systemImage: "person.crop.circle.badge.xmark")
+                        .foregroundColor(.red)
+                }
             } else {
                 Button {
                     competitionsManager.join(competition)

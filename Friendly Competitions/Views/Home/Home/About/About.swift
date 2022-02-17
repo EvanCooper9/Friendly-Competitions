@@ -36,16 +36,13 @@ struct About: View {
                 }
             } header: {
                 VStack {
-                    Image(uiImage: Bundle.main.icon)
-                        .resizable()
-                        .frame(width: Constants.iconSize, height: Constants.iconSize)
-                        .cornerRadius(Constants.iconCornerRadius)
-                        .frame(maxWidth: .infinity, alignment: .center)
+                    AppIcon()
                         .shadow(radius: 10)
                     Text("\(Bundle.main.name) (\(Bundle.main.version))")
                         .font(.title3)
                     Text("by Evan Cooper")
                 }
+                .frame(maxWidth: .infinity)
                 Text("The app")
             }
             .textCase(nil)

@@ -1,14 +1,7 @@
 import Resolver
 import SwiftUI
 
-enum Tab {
-    case home
-    case explore
-}
-
 struct HomeContainer: View {
-
-    @State private var tab = Tab.home
 
     @StateObject private var activitySummaryManager = Resolver.resolve(AnyActivitySummaryManager.self)
     @StateObject private var competitionsManager = Resolver.resolve(AnyCompetitionsManager.self)
@@ -19,15 +12,7 @@ struct HomeContainer: View {
     var body: some View {
         TabView {
             Home()
-                .tag(Tab.home)
-                .tabItem {
-                    Label("Home", systemImage: "house")
-                }
-            ExploreCompetitions()
-                .tag(Tab.explore)
-                .tabItem {
-                    Label("Explore", systemImage: "sparkle.magnifyingglass")
-                }
+            Explore()
         }
         .environmentObject(activitySummaryManager)
         .environmentObject(competitionsManager)

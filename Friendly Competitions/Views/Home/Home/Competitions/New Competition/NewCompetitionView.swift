@@ -14,10 +14,7 @@ struct NewCompetitionView: View {
         Form {
             details
             scoring
-
-            if !editorConfig.public {
-                friendsView
-            }
+            friendsView
 
             Section {
                 Button("Create") {
@@ -37,7 +34,7 @@ struct NewCompetitionView: View {
     }
 
     private var details: some View {
-        Section("Details") {
+        Section {
             TextField("Name", text: $editorConfig.name)
             DatePicker(
                 "Starts",
@@ -51,12 +48,16 @@ struct NewCompetitionView: View {
                 in: dateRange(startingFrom: editorConfig.start),
                 displayedComponents: [.date]
             )
-            Toggle("Recurring", isOn: $editorConfig.recurring)
-            Toggle("Public", isOn: $editorConfig.public)
-            if editorConfig.public {
-                VStack(alignment: .leading) {
-                    Text("Preview")
-                    FeaturedCompetitionView(competition: editorConfig.competition(creator: userManager.user))
+            Toggle("Recurring", isOn: $editorConfig.repeats)
+            Toggle("Public", isOn: $editorConfig.isPublic)
+        } header: {
+            Text("Details")
+        } footer: {
+            if !editorConfig.detailsFooterTexts.isEmpty {
+                VStack(alignment: .leading, spacing: 10) {
+                    ForEach(editorConfig.detailsFooterTexts, id: \.self) { text in
+                        Text(text)
+                    }
                 }
             }
         }

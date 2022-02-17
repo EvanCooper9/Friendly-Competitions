@@ -22,6 +22,10 @@ struct FriendView: View {
                 }
             }
 
+            Section("Stats") {
+                StatisticsView(statistics: friend.statistics ?? .zero)
+            }
+
             Section {
                 Button(toggling: $showConfirmDelete) {
                     Label("Remove friend", systemImage: "person.crop.circle.badge.minus")

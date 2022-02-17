@@ -5,44 +5,46 @@ import XCTest
 final class CompetitionTests: XCTestCase {
 
     func testThatEquatableIsCorrect() {
-        let idA = UUID()
-        let idB = UUID()
-        let competitionA = Competition(id: idA, name: "a")
-        let competitionB = Competition(id: idB, name: "b")
-        let competitionA2 = Competition(id: idA, name: "c")
+        let idA = UUID().uuidString
+        let idB = UUID().uuidString
+        let competitionA = Competition(id: idA)
+        let competitionB = Competition(id: idB)
+        let competitionA2 = Competition(id: idA)
         XCTAssertEqual(competitionA, competitionA2)
         XCTAssertNotEqual(competitionA, competitionB)
     }
 
     func testThatStartedIsCorrect() {
-        var competition = Competition()
-        competition.start = .distantPast
-        XCTAssertTrue(competition.started)
-        competition.start = .distantFuture
-        XCTAssertFalse(competition.started)
+        XCTAssertTrue(Competition(start: .distantPast).started)
+        XCTAssertFalse(Competition(start: .distantFuture).started)
     }
 
     func testThatEndedIsCorrect() {
-        var competition = Competition()
-        competition.end = .distantPast
-        XCTAssertTrue(competition.ended)
-        competition.end = .distantFuture
-        XCTAssertFalse(competition.ended)
+        XCTAssertTrue(Competition(end: .distantPast).ended)
+        XCTAssertFalse(Competition(end: .distantFuture).ended)
     }
 
     func testThatIsActiveIsCorrect() {
-        var competition = Competition()
+        XCTAssertTrue(Competition(start: .distantPast, end: .distantFuture).isActive)
+        XCTAssertFalse(Competition(start: .distantFuture, end: .distantFuture).isActive)
+        XCTAssertFalse(Competition(start: .distantPast, end: .distantPast).isActive)
+    }
+}
 
-        competition.start = .distantPast
-        competition.end = .distantFuture
-        XCTAssertTrue(competition.isActive)
-
-        competition.start = .distantFuture
-        competition.end = .distantFuture
-        XCTAssertFalse(competition.isActive)
-
-        competition.start = .distantPast
-        competition.end = .distantPast
-        XCTAssertFalse(competition.isActive)
+private extension Competition {
+    init(id: String = UUID().uuidString, start: Date = .now, end: Date = .now) {
+        self.init(
+            id: id,
+            name: #function,
+            owner: #function,
+            participants: [],
+            pendingParticipants: [],
+            scoringModel: .percentOfGoals,
+            start: start,
+            end: end,
+            repeats: false,
+            isPublic: false,
+            banner: nil
+        )
     }
 }

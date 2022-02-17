@@ -21,10 +21,16 @@ class AnyCompetitionsManager: ObservableObject {
     func join(_ competition: Competition) {}
     func leave(_ competition: Competition) {}
 
+    func search(_ searchText: String) async throws -> [Competition] { [] }
+
     func updateStandings() async throws {}
 }
 
 final class CompetitionsManager: AnyCompetitionsManager {
+
+    private struct SearchResult: Decodable {
+        let name: String
+    }
 
     // MARK: - Private Properties
 
@@ -32,6 +38,10 @@ final class CompetitionsManager: AnyCompetitionsManager {
     @Injected private var userManager: AnyUserManager
 
     private var user: User { userManager.user }
+
+    private var searchText: Task<Void, Error>? {
+        willSet { searchText?.cancel() }
+    }
 
     // MARK: - Lifecycle
 
@@ -48,6 +58,9 @@ final class CompetitionsManager: AnyCompetitionsManager {
         if !competition.participants.contains(user.id) {
             competition.participants.append(user.id)
             update(competition: competition)
+            Task { [competition] in
+                try await updateStandings(for: [competition])
+            }
         }
     }
 
@@ -93,9 +106,13 @@ final class CompetitionsManager: AnyCompetitionsManager {
     }
 
     override func join(_ competition: Competition) {
+        guard !competition.participants.contains(user.id) else { return }
         var competition = competition
         competition.participants.append(user.id)
         update(competition: competition)
+        Task { [competition] in
+            try await updateStandings(for: [competition])
+        }
     }
 
     override func leave(_ competition: Competition) {
@@ -111,11 +128,24 @@ final class CompetitionsManager: AnyCompetitionsManager {
         }
     }
 
+    override func search(_ searchText: String) async throws -> [Competition] {
+        try await self.database.collection("competitions")
+            .whereField("isPublic", isEqualTo: true)
+            .getDocuments()
+            .documents
+            .filter { document in
+                guard let searchResult = try? document.decoded(as: SearchResult.self) else { return false }
+                return searchResult.name.localizedCaseInsensitiveContains(searchText)
+            }
+            .decoded(asArrayOf: Competition.self)
+    }
+
     override func updateStandings() async throws {
         guard !competitions.isEmpty else { return }
         try await Functions.functions()
             .httpsCallable("updateCompetitionStandings")
             .call(["userId": self.user.id])
+        try await updateStandings(for: competitions)
     }
 
     // MARK: - Private Methods
@@ -149,7 +179,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
             }
 
         database.collection("competitions")
-            .whereField("public", isEqualTo: true)
+            .whereField("isPublic", isEqualTo: true)
             .addSnapshotListener { snapshot, error in
                 guard let snapshot = snapshot else { return }
                 let competitions = snapshot.documents.decoded(asArrayOf: Competition.self)
@@ -180,13 +210,16 @@ final class CompetitionsManager: AnyCompetitionsManager {
                 }
             }
 
-            var allStandings = [Competition.ID: [Competition.Standing]]()
+            var newStandings = self.standings
+                .filter { competitionId, _ in
+                    self.competitions.contains(where: { $0.id == competitionId })
+                }
             for try await (competitionId, standings) in group.compactMap({ $0 }) {
-                allStandings[competitionId] = standings
+                newStandings[competitionId] = standings
             }
 
-            DispatchQueue.main.async { [weak self, allStandings] in
-                self?.standings = allStandings
+            DispatchQueue.main.async { [weak self, newStandings] in
+                self?.standings = newStandings
             }
         }
     }
@@ -211,13 +244,16 @@ final class CompetitionsManager: AnyCompetitionsManager {
                 }
             }
 
-            var allParticipants = [Competition.ID: [Participant]]()
+            var newParticipants = self.participants
+                .filter { competitionId, _ in
+                    self.competitions.contains(where: { $0.id == competitionId })
+                }
             for try await (competitionId, participants) in group.compactMap({ $0 }) {
-                allParticipants[competitionId] = participants
+                newParticipants[competitionId] = participants
             }
 
-            DispatchQueue.main.async { [weak self, allParticipants] in
-                self?.participants = allParticipants
+            DispatchQueue.main.async { [weak self, newParticipants] in
+                self?.participants = newParticipants
             }
         }
     }

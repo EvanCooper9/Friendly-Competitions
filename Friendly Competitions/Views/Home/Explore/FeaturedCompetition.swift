@@ -1,28 +1,33 @@
 import SwiftUI
 
-struct FeaturedCompetitionView: View {
+struct FeaturedCompetition: View {
 
     let competition: Competition
+
+    private var start: String { competition.start.formatted(date: .abbreviated, time: .omitted) }
+    private var end: String { competition.end.formatted(date: .abbreviated, time: .omitted) }
 
     var body: some View {
         Color.clear
             .aspectRatio(3/2, contentMode: .fit)
             .overlay {
-                Image(competition.bannerPath ?? "trophy")
+                Image("trophy")
                     .resizable()
                     .scaledToFill()
             }
             .clipped()
             .overlay {
                 VStack(alignment: .leading, spacing: 5) {
-                    Text(competition.name)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .font(.title3)
                     HStack {
-                        Image(systemName: "calendar")
-                        Text("\(competition.start.formatted(date: .abbreviated, time: .omitted)) - \(competition.end.formatted(date: .abbreviated, time: .omitted))")
+                        if competition.owner == Bundle.main.id {
+                            AppIcon(size: UIFont.preferredFont(forTextStyle: .title2).pointSize)
+                        }
+                        Text(competition.name)
+                            .frame(maxWidth: .infinity, alignment: .leading)
+                            .font(.title3)
                     }
-                    .font(.caption)
+                    Label("\(start) - \(end)", systemImage: "calendar")
+                        .font(.caption)
                 }
                 .foregroundColor(.black)
                 .padding(8)
@@ -36,7 +41,7 @@ struct FeaturedCompetitionView: View {
 struct FeaturedCompetitionView_Previews: PreviewProvider {
     static var previews: some View {
         ScrollView(.vertical) {
-            FeaturedCompetitionView(competition: .mock)
+            FeaturedCompetition(competition: .mockPublic)
                 .padding()
         }
     }

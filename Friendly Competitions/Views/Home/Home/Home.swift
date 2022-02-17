@@ -69,6 +69,9 @@ struct Home: View {
         .environmentObject(friendsManager)
         .environmentObject(permissionsManager)
         .environmentObject(userManager)
+        .tabItem {
+            Label("Home", systemImage: "house")
+        }
     }
 
     private var activitySummary: some View {

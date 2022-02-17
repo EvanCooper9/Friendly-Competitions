@@ -2,16 +2,20 @@ import Foundation
 
 struct Competition: Codable, Identifiable {
     var id = UUID().uuidString
-    var name = ""
-    var participants = [String]()
-    var pendingParticipants = [String]()
-    var scoringModel = ScoringModel.percentOfGoals
-    var start = Date.now
-    var end = Date.now.addingTimeInterval(7.days)
+    let name: String
 
-    var bannerPath: String?
-    var `public`: Bool? = false
-    var recurring: Bool? = false
+    let owner: String
+    var participants: [String]
+    var pendingParticipants: [String]
+
+    let scoringModel: ScoringModel
+
+    let start: Date
+    let end: Date
+    let repeats: Bool
+
+    let isPublic: Bool
+    let banner: String?
 }
 
 extension Competition: Equatable {
@@ -24,4 +28,6 @@ extension Competition {
     var isActive: Bool { started && !ended }
     var started: Bool { Calendar.current.compare(.now, to: start, toGranularity: .day) != .orderedAscending }
     var ended: Bool { Calendar.current.compare(.now, to: end, toGranularity: .day) == .orderedDescending }
+    var appOwned: Bool { owner == Bundle.main.id }
+//    var repeats: Bool { repeatInterval != nil }
 }
