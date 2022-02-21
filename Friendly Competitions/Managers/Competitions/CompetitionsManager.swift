@@ -9,12 +9,13 @@ class AnyCompetitionsManager: ObservableObject {
     @Published(storedWithKey: "competitions") var competitions = [Competition]()
     @Published(storedWithKey: "standings") var standings = [Competition.ID : [Competition.Standing]]()
     @Published(storedWithKey: "participants") var participants = [Competition.ID: [Participant]]()
-    @Published(storedWithKey: "pendingParticipants") var pendingParticipants = [Competition.ID : [Participant]]()
+    @Published(storedWithKey: "pendingParticipants") var pendingParticipants = [Competition.ID: [Participant]]()
 
-    @Published var publicCompetitions = [Competition]()
+    @Published var appOwnedCompetitions = [Competition]()
+    @Published var topCommunityCompetitions = [Competition]()
 
     func accept(_ competition: Competition) {}
-    func create(_ competition: Competition) {}
+    func createCompetition(with config: NewCompetitionEditorConfig) {}
     func decline(_ competition: Competition) {}
     func delete(_ competition: Competition) {}
     func invite(_ user: User, to competition: Competition) {}
@@ -32,8 +33,13 @@ final class CompetitionsManager: AnyCompetitionsManager {
         let name: String
     }
 
+    private struct TopCommunityResult: Decodable {
+        let participants: [String]
+    }
+
     // MARK: - Private Properties
 
+    @LazyInjected private var activitySummaryManager: AnyActivitySummaryManager
     @Injected private var database: Firestore
     @Injected private var userManager: AnyUserManager
 
@@ -58,16 +64,29 @@ final class CompetitionsManager: AnyCompetitionsManager {
         if !competition.participants.contains(user.id) {
             competition.participants.append(user.id)
             update(competition: competition)
-            Task { [competition] in
-                try await updateStandings(for: [competition])
+            Task {
+                try await activitySummaryManager.update()
             }
         }
     }
 
-    override func create(_ competition: Competition) {
+    override func createCompetition(with config: NewCompetitionEditorConfig) {
+        let competition = Competition(
+            name: config.name,
+            owner: user.id,
+            participants: [user.id],
+            pendingParticipants: config.invitees,
+            scoringModel: config.scoringModel,
+            start: config.start,
+            end: config.end,
+            repeats: config.repeats,
+            isPublic: config.isPublic,
+            banner: nil
+        )
         competitions.append(competition)
-        Task { [weak self] in
+        Task { [weak self, competition] in
             try await self?.database.document("competitions/\(competition.id)").setDataEncodable(competition)
+            try await activitySummaryManager.update()
         }
     }
 
@@ -110,8 +129,8 @@ final class CompetitionsManager: AnyCompetitionsManager {
         var competition = competition
         competition.participants.append(user.id)
         update(competition: competition)
-        Task { [competition] in
-            try await updateStandings(for: [competition])
+        Task {
+            try await activitySummaryManager.update()
         }
     }
 
@@ -122,6 +141,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
         standings[competition.id] = nil
         participants[competition.id] = nil
         pendingParticipants[competition.id] = nil
+        update(competition: competition)
         Task { [weak self, competition] in
             try await self?.database.document("competitions/\(competition.id)/standings/\(user.id)").delete()
             try await self?.database.document("competitions/\(competition.id)").updateDataEncodable(competition)
@@ -153,8 +173,10 @@ final class CompetitionsManager: AnyCompetitionsManager {
     private func update(competition: Competition) {
         if let index = competitions.firstIndex(where: { $0.id == competition.id }) {
             competitions[index] = competition
-        } else if let index = publicCompetitions.firstIndex(where: { $0.id == competition.id }) {
-            publicCompetitions[index] = competition
+        } else if let index = appOwnedCompetitions.firstIndex(where: { $0.id == competition.id }) {
+            appOwnedCompetitions[index] = competition
+        } else if let index = topCommunityCompetitions.firstIndex(where: { $0.id == competition.id }) {
+            topCommunityCompetitions[index] = competition
         }
         Task { [weak self, competition] in
             try await self?.database.document("competitions/\(competition.id)").updateDataEncodable(competition)
@@ -180,11 +202,28 @@ final class CompetitionsManager: AnyCompetitionsManager {
 
         database.collection("competitions")
             .whereField("isPublic", isEqualTo: true)
+            .whereField("owner", isEqualTo: Bundle.main.id)
             .addSnapshotListener { snapshot, error in
                 guard let snapshot = snapshot else { return }
                 let competitions = snapshot.documents.decoded(asArrayOf: Competition.self)
                 DispatchQueue.main.async { [weak self] in
-                    self?.publicCompetitions = competitions
+                    self?.appOwnedCompetitions = competitions
+                }
+            }
+
+        database.collection("competitions")
+            .whereField("isPublic", isEqualTo: true)
+            .whereField("owner", isNotEqualTo: Bundle.main.id)
+            .limit(to: 10)
+            .addSnapshotListener { snapshot, error in
+                guard let snapshot = snapshot else { return }
+                let competitions = snapshot.documents
+                    .decoded(asArrayOf: Competition.self)
+                    .sorted(by: \.participants.count)
+                    .reversed()
+                    .dropLast(max(0, snapshot.documents.count - 10))
+                DispatchQueue.main.async { [weak self] in
+                    self?.topCommunityCompetitions = Array(competitions)
                 }
             }
     }
@@ -200,12 +239,29 @@ final class CompetitionsManager: AnyCompetitionsManager {
             competitions.forEach { competition in
                 group.addTask { [weak self] in
                     guard let self = self else { return nil }
-                    let standings = try await self.database
-                        .collection("competitions/\(competition.id)/standings")
+
+                    let standingsRef = self.database.collection("competitions/\(competition.id)/standings")
+
+                    var standings = try await standingsRef
+                        .order(by: "rank")
+                        .limit(to: 10)
                         .getDocuments()
                         .documents
                         .decoded(asArrayOf: Competition.Standing.self)
-                        .sorted(by: \.rank)
+
+                    if !standings.contains(where: { $0.userId == self.userManager.user.id }) {
+                        let standing = try await standingsRef
+                            .whereField("userId", isEqualTo: self.userManager.user.id)
+                            .getDocuments()
+                            .documents
+                            .first?
+                            .decoded(as: Competition.Standing.self)
+
+                        if let standing = standing {
+                            standings.append(standing)
+                        }
+                    }
+
                     return (competition.id, standings)
                 }
             }
@@ -287,5 +343,24 @@ final class CompetitionsManager: AnyCompetitionsManager {
                 self?.pendingParticipants = allPendingParticipants
             }
         }
+    }
+}
+
+private extension Array where Element == Competition.Standing {
+    var chunkedByConsecutiveRank: [[Element]] {
+        guard var currentStanding = first else { return [] }
+        var currentChunk = [Element]()
+        var chunkedStandings = [[Competition.Standing]]()
+        forEach { standing in
+            defer { currentStanding = standing }
+            guard standing.rank - currentStanding.rank <= 1 else {
+                chunkedStandings.append(currentChunk)
+                currentChunk = [standing]
+                return
+            }
+            currentChunk.append(standing)
+        }
+        chunkedStandings.append(currentChunk)
+        return chunkedStandings
     }
 }

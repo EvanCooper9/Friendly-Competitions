@@ -9,54 +9,35 @@ struct Explore: View {
     @State private var searchResults = [Competition]()
     @State private var searchText = ""
 
-    private var appOwnedCompetitions: [Competition] {
-        competitionsManager.publicCompetitions.filter(\.appOwned)
-    }
-
-    private var communityCompetitions: [Competition] {
-        competitionsManager.publicCompetitions.filter { !$0.appOwned }
-    }
-
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
             if searchText.isEmpty {
+                let carouselPadding = 20.0
                 ExploreCarousel(title: "From us") {
-                    ForEach(appOwnedCompetitions) { competition in
+                    ForEach($competitionsManager.appOwnedCompetitions) { $competition in
                         NavigationLink {
-                            CompetitionView(competition: .constant(competition))
+                            CompetitionView(competition: $competition)
                         } label: {
-                            FeaturedCompetition(competition: competition)
-                                .frame(width: UIScreen.width - 40)
+                            ExploreCompetition(competition: competition)
+                                .frame(width: UIScreen.width - (carouselPadding * 2))
                         }
                         .buttonStyle(.flatLink)
                     }
                 }
-                .padding(.bottom, 20)
+                .padding(.bottom, carouselPadding)
 
                 VStack(alignment: .leading) {
-                    Text("From the community")
+                    Text("Top from the community")
                         .font(.title2)
                     VStack(alignment: .leading, spacing: 10) {
-                        ForEach(communityCompetitions) { competition in
+                        ForEach($competitionsManager.topCommunityCompetitions) { $competition in
                             NavigationLink {
-                                CompetitionView(competition: .constant(competition))
+                                CompetitionView(competition: $competition)
                             } label: {
-                                VStack(alignment: .leading, spacing: 5) {
-                                    Text(competition.name)
-                                        .frame(maxWidth: .infinity, alignment: .leading)
-                                        .font(.title3)
-
-                                    let start = competition.start.formatted(date: .abbreviated, time: .omitted)
-                                    let end = competition.end.formatted(date: .abbreviated, time: .omitted)
-                                    let text = "\(start) - \(end)"
-                                    Label(text, systemImage: "calendar")
-                                        .font(.footnote)
-                                }
-                                .frame(maxWidth: .infinity)
-                                .contentShape(Rectangle())
+                                ExploreCompetition(competition: competition)
                             }
                             .buttonStyle(.flatLink)
-                            if competition.id != communityCompetitions.last?.id {
+                            if competition.id != competitionsManager.topCommunityCompetitions.last?.id {
                                 Divider().padding(.leading)
                             }
                         }
@@ -69,18 +50,40 @@ struct Explore: View {
                 }
                 .padding(.horizontal)
             } else {
-                ForEach(searchResults) { competition in
-                    NavigationLink {
-                        CompetitionView(competition: .constant(competition))
-                    } label: {
-                        FeaturedCompetition(competition: competition)
-                            .frame(width: UIScreen.width - 40)
+                VStack {
+                    ForEach($searchResults.filter(\.wrappedValue.appOwned)) { $competition in
+                        NavigationLink {
+                            CompetitionView(competition: $competition)
+                        } label: {
+                            ExploreCompetition(competition: competition)
+                        }
+                        .buttonStyle(.flatLink)
                     }
-                    .buttonStyle(.flatLink)
+
+                    VStack(alignment: .leading, spacing: 10) {
+                        let communitySearchResults = $searchResults.filter { !$0.wrappedValue.appOwned }
+                        ForEach(communitySearchResults) { $competition in
+                            NavigationLink {
+                                CompetitionView(competition: $competition)
+                            } label: {
+                                ExploreCompetition(competition: competition)
+                            }
+                            .buttonStyle(.flatLink)
+                            if competition.id != communitySearchResults.last?.id {
+                                Divider().padding(.leading)
+                            }
+                        }
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(.horizontal)
+                    .padding(.vertical, 10)
+                    .background(colorScheme == .light ? .white : Color(uiColor: .secondarySystemBackground))
+                    .cornerRadius(10)
                 }
-                .padding(.horizontal)
+                .padding()
             }
         }
+        .frame(maxWidth: .infinity)
         .background(colorScheme == .light ?
             Color(uiColor: .secondarySystemBackground).ignoresSafeArea() :
             nil
@@ -105,11 +108,17 @@ struct Explore: View {
 struct ExploreCompetitions_Previews: PreviewProvider {
 
     static let competitionsManager: AnyCompetitionsManager = {
-        let competitionsManager = AnyCompetitionsManager()
-        competitionsManager.publicCompetitions = [
+        let competitionsManager = MockCompetitionManager()
+        competitionsManager.appOwnedCompetitions = [
             .mockPublic,
-            .mockPublic,
+            .mockPublic
+        ]
+        competitionsManager.topCommunityCompetitions = [
             .mock,
+            .mock
+        ]
+        competitionsManager.searchResults = [
+            .mockPublic,
             .mock
         ]
         return competitionsManager

@@ -20,16 +20,20 @@ function sendNotifications(userId: string, title: string, body: string): Promise
             if (tokens == null) {
                 return Promise.resolve([]);
             }
-
-            const notifications = tokens.map(token => {
-                return sendNotification(token, title, body);
+            const notifications = tokens.map(async token => {
+                try {
+                    return await sendNotification(token, title, body);
+                } catch (error) {
+                    // error likely due to invalid notification token... so remove it.
+                    const activeTokens = tokens.filter((t) => t != token);
+                    user.notificationTokens = activeTokens;
+                    return await snapshot.ref.update(user);
+                }
             });
 
             return Promise.all(notifications);
         })
-        .then(messageIds => {
-            return;
-        });
+        .then();
 }
 
 /**
@@ -51,14 +55,9 @@ function sendNotification(fcmToken: string, title: string, body: string): Promis
         }
     };
     
-    return admin.messaging().send(notificationPayload)
-        .then(messageId => {
-            return;
-        })
-        .catch(error => {
-            console.log(`error when sending notification: ${error}`);
-            return;
-        });
+    return admin.messaging()
+        .send(notificationPayload)
+        .then();
 }
 
 export {

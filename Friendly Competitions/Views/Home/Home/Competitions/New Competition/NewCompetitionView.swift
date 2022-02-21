@@ -18,8 +18,7 @@ struct NewCompetitionView: View {
 
             Section {
                 Button("Create") {
-                    let newCompetition = editorConfig.competition(creator: userManager.user)
-                    competitionManager.create(newCompetition)
+                    competitionManager.createCompetition(with: editorConfig)
                     presentationMode.wrappedValue.dismiss()
                 }
                 .disabled(editorConfig.createDisabled)
@@ -48,7 +47,7 @@ struct NewCompetitionView: View {
                 in: dateRange(startingFrom: editorConfig.start),
                 displayedComponents: [.date]
             )
-            Toggle("Recurring", isOn: $editorConfig.repeats)
+            Toggle("Repeats", isOn: $editorConfig.repeats)
             Toggle("Public", isOn: $editorConfig.isPublic)
         } header: {
             Text("Details")

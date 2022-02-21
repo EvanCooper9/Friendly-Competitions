@@ -16,23 +16,19 @@ struct About: View {
     var body: some View {
         List {
             Section {
-                Button {
+                Button("Rate", systemImage: "heart") {
                     let windowScene = UIApplication.shared.connectedScenes
                         .filter { $0.activationState == .foregroundActive }
                         .compactMap { $0 as? UIWindowScene }
                         .first
                     guard let windowScene = windowScene else { return }
                     SKStoreReviewController.requestReview(in: windowScene)
-                } label: {
-                    Label("Rate", systemImage: "heart")
                 }
                 Link(destination: Constants.privacyPolicyURL) {
                     Label("Privacy policy", systemImage: "hand.raised")
                 }
-                Button {
+                Button("Report an issue", systemImage: "ladybug") {
                     UIApplication.shared.open(Constants.bugReportURL)
-                } label: {
-                    Label("Report an issue", systemImage: "ladybug")
                 }
             } header: {
                 VStack {

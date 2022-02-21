@@ -43,8 +43,12 @@
 		C132336927BECCA800196D81 /* AttributedText.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132336827BECCA800196D81 /* AttributedText.swift */; };
 		C132336B27BF0AF700196D81 /* Sticker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132336A27BF0AF700196D81 /* Sticker.swift */; };
 		C132336D27BF0C0F00196D81 /* View+CornerRadius.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132336C27BF0C0F00196D81 /* View+CornerRadius.swift */; };
-		C132336F27BF146500196D81 /* Competition+RepeatInterval.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132336E27BF146500196D81 /* Competition+RepeatInterval.swift */; };
 		C1386C7E26D566210096E952 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = C1386C7D26D566210096E952 /* FirebaseAuth */; };
+		C13F922A27BFFEB500FC6880 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = C13F922927BFFEB500FC6880 /* FirebaseStorage */; };
+		C13F922C27BFFF9900FC6880 /* StorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13F922B27BFFF9900FC6880 /* StorageManager.swift */; };
+		C13F922E27C0017400FC6880 /* FirestoreImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13F922D27C0017400FC6880 /* FirestoreImage.swift */; };
+		C13F923027C008DF00FC6880 /* ExploreCompetition.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13F922F27C008DF00FC6880 /* ExploreCompetition.swift */; };
+		C13F923327C0099800FC6880 /* MockCompetitionManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13F923227C0099800FC6880 /* MockCompetitionManager.swift */; };
 		C1401F8726D921960080F74F /* Sequence+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1401F8626D921960080F74F /* Sequence+Extensions.swift */; };
 		C1401F8926D933560080F74F /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1401F8826D933560080F74F /* Profile.swift */; };
 		C1401F8B26D94D1C0080F74F /* ImmutableListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1401F8A26D94D1C0080F74F /* ImmutableListItemView.swift */; };
@@ -175,8 +179,11 @@
 		C132336827BECCA800196D81 /* AttributedText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttributedText.swift; sourceTree = "<group>"; };
 		C132336A27BF0AF700196D81 /* Sticker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sticker.swift; sourceTree = "<group>"; };
 		C132336C27BF0C0F00196D81 /* View+CornerRadius.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+CornerRadius.swift"; sourceTree = "<group>"; };
-		C132336E27BF146500196D81 /* Competition+RepeatInterval.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Competition+RepeatInterval.swift"; sourceTree = "<group>"; };
 		C1386C8126D56CD60096E952 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		C13F922B27BFFF9900FC6880 /* StorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageManager.swift; sourceTree = "<group>"; };
+		C13F922D27C0017400FC6880 /* FirestoreImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreImage.swift; sourceTree = "<group>"; };
+		C13F922F27C008DF00FC6880 /* ExploreCompetition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreCompetition.swift; sourceTree = "<group>"; };
+		C13F923227C0099800FC6880 /* MockCompetitionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCompetitionManager.swift; sourceTree = "<group>"; };
 		C1401F8626D921960080F74F /* Sequence+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Sequence+Extensions.swift"; sourceTree = "<group>"; };
 		C1401F8826D933560080F74F /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
 		C1401F8A26D94D1C0080F74F /* ImmutableListItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImmutableListItemView.swift; sourceTree = "<group>"; };
@@ -271,6 +278,7 @@
 				C119B03226FE67A300B56703 /* FirebaseCrashlytics in Frameworks */,
 				C1EA986526D6C32400219E84 /* Resolver in Frameworks */,
 				C1EA986B26D6FFBE00219E84 /* FirebaseFirestore in Frameworks */,
+				C13F922A27BFFEB500FC6880 /* FirebaseStorage in Frameworks */,
 				C123C9E927A9AF4800375F73 /* Algorithms in Frameworks */,
 				C1386C7E26D566210096E952 /* FirebaseAuth in Frameworks */,
 			);
@@ -316,6 +324,7 @@
 				C1E4AB9726FCC8BD00B1AF12 /* ActivitySummaryInfoView.swift */,
 				C132336427BEB58B00196D81 /* AppIcon.swift */,
 				C1E4AB9926FCC96500B1AF12 /* CompetitionListItem.swift */,
+				C13F922D27C0017400FC6880 /* FirestoreImage.swift */,
 				C1401F8A26D94D1C0080F74F /* ImmutableListItemView.swift */,
 				C123C9CE27A86E1200375F73 /* Stack.swift */,
 				C132336A27BF0AF700196D81 /* Sticker.swift */,
@@ -413,7 +422,6 @@
 			isa = PBXGroup;
 			children = (
 				C1884E5326D5A40E00C21014 /* Competition.swift */,
-				C132336E27BF146500196D81 /* Competition+RepeatInterval.swift */,
 				C155CA7527AC1A63005F49F4 /* Competition+Standing.swift */,
 				C16ADDD126D9123600E34E04 /* Competition+ScoringModel.swift */,
 			);
@@ -426,6 +434,14 @@
 				C132335E27BEA97A00196D81 /* FlatLinkStyle.swift */,
 			);
 			path = Styles;
+			sourceTree = "<group>";
+		};
+		C13F923127C0098E00FC6880 /* Managers */ = {
+			isa = PBXGroup;
+			children = (
+				C13F923227C0099800FC6880 /* MockCompetitionManager.swift */,
+			);
+			path = Managers;
 			sourceTree = "<group>";
 		};
 		C15522A126E793F300FE0DA7 /* Models */ = {
@@ -590,6 +606,7 @@
 		C18AA8AA26E7E3BB00F92D9A /* Mocks */ = {
 			isa = PBXGroup;
 			children = (
+				C13F923127C0098E00FC6880 /* Managers */,
 				C15522A126E793F300FE0DA7 /* Models */,
 			);
 			path = Mocks;
@@ -600,6 +617,7 @@
 			children = (
 				C19B7F2527BD843000BCA4B9 /* Explore.swift */,
 				C19B7F2C27BDED8B00BCA4B9 /* ExploreCarousel.swift */,
+				C13F922F27C008DF00FC6880 /* ExploreCompetition.swift */,
 				C19B7F2A27BD8C7100BCA4B9 /* FeaturedCompetition.swift */,
 			);
 			path = Explore;
@@ -677,6 +695,7 @@
 				C1E1A9D027A6D9D700E8E360 /* FriendsManager.swift */,
 				C1F9D7CC26FF871A00B25651 /* NotificationManaging.swift */,
 				C123C9C827A74F3500375F73 /* PermissionsManager.swift */,
+				C13F922B27BFFF9900FC6880 /* StorageManager.swift */,
 				C123C9DA27A8A98800375F73 /* UserManager.swift */,
 				C123C9D727A8A81F00375F73 /* Competitions */,
 				C123C9D027A875D500375F73 /* HealthKit */,
@@ -814,6 +833,7 @@
 				C123C9D527A8989500375F73 /* FirebaseFunctions */,
 				C123C9E827A9AF4800375F73 /* Algorithms */,
 				C1DB3B5A27AA0AC20074BED1 /* FirebasePerformance */,
+				C13F922927BFFEB500FC6880 /* FirebaseStorage */,
 			);
 			productName = CompyBoi;
 			productReference = C1691DC326D55FCF006FFA30 /* Friendly Competitions.app */;
@@ -949,6 +969,7 @@
 				C12D640427A5EABD00259237 /* SignInViewModel.swift in Sources */,
 				C132336127BEAF9200196D81 /* String+Extensions.swift in Sources */,
 				C1691DDB26D560C5006FFA30 /* SignInWithAppleButton.swift in Sources */,
+				C13F922C27BFFF9900FC6880 /* StorageManager.swift in Sources */,
 				C109E4C026E7F52E00AA10C5 /* Encodable+Extensions.swift in Sources */,
 				C132336B27BF0AF700196D81 /* Sticker.swift in Sources */,
 				C123C9DB27A8A98800375F73 /* UserManager.swift in Sources */,
@@ -958,6 +979,7 @@
 				C123C9C927A74F3500375F73 /* PermissionsManager.swift in Sources */,
 				C123C9E027A8B02300375F73 /* Bundle+Extensions.swift in Sources */,
 				C1ABB21526D6987C00716984 /* NewCompetitionView.swift in Sources */,
+				C13F923327C0099800FC6880 /* MockCompetitionManager.swift in Sources */,
 				C155CA7627AC1A63005F49F4 /* Competition+Standing.swift in Sources */,
 				C123C9CD27A863F100375F73 /* UserHashIDPill.swift in Sources */,
 				C132335F27BEA97A00196D81 /* FlatLinkStyle.swift in Sources */,
@@ -966,10 +988,10 @@
 				C155229C26E793B300FE0DA7 /* User+Mock.swift in Sources */,
 				C184A6E626D87FD4007CEF9B /* JSONEncoder+Extensions.swift in Sources */,
 				C15522A026E793DA00FE0DA7 /* ActivitySummary+Mock.swift in Sources */,
-				C132336F27BF146500196D81 /* Competition+RepeatInterval.swift in Sources */,
 				C12BA6E426F60B34009DAE38 /* DateInterval+Extensions.swift in Sources */,
 				C132336727BEBB1600196D81 /* UIScreen+Extensions.swift in Sources */,
 				C19B7F2627BD843000BCA4B9 /* Explore.swift in Sources */,
+				C13F923027C008DF00FC6880 /* ExploreCompetition.swift in Sources */,
 				C16CC40927A73E6E00C26208 /* User+Statistics.swift in Sources */,
 				C123C9D927A8A83300375F73 /* Participant.swift in Sources */,
 				C1884E5426D5A40E00C21014 /* Competition.swift in Sources */,
@@ -995,6 +1017,7 @@
 				C1185A2526D6717C002E2377 /* ActivitySummary.swift in Sources */,
 				C1EA986726D6DBAA00219E84 /* Date+Extensions.swift in Sources */,
 				C15522A626E7971900FE0DA7 /* FirestoreTransactionHelper.swift in Sources */,
+				C13F922E27C0017400FC6880 /* FirestoreImage.swift in Sources */,
 				C123C9D227A875EC00375F73 /* HealthKitBackgroundDeliveryReceiving.swift in Sources */,
 				C16ADDD426D9125C00E34E04 /* Int+Extensions.swift in Sources */,
 				C1401F8B26D94D1C0080F74F /* ImmutableListItemView.swift in Sources */,
@@ -1355,6 +1378,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = C1386C7C26D566210096E952 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseAuth;
+		};
+		C13F922927BFFEB500FC6880 /* FirebaseStorage */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C1386C7C26D566210096E952 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseStorage;
 		};
 		C1DB3B5A27AA0AC20074BED1 /* FirebasePerformance */ = {
 			isa = XCSwiftPackageProductDependency;

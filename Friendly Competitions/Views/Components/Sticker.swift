@@ -1,10 +1,3 @@
-//
-//  Sticker.swift
-//  Friendly Competitions
-//
-//  Created by Evan Cooper on 2022-02-17.
-//
-
 import SwiftUI
 
 struct Sticker: View {

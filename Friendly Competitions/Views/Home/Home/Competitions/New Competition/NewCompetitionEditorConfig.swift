@@ -10,14 +10,13 @@ struct NewCompetitionEditorConfig {
 
     var start = Date.now.addingTimeInterval(1.days)
     var end = Date.now.addingTimeInterval(Constants.defaultInterval.days + 1.days)
-    var repeats = false
+    var repeats = true
     var isPublic = false
-
+    
     var detailsFooterTexts: [String] {
         var detailsTexts = [String]()
         if repeats {
-            let recurringInterval = Int(end.timeIntervalSince(start) / 1.days)
-            detailsTexts.append("This competition will restart every \(recurringInterval) day(s).")
+            detailsTexts.append("This competition will restart the next day after it ends.")
         }
         if isPublic {
             detailsTexts.append("Heads up! Anyone can join public competitions from the explore page.")
@@ -37,20 +36,5 @@ struct NewCompetitionEditorConfig {
             return "Please invite at least 1 friend"
         }
         return nil
-    }
-
-    func competition(creator: User) -> Competition {
-        .init(
-            name: name,
-            owner: creator.id,
-            participants: [creator.id],
-            pendingParticipants: invitees,
-            scoringModel: scoringModel,
-            start: start,
-            end: end,
-            repeats: repeats,
-            isPublic: isPublic,
-            banner: nil
-        )
     }
 }

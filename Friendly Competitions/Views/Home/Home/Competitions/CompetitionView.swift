@@ -19,15 +19,13 @@ struct CompetitionView: View {
     @State private var showInviteFriend = false
 
     var body: some View {
-        VStack {
-            List {
-                standings
-                if !competition.pendingParticipants.isEmpty {
-                    pendingInvites
-                }
-                details
-                actions
+        List {
+            standings
+            if !competition.pendingParticipants.isEmpty {
+                pendingInvites
             }
+            details
+            actions
         }
         .navigationTitle(competition.name)
     }
@@ -47,6 +45,7 @@ struct CompetitionView: View {
                     Spacer()
                     Text("\(standing.points)")
                 }
+                .foregroundColor(standing.userId == userManager.user.id ? .blue : nil)
             }
         } header: {
             Text("Standings")
@@ -80,9 +79,8 @@ struct CompetitionView: View {
                 valueType: .other(systemImage: "plusminus.circle", description: "Scoring model")
             )
             if competition.repeats {
-                let repeatInterval = Int(competition.end.timeIntervalSince(competition.start) / 1.days)
                 ImmutableListItemView(
-                    value: "Every \(repeatInterval) days",
+                    value: "Yes",
                     valueType: .other(systemImage: "repeat.circle", description: "Restarts")
                 )
             }
@@ -92,44 +90,34 @@ struct CompetitionView: View {
     private var actions: some View {
         Section {
             if !competition.ended {
-                Button(toggling: $showInviteFriend) {
-                    Label("Invite a friend", systemImage: "person.crop.circle.badge.plus")
+                Button("Invite a friend", systemImage: "person.crop.circle.badge.plus") {
+                    showInviteFriend.toggle()
                 }
             }
 
             if competition.participants.contains(userManager.user.id) {
-                Button {
+                Button("Leave competition", systemImage: "person.crop.circle.badge.minus") {
                     actionRequiringConfirmation = .leave
-                } label: {
-                    Label("Leave competition", systemImage: "person.crop.circle.badge.minus")
-                        .foregroundColor(.red)
                 }
+                .foregroundColor(.red)
 
                 if competition.owner == userManager.user.id {
-                    Button {
+                    Button("Delete competition", systemImage: "trash") {
                         actionRequiringConfirmation = .delete
-                    } label: {
-                        Label("Delete competition", systemImage: "trash")
-                            .foregroundColor(.red)
                     }
+                    .foregroundColor(.red)
                 }
             } else if competition.pendingParticipants.contains(userManager.user.id) {
-                Button {
+                Button("Accept invite", systemImage: "person.crop.circle.badge.checkmark") {
                     competitionsManager.accept(competition)
-                } label: {
-                    Label("Accept invite", systemImage: "person.crop.circle.badge.checkmark")
                 }
-                Button {
+                Button("Decline invite", systemImage: "person.crop.circle.badge.xmark") {
                     competitionsManager.decline(competition)
-                } label: {
-                    Label("Decline invite", systemImage: "person.crop.circle.badge.xmark")
-                        .foregroundColor(.red)
                 }
+                .foregroundColor(.red)
             } else {
-                Button {
+                Button("Join competition", systemImage: "person.crop.circle.badge.checkmark") {
                     competitionsManager.join(competition)
-                } label: {
-                    Label("Join competition", systemImage: "person.crop.circle.badge.checkmark")
                 }
             }
         }
@@ -193,8 +181,17 @@ struct CompetitionView_Previews: PreviewProvider {
         competitionManager.competitions = [competition]
         competitionManager.standings = [
             competition.id: [
-                .init(rank: 1, userId: evan.id, points: 100),
-                .init(rank: 2, userId: gabby.id, points: 50)
+                .init(rank: 1, userId: "1", points: 100),
+                .init(rank: 2, userId: "2", points: 50),
+                .init(rank: 3, userId: "a", points: 50),
+                .init(rank: 4, userId: "b", points: 50),
+//                .init(rank: 5, userId: "c", points: 50),
+                .init(rank: 5, userId: evan.id, points: 50),
+                .init(rank: 6, userId: "d", points: 50),
+//                .init(rank: 7, userId: "e", points: 50),
+//                .init(rank: 8, userId: "f", points: 50),
+//                .init(rank: 9, userId: "g", points: 50),
+//                .init(rank: 10, userId: "h", points: 50)
             ]
         ]
         competitionManager.participants = [
@@ -224,11 +221,6 @@ struct CompetitionView_Previews: PreviewProvider {
 
     static var previews: some View {
         CompetitionView(competition: .constant(competition))
-            .environmentObject(competitionManager)
-            .environmentObject(friendsManager)
-            .environmentObject(userManager)
-            .embeddedInNavigationView()
-        CompetitionView(competition: .constant(.mockPublic))
             .environmentObject(competitionManager)
             .environmentObject(friendsManager)
             .environmentObject(userManager)

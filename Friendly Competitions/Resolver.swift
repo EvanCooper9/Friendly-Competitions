@@ -1,5 +1,6 @@
 import Firebase
 import FirebaseFirestore
+import FirebaseStorage
 import Resolver
 
 extension Resolver: ResolverRegistering {
@@ -11,6 +12,8 @@ extension Resolver: ResolverRegistering {
         register { HealthKitManager() as AnyHealthKitManager }.scope(.shared)
         register { NotificationManager() as NotificationManaging }.scope(.shared)
         register { PermissionsManager() as AnyPermissionsManager }.scope(.shared)
+        register { StorageManager() as AnyStorageManager }.scope(.shared)
         register { Firestore.firestore() }.scope(.shared)
+        register { Storage.storage().reference() }.scope(.shared)
     }
 }

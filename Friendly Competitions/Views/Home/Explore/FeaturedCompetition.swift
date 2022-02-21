@@ -4,16 +4,20 @@ struct FeaturedCompetition: View {
 
     let competition: Competition
 
+    @Environment(\.colorScheme) private var colorScheme
+
     private var start: String { competition.start.formatted(date: .abbreviated, time: .omitted) }
     private var end: String { competition.end.formatted(date: .abbreviated, time: .omitted) }
 
     var body: some View {
-        Color.clear
+        color
             .aspectRatio(3/2, contentMode: .fit)
             .overlay {
-                Image("trophy")
-                    .resizable()
-                    .scaledToFill()
+                if let banner = competition.banner {
+                    FirestoreImage(path: banner)
+                } else {
+                    Color(uiColor: .white)
+                }
             }
             .clipped()
             .overlay {
@@ -36,13 +40,19 @@ struct FeaturedCompetition: View {
             }
             .cornerRadius(10)
     }
+
+    @ViewBuilder
+    private var color: some View {
+        colorScheme == .light ? .white : Color(uiColor: .secondarySystemBackground)
+    }
 }
 
 struct FeaturedCompetitionView_Previews: PreviewProvider {
     static var previews: some View {
-        ScrollView(.vertical) {
+        List {
             FeaturedCompetition(competition: .mockPublic)
-                .padding()
+                .listRowSeparator(.hidden)
         }
+        .listStyle(.plain)
     }
 }
