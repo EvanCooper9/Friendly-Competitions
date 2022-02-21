@@ -244,13 +244,13 @@ exports.sendCompetitionCompleteNotifications = functions.pubsub.schedule("every 
             if (competition.repeats) {
                 const competitionStart = moment(competition.start);
                 if (competitionStart.day() == 1 && competitionEnd.day() == competitionEnd.daysInMonth()) {
-                    let newStart = competitionStart.add(1, "month");
+                    const newStart = competitionStart.add(1, "month");
                     competition.start = newStart.format("yyyy-mm-dd");
                     competition.end = newStart.set("day", competitionStart.daysInMonth());
                 } else {
-                    let diff = competitionStart.diff(competitionEnd, "days");
-                    let newStart = competitionEnd.add(1, "days");
-                    let newEnd = newStart.add(diff, "days");
+                    const diff = competitionStart.diff(competitionEnd, "days");
+                    const newStart = competitionEnd.add(1, "days");
+                    const newEnd = newStart.add(diff, "days");
                     competition.start = newStart.format("yyyy-mm-dd");
                     competition.end = newEnd.format("yyyy-mm-dd");
                 }
@@ -294,7 +294,7 @@ exports.sendCompetitionCompleteNotifications = functions.pubsub.schedule("every 
                     }
                 }
 
-                let ordinal = ["st", "nd", "rd"][((rank+90)%100-10)%10-1] || "th";
+                const ordinal = ["st", "nd", "rd"][((rank+90)%100-10)%10-1] || "th";
                 const nfs = notifications.sendNotifications(
                     participantId,
                     "Competition complete!",

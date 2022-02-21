@@ -6,6 +6,8 @@ import Resolver
 
 struct Profile: View {
 
+    @Environment(\.presentationMode) private var presentationMode
+    @EnvironmentObject private var authenticationManager: AnyAuthenticationManager
     @EnvironmentObject private var userManager: AnyUserManager
     @State private var presentDeleteAccountAlert = false
 
@@ -19,8 +21,9 @@ struct Profile: View {
             }
 
             Section {
-                Button(action: userManager.signOut) {
-                    Label("Sign out", systemImage: "person.crop.circle.badge.minus")
+                Button("Sign out", systemImage: "person.crop.circle.badge.minus") {
+                    userManager.signOut()
+                    presentationMode.wrappedValue.dismiss()
                 }
                 Button(toggling: $presentDeleteAccountAlert) {
                     Label("Delete account", systemImage: "trash")

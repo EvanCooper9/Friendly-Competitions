@@ -628,9 +628,9 @@
 			children = (
 				C1884E4726D5894000C21014 /* Home.swift */,
 				C123C9DC27A8AF4700375F73 /* About */,
+				C1F7DFF226D7F77900B46F91 /* Competitions */,
 				C1F7DFF326D7F78300B46F91 /* Friends */,
 				C12D63F927A5B5CE00259237 /* Profile */,
-				C1F7DFF226D7F77900B46F91 /* Competitions */,
 			);
 			path = Home;
 			sourceTree = "<group>";

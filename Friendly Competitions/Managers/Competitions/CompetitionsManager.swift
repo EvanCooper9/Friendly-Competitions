@@ -98,6 +98,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
 
     override func delete(_ competition: Competition) {
         competitions.remove(competition)
+        topCommunityCompetitions.remove(competition)
         standings[competition.id] = nil
         Task { [weak self] in
             guard let self = self else { return }
@@ -214,14 +215,14 @@ final class CompetitionsManager: AnyCompetitionsManager {
         database.collection("competitions")
             .whereField("isPublic", isEqualTo: true)
             .whereField("owner", isNotEqualTo: Bundle.main.id)
-            .limit(to: 10)
-            .addSnapshotListener { snapshot, error in
+            .getDocuments { snapshot, error in
                 guard let snapshot = snapshot else { return }
                 let competitions = snapshot.documents
                     .decoded(asArrayOf: Competition.self)
+                    .filter { !$0.participants.isEmpty }
+                    .randomSample(count: 10)
                     .sorted(by: \.participants.count)
                     .reversed()
-                    .dropLast(max(0, snapshot.documents.count - 10))
                 DispatchQueue.main.async { [weak self] in
                     self?.topCommunityCompetitions = Array(competitions)
                 }
@@ -266,10 +267,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
                 }
             }
 
-            var newStandings = self.standings
-                .filter { competitionId, _ in
-                    self.competitions.contains(where: { $0.id == competitionId })
-                }
+            var newStandings = self.standings.removeOldCompetitions(current: self.competitions)
             for try await (competitionId, standings) in group.compactMap({ $0 }) {
                 newStandings[competitionId] = standings
             }
@@ -300,10 +298,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
                 }
             }
 
-            var newParticipants = self.participants
-                .filter { competitionId, _ in
-                    self.competitions.contains(where: { $0.id == competitionId })
-                }
+            var newParticipants = self.participants.removeOldCompetitions(current: self.competitions)
             for try await (competitionId, participants) in group.compactMap({ $0 }) {
                 newParticipants[competitionId] = participants
             }
@@ -334,13 +329,13 @@ final class CompetitionsManager: AnyCompetitionsManager {
                 }
             }
 
-            var allPendingParticipants = [Competition.ID: [Participant]]()
+            var newPendingParticipants = self.pendingParticipants.removeOldCompetitions(current: self.competitions)
             for try await (competitionId, participants) in group.compactMap({ $0 }) {
-                allPendingParticipants[competitionId] = participants
+                newPendingParticipants[competitionId] = participants
             }
 
-            DispatchQueue.main.async { [weak self, allPendingParticipants] in
-                self?.pendingParticipants = allPendingParticipants
+            DispatchQueue.main.async { [weak self, newPendingParticipants] in
+                self?.pendingParticipants = newPendingParticipants
             }
         }
     }
@@ -362,5 +357,11 @@ private extension Array where Element == Competition.Standing {
         }
         chunkedStandings.append(currentChunk)
         return chunkedStandings
+    }
+}
+
+private extension Dictionary where Key == Competition.ID {
+    func removeOldCompetitions(current competitions: [Competition]) -> Self {
+        filter { competitionId, _ in competitions.contains(where: { $0.id == competitionId }) }
     }
 }
