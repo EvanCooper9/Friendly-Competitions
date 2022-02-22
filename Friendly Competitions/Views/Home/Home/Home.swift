@@ -1,10 +1,4 @@
-import HealthKit
 import SwiftUI
-import Resolver
-
-final class AppState: ObservableObject {
-    @Published var deepLink: DeepLink? = nil
-}
 
 struct Home: View {
 
@@ -21,7 +15,6 @@ struct Home: View {
     @State private var presentSettings = false
     @State private var presentNewCompetition = false
     @State private var presentSearchFriendsSheet = false
-    @State private var sharedFriendId: String?
     @AppStorage("competitionsFiltered") var competitionsFiltered = false
 
     var body: some View {
@@ -99,16 +92,10 @@ struct Home: View {
                 Text(text).font(.title3)
                 Spacer()
                 Button {
-                    let array = [1]
-                    print(array[1])
                     withAnimation { competitionsFiltered.toggle() }
                 } label: {
-                    Image(
-                        systemName: competitionsFiltered ?
-                            "line.3.horizontal.decrease.circle.fill" :
-                            "line.3.horizontal.decrease.circle"
-                    )
-                    .font(.title2)
+                    Image(systemName: "line.3.horizontal.decrease.circle\(competitionsFiltered ? ".fill" : "")")
+                        .font(.title2)
                 }
                 .disabled(competitionsManager.competitions.isEmpty)
 

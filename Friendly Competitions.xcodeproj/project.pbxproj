@@ -82,6 +82,7 @@
 		C1884E4826D5894000C21014 /* Home.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1884E4726D5894000C21014 /* Home.swift */; };
 		C1884E4E26D59E3100C21014 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1884E4D26D59E3000C21014 /* User.swift */; };
 		C1884E5426D5A40E00C21014 /* Competition.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1884E5326D5A40E00C21014 /* Competition.swift */; };
+		C1930E4527C55EF500DB45C1 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1930E4427C55EF500DB45C1 /* AppState.swift */; };
 		C19B7F2627BD843000BCA4B9 /* Explore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C19B7F2527BD843000BCA4B9 /* Explore.swift */; };
 		C19B7F2827BD8A5E00BCA4B9 /* HomeContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = C19B7F2727BD8A5E00BCA4B9 /* HomeContainer.swift */; };
 		C19B7F2B27BD8C7100BCA4B9 /* FeaturedCompetition.swift in Sources */ = {isa = PBXBuildFile; fileRef = C19B7F2A27BD8C7100BCA4B9 /* FeaturedCompetition.swift */; };
@@ -222,6 +223,7 @@
 		C1884E4726D5894000C21014 /* Home.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Home.swift; sourceTree = "<group>"; };
 		C1884E4D26D59E3000C21014 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		C1884E5326D5A40E00C21014 /* Competition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Competition.swift; sourceTree = "<group>"; };
+		C1930E4427C55EF500DB45C1 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
 		C19B7F2527BD843000BCA4B9 /* Explore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Explore.swift; sourceTree = "<group>"; };
 		C19B7F2727BD8A5E00BCA4B9 /* HomeContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeContainer.swift; sourceTree = "<group>"; };
 		C19B7F2A27BD8C7100BCA4B9 /* FeaturedCompetition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeaturedCompetition.swift; sourceTree = "<group>"; };
@@ -626,6 +628,7 @@
 		C19B7F2E27BEA69200BCA4B9 /* Home */ = {
 			isa = PBXGroup;
 			children = (
+				C1930E4427C55EF500DB45C1 /* AppState.swift */,
 				C1884E4726D5894000C21014 /* Home.swift */,
 				C123C9DC27A8AF4700375F73 /* About */,
 				C1F7DFF226D7F77900B46F91 /* Competitions */,
@@ -1020,6 +1023,7 @@
 				C13F922E27C0017400FC6880 /* FirestoreImage.swift in Sources */,
 				C123C9D227A875EC00375F73 /* HealthKitBackgroundDeliveryReceiving.swift in Sources */,
 				C16ADDD426D9125C00E34E04 /* Int+Extensions.swift in Sources */,
+				C1930E4527C55EF500DB45C1 /* AppState.swift in Sources */,
 				C1401F8B26D94D1C0080F74F /* ImmutableListItemView.swift in Sources */,
 				C1E1A9D127A6D9D700E8E360 /* FriendsManager.swift in Sources */,
 				C1AAE944275AEE6F00921E41 /* UIViewController+Extensions.swift in Sources */,

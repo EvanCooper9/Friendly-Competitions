@@ -1,5 +1,4 @@
 import SwiftUI
-import Resolver
 
 struct CompetitionListItem: View {
 

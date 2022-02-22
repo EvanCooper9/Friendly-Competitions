@@ -1,8 +1,4 @@
-import Firebase
-import FirebaseAuth
-import FirebaseFirestore
 import SwiftUI
-import Resolver
 
 struct Profile: View {
 

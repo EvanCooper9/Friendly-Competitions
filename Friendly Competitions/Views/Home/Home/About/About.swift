@@ -1,13 +1,10 @@
 import Foundation
 import StoreKit
 import SwiftUI
-import UIKit
 
 struct About: View {
 
     private enum Constants {
-        static let iconSize = 60.0
-        static var iconCornerRadius: Double { iconSize * 0.2237 }
         static let privacyPolicyURL = URL(string: "https://www.termsfeed.com/live/83fffe02-9426-43f1-94ca-aedea5df3d24")!
         static let bugReportURL = URL(string: "https://github.com/EvanCooper9/Friendly-Competitions/issues/new")!
         static let developerURL = URL(string: "https://evancooper.tech")!
