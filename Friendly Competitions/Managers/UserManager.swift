@@ -1,5 +1,6 @@
 import Combine
 import Firebase
+import FirebaseCrashlytics
 import FirebaseFirestore
 import Resolver
 
@@ -45,6 +46,7 @@ final class UserManager: AnyUserManager {
         userListener = database.document("users/\(user.id)")
             .addSnapshotListener { [weak self] snapshot, _ in
                 guard let self = self, let user = try? snapshot?.decoded(as: User.self) else { return }
+                Crashlytics.crashlytics().setUserID(user.id)
                 DispatchQueue.main.async {
                     self.user = user
                 }

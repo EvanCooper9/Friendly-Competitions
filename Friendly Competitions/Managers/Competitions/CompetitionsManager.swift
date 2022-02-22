@@ -21,9 +21,7 @@ class AnyCompetitionsManager: ObservableObject {
     func invite(_ user: User, to competition: Competition) {}
     func join(_ competition: Competition) {}
     func leave(_ competition: Competition) {}
-
     func search(_ searchText: String) async throws -> [Competition] { [] }
-
     func updateStandings() async throws {}
 }
 

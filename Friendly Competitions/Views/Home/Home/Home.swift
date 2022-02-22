@@ -99,6 +99,8 @@ struct Home: View {
                 Text(text).font(.title3)
                 Spacer()
                 Button {
+                    let array = [1]
+                    print(array[1])
                     withAnimation { competitionsFiltered.toggle() }
                 } label: {
                     Image(

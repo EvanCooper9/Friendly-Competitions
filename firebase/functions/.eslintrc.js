@@ -33,6 +33,7 @@ module.exports = {
         "no-trailing-spaces": "off",
         "comma-dangle": "off",
         "guard-for-in": "off",
-        "arrow-parens": "off"
+        "arrow-parens": "off",
+        "object-curly-spacing": "off"
     },
 };

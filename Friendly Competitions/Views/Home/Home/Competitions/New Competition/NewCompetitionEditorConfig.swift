@@ -10,7 +10,7 @@ struct NewCompetitionEditorConfig {
 
     var start = Date.now.addingTimeInterval(1.days)
     var end = Date.now.addingTimeInterval(Constants.defaultInterval.days + 1.days)
-    var repeats = true
+    var repeats = false
     var isPublic = false
     
     var detailsFooterTexts: [String] {
@@ -28,7 +28,6 @@ struct NewCompetitionEditorConfig {
     var scoringModel = Competition.ScoringModel.percentOfGoals
 
     var createDisabled: Bool { disabledReason != nil }
-
     var disabledReason: String? {
         if name.isEmpty {
             return "Please enter a name"
