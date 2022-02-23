@@ -7,6 +7,7 @@ import SwiftUI
 class AnyCompetitionsManager: ObservableObject {
 
     @Published(storedWithKey: "competitions") var competitions = [Competition]()
+    @Published(storedWithKey: "invitedCompetitions") var invitedCompetitions = [Competition]()
     @Published(storedWithKey: "standings") var standings = [Competition.ID : [Competition.Standing]]()
     @Published(storedWithKey: "participants") var participants = [Competition.ID: [Participant]]()
     @Published(storedWithKey: "pendingParticipants") var pendingParticipants = [Competition.ID: [Participant]]()
@@ -61,10 +62,10 @@ final class CompetitionsManager: AnyCompetitionsManager {
         competition.pendingParticipants.remove(user.id)
         if !competition.participants.contains(user.id) {
             competition.participants.append(user.id)
-            update(competition: competition)
-            Task {
-                try await activitySummaryManager.update()
-            }
+        }
+        update(competition: competition)
+        Task {
+            try await activitySummaryManager.update()
         }
     }
 
@@ -73,7 +74,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
             name: config.name,
             owner: user.id,
             participants: [user.id],
-            pendingParticipants: config.invitees,
+            pendingParticipants: config.invitees.appending(user.id),
             scoringModel: config.scoringModel,
             start: config.start,
             end: config.end,
@@ -196,6 +197,21 @@ final class CompetitionsManager: AnyCompetitionsManager {
                 }
                 DispatchQueue.main.async { [weak self] in
                     self?.competitions = competitions
+                }
+            }
+
+        database.collection("competitions")
+            .whereField("pendingParticipants", arrayContains: user.id)
+            .addSnapshotListener { snapshot, error in
+                guard let snapshot = snapshot else { return }
+                let competitions = snapshot.documents.decoded(asArrayOf: Competition.self)
+//                Task { [weak self] in
+//                    try await self?.updateStandings(for: competitions)
+//                    try await self?.updateParticipants(for: competitions)
+//                    try await self?.updatePendingParticipants(for: competitions)
+//                }
+                DispatchQueue.main.async { [weak self] in
+                    self?.invitedCompetitions = competitions
                 }
             }
 

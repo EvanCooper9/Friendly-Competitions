@@ -13,11 +13,11 @@ const firestore = admin.firestore();
 exports.sendIncomingFriendRequestNotification = functions.firestore
     .document("users/{userId}")
     .onUpdate(async change => {
-        const newUser = new User(change.after);
         const oldUser = new User(change.before);
+        const newUser = new User(change.after);
         const newFriendRequests: string[] = newUser.incomingFriendRequests;
         const oldFriendRequests: string[] = oldUser.incomingFriendRequests;
-        if (newFriendRequests == oldFriendRequests) return null;
+        if (newFriendRequests == oldFriendRequests) return;
 
         const notificationPromises = newFriendRequests
             .filter(x => !oldFriendRequests.includes(x))
@@ -29,6 +29,37 @@ exports.sendIncomingFriendRequestNotification = functions.firestore
                     `${authUser.displayName} added you as a friend`
                 );
             });
+
+        return Promise.all(notificationPromises);
+    });
+
+exports.sendNewCompetitionNotification = functions.firestore
+    .document("competitions/{competitionId}")
+    .onWrite(async change => {
+        if (!change.after.exists) return; // deleted
+
+        const oldCompetition = new Competition(change.before);
+        const newCompetition = new Competition(change.after);
+
+        const ownerData = await firestore.doc(`users/${newCompetition.owner}`).get();
+        const owner = new User(ownerData);
+
+        let oldInvitees = oldCompetition.pendingParticipants;
+        if (oldInvitees == undefined) oldInvitees = [];
+        const newInvitees = newCompetition.pendingParticipants;
+        if (oldInvitees == newInvitees) return;
+
+        const userPromises = await firestore.collection("users")
+            .where("id", "in", newInvitees.filter(x => !oldInvitees.includes(x)))
+            .get();
+
+        const users = userPromises.docs.map(doc => new User(doc));
+        const notificationPromises = users.map(user => {
+            const message = change.before.exists ?
+                `You've been invited to ${newCompetition.name}` : // invited by somebody to existing competition
+                `${owner.name} invited you to ${newCompetition.name}`; // invited by owner to new competition
+            return notifications.sendNotificationsToUser(user, "Competition invite", message);
+        });
 
         return Promise.all(notificationPromises);
     });
@@ -77,36 +108,14 @@ exports.updateCompetitionStandings = functions.https
                 .reverse()
                 .map((standing, index) => {
                     standing.rank = index + 1;
-                    return firestore.doc(`competitions/${competition.id}/standings/${standing.userId}`).set(standing);
+                    const obj = Object.assign({}, standing);
+                    return firestore.doc(`competitions/${competition.id}/standings/${standing.userId}`).set(obj);
                 });
             
             return Promise.all(updateStandings);
         });
 
         return Promise.all(updateCompetitions);
-    });
-
-exports.sendNewCompetitionNotification = functions.firestore
-    .document("competitions/{competitionId}")
-    .onCreate(async snapshot => {
-        const competition = new Competition(snapshot);
-        const ownerData = await firestore.doc(`users/${competition.owner}`).get();
-        const owner = new User(ownerData);
-
-        const userPromises = await firestore.collection("users")
-            .where("id", "in", competition.pendingParticipants)
-            .get();
-
-        const users = userPromises.docs.map(doc => new User(doc));
-        const notificationPromises = users.map(user => {
-            return notifications.sendNotificationsToUser(
-                user,
-                "Friendly Competitions",
-                `${owner.name} invited you to a competition`
-            );
-        });
-
-        return Promise.all(notificationPromises);
     });
 
 exports.cleanStaleActivitySummaries = functions.pubsub.schedule("every day 02:00")
@@ -133,9 +142,8 @@ exports.cleanStaleActivitySummaries = functions.pubsub.schedule("every day 02:00
 
 exports.sendCompetitionCompleteNotifications = functions.pubsub.schedule("every day 12:00")
     .timeZone("America/Toronto")
-    .onRun(async () => {        
+    .onRun(async () => {
         const competitionsRef = await firestore.collection("competitions").get();
-
         const competitionPromises = competitionsRef.docs.map(async doc => {
             const competition = new Competition(doc);
             

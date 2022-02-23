@@ -13,7 +13,7 @@ class Standing {
     constructor(document: FirebaseFirestore.DocumentSnapshot) {
         this.points = document.get("points");
         this.rank = document.get("rank");
-        this.userId = document.get("user");
+        this.userId = document.get("userId");
     }
 
     /**

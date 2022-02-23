@@ -24,7 +24,8 @@
 ##   - To know which params are supported for a template, use `swiftgen template doc xcassets swift5` to open the template documentation on GitHub.
  xcassets:
    inputs:
-     - "Friendly Competitions/Assets.xcassets"
+     - "Friendly Competitions/Images.xcassets"
+     - "Friendly Competitions/Colors.xcassets"
    outputs:
      - templateName: swift5
        params:

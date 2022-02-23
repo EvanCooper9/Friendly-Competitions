@@ -25,9 +25,9 @@ enum Permission: String, CaseIterable, Identifiable {
     var imageName: String {
         switch self {
         case .health:
-            return Asset.health.name
+            return Asset.Images.health.name
         case .notifications:
-            return Asset.notifications.name
+            return Asset.Images.notifications.name
         }
     }
 }

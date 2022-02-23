@@ -34,7 +34,7 @@ extension Competition {
         .init(
             name: "Weekly",
             owner: Bundle.main.id,
-            participants: [],
+            participants: [User.evan.id, User.gabby.id],
             pendingParticipants: [],
             scoringModel: .percentOfGoals,
             start: .now,

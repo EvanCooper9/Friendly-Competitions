@@ -2,51 +2,32 @@ import SwiftUI
 
 struct ExploreCarousel<Content: View>: View {
 
-    let title: String
-    @ViewBuilder var content: Content
+    @ViewBuilder let content: Content
 
     @Environment(\.colorScheme) private var colorScheme
 
     var body: some View {
-        VStack(alignment: .leading) {
-            HStack {
-                Text(title)
-                    .font(.title2)
-                Spacer()
-
-                NavigationLink("See all") {
-                    ScrollView(.vertical) {
-                        content
-                            .padding()
-                    }
-                    .frame(maxWidth: .infinity)
-                    .navigationTitle(title)
-                    .background(colorScheme == .light ?
-                        Color(uiColor: UIColor.secondarySystemBackground).ignoresSafeArea() :
-                        nil
-                    )
-                }
+        ScrollView(.horizontal, showsIndicators: false) {
+            LazyHStack {
+                content
             }
             .padding(.horizontal)
-            ScrollView(.horizontal, showsIndicators: false) {
-                LazyHStack {
-                    content
-                }
-                .padding(.horizontal)
-            }
         }
     }
 }
 
 struct ExploreCarousel_Previews: PreviewProvider {
     static var previews: some View {
-        ExploreCarousel(title: "From us") {
-            FeaturedCompetition(competition: .mockPublic)
-            FeaturedCompetition(competition: .mockPublic)
+        ScrollView {
+            ExploreCarousel {
+                FeaturedCompetition(competition: .mockPublic)
+                    .frame(width: UIScreen.width - 40)
+                FeaturedCompetition(competition: .mockPublic)
+                    .frame(width: UIScreen.width - 40)
+            }
+            .aspectRatio(3/2, contentMode: .fit)
         }
-        .aspectRatio(3/2, contentMode: .fit)
-        .navigationTitle("Test")
-        .embeddedInNavigationView()
-//        .frame(height: 300)
+        .background(Asset.Colors.listBackground.swiftUIColor)
+//        .preferredColorScheme(.dark)
     }
 }

@@ -86,6 +86,11 @@ struct Home: View {
                     CompetitionListItem(competition: $competition)
                 }
             }
+            ForEach($competitionsManager.invitedCompetitions) { $competition in
+                if competitionsFiltered ? competition.isActive : true {
+                    CompetitionListItem(competition: $competition)
+                }
+            }
         } header: {
             HStack {
                 let text = competitionsFiltered ? "Active competitions" : "Competitions"
