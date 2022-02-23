@@ -74,7 +74,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
             name: config.name,
             owner: user.id,
             participants: [user.id],
-            pendingParticipants: config.invitees.appending(user.id),
+            pendingParticipants: config.invitees,
             scoringModel: config.scoringModel,
             start: config.start,
             end: config.end,
