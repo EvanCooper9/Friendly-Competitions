@@ -378,13 +378,13 @@
 			path = Profile;
 			sourceTree = "<group>";
 		};
-		C12D63FE27A5E93600259237 /* Permissions */ = {
+		C12D63FE27A5E93600259237 /* Permission */ = {
 			isa = PBXGroup;
 			children = (
 				C10E5540272B3BB70053BBA6 /* Permission.swift */,
 				C1D0177C273F63CF00C9EEAE /* PermissionStatus.swift */,
 			);
-			path = Permissions;
+			path = Permission;
 			sourceTree = "<group>";
 		};
 		C12D640127A5EA7A00259237 /* Home */ = {
@@ -407,14 +407,14 @@
 			path = "Sign In";
 			sourceTree = "<group>";
 		};
-		C12D640527A5EDDF00259237 /* Competitions */ = {
+		C12D640527A5EDDF00259237 /* Competition */ = {
 			isa = PBXGroup;
 			children = (
 				C1884E5326D5A40E00C21014 /* Competition.swift */,
 				C155CA7527AC1A63005F49F4 /* Competition+Standing.swift */,
 				C16ADDD126D9123600E34E04 /* Competition+ScoringModel.swift */,
 			);
-			path = Competitions;
+			path = Competition;
 			sourceTree = "<group>";
 		};
 		C132335D27BEA96600196D81 /* Styles */ = {
@@ -575,8 +575,8 @@
 			children = (
 				C1185A2426D6717C002E2377 /* ActivitySummary.swift */,
 				C114314127B9B6ED00915757 /* DeepLink.swift */,
-				C12D640527A5EDDF00259237 /* Competitions */,
-				C12D63FE27A5E93600259237 /* Permissions */,
+				C12D640527A5EDDF00259237 /* Competition */,
+				C12D63FE27A5E93600259237 /* Permission */,
 				C16CC40727A73E6200C26208 /* User */,
 			);
 			path = Models;
