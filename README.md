@@ -7,4 +7,4 @@ Compete against groups of friends in fitness. Just like Apple's fitness cometiti
     <img alt="sc2" src="screenshots/mockups/11 Pro Max/2.png" width="24%">
     <img alt="sc3" src="screenshots/mockups/11 Pro Max/3.png" width="24%">
     <img alt="sc3" src="screenshots/mockups/11 Pro Max/4.png" width="24%">
-</24
+</p>
