@@ -12,6 +12,7 @@ struct Explore: View {
 
     @State private var searchResults = [Competition]()
     @State private var searchText = ""
+    @State private var loading = false
 
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
@@ -34,15 +35,28 @@ struct Explore: View {
                 }
             } else {
                 ExploreSection(title: "Search results") {
-                    VStack {
-                        ForEach($searchResults.filter(\.wrappedValue.appOwned)) { $competition in
-                            competitionNavigation($competition) {
-                                FeaturedCompetition(competition: competition)
+                    if loading {
+                        ProgressView()
+                            .progressViewStyle(.circular)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                    } else if searchResults.isEmpty {
+                        Text("Nothing here")
+                            .padding()
+                            .background(.ultraThinMaterial)
+                            .cornerRadius(8)
+                            .foregroundColor(.gray)
+                            .frame(maxWidth: .infinity, alignment: .center)
+                    } else {
+                        VStack {
+                            ForEach($searchResults.filter(\.wrappedValue.appOwned)) { $competition in
+                                competitionNavigation($competition) {
+                                    FeaturedCompetition(competition: competition)
+                                }
                             }
+                            communityCompetitions($searchResults)
                         }
-                        communityCompetitions($searchResults)
+                        .padding(.horizontal, Constants.horizontalPadding)
                     }
-                    .padding(.horizontal, Constants.horizontalPadding)
                 }
             }
         }
@@ -61,16 +75,21 @@ struct Explore: View {
         guard !searchText.isEmpty else {
             DispatchQueue.main.async {
                 self.searchResults = []
+                self.loading = false
             }
             return
+        }
+        DispatchQueue.main.async {
+            self.loading = true
         }
         let competitions = try await competitionsManager
             .search(searchText)
             .sorted { lhs, rhs in
                 lhs.appOwned && !rhs.appOwned
             }
-        DispatchQueue.main.async {
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
             self.searchResults = competitions
+            self.loading = false
         }
     }
 
@@ -83,28 +102,31 @@ struct Explore: View {
         .buttonStyle(.flatLink)
     }
 
+    @ViewBuilder
     private func communityCompetitions(_ competitions: Binding<[Competition]>) -> some View {
-        VStack(alignment: .leading, spacing: 10) {
-            let competitions = competitions.filter { !$0.wrappedValue.appOwned }
-            ForEach(competitions) { $competition in
-                NavigationLink {
-                    CompetitionView(competition: $competition)
-                } label: {
-                    ExploreCompetitionDetails(competition: competition)
-                        .frame(maxWidth: .infinity)
-                        .contentShape(Rectangle())
-                }
-                .buttonStyle(.flatLink)
-                if competition.id != competitions.last?.id {
-                    Divider().padding(.leading)
+        let competitions = competitions.filter { !$0.wrappedValue.appOwned }
+        if !competitions.isEmpty {
+            VStack(alignment: .leading, spacing: 10) {
+                ForEach(competitions) { $competition in
+                    NavigationLink {
+                        CompetitionView(competition: $competition)
+                    } label: {
+                        ExploreCompetitionDetails(competition: competition)
+                            .frame(maxWidth: .infinity)
+                            .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.flatLink)
+                    if competition.id != competitions.last?.id {
+                        Divider().padding(.leading)
+                    }
                 }
             }
+            .frame(maxWidth: .infinity, alignment: .leading)
+            .padding(.horizontal)
+            .padding(.vertical, 10)
+            .background(Asset.Colors.listSectionBackground.swiftUIColor)
+            .cornerRadius(10)
         }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal)
-        .padding(.vertical, 10)
-        .background(Asset.Colors.listSectionBackground.swiftUIColor)
-        .cornerRadius(10)
     }
 }
 
@@ -120,12 +142,12 @@ struct ExploreCompetitions_Previews: PreviewProvider {
             .mock,
             .mock
         ]
-        competitionsManager.searchResults = [
-            .mockPublic,
-            .mock,
-            .mockPublic,
-            .mock
-        ]
+//        competitionsManager.searchResults = [
+//            .mockPublic,
+//            .mock,
+//            .mockPublic,
+//            .mock
+//        ]
         return competitionsManager
     }()
 

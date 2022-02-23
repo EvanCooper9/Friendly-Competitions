@@ -12,6 +12,7 @@ struct ExploreSection<Content: View>: View {
                 .padding(.horizontal)
                 .foregroundColor(.gray)
                 .padding(.leading)
+                .frame(maxWidth: .infinity, alignment: .leading)
             content
         }
     }
