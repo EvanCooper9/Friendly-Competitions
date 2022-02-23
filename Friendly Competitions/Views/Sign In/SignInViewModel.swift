@@ -126,11 +126,16 @@ extension SignInViewModel: ASAuthorizationControllerDelegate {
             changeRequest?.commitChanges(completion: nil)
 
             guard let firebaseUser = firebaseUser, let email = appleIDCredential.email ?? firebaseUser.email else { return }
-            let user = User(id: firebaseUser.uid, email: email, name: displayName)
-            try? self?.database.document("users/\(user.id)").updateDataEncodable(user) { error in
+            let userJson = [
+                "id": firebaseUser.uid,
+                "email": email,
+                "name": displayName
+            ]
+            self?.database.document("users/\(firebaseUser.uid)").updateData(userJson) { error in
                 guard let nsError = error as NSError?,
                     nsError.domain == "FIRFirestoreErrorDomain",
                     nsError.code == 5 else { return }
+                let user = User(id: firebaseUser.uid, email: email, name: displayName)
                 try? self?.database.document("users/\(user.id)").setDataEncodable(user, completion: nil)
             }
         }

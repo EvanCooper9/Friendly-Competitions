@@ -1,6 +1,4 @@
 import Firebase
-import FirebaseAuth
-import FirebaseFirestore
 import SwiftUI
 import Resolver
 
@@ -20,7 +18,7 @@ struct FriendlyCompetitions: App {
     var body: some Scene {
         WindowGroup {
             if authenticationManager.loggedIn {
-                Home()
+                HomeContainer()
             } else {
                 SignInView()
             }

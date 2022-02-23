@@ -1,5 +1,4 @@
 import SwiftUI
-import Resolver
 
 struct PermissionsView: View {
 
@@ -8,7 +7,7 @@ struct PermissionsView: View {
     var body: some View {
         List {
             Section {
-                ForEach(Permission.allCases) { permission in
+                ForEach(Array(permissionsManager.permissionStatus.keys)) { permission in
                     PermissionView(permission: permission, status: permissionsManager.permissionStatus[permission]!) {
                         permissionsManager.request(permission)
                     }

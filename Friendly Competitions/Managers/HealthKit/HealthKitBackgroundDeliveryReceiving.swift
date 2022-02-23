@@ -1,3 +1,0 @@
-protocol HealthKitBackgroundDeliveryReceiving {
-    func trigger()
-}

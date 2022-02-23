@@ -10,7 +10,7 @@ struct UserHashIDPill: View {
             .foregroundColor(.gray)
             .padding(.horizontal, 8)
             .padding(.vertical, 4)
-            .background(.gray.opacity(0.1))
+            .background(.ultraThinMaterial)
             .clipShape(Capsule())
     }
 }

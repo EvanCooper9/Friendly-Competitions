@@ -16,4 +16,9 @@ extension Bundle {
     var version: String {
         infoDictionary!["CFBundleShortVersionString"] as! String
     }
+
+    var id: String {
+        let id = infoDictionary!["CFBundleIdentifier"] as! String
+        return id.before(suffix: ".debug") ?? id
+    }
 }
