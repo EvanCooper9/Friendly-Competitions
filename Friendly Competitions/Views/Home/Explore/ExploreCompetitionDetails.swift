@@ -14,7 +14,9 @@ struct ExploreCompetitionDetails: View {
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .font(.title3)
                 Spacer()
-                Label("\(competition.participants.count)", systemImage: "person.3.sequence.fill")
+                Text("\(competition.participants.count)")
+                    .font(.footnote)
+                Image(systemName: "person.3.sequence.fill")
                     .font(.footnote)
             }
             let start = competition.start.formatted(date: .abbreviated, time: .omitted)

@@ -2,14 +2,14 @@ import Foundation
 extension Competition {
     static var mock: Competition {
         .init(
-            name: "Mock competition",
+            name: "Feel the burn 🔥",
             owner: User.evan.id,
-            participants: [User.evan.id, User.gabby.id],
-            pendingParticipants: [User.gabby.id],
+            participants: [User.evan.id, User.gabby.id, User.andrew.id],
+            pendingParticipants: [],
             scoringModel: .percentOfGoals,
             start: .now,
             end: .now.addingTimeInterval(2.days),
-            repeats: false,
+            repeats: true,
             isPublic: false,
             banner: nil
         )
@@ -41,7 +41,7 @@ extension Competition {
             end: .now.addingTimeInterval(2.days),
             repeats: true,
             isPublic: true,
-            banner: nil
+            banner: "competitions/banners/trophy.jpg"
         )
     }
 
@@ -50,6 +50,21 @@ extension Competition {
             name: "Oldie bug a goodie",
             owner: User.evan.id,
             participants: [User.evan.id, User.gabby.id],
+            pendingParticipants: [],
+            scoringModel: .percentOfGoals,
+            start: .now.addingTimeInterval(-5.days),
+            end: .now.addingTimeInterval(-4.days),
+            repeats: false,
+            isPublic: false,
+            banner: nil
+        )
+    }
+
+    static func mock(with name: String, participantCount: Int) -> Competition {
+        .init(
+            name: name,
+            owner: User.evan.id,
+            participants: (0..<participantCount).map { "\($0)" },
             pendingParticipants: [],
             scoringModel: .percentOfGoals,
             start: .now.addingTimeInterval(-5.days),

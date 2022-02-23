@@ -1,7 +1,14 @@
 extension User {
+    static var andrew: User {
+        .init(
+            id: "abc123",
+            email: "andrew@email.com",
+            name: "Andrew Stapleton"
+        )
+    }
     static var evan: User {
         let user = User(
-            id: "NqduqRO62IfW6RkTq6otUey9xv42",
+            id: "0IQfVBJIgGdfC9CHgYefpZUQ13l1",
             email: "evan@test.com",
             name: "Evan Cooper"
         )
