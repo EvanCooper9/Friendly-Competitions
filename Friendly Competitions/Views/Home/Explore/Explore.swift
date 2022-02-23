@@ -2,6 +2,10 @@ import SwiftUI
 
 struct Explore: View {
 
+    private enum Constants {
+        static let horizontalPadding = 20.0
+    }
+
     @Environment(\.colorScheme) private var colorScheme
 
     @EnvironmentObject private var competitionsManager: AnyCompetitionsManager
@@ -13,11 +17,11 @@ struct Explore: View {
         ScrollView(.vertical, showsIndicators: false) {
             if searchText.isEmpty {
                 ExploreSection(title: "From us") {
-                    ExploreCarousel {
+                    ExploreCarousel(padding: Constants.horizontalPadding) {
                         ForEach($competitionsManager.appOwnedCompetitions) { $competition in
                             competitionNavigation($competition) {
                                 FeaturedCompetition(competition: competition)
-                                    .frame(width: UIScreen.width - 30)
+                                    .frame(width: UIScreen.width - (Constants.horizontalPadding * 2))
                             }
                         }
                     }
@@ -26,7 +30,7 @@ struct Explore: View {
 
                 ExploreSection(title: "Top from the community") {
                     communityCompetitions($competitionsManager.topCommunityCompetitions)
-                        .padding(.horizontal)
+                        .padding(.horizontal, Constants.horizontalPadding)
                 }
             } else {
                 ExploreSection(title: "Search results") {
@@ -38,7 +42,7 @@ struct Explore: View {
                         }
                         communityCompetitions($searchResults)
                     }
-                    .padding(.horizontal)
+                    .padding(.horizontal, Constants.horizontalPadding)
                 }
             }
         }

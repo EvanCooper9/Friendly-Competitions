@@ -3,6 +3,10 @@ import HealthKit
 import Resolver
 import SwiftUI
 
+protocol HealthKitBackgroundDeliveryReceiving {
+    func trigger()
+}
+
 class AnyHealthKitManager: ObservableObject {
     var permissionStatus: PermissionStatus { .authorized }
     func execute(_ query: HKQuery) {}

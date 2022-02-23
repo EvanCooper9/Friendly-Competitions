@@ -10,8 +10,6 @@ struct FriendView: View {
 
     var body: some View {
         List {
-            UserInfoSection(user: friend)
-
             Section {
                 ActivitySummaryInfoView(activitySummary: friend.tempActivitySummary)
             } header: {

@@ -9,8 +9,8 @@ class AnyCompetitionsManager: ObservableObject {
     @Published(storedWithKey: "competitions") var competitions = [Competition]()
     @Published(storedWithKey: "invitedCompetitions") var invitedCompetitions = [Competition]()
     @Published(storedWithKey: "standings") var standings = [Competition.ID : [Competition.Standing]]()
-    @Published(storedWithKey: "participants") var participants = [Competition.ID: [Participant]]()
-    @Published(storedWithKey: "pendingParticipants") var pendingParticipants = [Competition.ID: [Participant]]()
+    @Published(storedWithKey: "participants") var participants = [Competition.ID: [User]]()
+    @Published(storedWithKey: "pendingParticipants") var pendingParticipants = [Competition.ID: [User]]()
 
     @Published var appOwnedCompetitions = [Competition]()
     @Published var topCommunityCompetitions = [Competition]()
@@ -28,10 +28,12 @@ class AnyCompetitionsManager: ObservableObject {
 
 final class CompetitionsManager: AnyCompetitionsManager {
 
+    /// Used for searching, so we don't decode dates and other expensive properties
     private struct SearchResult: Decodable {
         let name: String
     }
 
+    /// Used for getting community results, so we don't decode dates and other expensive properties
     private struct TopCommunityResult: Decodable {
         let participants: [String]
     }
@@ -43,10 +45,6 @@ final class CompetitionsManager: AnyCompetitionsManager {
     @Injected private var userManager: AnyUserManager
 
     private var user: User { userManager.user }
-
-    private var searchText: Task<Void, Error>? {
-        willSet { searchText?.cancel() }
-    }
 
     // MARK: - Lifecycle
 
@@ -63,6 +61,8 @@ final class CompetitionsManager: AnyCompetitionsManager {
         if !competition.participants.contains(user.id) {
             competition.participants.append(user.id)
         }
+        competitions.append(competition)
+        invitedCompetitions.remove(competition)
         update(competition: competition)
         Task {
             try await activitySummaryManager.update()
@@ -92,6 +92,8 @@ final class CompetitionsManager: AnyCompetitionsManager {
     override func decline(_ competition: Competition) {
         var competition = competition
         competition.pendingParticipants.remove(user.id)
+        invitedCompetitions.remove(competition)
+        standings[competition.id] = nil
         update(competition: competition)
     }
 
@@ -119,7 +121,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
         var competition = competition
         competition.pendingParticipants.append(user.id)
         var pendingParticipants = pendingParticipants[competition.id] ?? []
-        pendingParticipants.append(.init(from: user))
+        pendingParticipants.append(user)
         self.pendingParticipants[competition.id] = pendingParticipants
         update(competition: competition)
     }
@@ -205,11 +207,6 @@ final class CompetitionsManager: AnyCompetitionsManager {
             .addSnapshotListener { snapshot, error in
                 guard let snapshot = snapshot else { return }
                 let competitions = snapshot.documents.decoded(asArrayOf: Competition.self)
-//                Task { [weak self] in
-//                    try await self?.updateStandings(for: competitions)
-//                    try await self?.updateParticipants(for: competitions)
-//                    try await self?.updatePendingParticipants(for: competitions)
-//                }
                 DispatchQueue.main.async { [weak self] in
                     self?.invitedCompetitions = competitions
                 }
@@ -232,9 +229,12 @@ final class CompetitionsManager: AnyCompetitionsManager {
             .getDocuments { snapshot, error in
                 guard let snapshot = snapshot else { return }
                 let competitions = snapshot.documents
-                    .decoded(asArrayOf: Competition.self)
-                    .filter { !$0.participants.isEmpty }
+                    .filter { document in
+                        guard let result = try? document.decoded(as: TopCommunityResult.self) else { return false }
+                        return !result.participants.isEmpty
+                    }
                     .randomSample(count: 10)
+                    .decoded(asArrayOf: Competition.self)
                     .sorted(by: \.participants.count)
                     .reversed()
                 DispatchQueue.main.async { [weak self] in
@@ -299,7 +299,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
             }
             return
         }
-        try await withThrowingTaskGroup(of: (Competition.ID, [Participant])?.self) { group in
+        try await withThrowingTaskGroup(of: (Competition.ID, [User])?.self) { group in
             competitions.forEach { competition in
                 guard !competition.participants.isEmpty else { return }
                 group.addTask { [weak self] in
@@ -307,7 +307,6 @@ final class CompetitionsManager: AnyCompetitionsManager {
                     let participants = try await self.database.collection("users")
                         .whereFieldWithChunking("id", in: competition.participants)
                         .decoded(asArrayOf: User.self)
-                        .map(Participant.init(from:))
                     return (competition.id, participants)
                 }
             }
@@ -330,7 +329,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
             }
             return
         }
-        try await withThrowingTaskGroup(of: (Competition.ID, [Participant])?.self) { group in
+        try await withThrowingTaskGroup(of: (Competition.ID, [User])?.self) { group in
             competitions.forEach { competition in
                 guard !competition.pendingParticipants.isEmpty else { return }
                 group.addTask { [weak self] in
@@ -338,7 +337,6 @@ final class CompetitionsManager: AnyCompetitionsManager {
                     let participants = try await self.database.collection("users")
                         .whereFieldWithChunking("id", in: competition.pendingParticipants)
                         .decoded(asArrayOf: User.self)
-                        .map(Participant.init(from:))
                     return (competition.id, participants)
                 }
             }

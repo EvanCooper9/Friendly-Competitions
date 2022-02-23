@@ -1,6 +1,8 @@
 import * as admin from "firebase-admin";
 import * as moment from "moment";
 
+const dateFormat = "YYYY-MM-DD";
+
 /**
  * Competition
  */
@@ -42,23 +44,22 @@ class Competition {
     async updateRepeatingCompetition(): Promise<void> {
         if (!this.repeats) return Promise.resolve();
 
-        const dateFormat = "yyyy-mm-dd";
         const competitionStart = moment(this.start);
         const competitionEnd = moment(this.end);
+        let newStart = competitionStart;
+        let newEnd = competitionEnd;
         if (competitionStart.day() == 1 && competitionEnd.day() == competitionEnd.daysInMonth()) {
-            const newStart = competitionStart.add(1, "month");
-            const newEnd = newStart.set("day", competitionStart.daysInMonth());
-            this.start = new Date(newStart.format(dateFormat));
-            this.end = new Date(newEnd.format(dateFormat));
+            newStart = moment(this.start).add(1, "month");
+            newEnd = moment(this.start).set("day", newStart.daysInMonth());
         } else {
-            const diff = competitionStart.diff(competitionEnd, "days");
-            const newStart = competitionEnd.add(1, "days");
-            const newEnd = newStart.add(diff, "days");
-            this.start = new Date(newStart.format(dateFormat));
-            this.end = new Date(newEnd.format(dateFormat));
+            const diff = competitionEnd.diff(competitionStart, "days");
+            newStart = moment(this.end).add(1, "days");
+            newEnd = moment(newStart.format(dateFormat)).add(diff, "days");
         }
+
+        const obj = { start: newStart.format(dateFormat), end: newEnd.format(dateFormat) };
         return admin.firestore().doc(`competitions/${this.id}`)
-            .set(this)
+            .update(obj)
             .then();
     }
 }

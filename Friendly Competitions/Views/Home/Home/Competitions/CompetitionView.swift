@@ -36,8 +36,9 @@ struct CompetitionView: View {
             ForEach(standings) { standing in
                 HStack {
                     Text(standing.rank.ordinalString ?? "?").bold()
-                    if let participant = competitionsManager.participants[competition.id]?.first(where: { $0.id == standing.userId }) {
-                        Text(participant.name)
+                    if let user = competitionsManager.participants[competition.id]?.first(where: { $0.id == standing.userId }) {
+                        Text(user.name)
+                        UserHashIDPill(user: user)
                     } else {
                         Text(standing.userId)
                     }
@@ -194,15 +195,10 @@ struct CompetitionView_Previews: PreviewProvider {
             ]
         ]
         competitionManager.participants = [
-            competition.id: [
-                .init(from: evan),
-                .init(from: gabby)
-            ]
+            competition.id: [.evan, .gabby]
         ]
         competitionManager.pendingParticipants = [
-            competition.id: [
-                .init(from: gabby)
-            ]
+            competition.id: [.gabby]
         ]
 
         return competitionManager

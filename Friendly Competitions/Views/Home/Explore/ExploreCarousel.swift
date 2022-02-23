@@ -2,6 +2,7 @@ import SwiftUI
 
 struct ExploreCarousel<Content: View>: View {
 
+    let padding: CGFloat
     @ViewBuilder let content: Content
 
     @Environment(\.colorScheme) private var colorScheme
@@ -11,7 +12,7 @@ struct ExploreCarousel<Content: View>: View {
             LazyHStack {
                 content
             }
-            .padding(.horizontal)
+            .padding(.horizontal, padding)
         }
     }
 }
@@ -19,7 +20,7 @@ struct ExploreCarousel<Content: View>: View {
 struct ExploreCarousel_Previews: PreviewProvider {
     static var previews: some View {
         ScrollView {
-            ExploreCarousel {
+            ExploreCarousel(padding: 20) {
                 FeaturedCompetition(competition: .mockPublic)
                     .frame(width: UIScreen.width - 40)
                 FeaturedCompetition(competition: .mockPublic)
