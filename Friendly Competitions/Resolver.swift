@@ -5,19 +5,18 @@ import Resolver
 
 extension Resolver: ResolverRegistering {
     public static func registerAllServices() {
-        register { ActivitySummaryManager() as AnyActivitySummaryManager }.scope(.shared)
-        register { AuthenticationManager() as AnyAuthenticationManager }.scope(.shared)
 
-//        register { CompetitionsManager() as AnyCompetitionsManager }.scope(.shared)
-        register(AnyCompetitionsManager.self) { MockCompetitionManager() }.scope(.application)
+        // Managers
+        register(AnyActivitySummaryManager.self) { ActivitySummaryManager() }.scope(.shared)
+        register(AnyAuthenticationManager.self) { AuthenticationManager() }.scope(.shared)
+        register(AnyCompetitionsManager.self) { CompetitionsManager() }.scope(.shared)
+        register(AnyFriendsManager.self) { FriendsManager() }.scope(.shared)
+        register(AnyHealthKitManager.self) { HealthKitManager() }.scope(.shared)
+        register(NotificationManaging.self) { NotificationManager() }.scope(.shared)
+        register(AnyPermissionsManager.self) { PermissionsManager() }.scope(.shared)
+        register(AnyStorageManager.self) { StorageManager() }.scope(.shared)
 
-//        register { FriendsManager() as AnyFriendsManager }.scope(.shared)
-        register(AnyFriendsManager.self) { MockFriendsManager() }.scope(.shared)
-
-        register { HealthKitManager() as AnyHealthKitManager }.scope(.shared)
-        register { NotificationManager() as NotificationManaging }.scope(.shared)
-        register { PermissionsManager() as AnyPermissionsManager }.scope(.shared)
-        register { StorageManager() as AnyStorageManager }.scope(.shared)
+        // Firebase
         register { Firestore.firestore() }.scope(.shared)
         register { Storage.storage().reference() }.scope(.shared)
     }
