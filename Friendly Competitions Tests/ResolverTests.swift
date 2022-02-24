@@ -6,6 +6,7 @@ import XCTest
 final class ResolverTests: XCTestCase {
     func testThatMocksAreNotUsed() {
         Resolver.registerAllServices()
+        Resolver.register(AnyUserManager.self) { UserManager(user: .evan) }
         XCTAssertTrue(Resolver.resolve(AnyActivitySummaryManager.self) is ActivitySummaryManager)
         XCTAssertTrue(Resolver.resolve(AnyAuthenticationManager.self) is AuthenticationManager)
         XCTAssertTrue(Resolver.resolve(AnyCompetitionsManager.self) is CompetitionsManager)
