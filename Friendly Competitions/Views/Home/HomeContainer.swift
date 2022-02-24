@@ -7,6 +7,7 @@ struct HomeContainer: View {
     @StateObject private var competitionsManager = Resolver.resolve(AnyCompetitionsManager.self)
     @StateObject private var friendsManager = Resolver.resolve(AnyFriendsManager.self)
     @StateObject private var permissionsManager = Resolver.resolve(AnyPermissionsManager.self)
+    @StateObject private var profanityManager = Resolver.resolve(AnyProfanityManager.self)
     @StateObject private var storageManager = Resolver.resolve(AnyStorageManager.self)
     @StateObject private var userManager = Resolver.resolve(AnyUserManager.self)
 
@@ -19,6 +20,7 @@ struct HomeContainer: View {
         .environmentObject(competitionsManager)
         .environmentObject(friendsManager)
         .environmentObject(permissionsManager)
+        .environmentObject(profanityManager)
         .environmentObject(storageManager)
         .environmentObject(userManager)
     }

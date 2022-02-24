@@ -15,6 +15,8 @@ extension Resolver: ResolverRegistering {
         register(NotificationManaging.self) { NotificationManager() }.scope(.shared)
         register(AnyPermissionsManager.self) { PermissionsManager() }.scope(.shared)
         register(AnyStorageManager.self) { StorageManager() }.scope(.shared)
+        register(AnyProfanityManager.self) { ProfanityManager() }.scope(.shared)
+        register(AnyStorageManager.self) { StorageManager() }.scope(.shared)
 
         // Firebase
         register { Firestore.firestore() }.scope(.shared)

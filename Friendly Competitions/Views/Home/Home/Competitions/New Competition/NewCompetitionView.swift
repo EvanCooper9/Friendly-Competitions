@@ -7,8 +7,11 @@ struct NewCompetitionView: View {
     @Environment(\.presentationMode) private var presentationMode
     @EnvironmentObject private var competitionManager: AnyCompetitionsManager
     @EnvironmentObject private var friendsManager: AnyFriendsManager
+    @EnvironmentObject private var profanityManager: AnyProfanityManager
     @EnvironmentObject private var userManager: AnyUserManager
     @State private var presentAddFriends = false
+
+    @State private var error: Error?
 
     var body: some View {
         Form {
@@ -17,12 +20,9 @@ struct NewCompetitionView: View {
             friendsView
 
             Section {
-                Button("Create") {
-                    competitionManager.createCompetition(with: editorConfig)
-                    presentationMode.wrappedValue.dismiss()
-                }
-                .disabled(editorConfig.createDisabled)
-                .frame(maxWidth: .infinity)
+                Button("Create", action: createCompetition)
+                    .disabled(editorConfig.createDisabled)
+                    .frame(maxWidth: .infinity)
             } footer: {
                 Text(editorConfig.disabledReason ?? "")
             }
@@ -34,7 +34,28 @@ struct NewCompetitionView: View {
 
     private var details: some View {
         Section {
-            TextField("Name", text: $editorConfig.name)
+            HStack {
+                TextField("Name", text: $editorConfig.name)
+                    .onChange(of: editorConfig.name) { newValue in
+                        Task {
+                            do {
+                                try await profanityManager.checkProfanity(newValue)
+                                DispatchQueue.main.async {
+                                    error = nil
+                                }
+                            } catch {
+                                DispatchQueue.main.async {
+                                    self.error = error
+                                }
+                            }
+                        }
+                    }
+                if let error = error {
+                    Text(error.localizedDescription)
+                        .font(.footnote)
+                        .foregroundColor(.red)
+                }
+            }
             DatePicker(
                 "Starts",
                 selection: $editorConfig.start,
@@ -96,29 +117,27 @@ struct NewCompetitionView: View {
 
     private var friendsView: some View {
         Section("Invite friends") {
-            List {
-                if friendsManager.friends.isEmpty {
-                    LazyHStack {
-                        Text("Nothing here, yet!")
-                        Button("Add friends.", toggling: $presentAddFriends)
-                    }
-                    .padding(.vertical, 6)
+            if friendsManager.friends.isEmpty {
+                LazyHStack {
+                    Text("Nothing here, yet!")
+                    Button("Add friends.", toggling: $presentAddFriends)
                 }
+                .padding(.vertical, 6)
+            }
 
-                ForEach(friendsManager.friends) { friend in
-                    HStack {
-                        Text(friend.name)
-                        Spacer()
-                        if editorConfig.invitees.contains(friend.id) {
-                            Image(systemName: "checkmark.circle.fill")
-                        }
+            ForEach(friendsManager.friends) { friend in
+                HStack {
+                    Text(friend.name)
+                    Spacer()
+                    if editorConfig.invitees.contains(friend.id) {
+                        Image(systemName: "checkmark.circle.fill")
                     }
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        editorConfig.invitees.contains(friend.id) ?
-                            editorConfig.invitees.remove(friend.id) :
-                            editorConfig.invitees.append(friend.id)
-                    }
+                }
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    editorConfig.invitees.contains(friend.id) ?
+                        editorConfig.invitees.remove(friend.id) :
+                        editorConfig.invitees.append(friend.id)
                 }
             }
         }
@@ -127,6 +146,23 @@ struct NewCompetitionView: View {
     private func dateRange(startingFrom date: Date) -> PartialRangeFrom<Date> {
         let components = Calendar.current.dateComponents([.year, .month, .day], from: date)
         return PartialRangeFrom<Date>(Calendar.current.date(from: components)!)
+    }
+
+    private func createCompetition() {
+        Task {
+            do {
+                try await competitionManager.createCompetition(with: editorConfig)
+                DispatchQueue.main.async {
+                    presentationMode.wrappedValue.dismiss()
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    withAnimation {
+                        self.error = error
+                    }
+                }
+            }
+        }
     }
 }
 

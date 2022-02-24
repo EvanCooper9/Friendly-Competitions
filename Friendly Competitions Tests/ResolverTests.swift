@@ -14,6 +14,7 @@ final class ResolverTests: XCTestCase {
         XCTAssertTrue(Resolver.resolve(AnyHealthKitManager.self) is HealthKitManager)
         XCTAssertTrue(Resolver.resolve(NotificationManaging.self) is NotificationManager)
         XCTAssertTrue(Resolver.resolve(AnyPermissionsManager.self) is PermissionsManager)
+        XCTAssertTrue(Resolver.resolve(AnyProfanityManager.self) is ProfanityManager)
         XCTAssertTrue(Resolver.resolve(AnyStorageManager.self) is StorageManager)
     }
 }

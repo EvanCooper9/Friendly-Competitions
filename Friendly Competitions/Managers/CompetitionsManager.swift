@@ -16,7 +16,7 @@ class AnyCompetitionsManager: ObservableObject {
     @Published var topCommunityCompetitions = [Competition]()
 
     func accept(_ competition: Competition) {}
-    func createCompetition(with config: NewCompetitionEditorConfig) {}
+    func createCompetition(with config: NewCompetitionEditorConfig) async throws {}
     func decline(_ competition: Competition) {}
     func delete(_ competition: Competition) {}
     func invite(_ user: User, to competition: Competition) {}
@@ -42,6 +42,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
 
     @LazyInjected private var activitySummaryManager: AnyActivitySummaryManager
     @Injected private var database: Firestore
+    @Injected private var profanityManager: AnyProfanityManager
     @Injected private var userManager: AnyUserManager
 
     private var user: User { userManager.user }
@@ -69,7 +70,9 @@ final class CompetitionsManager: AnyCompetitionsManager {
         }
     }
 
-    override func createCompetition(with config: NewCompetitionEditorConfig) {
+    override func createCompetition(with config: NewCompetitionEditorConfig) async throws {
+        try await profanityManager.checkProfanity(config.name)
+
         let competition = Competition(
             name: config.name,
             owner: user.id,
