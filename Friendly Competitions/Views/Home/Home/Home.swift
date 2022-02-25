@@ -69,7 +69,7 @@ struct Home: View {
 
     private var activitySummary: some View {
         Section {
-            ActivitySummaryInfoView(activitySummary: .mock)
+            ActivitySummaryInfoView(activitySummary: activitySummaryManager.activitySummary)
         } header: {
             Text("Activity").font(.title3)
         } footer: {

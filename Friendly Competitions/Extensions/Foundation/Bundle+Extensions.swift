@@ -13,6 +13,10 @@ extension Bundle {
         infoDictionary!["CFBundleName"] as! String
     }
 
+    var displayName: String {
+        infoDictionary!["CFBundleDisplayName"] as! String
+    }
+
     var version: String {
         infoDictionary!["CFBundleShortVersionString"] as! String
     }
