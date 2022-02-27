@@ -11,9 +11,8 @@ struct Profile: View {
         List {
             UserInfoSection(user: userManager.user)
 
-            let stats = userManager.user.statistics ?? .zero
             Section("Stats") {
-                StatisticsView(statistics: stats)
+                StatisticsView(statistics: userManager.user.statistics ?? .zero)
             }
 
             Section {
