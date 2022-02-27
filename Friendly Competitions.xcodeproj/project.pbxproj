@@ -34,6 +34,7 @@
 		C12D640427A5EABD00259237 /* SignInViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C12D640327A5EABD00259237 /* SignInViewModel.swift */; };
 		C12D640727A5F2FC00259237 /* CompetitionsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C12D640627A5F2FC00259237 /* CompetitionsManager.swift */; };
 		C1300FDC27C83E3B002E2C52 /* BundleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1300FDB27C83E3B002E2C52 /* BundleTests.swift */; };
+		C1300FDF27C9642F002E2C52 /* XCTestCase+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1300FDE27C9642F002E2C52 /* XCTestCase+Extensions.swift */; };
 		C132335F27BEA97A00196D81 /* FlatLinkStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132335E27BEA97A00196D81 /* FlatLinkStyle.swift */; };
 		C132336127BEAF9200196D81 /* String+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132336027BEAF9200196D81 /* String+Extensions.swift */; };
 		C132336327BEB00B00196D81 /* StringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132336227BEB00B00196D81 /* StringTests.swift */; };
@@ -98,7 +99,7 @@
 		C1AAE947275AF92C00921E41 /* WithLoadingOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AAE946275AF92C00921E41 /* WithLoadingOverlay.swift */; };
 		C1ABB20E26D683BA00716984 /* AddFriendView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1ABB20D26D683BA00716984 /* AddFriendView.swift */; };
 		C1ABB21326D6971900716984 /* TimeInterval+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1ABB21226D6971900716984 /* TimeInterval+Extensions.swift */; };
-		C1ABB21526D6987C00716984 /* NewCompetitionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1ABB21426D6987C00716984 /* NewCompetitionView.swift */; };
+		C1ABB21526D6987C00716984 /* NewCompetition.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1ABB21426D6987C00716984 /* NewCompetition.swift */; };
 		C1B2F4E4272B505C0028449F /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1B2F4E3272B505C0028449F /* AppDelegate.swift */; };
 		C1C1542326D5DFFD00C6FA9F /* HKActivitySummary+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1C1542226D5DFFD00C6FA9F /* HKActivitySummary+Extensions.swift */; };
 		C1C8B24226F3FB47008D6B1B /* HealthKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C14634F526F2A84B0028F847 /* HealthKitManager.swift */; };
@@ -176,6 +177,7 @@
 		C12D640327A5EABD00259237 /* SignInViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInViewModel.swift; sourceTree = "<group>"; };
 		C12D640627A5F2FC00259237 /* CompetitionsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionsManager.swift; sourceTree = "<group>"; };
 		C1300FDB27C83E3B002E2C52 /* BundleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BundleTests.swift; sourceTree = "<group>"; };
+		C1300FDE27C9642F002E2C52 /* XCTestCase+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTestCase+Extensions.swift"; sourceTree = "<group>"; };
 		C132335E27BEA97A00196D81 /* FlatLinkStyle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FlatLinkStyle.swift; sourceTree = "<group>"; };
 		C132336027BEAF9200196D81 /* String+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extensions.swift"; sourceTree = "<group>"; };
 		C132336227BEB00B00196D81 /* StringTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringTests.swift; sourceTree = "<group>"; };
@@ -244,7 +246,7 @@
 		C1AAE946275AF92C00921E41 /* WithLoadingOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WithLoadingOverlay.swift; sourceTree = "<group>"; };
 		C1ABB20D26D683BA00716984 /* AddFriendView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddFriendView.swift; sourceTree = "<group>"; };
 		C1ABB21226D6971900716984 /* TimeInterval+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TimeInterval+Extensions.swift"; sourceTree = "<group>"; };
-		C1ABB21426D6987C00716984 /* NewCompetitionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCompetitionView.swift; sourceTree = "<group>"; };
+		C1ABB21426D6987C00716984 /* NewCompetition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCompetition.swift; sourceTree = "<group>"; };
 		C1B2F4E3272B505C0028449F /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		C1C1542226D5DFFD00C6FA9F /* HKActivitySummary+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HKActivitySummary+Extensions.swift"; sourceTree = "<group>"; };
 		C1C8B24626F3FB9C008D6B1B /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
@@ -360,7 +362,7 @@
 			isa = PBXGroup;
 			children = (
 				C123C9E227A9810100375F73 /* NewCompetitionEditorConfig.swift */,
-				C1ABB21426D6987C00716984 /* NewCompetitionView.swift */,
+				C1ABB21426D6987C00716984 /* NewCompetition.swift */,
 			);
 			path = "New Competition";
 			sourceTree = "<group>";
@@ -423,6 +425,14 @@
 			path = Competition;
 			sourceTree = "<group>";
 		};
+		C1300FDD27C96422002E2C52 /* Test Helpers */ = {
+			isa = PBXGroup;
+			children = (
+				C1300FDE27C9642F002E2C52 /* XCTestCase+Extensions.swift */,
+			);
+			path = "Test Helpers";
+			sourceTree = "<group>";
+		};
 		C132335D27BEA96600196D81 /* Styles */ = {
 			isa = PBXGroup;
 			children = (
@@ -453,6 +463,7 @@
 		C155CA5827AB989D005F49F4 /* Friendly Competitions Tests */ = {
 			isa = PBXGroup;
 			children = (
+				C1300FDD27C96422002E2C52 /* Test Helpers */,
 				C1930E5527C6FBF500DB45C1 /* ResolverTests.swift */,
 				C155CA6027AB997D005F49F4 /* Extensions */,
 				C155CA6F27AC1245005F49F4 /* Models */,
@@ -964,6 +975,7 @@
 				C155CA7227AC126E005F49F4 /* UserTests.swift in Sources */,
 				C1EBB16727AD7AF600376E59 /* UserDefaultsTests.swift in Sources */,
 				C1E35D4A27B4600D00833EB2 /* Competition+StandingTests.swift in Sources */,
+				C1300FDF27C9642F002E2C52 /* XCTestCase+Extensions.swift in Sources */,
 				C155CA6E27AC0C6A005F49F4 /* TimeIntervalTests.swift in Sources */,
 				C1300FDC27C83E3B002E2C52 /* BundleTests.swift in Sources */,
 				C1E35D4C27B4606200833EB2 /* Competition+ScoringModelTests.swift in Sources */,
@@ -991,7 +1003,7 @@
 				C1691DC726D55FCF006FFA30 /* FriendlyCompetitions.swift in Sources */,
 				C123C9C927A74F3500375F73 /* PermissionsManager.swift in Sources */,
 				C123C9E027A8B02300375F73 /* Bundle+Extensions.swift in Sources */,
-				C1ABB21526D6987C00716984 /* NewCompetitionView.swift in Sources */,
+				C1ABB21526D6987C00716984 /* NewCompetition.swift in Sources */,
 				C1930E5427C6EB4000DB45C1 /* MockFriendsManager.swift in Sources */,
 				C13F923327C0099800FC6880 /* MockCompetitionManager.swift in Sources */,
 				C155CA7627AC1A63005F49F4 /* Competition+Standing.swift in Sources */,

@@ -41,7 +41,7 @@ struct Home: View {
         .sheet(isPresented: $presentAbout) { About() }
         .sheet(isPresented: $presentSettings) { Profile() }
         .sheet(isPresented: $presentSearchFriendsSheet) { AddFriendView() }
-        .sheet(isPresented: $presentNewCompetition) { NewCompetitionView() }
+        .sheet(isPresented: $presentNewCompetition) { NewCompetition() }
         .sheet(isPresented: $presentPermissions) { PermissionsView() }
         .onOpenURL { url in
             appState.deepLink = DeepLink(from: url)

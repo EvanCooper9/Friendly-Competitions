@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct NewCompetitionView: View {
+struct NewCompetition: View {
 
     @State private var editorConfig = NewCompetitionEditorConfig()
 
@@ -38,13 +38,13 @@ struct NewCompetitionView: View {
             DatePicker(
                 "Starts",
                 selection: $editorConfig.start,
-                in: dateRange(startingFrom: editorConfig.start),
+                in: PartialRangeFrom(.now),
                 displayedComponents: [.date]
             )
             DatePicker(
                 "Ends",
                 selection: $editorConfig.end,
-                in: dateRange(startingFrom: editorConfig.start),
+                in: PartialRangeFrom(editorConfig.start.addingTimeInterval(1.days)),
                 displayedComponents: [.date]
             )
             Toggle("Repeats", isOn: $editorConfig.repeats)
@@ -123,11 +123,6 @@ struct NewCompetitionView: View {
             }
         }
     }
-
-    private func dateRange(startingFrom date: Date) -> PartialRangeFrom<Date> {
-        let components = Calendar.current.dateComponents([.year, .month, .day], from: date)
-        return PartialRangeFrom<Date>(Calendar.current.date(from: components)!)
-    }
 }
 
 struct NewCompetitionView_Previews: PreviewProvider {
@@ -144,7 +139,7 @@ struct NewCompetitionView_Previews: PreviewProvider {
     }()
 
     static var previews: some View {
-        NewCompetitionView()
+        NewCompetition()
             .environmentObject(competitionsManager)
             .environmentObject(friendsManager)
             .environmentObject(userManager)
