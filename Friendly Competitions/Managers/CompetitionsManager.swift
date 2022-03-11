@@ -191,13 +191,9 @@ final class CompetitionsManager: AnyCompetitionsManager {
             .call(["userId": self.user.id])
         updateTask = Task(priority: .medium) {
             let competitionGroups = self.competitions + self.appOwnedCompetitions + self.topCommunityCompetitions + self.invitedCompetitions
-//            print(competitionGroups[0].count, competitionGroups[1].count, competitionGroups[2].count, competitionGroups[3].count)
-            print(competitionGroups.count)
-//            for competitionGroup in competitionGroups {
-                try await self.updateStandings(for: competitionGroups)
-                try await self.updateParticipants(for: competitionGroups)
-                try await self.updatePendingParticipants(for: competitionGroups)
-//            }
+            try await self.updateStandings(for: competitionGroups)
+            try await self.updateParticipants(for: competitionGroups)
+            try await self.updatePendingParticipants(for: competitionGroups)
         }
     }
 

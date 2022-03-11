@@ -5,7 +5,6 @@ struct CompetitionView: View {
     @Binding var competition: Competition
 
     @Environment(\.presentationMode) private var presentationMode
-    @EnvironmentObject private var analyticsManager: AnyAnalyticsManager
     @EnvironmentObject private var competitionsManager: AnyCompetitionsManager
     @EnvironmentObject private var friendsManager: AnyFriendsManager
     @EnvironmentObject private var userManager: AnyUserManager
