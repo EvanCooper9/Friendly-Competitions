@@ -2,7 +2,7 @@ import SwiftUI
 
 struct ExploreCompetitionDetails: View {
 
-    let competition: Competition
+    @Binding var competition: Competition
 
     var body: some View {
         VStack(alignment: .leading, spacing: 5) {

@@ -11,9 +11,8 @@ class AnyCompetitionsManager: ObservableObject {
     @Published(storedWithKey: "standings") var standings = [Competition.ID : [Competition.Standing]]()
     @Published(storedWithKey: "participants") var participants = [Competition.ID: [User]]()
     @Published(storedWithKey: "pendingParticipants") var pendingParticipants = [Competition.ID: [User]]()
-
-    @Published var appOwnedCompetitions = [Competition]()
-    @Published var topCommunityCompetitions = [Competition]()
+    @Published(storedWithKey: "appOwnedCompetitions") var appOwnedCompetitions = [Competition]()
+    @Published(storedWithKey: "topCommunityCompetitions") var topCommunityCompetitions = [Competition]()
 
     func accept(_ competition: Competition) {}
     func createCompetition(with config: NewCompetitionEditorConfig) {}
@@ -46,11 +45,35 @@ final class CompetitionsManager: AnyCompetitionsManager {
 
     private var user: User { userManager.user }
 
+    private var updateTask: Task<Void, Error>? {
+        willSet {
+            updateTask?.cancel()
+        }
+    }
+
+    private var cancellables = Set<AnyCancellable>()
+
     // MARK: - Lifecycle
 
     override init() {
         super.init()
         listen()
+
+        Publishers
+            .CombineLatest3(
+                competitions.publisher,
+                appOwnedCompetitions.publisher,
+                invitedCompetitions.publisher
+            )
+            .map { _ in () }
+            .prepend(())
+            .sink { [weak self] in
+                guard let self = self else { return }
+                Task {
+                    try await self.updateStandings()
+                }
+            }
+            .store(in: &cancellables)
     }
 
     // MARK: - Public Methods
@@ -163,11 +186,19 @@ final class CompetitionsManager: AnyCompetitionsManager {
     }
 
     override func updateStandings() async throws {
-        guard !competitions.isEmpty else { return }
         try await Functions.functions()
             .httpsCallable("updateCompetitionStandings")
             .call(["userId": self.user.id])
-        try await updateStandings(for: competitions)
+        updateTask = Task(priority: .medium) {
+            let competitionGroups = self.competitions + self.appOwnedCompetitions + self.topCommunityCompetitions + self.invitedCompetitions
+//            print(competitionGroups[0].count, competitionGroups[1].count, competitionGroups[2].count, competitionGroups[3].count)
+            print(competitionGroups.count)
+//            for competitionGroup in competitionGroups {
+                try await self.updateStandings(for: competitionGroups)
+                try await self.updateParticipants(for: competitionGroups)
+                try await self.updatePendingParticipants(for: competitionGroups)
+//            }
+        }
     }
 
     // MARK: - Private Methods
@@ -192,11 +223,6 @@ final class CompetitionsManager: AnyCompetitionsManager {
             .addSnapshotListener { snapshot, error in
                 guard let snapshot = snapshot else { return }
                 let competitions = snapshot.documents.decoded(asArrayOf: Competition.self)
-                Task { [weak self] in
-                    try await self?.updateStandings(for: competitions)
-                    try await self?.updateParticipants(for: competitions)
-                    try await self?.updatePendingParticipants(for: competitions)
-                }
                 DispatchQueue.main.async { [weak self] in
                     self?.competitions = competitions
                 }
@@ -286,6 +312,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
                 newStandings[competitionId] = standings
             }
 
+            try Task.checkCancellation()
             DispatchQueue.main.async { [weak self, newStandings] in
                 self?.standings = newStandings
             }
@@ -316,6 +343,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
                 newParticipants[competitionId] = participants
             }
 
+            try Task.checkCancellation()
             DispatchQueue.main.async { [weak self, newParticipants] in
                 self?.participants = newParticipants
             }
@@ -346,6 +374,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
                 newPendingParticipants[competitionId] = participants
             }
 
+            try Task.checkCancellation()
             DispatchQueue.main.async { [weak self, newPendingParticipants] in
                 self?.pendingParticipants = newPendingParticipants
             }
