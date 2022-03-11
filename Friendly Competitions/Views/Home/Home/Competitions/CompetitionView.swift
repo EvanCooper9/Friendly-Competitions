@@ -173,8 +173,6 @@ extension Binding {
 
 struct CompetitionView_Previews: PreviewProvider {
 
-    private static let analyticsManager = AnyAnalyticsManager()
-
     private static let competition = Competition.mock
     private static let competitionManager: AnyCompetitionsManager = {
         let evan = User.evan
@@ -218,7 +216,6 @@ struct CompetitionView_Previews: PreviewProvider {
 
     static var previews: some View {
         CompetitionView(competition: .constant(competition))
-            .environmentObject(analyticsManager)
             .environmentObject(competitionManager)
             .environmentObject(friendsManager)
             .environmentObject(userManager)
