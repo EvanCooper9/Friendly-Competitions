@@ -1,6 +1,6 @@
 import Foundation
 
-enum DeepLink {
+enum DeepLink: Equatable {
     case friendReferral(id: String)
     case competitionInvite(id: String)
 
