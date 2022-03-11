@@ -21,7 +21,7 @@ struct Explore: View {
                     ExploreCarousel(padding: Constants.horizontalPadding) {
                         ForEach($competitionsManager.appOwnedCompetitions) { $competition in
                             competitionNavigation($competition) {
-                                FeaturedCompetition(competition: competition)
+                                FeaturedCompetition(competition: $competition)
                                     .frame(width: UIScreen.width - (Constants.horizontalPadding * 2))
                             }
                         }
@@ -50,7 +50,7 @@ struct Explore: View {
                         VStack {
                             ForEach($searchResults.filter(\.wrappedValue.appOwned)) { $competition in
                                 competitionNavigation($competition) {
-                                    FeaturedCompetition(competition: competition)
+                                    FeaturedCompetition(competition: $competition)
                                 }
                             }
                             communityCompetitions($searchResults)
@@ -111,7 +111,7 @@ struct Explore: View {
                     NavigationLink {
                         CompetitionView(competition: $competition)
                     } label: {
-                        ExploreCompetitionDetails(competition: competition)
+                        ExploreCompetitionDetails(competition: $competition)
                             .frame(maxWidth: .infinity)
                             .contentShape(Rectangle())
                     }

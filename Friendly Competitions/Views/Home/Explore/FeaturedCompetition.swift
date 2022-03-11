@@ -2,7 +2,7 @@ import SwiftUI
 
 struct FeaturedCompetition: View {
 
-    let competition: Competition
+    @Binding var competition: Competition
 
     @Environment(\.colorScheme) private var colorScheme
 
@@ -21,7 +21,7 @@ struct FeaturedCompetition: View {
             }
             .clipped()
             .overlay {
-                ExploreCompetitionDetails(competition: competition)
+                ExploreCompetitionDetails(competition: $competition)
                     .padding(.vertical, 8)
                     .padding(.horizontal)
                     .background(.ultraThinMaterial)
@@ -38,9 +38,9 @@ struct FeaturedCompetition: View {
 struct FeaturedCompetitionView_Previews: PreviewProvider {
     static var previews: some View {
         ScrollView {
-            FeaturedCompetition(competition: .mockPublic)
+            FeaturedCompetition(competition: .constant(.mockPublic))
                 .padding()
-            FeaturedCompetition(competition: .mockPublic)
+            FeaturedCompetition(competition: .constant(.mockPublic))
                 .padding()
                 .preferredColorScheme(.dark)
         }

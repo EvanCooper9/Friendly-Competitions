@@ -47,7 +47,7 @@ exports.sendNewCompetitionNotification = functions.firestore
         let oldInvitees = oldCompetition.pendingParticipants;
         if (oldInvitees == undefined) oldInvitees = [];
         const newInvitees = newCompetition.pendingParticipants;
-        if (oldInvitees == newInvitees) return;
+        if (oldInvitees == newInvitees || newInvitees.length == 0) return;
 
         const userPromises = await firestore.collection("users")
             .where("id", "in", newInvitees.filter(x => !oldInvitees.includes(x)))

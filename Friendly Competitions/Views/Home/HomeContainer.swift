@@ -77,11 +77,5 @@ struct HomeContainer_Previews: PreviewProvider {
         Resolver.register { storageManager as AnyStorageManager }
         Resolver.register { userManager as AnyUserManager }
         return HomeContainer()
-            .environmentObject(activitySummaryManager)
-            .environmentObject(competitionsManager)
-            .environmentObject(friendsManager)
-            .environmentObject(permissionsManager)
-            .environmentObject(storageManager)
-            .environmentObject(userManager)
     }
 }
