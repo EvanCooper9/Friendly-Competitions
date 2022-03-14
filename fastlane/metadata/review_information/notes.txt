@@ -1,0 +1,4 @@
+The sign-in information is for an Apple ID. You can Sign-In with Apple using the provided Apple ID. Otherwise, you can use any other Apple ID to create an account.
+
+The requested video of a real device accessing HealthKit can be found here: 
+https://firebasestorage.googleapis.com/v0/b/compyboi-79ae0.appspot.com/o/RPReplay_Final1632512181.MP4?alt=media&token=c43484f1-5d0f-4f4c-ac33-b07006d1379a

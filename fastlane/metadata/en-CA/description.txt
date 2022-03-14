@@ -1,0 +1,1 @@
+Friendly Competitions allows you to compete against groups of friends in fitness. It automatically uses your fitness goals and results from the Health app, without the need for pesky configuration. Create competitions like never before, like start & end date, scoring models and more. 
