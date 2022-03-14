@@ -17,4 +17,4 @@ jobs:
       - name: Homebrew
         run: brew bundle
       - name: Build & upload iOS binary
-        run: bundle exec fastlane test
+        run: fastlane test
