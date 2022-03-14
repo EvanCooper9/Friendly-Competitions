@@ -34,5 +34,7 @@ lane :release do |options|
     scheme: "Friendly Competitions", 
     include_bitcode: true
   )
-  upload_to_app_store
+  upload_to_app_store(
+    force: true
+  )
 end
