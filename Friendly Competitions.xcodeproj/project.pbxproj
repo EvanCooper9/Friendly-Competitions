@@ -46,6 +46,7 @@
 		C132945227DB8DF000117548 /* ImageAsset+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132945127DB8DF000117548 /* ImageAsset+Extensions.swift */; };
 		C132945627DF6D9E00117548 /* Binding+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132945527DF6D9E00117548 /* Binding+Extensions.swift */; };
 		C132945827DF703C00117548 /* Publisher+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132945727DF703C00117548 /* Publisher+Extensions.swift */; };
+		C132944A27DAB12200117548 /* DeepLinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132944927DAB12200117548 /* DeepLinkTests.swift */; };
 		C1386C7E26D566210096E952 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = C1386C7D26D566210096E952 /* FirebaseAuth */; };
 		C13F922A27BFFEB500FC6880 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = C13F922927BFFEB500FC6880 /* FirebaseStorage */; };
 		C13F922C27BFFF9900FC6880 /* StorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13F922B27BFFF9900FC6880 /* StorageManager.swift */; };
@@ -192,6 +193,7 @@
 		C132945127DB8DF000117548 /* ImageAsset+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ImageAsset+Extensions.swift"; sourceTree = "<group>"; };
 		C132945527DF6D9E00117548 /* Binding+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Binding+Extensions.swift"; sourceTree = "<group>"; };
 		C132945727DF703C00117548 /* Publisher+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Publisher+Extensions.swift"; sourceTree = "<group>"; };
+		C132944927DAB12200117548 /* DeepLinkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkTests.swift; sourceTree = "<group>"; };
 		C1386C8126D56CD60096E952 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		C13F922B27BFFF9900FC6880 /* StorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageManager.swift; sourceTree = "<group>"; };
 		C13F922D27C0017400FC6880 /* FirestoreImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreImage.swift; sourceTree = "<group>"; };
@@ -448,6 +450,14 @@
 			path = Styles;
 			sourceTree = "<group>";
 		};
+		C132944827DAB10700117548 /* User */ = {
+			isa = PBXGroup;
+			children = (
+				C155CA7127AC126E005F49F4 /* UserTests.swift */,
+			);
+			path = User;
+			sourceTree = "<group>";
+		};
 		C13F923127C0098E00FC6880 /* Managers */ = {
 			isa = PBXGroup;
 			children = (
@@ -513,9 +523,10 @@
 		C155CA6F27AC1245005F49F4 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				C155CA7127AC126E005F49F4 /* UserTests.swift */,
 				C1E35D4727B45FEB00833EB2 /* Competition */,
 				C1E35D4827B45FF000833EB2 /* Permissions */,
+				C132944827DAB10700117548 /* User */,
+				C132944927DAB12200117548 /* DeepLinkTests.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -981,6 +992,7 @@
 				C1E35D4427B45ECE00833EB2 /* PermissionTests.swift in Sources */,
 				C155CA6727AC086E005F49F4 /* SequenceTests.swift in Sources */,
 				C1E35D4627B45F6C00833EB2 /* PermissionStatusTests.swift in Sources */,
+				C132944A27DAB12200117548 /* DeepLinkTests.swift in Sources */,
 				C155CA7227AC126E005F49F4 /* UserTests.swift in Sources */,
 				C1EBB16727AD7AF600376E59 /* UserDefaultsTests.swift in Sources */,
 				C1E35D4A27B4600D00833EB2 /* Competition+StandingTests.swift in Sources */,
@@ -1275,7 +1287,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Friendly Competitions/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "Competitions (DBG)";
+				INFOPLIST_KEY_CFBundleDisplayName = "FC (DBG)";
 				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "We need access to HealthKit so you can compete against your friends!";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "We need access to HealthKit so you can compete against your friends!";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "We need access to HealthKit so you can compete against your friends!";
@@ -1314,7 +1326,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Friendly Competitions/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = Competitions;
+				INFOPLIST_KEY_CFBundleDisplayName = "FC (DBG)";
 				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "We need access to HealthKit so you can compete against your friends!";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "We need access to HealthKit so you can compete against your friends!";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "We need access to HealthKit so you can compete against your friends!";
