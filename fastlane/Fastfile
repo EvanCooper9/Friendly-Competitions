@@ -23,3 +23,15 @@ platform :ios do
     upload_to_app_store
   end
 end
+
+lane :test do
+  run_tests(scheme: "Friendly Competitions Tests")
+end
+
+lane :release do
+  build_app(
+    scheme: "MyApp", 
+    include_bitcode: true
+  )
+  upload_to_app_store
+end
