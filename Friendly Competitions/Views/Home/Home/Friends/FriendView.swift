@@ -8,14 +8,18 @@ struct FriendView: View {
 
     @State private var showConfirmDelete = false
 
+    private var activitySummary: ActivitySummary? {
+        friendsManager.friendActivitySummaries[friend.id]
+    }
+
     var body: some View {
         List {
             Section {
-                ActivitySummaryInfoView(activitySummary: friend.tempActivitySummary)
+                ActivitySummaryInfoView(activitySummary: activitySummary)
             } header: {
                 Text("Today's activity")
             } footer: {
-                if friend.tempActivitySummary == nil {
+                if activitySummary == nil {
                     Text("Nothing here, yet!")
                 }
             }

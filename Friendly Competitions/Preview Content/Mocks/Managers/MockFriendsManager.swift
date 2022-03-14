@@ -7,9 +7,8 @@ final class MockFriendsManager: AnyFriendsManager {
 
     private func setupAppStorePreviewContent() {
         friends = [User.andrew, .gabby]
-            .map { friend -> User in
-                friend.tempActivitySummary = .mock
-                return friend
-            }
+        friendActivitySummaries = friends.reduce(into: [:]) { partialResult, friend in
+            partialResult[friend.id] = .mock
+        }
     }
 }

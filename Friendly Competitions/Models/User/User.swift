@@ -10,7 +10,10 @@ final class User: Codable, Identifiable {
     var notificationTokens: [String]? = []
     var statistics: Statistics? = .zero
 
-    var tempActivitySummary: ActivitySummary? = nil
+    var searchable: Bool? = true
+    var showRealName: Bool? = false
+
+    var displayName: String { showRealName == false ? "Somebody random" : "Hungry Giraffe" }
 
     var hashId: String {
         let endIndex = id.index(id.startIndex, offsetBy: 4)
