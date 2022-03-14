@@ -1,6 +1,12 @@
+name: Deploy to AppStore Connect
+
+on:
+  release:
+    types: [published]
+
 jobs:
   build:
-    name: Deploy to AppStore Connect
+    name: Deploy
     runs-on: macos-latest
 
     steps:
