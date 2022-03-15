@@ -1,0 +1,3 @@
+Bug fixes:
+• Fixed the app name that appears on the home screen
+• Fixed an issue where some users were seeing fake activity ring data on the home screen, even though competition scores were being properly calculated

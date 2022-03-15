@@ -1,0 +1,20 @@
+name: Run unit tests
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    name: Test
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Restore build cache
+        uses: mikehardy/buildcache-action@v1
+      - name: Homebrew
+        run: brew bundle
+      - name: Test
+        run: fastlane test
