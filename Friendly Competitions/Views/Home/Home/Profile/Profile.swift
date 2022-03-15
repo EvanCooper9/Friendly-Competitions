@@ -27,7 +27,7 @@ struct Profile: View {
             Section {
                 Toggle("Show real name", isOn: $userManager.user.showRealName ?? true)
             } footer: {
-                Text("Turn this off to hide your real name in public competitions that you join. You will still earn medals, even if this is turned off.")
+                Text("Turn this off to hide your name in public competitions that you join. You will still earn medals, even if this is turned off. Friends will still see your real name.")
             }
 
             Section("Session") {
@@ -42,7 +42,6 @@ struct Profile: View {
             }
         }
         .navigationTitle("Profile")
-        .embeddedInNavigationView()
         .confirmationDialog(
             "Are you sure? This cannot be undone.",
             isPresented: $presentDeleteAccountAlert,
@@ -57,6 +56,7 @@ struct Profile: View {
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
         Profile()
+            .embeddedInNavigationView()
             .environmentObject(AnyUserManager(user: .evan))
     }
 }

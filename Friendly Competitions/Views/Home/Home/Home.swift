@@ -12,7 +12,6 @@ struct Home: View {
 
     @State private var presentAbout = false
     @State private var presentPermissions = false
-    @State private var presentSettings = false
     @State private var presentNewCompetition = false
     @State private var presentSearchFriendsSheet = false
     @AppStorage("competitionsFiltered") var competitionsFiltered = false
@@ -32,14 +31,15 @@ struct Home: View {
                 Button(toggling: $presentAbout) {
                     Image(systemName: "questionmark.circle")
                 }
-                Button(toggling: $presentSettings) {
+                NavigationLink {
+                    Profile()
+                } label: {
                     Image(systemName: "person.crop.circle")
                 }
             }
         }
         .embeddedInNavigationView()
         .sheet(isPresented: $presentAbout) { About() }
-        .sheet(isPresented: $presentSettings) { Profile() }
         .sheet(isPresented: $presentSearchFriendsSheet) { AddFriendView() }
         .sheet(isPresented: $presentNewCompetition) { NewCompetition() }
         .sheet(isPresented: $presentPermissions) { PermissionsView() }
@@ -173,7 +173,7 @@ struct HomeView_Previews: PreviewProvider {
     }()
 
     private static let competitionManager: AnyCompetitionsManager = {
-        let competitions: [Competition] = [.mock, .mockInvited, .mockOld]
+        let competitions: [Competition] = [.mock, .mockInvited, .mockOld, .mockPublic]
         let competitionManager = AnyCompetitionsManager()
         competitionManager.competitions = competitions
         competitionManager.standings = competitions.reduce(into: [:]) { partialResult, competition in
