@@ -21,9 +21,16 @@ final class UserManager: AnyUserManager {
 
     private var userListener: ListenerRegistration?
 
+    private var cancellables = Set<AnyCancellable>()
+
     override init(user: User) {
         super.init(user: user)
         listenForUser()
+
+        $user.sinkAsync { [weak self] _ in
+            try await self?.update()
+        }
+        .store(in: &cancellables)
     }
 
     deinit {
@@ -40,6 +47,12 @@ final class UserManager: AnyUserManager {
 
     override func signOut() {
         try? Auth.auth().signOut()
+    }
+
+    // MARK: - Private Methods
+
+    private func update() async throws {
+        try await database.document("users/\(user.id)").updateDataEncodable(user)
     }
 
     private func listenForUser() {

@@ -43,6 +43,9 @@
 		C132336927BECCA800196D81 /* AttributedText.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132336827BECCA800196D81 /* AttributedText.swift */; };
 		C132336B27BF0AF700196D81 /* Sticker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132336A27BF0AF700196D81 /* Sticker.swift */; };
 		C132336D27BF0C0F00196D81 /* View+CornerRadius.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132336C27BF0C0F00196D81 /* View+CornerRadius.swift */; };
+		C132945227DB8DF000117548 /* ImageAsset+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132945127DB8DF000117548 /* ImageAsset+Extensions.swift */; };
+		C132945627DF6D9E00117548 /* Binding+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132945527DF6D9E00117548 /* Binding+Extensions.swift */; };
+		C132945827DF703C00117548 /* Publisher+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132945727DF703C00117548 /* Publisher+Extensions.swift */; };
 		C132944A27DAB12200117548 /* DeepLinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132944927DAB12200117548 /* DeepLinkTests.swift */; };
 		C1386C7E26D566210096E952 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = C1386C7D26D566210096E952 /* FirebaseAuth */; };
 		C13F922A27BFFEB500FC6880 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = C13F922927BFFEB500FC6880 /* FirebaseStorage */; };
@@ -187,6 +190,9 @@
 		C132336827BECCA800196D81 /* AttributedText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttributedText.swift; sourceTree = "<group>"; };
 		C132336A27BF0AF700196D81 /* Sticker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sticker.swift; sourceTree = "<group>"; };
 		C132336C27BF0C0F00196D81 /* View+CornerRadius.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+CornerRadius.swift"; sourceTree = "<group>"; };
+		C132945127DB8DF000117548 /* ImageAsset+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ImageAsset+Extensions.swift"; sourceTree = "<group>"; };
+		C132945527DF6D9E00117548 /* Binding+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Binding+Extensions.swift"; sourceTree = "<group>"; };
+		C132945727DF703C00117548 /* Publisher+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Publisher+Extensions.swift"; sourceTree = "<group>"; };
 		C132944927DAB12200117548 /* DeepLinkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkTests.swift; sourceTree = "<group>"; };
 		C1386C8126D56CD60096E952 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		C13F922B27BFFF9900FC6880 /* StorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageManager.swift; sourceTree = "<group>"; };
@@ -372,6 +378,7 @@
 		C12D63EE27A4D5A700259237 /* SwiftUI */ = {
 			isa = PBXGroup;
 			children = (
+				C132945527DF6D9E00117548 /* Binding+Extensions.swift */,
 				C123C9C627A74C4000375F73 /* Button+Extensions.swift */,
 				C12D63EF27A4D5B300259237 /* View+Extensions.swift */,
 				C132336C27BF0C0F00196D81 /* View+CornerRadius.swift */,
@@ -637,6 +644,7 @@
 			isa = PBXGroup;
 			children = (
 				C1930E4F27C6755200DB45C1 /* Color+Extensions.swift */,
+				C132945127DB8DF000117548 /* ImageAsset+Extensions.swift */,
 			);
 			path = SwiftGen;
 			sourceTree = "<group>";
@@ -763,6 +771,7 @@
 			isa = PBXGroup;
 			children = (
 				C1E1A9D427A7037D00E8E360 /* Published+Extensions.swift */,
+				C132945727DF703C00117548 /* Publisher+Extensions.swift */,
 			);
 			path = Combine;
 			sourceTree = "<group>";
@@ -1009,6 +1018,7 @@
 				C13F922C27BFFF9900FC6880 /* StorageManager.swift in Sources */,
 				C109E4C026E7F52E00AA10C5 /* Encodable+Extensions.swift in Sources */,
 				C132336B27BF0AF700196D81 /* Sticker.swift in Sources */,
+				C132945827DF703C00117548 /* Publisher+Extensions.swift in Sources */,
 				C123C9DB27A8A98800375F73 /* UserManager.swift in Sources */,
 				C1E1A9D527A7037D00E8E360 /* Published+Extensions.swift in Sources */,
 				C12D640727A5F2FC00259237 /* CompetitionsManager.swift in Sources */,
@@ -1021,6 +1031,7 @@
 				C155CA7627AC1A63005F49F4 /* Competition+Standing.swift in Sources */,
 				C123C9CD27A863F100375F73 /* UserHashIDPill.swift in Sources */,
 				C132335F27BEA97A00196D81 /* FlatLinkStyle.swift in Sources */,
+				C132945227DB8DF000117548 /* ImageAsset+Extensions.swift in Sources */,
 				C1691DD926D5603D006FFA30 /* ActivityRingView.swift in Sources */,
 				C1884E4826D5894000C21014 /* Home.swift in Sources */,
 				C155229C26E793B300FE0DA7 /* User+Mock.swift in Sources */,
@@ -1075,6 +1086,7 @@
 				C1C1542326D5DFFD00C6FA9F /* HKActivitySummary+Extensions.swift in Sources */,
 				C114314227B9B6ED00915757 /* DeepLink.swift in Sources */,
 				C123C9D427A88D3200375F73 /* UserInfoSection.swift in Sources */,
+				C132945627DF6D9E00117548 /* Binding+Extensions.swift in Sources */,
 				C132336D27BF0C0F00196D81 /* View+CornerRadius.swift in Sources */,
 				C19B7F2B27BD8C7100BCA4B9 /* FeaturedCompetition.swift in Sources */,
 				C1401F8926D933560080F74F /* Profile.swift in Sources */,
