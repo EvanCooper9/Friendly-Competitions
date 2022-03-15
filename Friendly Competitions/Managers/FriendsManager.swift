@@ -8,6 +8,7 @@ import SwiftUI
 class AnyFriendsManager: ObservableObject {
 
     @Published(storedWithKey: "friends") var friends = [User]()
+    @Published(storedWithKey: "friendActivitySummaries") var friendActivitySummaries = [User.ID: ActivitySummary]()
     @Published var friendRequests = [User]()
     @Published var searchResults = [User]()
     @Published var searchText = ""
@@ -170,7 +171,7 @@ final class FriendsManager: AnyFriendsManager {
     }
 
     private func updateFriendActivitySummaries() async throws {
-        try await withThrowingTaskGroup(of: (User, ActivitySummary?).self) { group in
+        try await withThrowingTaskGroup(of: (User.ID, ActivitySummary?).self) { group in
             friends.forEach { friend in
                 group.addTask { [weak self] in
                     // TODO: use whereIn("date", is: DateFormatter.dateDashed.string(from: .now)) filter when most users have installed >= 1.1.0
@@ -182,17 +183,16 @@ final class FriendsManager: AnyFriendsManager {
                         .decoded(as: ActivitySummary.self)
                     let now = DateFormatter.dateDashed.string(from: .now)
                     let isFromToday = activitySummary?.date.encodedToString().starts(with: now) == true
-                    return (friend, isFromToday ? activitySummary : nil)
+                    return (friend.id, isFromToday ? activitySummary : nil)
                 }
             }
 
-            var friends = [User]()
-            for try await (friend, activitySummary) in group {
-                friend.tempActivitySummary = activitySummary
-                friends.append(friend)
+            var friendActivitySummaries = [User.ID: ActivitySummary]()
+            for try await (friendId, activitySummary) in group {
+                friendActivitySummaries[friendId] = activitySummary
             }
-            DispatchQueue.main.async { [weak self, friends] in
-                self?.friends = friends
+            DispatchQueue.main.async { [weak self, friendActivitySummaries] in
+                self?.friendActivitySummaries = friendActivitySummaries
             }
         }
     }

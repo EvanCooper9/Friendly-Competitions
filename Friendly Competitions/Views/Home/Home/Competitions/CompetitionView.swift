@@ -4,7 +4,7 @@ struct CompetitionView: View {
 
     @Binding var competition: Competition
 
-    @Environment(\.presentationMode) private var presentationMode
+//    @Environment(\.presentationMode) private var presentationMode
     @EnvironmentObject private var competitionsManager: AnyCompetitionsManager
     @EnvironmentObject private var friendsManager: AnyFriendsManager
     @EnvironmentObject private var userManager: AnyUserManager
@@ -16,6 +16,8 @@ struct CompetitionView: View {
     @State private var showAreYouSure = false
     @State private var actionRequiringConfirmation: Action?
     @State private var showInviteFriend = false
+
+    @State private var displayNames = [User.ID: String]()
 
     var body: some View {
         List {
@@ -37,7 +39,9 @@ struct CompetitionView: View {
                 HStack {
                     Text(standing.rank.ordinalString ?? "?").bold()
                     if let user = competitionsManager.participants[competition.id]?.first(where: { $0.id == standing.userId }) {
-                        Text(user.name)
+                        let displayName = displayNames[user.id] ?? user.displayName(seenBy: userManager.user)
+                        Text(displayName)
+                            .onAppear { displayNames[user.id] = displayName }
                         UserHashIDPill(user: user)
                     } else {
                         Text(standing.userId)
@@ -135,7 +139,7 @@ struct CompetitionView: View {
                     competitionsManager.delete(competition)
                 }
                 self.actionRequiringConfirmation = nil
-                presentationMode.wrappedValue.dismiss()
+//                presentationMode.wrappedValue.dismiss()
             }
             Button("Cancel", role: .cancel) {
                 actionRequiringConfirmation = nil
@@ -184,7 +188,7 @@ struct CompetitionView_Previews: PreviewProvider {
                 .init(rank: 1, userId: "1", points: 100),
                 .init(rank: 2, userId: "2", points: 50),
                 .init(rank: 3, userId: "a", points: 50),
-                .init(rank: 4, userId: "b", points: 50),
+                .init(rank: 4, userId: gabby.id, points: 50),
 //                .init(rank: 5, userId: "c", points: 50),
                 .init(rank: 5, userId: evan.id, points: 50),
                 .init(rank: 6, userId: "d", points: 50),
@@ -195,10 +199,10 @@ struct CompetitionView_Previews: PreviewProvider {
             ]
         ]
         competitionManager.participants = [
-            competition.id: [.evan, .gabby]
+            competition.id: [evan, gabby]
         ]
         competitionManager.pendingParticipants = [
-            competition.id: [.gabby]
+            competition.id: [gabby]
         ]
 
         return competitionManager

@@ -13,6 +13,8 @@ extension User {
             name: "Evan Cooper"
         )
         user.statistics = .mock
+        user.searchable = true
+        user.showRealName = true
         return user
     }
 

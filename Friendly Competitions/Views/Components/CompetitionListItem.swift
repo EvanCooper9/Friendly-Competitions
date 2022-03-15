@@ -9,12 +9,19 @@ struct CompetitionListItem: View {
 
     var body: some View {
         NavigationLink(destination: CompetitionView(competition: $competition)) {
-            HStack {
+            HStack(alignment: .center) {
                 if competition.owner == Bundle.main.id {
-                    AppIcon(size: UIFont.preferredFont(forTextStyle: .body).pointSize)
+                    AppIcon(size: UIFont.preferredFont(forTextStyle: .title2).pointSize)
                 }
-                Text(competition.name)
+                VStack(alignment: .leading) {
+                    Text(competition.name)
+                    Text("\(competition.ended ? "ended" : "ends") \(RelativeDateTimeFormatter().localizedString(for: competition.end, relativeTo: .now))")
+                        .font(.footnote)
+                        .foregroundColor(.gray)
+                }
+
                 Spacer()
+
                 if competition.pendingParticipants.contains(userManager.user.id) {
                     Text("Invited")
                         .foregroundColor(.gray)
@@ -23,8 +30,9 @@ struct CompetitionListItem: View {
                       let rank = standings.first(where: { $0.userId == userManager.user.id })?.rank,
                       let rankEmoji = rank.rankEmoji {
                     Text(rankEmoji)
-                } 
+                }
             }
+            .padding(.vertical, 2)
         }
     }
 }

@@ -44,10 +44,10 @@ struct HomeContainer_Previews: PreviewProvider {
 
     private static let friendsManager: AnyFriendsManager = {
         let friend = User.gabby
-        friend.tempActivitySummary = .mock
         let friendsManager = AnyFriendsManager()
         friendsManager.friends = [friend]
         friendsManager.friendRequests = [friend]
+        friendsManager.friendActivitySummaries = [friend.id: .mock]
         return friendsManager
     }()
 
