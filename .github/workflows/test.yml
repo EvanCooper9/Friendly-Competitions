@@ -18,12 +18,10 @@ jobs:
         run: |
           GOOGLE_SERVICE_INFO="Friendly\ Competitions/Firebase/Debug/GoogleService-Info.plist"
           touch $GOOGLE_SERVICE_INFO
-          echo $GOOGLE_SERVICE_INFO_DEBUG > GOOGLE_SERVICE_INFO
+          echo $GOOGLE_SERVICE_INFO_DEBUG > $GOOGLE_SERVICE_INFO
           ls
           pwd
-          ls "Friendly Competitions"
-          ls 'Friendly Competitions/Firebase'
-          ls "Friendly Competitions/Firebase/Debug"
+          ls $GOOGLE_SERVICE_INFO
           cat "Friendly Competitions/Firebase/Debug/GoogleService-Info.plist"
         env:
           GOOGLE_SERVICE_INFO_DEBUG: ${{ secrets.GOOGLE_SERVICE_INFO_DEBUG }}
