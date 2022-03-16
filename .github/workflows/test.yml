@@ -17,8 +17,7 @@ jobs:
       - name: Homebrew
         run: brew bundle
       - name: Setup GoogleService-Info.plist
-        run: |
-          echo $GOOGLE_SERVICE_INFO_DEBUG > "Friendly Competitions/Firebase/Release/GoogleService-Info.plist"
+        run: echo $GOOGLE_SERVICE_INFO_DEBUG >> "Friendly Competitions/Firebase/Release/GoogleService-Info.plist"
         env:
           GOOGLE_SERVICE_INFO_DEBUG: ${{ secrets.GOOGLE_SERVICE_INFO_DEBUG }}
       - name: Test
