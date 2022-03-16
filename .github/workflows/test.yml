@@ -16,8 +16,8 @@ jobs:
         uses: mikehardy/buildcache-action@v1
       - name: Setup GoogleService-Info.plist
         run: |
-          mkdir -p "Friendly\ Competitions/Firebase/Debug" && touch "Friendly\ Competitions/Firebase/Debug/GoogleService-Info.plist"
-          echo $GOOGLE_SERVICE_INFO_DEBUG > "Friendly\ Competitions/Firebase/Debug/GoogleService-Info.plist"
+          mkdir -p "Friendly Competitions/Firebase/Debug" && touch "Friendly Competitions/Firebase/Debug/GoogleService-Info.plist"
+          echo $GOOGLE_SERVICE_INFO_DEBUG > "Friendly Competitions/Firebase/Debug/GoogleService-Info.plist"
           ls "Friendly Competitions"
           echo "========"
           ls "Friendly Competitions/Firebase"
