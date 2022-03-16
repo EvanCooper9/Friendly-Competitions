@@ -16,11 +16,10 @@ lane :deploy do
         gsp_path: "Friendly Competitions/Firebase/Release/GoogleService-Info.plist",
         binary_path: "fastlane/scripts/upload-symbols"
     )
-    latest_testflight_build_number
     upload_to_app_store(
+        ipa: "Friendly Competitions.ipa"
         build_number: (latest_testflight_build_number + 1).to_s,
         force: true,
-        reject_if_possible: true,
-        run_precheck_before_submit: false
+        precheck_include_in_app_purchases: false
     )
 end
