@@ -13,22 +13,12 @@
 # Uncomment the line if you want fastlane to automatically update itself
 # update_fastlane
 
-default_platform(:ios)
-
-platform :ios do
-  desc "Push a new release build to the App Store"
-  lane :release do
-    increment_build_number(xcodeproj: "Friendly Competitions.xcodeproj")
-    build_app(scheme: "Friendly Competitions")
-    upload_to_app_store
-  end
-end
-
 lane :test do
   run_tests(scheme: "Friendly Competitions")
 end
 
-lane :release do |options|
+lane :deploy do
+  setup_ci
   match(type: "appstore", readonly: is_ci)
   build_app(
     scheme: "Friendly Competitions", 
