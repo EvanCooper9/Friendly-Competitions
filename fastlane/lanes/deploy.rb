@@ -8,6 +8,9 @@ lane :deploy do
         in_house: false # optional but may be required if using match/sigh
     ) if is_ci
     match(type: "appstore", readonly: true)
+    increment_build_number(
+        build_number: latest_testflight_build_number + 1
+    )
     build_app(
         scheme: "Friendly Competitions", 
         include_bitcode: true
@@ -18,7 +21,6 @@ lane :deploy do
     )
     upload_to_app_store(
         ipa: "Friendly Competitions.ipa",
-        build_number: (latest_testflight_build_number + 1).to_s,
         force: true,
         precheck_include_in_app_purchases: false
     )
