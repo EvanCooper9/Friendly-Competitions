@@ -17,7 +17,7 @@ lane :deploy do
         binary_path: "fastlane/scripts/upload-symbols"
     )
     upload_to_app_store(
-        ipa: "Friendly Competitions.ipa"
+        ipa: "Friendly Competitions.ipa",
         build_number: (latest_testflight_build_number + 1).to_s,
         force: true,
         precheck_include_in_app_purchases: false
