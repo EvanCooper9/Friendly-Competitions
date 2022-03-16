@@ -43,10 +43,10 @@
 		C132336927BECCA800196D81 /* AttributedText.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132336827BECCA800196D81 /* AttributedText.swift */; };
 		C132336B27BF0AF700196D81 /* Sticker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132336A27BF0AF700196D81 /* Sticker.swift */; };
 		C132336D27BF0C0F00196D81 /* View+CornerRadius.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132336C27BF0C0F00196D81 /* View+CornerRadius.swift */; };
+		C132944A27DAB12200117548 /* DeepLinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132944927DAB12200117548 /* DeepLinkTests.swift */; };
 		C132945227DB8DF000117548 /* ImageAsset+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132945127DB8DF000117548 /* ImageAsset+Extensions.swift */; };
 		C132945627DF6D9E00117548 /* Binding+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132945527DF6D9E00117548 /* Binding+Extensions.swift */; };
 		C132945827DF703C00117548 /* Publisher+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132945727DF703C00117548 /* Publisher+Extensions.swift */; };
-		C132944A27DAB12200117548 /* DeepLinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132944927DAB12200117548 /* DeepLinkTests.swift */; };
 		C1386C7E26D566210096E952 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = C1386C7D26D566210096E952 /* FirebaseAuth */; };
 		C13F922A27BFFEB500FC6880 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = C13F922927BFFEB500FC6880 /* FirebaseStorage */; };
 		C13F922C27BFFF9900FC6880 /* StorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13F922B27BFFF9900FC6880 /* StorageManager.swift */; };
@@ -190,10 +190,10 @@
 		C132336827BECCA800196D81 /* AttributedText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttributedText.swift; sourceTree = "<group>"; };
 		C132336A27BF0AF700196D81 /* Sticker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sticker.swift; sourceTree = "<group>"; };
 		C132336C27BF0C0F00196D81 /* View+CornerRadius.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+CornerRadius.swift"; sourceTree = "<group>"; };
+		C132944927DAB12200117548 /* DeepLinkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkTests.swift; sourceTree = "<group>"; };
 		C132945127DB8DF000117548 /* ImageAsset+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ImageAsset+Extensions.swift"; sourceTree = "<group>"; };
 		C132945527DF6D9E00117548 /* Binding+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Binding+Extensions.swift"; sourceTree = "<group>"; };
 		C132945727DF703C00117548 /* Publisher+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Publisher+Extensions.swift"; sourceTree = "<group>"; };
-		C132944927DAB12200117548 /* DeepLinkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkTests.swift; sourceTree = "<group>"; };
 		C1386C8126D56CD60096E952 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		C13F922B27BFFF9900FC6880 /* StorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageManager.swift; sourceTree = "<group>"; };
 		C13F922D27C0017400FC6880 /* FirestoreImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreImage.swift; sourceTree = "<group>"; };
