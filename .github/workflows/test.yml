@@ -21,6 +21,8 @@ jobs:
           echo $GOOGLE_SERVICE_INFO_DEBUG > GOOGLE_SERVICE_INFO
           ls
           pwd
+          ls "Friendly Competitions"
+          ls 'Friendly Competitions/Firebase'
           ls "Friendly Competitions/Firebase/Debug"
           cat "Friendly Competitions/Firebase/Debug/GoogleService-Info.plist"
         env:
