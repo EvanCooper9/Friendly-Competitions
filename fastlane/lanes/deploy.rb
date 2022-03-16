@@ -18,7 +18,7 @@ lane :deploy do
     )
     latest_testflight_build_number
     upload_to_app_store(
-        build_number: latest_testflight_build_number + 1,
+        build_number: (latest_testflight_build_number + 1).to_s,
         force: true,
         reject_if_possible: true
     )
