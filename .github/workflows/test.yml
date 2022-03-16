@@ -18,8 +18,9 @@ jobs:
         run: |
           mkdir -p "Friendly\ Competitions/Firebase/Debug" && touch "Friendly\ Competitions/Firebase/Debug/GoogleService-Info.plist"
           echo $GOOGLE_SERVICE_INFO_DEBUG > "Friendly\ Competitions/Firebase/Debug/GoogleService-Info.plist"
-          ls
-          pwd
+          ls "Friendly Competitions"
+          echo "========"
+          ls "Friendly Competitions/Firebase"
           cat "Friendly Competitions/Firebase/Debug/GoogleService-Info.plist"
         env:
           GOOGLE_SERVICE_INFO_DEBUG: ${{ secrets.GOOGLE_SERVICE_INFO_DEBUG }}
