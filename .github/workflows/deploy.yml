@@ -16,9 +16,8 @@ jobs:
         run: brew bundle
       - name: Setup GoogleService-Info.plist
         run: |
-          GOOGLE_SERVICE_INFO="Friendly Competitions/Firebase/Release/GoogleService-Info.plist"
-          touch $GOOGLE_SERVICE_INFO
-          echo $GOOGLE_SERVICE_INFO_DEBUG > $GOOGLE_SERVICE_INFO
+          mkdir -p "Friendly Competitions/Firebase/Release" && touch "Friendly Competitions/Firebase/Release/GoogleService-Info.plist"
+          echo $GOOGLE_SERVICE_INFO_DEBUG > "Friendly Competitions/Firebase/Release/GoogleService-Info.plist"
         env:
           GOOGLE_SERVICE_INFO_RELEASE: ${{ secrets.GOOGLE_SERVICE_INFO_RELEASE }}
       - name: Deploy
