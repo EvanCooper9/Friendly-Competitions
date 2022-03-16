@@ -15,9 +15,7 @@ jobs:
       - name: Homebrew
         run: brew bundle
       - name: Deploy
-        run: |
-          fastlane env
-          fastlane release
+        run: fastlane release
         env:
           FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD: ${{ secrets.FASTLANE_APPLE_APPLICATION_SPECIFIC_PASSWORD }}
           FASTLANE_USER: ${{ secrets.FASTLANE_USER }}
