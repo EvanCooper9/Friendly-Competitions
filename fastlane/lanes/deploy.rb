@@ -20,6 +20,7 @@ lane :deploy do
     upload_to_app_store(
         build_number: (latest_testflight_build_number + 1).to_s,
         force: true,
-        reject_if_possible: true
+        reject_if_possible: true,
+        run_precheck_before_submit: false
     )
 end
