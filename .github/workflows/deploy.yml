@@ -12,14 +12,14 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Homebrew
-        run: brew bundle
       - name: Setup GoogleService-Info.plist
         run: |
           mkdir -p "Friendly Competitions/Firebase/Release" && touch "Friendly Competitions/Firebase/Release/GoogleService-Info.plist"
-          echo $GOOGLE_SERVICE_INFO_DEBUG > "Friendly Competitions/Firebase/Release/GoogleService-Info.plist"
+          echo $GOOGLE_SERVICE_INFO_RELEASE > "Friendly Competitions/Firebase/Release/GoogleService-Info.plist"
         env:
           GOOGLE_SERVICE_INFO_RELEASE: ${{ secrets.GOOGLE_SERVICE_INFO_RELEASE }}
+      - name: Homebrew
+        run: brew bundle
       - name: Deploy
         run: fastlane release
         env:
