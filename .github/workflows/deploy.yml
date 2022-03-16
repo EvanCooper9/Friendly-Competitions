@@ -17,7 +17,7 @@ jobs:
       - name: Setup GoogleService-Info.plist
         run: |
           GOOGLE_SERVICE_INFO="Friendly Competitions/Firebase/Release/GoogleService-Info.plist"
-          touch GOOGLE_SERVICE_INFO
+          touch $GOOGLE_SERVICE_INFO
           echo $GOOGLE_SERVICE_INFO_DEBUG > GOOGLE_SERVICE_INFO
         env:
           GOOGLE_SERVICE_INFO_RELEASE: ${{ secrets.GOOGLE_SERVICE_INFO_RELEASE }}
