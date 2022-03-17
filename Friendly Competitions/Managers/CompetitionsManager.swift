@@ -32,11 +32,6 @@ final class CompetitionsManager: AnyCompetitionsManager {
         let name: String
     }
 
-    /// Used for getting community results, so we don't decode dates and other expensive properties
-    private struct TopCommunityResult: Decodable {
-        let participants: [String]
-    }
-
     // MARK: - Private Properties
 
     @LazyInjected private var activitySummaryManager: AnyActivitySummaryManager
@@ -251,12 +246,9 @@ final class CompetitionsManager: AnyCompetitionsManager {
             .getDocuments { snapshot, error in
                 guard let snapshot = snapshot else { return }
                 let competitions = snapshot.documents
-                    .filter { document in
-                        guard let result = try? document.decoded(as: TopCommunityResult.self) else { return false }
-                        return !result.participants.isEmpty
-                    }
-                    .randomSample(count: 10)
                     .decoded(asArrayOf: Competition.self)
+                    .filter { !$0.ended && !$0.participants.isEmpty }
+                    .randomSample(count: 10)
                     .sorted(by: \.participants.count)
                     .reversed()
                 DispatchQueue.main.async { [weak self] in
