@@ -12,7 +12,6 @@ lane :deploy do
         build_number: latest_testflight_build_number + 1
     )
     build_app(
-        scheme: "Friendly Competitions", 
         include_bitcode: true
     )
     upload_symbols_to_crashlytics(
@@ -20,7 +19,6 @@ lane :deploy do
         binary_path: "fastlane/scripts/upload-symbols"
     )
     upload_to_app_store(
-        ipa: "Friendly Competitions.ipa",
         force: true,
         precheck_include_in_app_purchases: false
     )
