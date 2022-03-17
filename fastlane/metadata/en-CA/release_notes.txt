@@ -1,3 +1,6 @@
+New features:
+• Take control of your privacy. Prevent your name from being displayed in public competitions and hide youself from search.
+
 Bug fixes:
-• Fixed the app name that appears on the home screen
-• Fixed an issue where some users were seeing fake activity ring data on the home screen, even though competition scores were being properly calculated
+• Fixed an issue where the standing for public competitions appeared empty if you hadn't joined.
+• Fixed an issue where public competitions that had already ended were showing on the explore page.
