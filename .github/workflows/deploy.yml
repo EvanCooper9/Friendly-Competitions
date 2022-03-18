@@ -12,7 +12,24 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Setup GoogleService-Info.plist
+        run: |
+          mkdir -p "Friendly Competitions/Firebase/Release"
+          echo $GOOGLE_SERVICE_INFO_RELEASE > "Friendly Competitions/Firebase/Release/GoogleService-Info.plist"
+        env:
+          GOOGLE_SERVICE_INFO_RELEASE: ${{ secrets.GOOGLE_SERVICE_INFO_RELEASE }}
       - name: Homebrew
         run: brew bundle
+
+      # https://docs.fastlane.tools/getting-started/ios/authentication/
       - name: Deploy
-        run: fastlane release
+        run: fastlane deploy
+        env:
+          APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+          APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+          APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
+          MATCH_GIT_BASIC_AUTHORIZATION: ${{ secrets.MATCH_GIT_BASIC_AUTHORIZATION }}
+          MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+      - uses: actions/upload-artifact@v3
+        with:
+          path: "Friendly Competitions.app.dSYM.zip"

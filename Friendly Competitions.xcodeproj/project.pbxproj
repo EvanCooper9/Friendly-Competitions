@@ -43,10 +43,10 @@
 		C132336927BECCA800196D81 /* AttributedText.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132336827BECCA800196D81 /* AttributedText.swift */; };
 		C132336B27BF0AF700196D81 /* Sticker.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132336A27BF0AF700196D81 /* Sticker.swift */; };
 		C132336D27BF0C0F00196D81 /* View+CornerRadius.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132336C27BF0C0F00196D81 /* View+CornerRadius.swift */; };
+		C132944A27DAB12200117548 /* DeepLinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132944927DAB12200117548 /* DeepLinkTests.swift */; };
 		C132945227DB8DF000117548 /* ImageAsset+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132945127DB8DF000117548 /* ImageAsset+Extensions.swift */; };
 		C132945627DF6D9E00117548 /* Binding+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132945527DF6D9E00117548 /* Binding+Extensions.swift */; };
 		C132945827DF703C00117548 /* Publisher+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132945727DF703C00117548 /* Publisher+Extensions.swift */; };
-		C132944A27DAB12200117548 /* DeepLinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132944927DAB12200117548 /* DeepLinkTests.swift */; };
 		C1386C7E26D566210096E952 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = C1386C7D26D566210096E952 /* FirebaseAuth */; };
 		C13F922A27BFFEB500FC6880 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = C13F922927BFFEB500FC6880 /* FirebaseStorage */; };
 		C13F922C27BFFF9900FC6880 /* StorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13F922B27BFFF9900FC6880 /* StorageManager.swift */; };
@@ -190,11 +190,10 @@
 		C132336827BECCA800196D81 /* AttributedText.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttributedText.swift; sourceTree = "<group>"; };
 		C132336A27BF0AF700196D81 /* Sticker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sticker.swift; sourceTree = "<group>"; };
 		C132336C27BF0C0F00196D81 /* View+CornerRadius.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+CornerRadius.swift"; sourceTree = "<group>"; };
+		C132944927DAB12200117548 /* DeepLinkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkTests.swift; sourceTree = "<group>"; };
 		C132945127DB8DF000117548 /* ImageAsset+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "ImageAsset+Extensions.swift"; sourceTree = "<group>"; };
 		C132945527DF6D9E00117548 /* Binding+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Binding+Extensions.swift"; sourceTree = "<group>"; };
 		C132945727DF703C00117548 /* Publisher+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Publisher+Extensions.swift"; sourceTree = "<group>"; };
-		C132944927DAB12200117548 /* DeepLinkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkTests.swift; sourceTree = "<group>"; };
-		C1386C8126D56CD60096E952 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		C13F922B27BFFF9900FC6880 /* StorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageManager.swift; sourceTree = "<group>"; };
 		C13F922D27C0017400FC6880 /* FirestoreImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreImage.swift; sourceTree = "<group>"; };
 		C13F923227C0099800FC6880 /* MockCompetitionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockCompetitionManager.swift; sourceTree = "<group>"; };
@@ -260,7 +259,6 @@
 		C1C8B24626F3FB9C008D6B1B /* HealthKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKit.framework; path = System/Library/Frameworks/HealthKit.framework; sourceTree = SDKROOT; };
 		C1C8B24826F3FBA3008D6B1B /* HealthKitUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = HealthKitUI.framework; path = System/Library/Frameworks/HealthKitUI.framework; sourceTree = SDKROOT; };
 		C1D0177C273F63CF00C9EEAE /* PermissionStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionStatus.swift; sourceTree = "<group>"; };
-		C1DB3B6027AA0D420074BED1 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		C1E1A9D027A6D9D700E8E360 /* FriendsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendsManager.swift; sourceTree = "<group>"; };
 		C1E1A9D427A7037D00E8E360 /* Published+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Published+Extensions.swift"; sourceTree = "<group>"; };
 		C1E35D4127B45D6300833EB2 /* CompetitionTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionTests.swift; sourceTree = "<group>"; };
@@ -561,7 +559,6 @@
 				C1B2F4E3272B505C0028449F /* AppDelegate.swift */,
 				C1A4696926DA823C00254105 /* Resolver.swift */,
 				C11193AD26E7C5C6003B7EB3 /* Extensions */,
-				C1DB3B5D27AA0D090074BED1 /* Firebase */,
 				C1DA90AA26F63C2500B0E2D3 /* Managers */,
 				C1884E4C26D59E2300C21014 /* Models */,
 				C1ABB20C26D6839900716984 /* Views */,
@@ -740,31 +737,6 @@
 				C123C9DA27A8A98800375F73 /* UserManager.swift */,
 			);
 			path = Managers;
-			sourceTree = "<group>";
-		};
-		C1DB3B5D27AA0D090074BED1 /* Firebase */ = {
-			isa = PBXGroup;
-			children = (
-				C1DB3B5F27AA0D1A0074BED1 /* Release */,
-				C1DB3B5E27AA0D130074BED1 /* Debug */,
-			);
-			path = Firebase;
-			sourceTree = "<group>";
-		};
-		C1DB3B5E27AA0D130074BED1 /* Debug */ = {
-			isa = PBXGroup;
-			children = (
-				C1DB3B6027AA0D420074BED1 /* GoogleService-Info.plist */,
-			);
-			path = Debug;
-			sourceTree = "<group>";
-		};
-		C1DB3B5F27AA0D1A0074BED1 /* Release */ = {
-			isa = PBXGroup;
-			children = (
-				C1386C8126D56CD60096E952 /* GoogleService-Info.plist */,
-			);
-			path = Release;
 			sourceTree = "<group>";
 		};
 		C1E1A9D627A7076B00E8E360 /* Combine */ = {
@@ -1302,7 +1274,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.3.2;
+				MARKETING_VERSION = 1.4.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.evancooper.FriendlyCompetitions.debug;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "match Development com.evancooper.FriendlyCompetitions.debug";
@@ -1341,7 +1313,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.3.2;
+				MARKETING_VERSION = 1.4.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.evancooper.FriendlyCompetitions;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "match AppStore com.evancooper.FriendlyCompetitions";

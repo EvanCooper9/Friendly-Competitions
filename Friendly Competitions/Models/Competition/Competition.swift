@@ -29,5 +29,4 @@ extension Competition {
     var started: Bool { Calendar.current.compare(.now, to: start, toGranularity: .day) != .orderedAscending }
     var ended: Bool { Calendar.current.compare(.now, to: end, toGranularity: .day) == .orderedDescending }
     var appOwned: Bool { owner == Bundle.main.id }
-//    var repeats: Bool { repeatInterval != nil }
 }
