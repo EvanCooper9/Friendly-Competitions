@@ -26,17 +26,15 @@ struct PermissionsView: View {
 
 struct PermissionsView_Previews: PreviewProvider {
 
-    private static let permissionsManager: AnyPermissionsManager = {
-        let permissionsManager = AnyPermissionsManager()
+    private static func setupMocks() {
         permissionsManager.permissionStatus = [
             .health: .done,
             .notifications: .authorized
         ]
-        return permissionsManager
-    }()
+    }
     
     static var previews: some View {
         PermissionsView()
-            .environmentObject(permissionsManager)
+            .withEnvironmentObjects(setupMocks: setupMocks)
     }
 }

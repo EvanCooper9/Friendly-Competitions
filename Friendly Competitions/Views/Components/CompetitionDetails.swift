@@ -1,8 +1,10 @@
 import SwiftUI
 
-struct CompetitionListItem: View {
+struct CompetitionDetails: View {
 
     @Binding var competition: Competition
+
+    @Environment(\.colorScheme) private var colorScheme
 
     @EnvironmentObject private var competitionsManager: AnyCompetitionsManager
     @EnvironmentObject private var userManager: AnyUserManager
