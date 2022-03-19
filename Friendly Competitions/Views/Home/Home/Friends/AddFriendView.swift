@@ -95,19 +95,16 @@ struct AddFriendView: View {
 
 struct AddFriendView_Previews: PreviewProvider {
 
-    private static let friendsManager: AnyFriendsManager = {
+    private static func setupMocks() {
         let friend = User.gabby
-        let friendsManager = AnyFriendsManager()
         friendsManager.friends = [friend]
         friendsManager.friendActivitySummaries = [friend.id: .mock]
         friendsManager.friendRequests = [friend]
         friendsManager.searchResults = [.gabby, .evan]
-        return friendsManager
-    }()
+    }
 
     static var previews: some View {
         AddFriendView()
-            .environmentObject(User.evan)
-            .environmentObject(friendsManager)
+            .withEnvironmentObjects(setupMocks: setupMocks)
     }
 }

@@ -56,7 +56,7 @@ struct Profile: View {
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
         Profile()
+            .withEnvironmentObjects()
             .embeddedInNavigationView()
-            .environmentObject(AnyUserManager(user: .evan))
     }
 }

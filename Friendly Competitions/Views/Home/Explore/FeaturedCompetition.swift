@@ -10,7 +10,7 @@ struct FeaturedCompetition: View {
     private var end: String { competition.end.formatted(date: .abbreviated, time: .omitted) }
 
     var body: some View {
-        Asset.Colors.listBackground.swiftUIColor
+        color
             .aspectRatio(3/2, contentMode: .fit)
             .overlay {
                 if let banner = competition.banner {
@@ -21,7 +21,7 @@ struct FeaturedCompetition: View {
             }
             .clipped()
             .overlay {
-                ExploreCompetitionDetails(competition: $competition)
+                CompetitionDetails(competition: $competition)
                     .padding(.vertical, 8)
                     .padding(.horizontal)
                     .background(.ultraThinMaterial)
@@ -31,7 +31,7 @@ struct FeaturedCompetition: View {
     }
 
     private var color: some View {
-        colorScheme == .light ? .white : Color(uiColor: .secondarySystemBackground)
+        colorScheme == .light ? Color(uiColor: .systemGray4) : Color(uiColor: .secondarySystemBackground)
     }
 }
 
@@ -42,8 +42,9 @@ struct FeaturedCompetitionView_Previews: PreviewProvider {
                 .padding()
             FeaturedCompetition(competition: .constant(.mockPublic))
                 .padding()
-                .preferredColorScheme(.dark)
         }
+//        .preferredColorScheme(.dark)
         .background(Asset.Colors.listBackground.swiftUIColor)
+        .withEnvironmentObjects()
     }
 }

@@ -111,7 +111,7 @@ struct Explore: View {
                     NavigationLink {
                         CompetitionView(competition: $competition)
                     } label: {
-                        ExploreCompetitionDetails(competition: $competition)
+                        CompetitionDetails(competition: $competition)
                             .frame(maxWidth: .infinity)
                             .contentShape(Rectangle())
                     }
@@ -131,29 +131,9 @@ struct Explore: View {
 }
 
 struct ExploreCompetitions_Previews: PreviewProvider {
-
-    static let competitionsManager: AnyCompetitionsManager = {
-        let competitionsManager = MockCompetitionManager()
-        competitionsManager.appOwnedCompetitions = [
-            .mockPublic,
-            .mockPublic
-        ]
-        competitionsManager.topCommunityCompetitions = [
-            .mock,
-            .mock
-        ]
-//        competitionsManager.searchResults = [
-//            .mockPublic,
-//            .mock,
-//            .mockPublic,
-//            .mock
-//        ]
-        return competitionsManager
-    }()
-
     static var previews: some View {
         Explore()
-            .environmentObject(competitionsManager)
-            .preferredColorScheme(.dark)
+            .withEnvironmentObjects()
+//            .preferredColorScheme(.dark)
     }
 }
