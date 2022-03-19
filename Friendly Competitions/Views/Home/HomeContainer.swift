@@ -25,49 +25,30 @@ struct HomeContainer: View {
 }
 
 struct HomeContainer_Previews: PreviewProvider {
-    
-    private static let activitySummaryManager: AnyActivitySummaryManager = {
-        let activitySummaryManager = AnyActivitySummaryManager()
-        activitySummaryManager.activitySummary = .mock
-        return activitySummaryManager
-    }()
 
-    private static let competitionsManager: AnyCompetitionsManager = {
+    private static func setupMocks() {
+        activitySummaryManager.activitySummary = .mock
+
         let competitions: [Competition] = [.mock, .mockInvited, .mockOld]
-        let competitionManager = AnyCompetitionsManager()
-        competitionManager.competitions = competitions
-        competitionManager.standings = competitions.reduce(into: [:]) { partialResult, competition in
+        competitionsManager.competitions = competitions
+        competitionsManager.participants = competitions.reduce(into: [:]) { partialResult, competition in
+            partialResult[competition.id] = [.evan]
+        }
+        competitionsManager.standings = competitions.reduce(into: [:]) { partialResult, competition in
             partialResult[competition.id] = [.mock(for: .evan)]
         }
-        return competitionManager
-    }()
 
-    private static let friendsManager: AnyFriendsManager = {
         let friend = User.gabby
-        let friendsManager = AnyFriendsManager()
         friendsManager.friends = [friend]
         friendsManager.friendRequests = [friend]
         friendsManager.friendActivitySummaries = [friend.id: .mock]
-        return friendsManager
-    }()
 
-    private static let permissionsManager: AnyPermissionsManager = {
-        let permissionsManager = AnyPermissionsManager()
         permissionsManager.requiresPermission = false
         permissionsManager.permissionStatus = [
             .health: .authorized,
             .notifications: .authorized
         ]
-        return permissionsManager
-    }()
-
-    private static let storageManager: AnyStorageManager = {
-        return AnyStorageManager()
-    }()
-
-    private static let userManager: AnyUserManager = {
-        return AnyUserManager(user: .evan)
-    }()
+    }
 
     static var previews: some View {
         Resolver.register { activitySummaryManager as AnyActivitySummaryManager }
@@ -77,5 +58,6 @@ struct HomeContainer_Previews: PreviewProvider {
         Resolver.register { storageManager as AnyStorageManager }
         Resolver.register { userManager as AnyUserManager }
         return HomeContainer()
+            .withEnvironmentObjects(setupMocks: setupMocks)
     }
 }

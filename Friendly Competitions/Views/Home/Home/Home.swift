@@ -171,6 +171,9 @@ struct HomeView_Previews: PreviewProvider {
 
         let competitions: [Competition] = [.mock, .mockInvited, .mockOld, .mockPublic]
         competitionsManager.competitions = competitions
+        competitionsManager.participants = competitions.reduce(into: [:]) { partialResult, competition in
+            partialResult[competition.id] = [.evan]
+        }
         competitionsManager.standings = competitions.reduce(into: [:]) { partialResult, competition in
             partialResult[competition.id] = [.mock(for: .evan)]
         }
