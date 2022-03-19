@@ -127,21 +127,12 @@ struct NewCompetition: View {
 
 struct NewCompetitionView_Previews: PreviewProvider {
 
-    private static let competitionsManager = AnyCompetitionsManager()
-    private static let friendsManager: AnyFriendsManager = {
-        let friendsManager = AnyFriendsManager()
+    private static func setupMocks() {
         friendsManager.friends = [.gabby]
-        return friendsManager
-    }()
-
-    private static let userManager: AnyUserManager = {
-        AnyUserManager(user: .evan)
-    }()
+    }
 
     static var previews: some View {
         NewCompetition()
-            .environmentObject(competitionsManager)
-            .environmentObject(friendsManager)
-            .environmentObject(userManager)
+            .withEnvironmentObjects(setupMocks: setupMocks)
     }
 }

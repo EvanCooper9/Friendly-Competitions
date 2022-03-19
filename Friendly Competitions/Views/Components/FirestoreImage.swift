@@ -29,7 +29,7 @@ struct FirestoreImage: View {
     }
 
     private var failedImage: some View {
-        Image(systemName: "exclamationmark.circle")
+        Image(systemName: "bolt.horizontal.circle")
             .font(.largeTitle)
     }
 
@@ -51,13 +51,8 @@ struct FirestoreImage: View {
 }
 
 struct FirestoreImage_Previews: PreviewProvider {
-
-    private static let storageManager: AnyStorageManager = {
-        AnyStorageManager()
-    }()
-
     static var previews: some View {
         FirestoreImage(path: "")
-            .environmentObject(storageManager)
+            .withEnvironmentObjects()
     }
 }

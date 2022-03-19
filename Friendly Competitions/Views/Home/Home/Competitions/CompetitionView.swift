@@ -4,7 +4,7 @@ struct CompetitionView: View {
 
     @Binding var competition: Competition
 
-//    @Environment(\.presentationMode) private var presentationMode
+    @Environment(\.presentationMode) private var presentationMode
     @EnvironmentObject private var competitionsManager: AnyCompetitionsManager
     @EnvironmentObject private var friendsManager: AnyFriendsManager
     @EnvironmentObject private var userManager: AnyUserManager
@@ -139,7 +139,7 @@ struct CompetitionView: View {
                     competitionsManager.delete(competition)
                 }
                 self.actionRequiringConfirmation = nil
-//                presentationMode.wrappedValue.dismiss()
+                presentationMode.wrappedValue.dismiss()
             }
             Button("Cancel", role: .cancel) {
                 actionRequiringConfirmation = nil
@@ -178,51 +178,31 @@ extension Binding {
 struct CompetitionView_Previews: PreviewProvider {
 
     private static let competition = Competition.mock
-    private static let competitionManager: AnyCompetitionsManager = {
+
+    private static func setupMocks() {
         let evan = User.evan
         let gabby = User.gabby
-        let competitionManager = AnyCompetitionsManager()
-        competitionManager.competitions = [competition]
-        competitionManager.standings = [
+        competitionsManager.standings = [
             competition.id: [
-                .init(rank: 1, userId: "1", points: 100),
-                .init(rank: 2, userId: "2", points: 50),
-                .init(rank: 3, userId: "a", points: 50),
+                .init(rank: 1, userId: "Somebody", points: 100),
+                .init(rank: 2, userId: "Rick", points: 50),
+                .init(rank: 3, userId: "Bob", points: 50),
                 .init(rank: 4, userId: gabby.id, points: 50),
-//                .init(rank: 5, userId: "c", points: 50),
                 .init(rank: 5, userId: evan.id, points: 50),
-                .init(rank: 6, userId: "d", points: 50),
-//                .init(rank: 7, userId: "e", points: 50),
-//                .init(rank: 8, userId: "f", points: 50),
-//                .init(rank: 9, userId: "g", points: 50),
-//                .init(rank: 10, userId: "h", points: 50)
+                .init(rank: 6, userId: "Joe", points: 50),
             ]
         ]
-        competitionManager.participants = [
+        competitionsManager.participants = [
             competition.id: [evan, gabby]
         ]
-        competitionManager.pendingParticipants = [
+        competitionsManager.pendingParticipants = [
             competition.id: [gabby]
         ]
-
-        return competitionManager
-    }()
-
-    private static let friendsManager: AnyFriendsManager = {
-        let friendsManager = AnyFriendsManager()
-        friendsManager.searchResults = [.gabby]
-        return friendsManager
-    }()
-
-    private static let userManager: AnyUserManager = {
-        AnyUserManager(user: .evan)
-    }()
+    }
 
     static var previews: some View {
         CompetitionView(competition: .constant(competition))
-            .environmentObject(competitionManager)
-            .environmentObject(friendsManager)
-            .environmentObject(userManager)
+            .withEnvironmentObjects(setupMocks: setupMocks)
             .embeddedInNavigationView()
     }
 }
