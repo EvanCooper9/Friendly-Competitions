@@ -108,14 +108,7 @@ struct Explore: View {
         if !competitions.isEmpty {
             VStack(alignment: .leading, spacing: 10) {
                 ForEach(competitions) { $competition in
-                    NavigationLink {
-                        CompetitionView(competition: $competition)
-                    } label: {
-                        ExploreCompetitionDetails(competition: $competition)
-                            .frame(maxWidth: .infinity)
-                            .contentShape(Rectangle())
-                    }
-                    .buttonStyle(.flatLink)
+                    CompetitionListItem(competition: $competition)
                     if competition.id != competitions.last?.id {
                         Divider().padding(.leading)
                     }

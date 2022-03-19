@@ -25,8 +25,15 @@ extension Competition: Equatable {
 }
 
 extension Competition {
+
+    /// Since dates are formatted like yyyy-MM-dd, end would be at 0:00.
+    /// We need to set end time to 23:59
+    var trueEnd: Date { end.advanced(by: 23.hours + 59.minutes) }
+
+    var started: Bool { Date.now.compare(start) != .orderedAscending }
+    var ended: Bool { Date.now.compare(trueEnd) == .orderedDescending }
+
     var isActive: Bool { started && !ended }
-    var started: Bool { Calendar.current.compare(.now, to: start, toGranularity: .day) != .orderedAscending }
-    var ended: Bool { Calendar.current.compare(.now, to: end, toGranularity: .day) == .orderedDescending }
+
     var appOwned: Bool { owner == Bundle.main.id }
 }

@@ -15,7 +15,7 @@ struct CompetitionListItem: View {
                 }
                 VStack(alignment: .leading) {
                     Text(competition.name)
-                    Text("\(competition.ended ? "ended" : "ends") \(RelativeDateTimeFormatter().localizedString(for: competition.end, relativeTo: .now))")
+                    Text("\(competition.ended ? "ended" : "ends") \(RelativeDateTimeFormatter().localizedString(for: competition.trueEnd, relativeTo: .now))")
                         .font(.footnote)
                         .foregroundColor(.gray)
                 }
