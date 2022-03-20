@@ -245,7 +245,7 @@
 		C1930E5327C6EB4000DB45C1 /* MockFriendsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockFriendsManager.swift; sourceTree = "<group>"; };
 		C1930E5527C6FBF500DB45C1 /* ResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResolverTests.swift; sourceTree = "<group>"; };
 		C19B7F2527BD843000BCA4B9 /* Explore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Explore.swift; sourceTree = "<group>"; };
-		C19B7F2727BD8A5E00BCA4B9 /* HomeContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeContainer.swift; sourceTree = "<group>"; };
+		C19B7F2727BD8A5E00BCA4B9 /* HomeContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = HomeContainer.swift; path = Home/HomeContainer.swift; sourceTree = "<group>"; };
 		C19B7F2A27BD8C7100BCA4B9 /* FeaturedCompetition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeaturedCompetition.swift; sourceTree = "<group>"; };
 		C19B7F2C27BDED8B00BCA4B9 /* ExploreCarousel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreCarousel.swift; sourceTree = "<group>"; };
 		C19EAFE2272B30E0008BCFDD /* PermissionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionsView.swift; sourceTree = "<group>"; };
@@ -313,7 +313,8 @@
 				C19EAFE2272B30E0008BCFDD /* PermissionsView.swift */,
 				C10E5542272B3BCF0053BBA6 /* PermissionView.swift */,
 			);
-			path = Permissions;
+			name = Permissions;
+			path = Home/Permissions;
 			sourceTree = "<group>";
 		};
 		C10E5546272B46990053BBA6 /* SwiftGen */ = {
@@ -400,17 +401,6 @@
 				C1D0177C273F63CF00C9EEAE /* PermissionStatus.swift */,
 			);
 			path = Permission;
-			sourceTree = "<group>";
-		};
-		C12D640127A5EA7A00259237 /* Home */ = {
-			isa = PBXGroup;
-			children = (
-				C19B7F2727BD8A5E00BCA4B9 /* HomeContainer.swift */,
-				C19B7F2E27BEA69200BCA4B9 /* Home */,
-				C19B7F2927BD8C5C00BCA4B9 /* Explore */,
-				C10E5544272B44B30053BBA6 /* Permissions */,
-			);
-			path = Home;
 			sourceTree = "<group>";
 		};
 		C12D640227A5EA8700259237 /* Sign In */ = {
@@ -663,7 +653,8 @@
 				C1930E4827C5A6F900DB45C1 /* ExploreSection.swift */,
 				C19B7F2A27BD8C7100BCA4B9 /* FeaturedCompetition.swift */,
 			);
-			path = Explore;
+			name = Explore;
+			path = Home/Explore;
 			sourceTree = "<group>";
 		};
 		C19B7F2E27BEA69200BCA4B9 /* Home */ = {
@@ -676,7 +667,8 @@
 				C1F7DFF326D7F78300B46F91 /* Friends */,
 				C12D63F927A5B5CE00259237 /* Profile */,
 			);
-			path = Home;
+			name = Home;
+			path = Home/Home;
 			sourceTree = "<group>";
 		};
 		C1AAE942275AEE5E00921E41 /* UIKit */ = {
@@ -699,7 +691,10 @@
 		C1ABB20C26D6839900716984 /* Views */ = {
 			isa = PBXGroup;
 			children = (
-				C12D640127A5EA7A00259237 /* Home */,
+				C19B7F2727BD8A5E00BCA4B9 /* HomeContainer.swift */,
+				C19B7F2E27BEA69200BCA4B9 /* Home */,
+				C19B7F2927BD8C5C00BCA4B9 /* Explore */,
+				C10E5544272B44B30053BBA6 /* Permissions */,
 				C12D640227A5EA8700259237 /* Sign In */,
 				C132335D27BEA96600196D81 /* Styles */,
 				C119B03026FE610100B56703 /* Components */,
