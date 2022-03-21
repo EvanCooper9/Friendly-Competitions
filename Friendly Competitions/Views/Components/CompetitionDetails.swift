@@ -17,8 +17,7 @@ struct CompetitionDetails: View {
                 }
                 VStack(alignment: .leading) {
                     Text(competition.name)
-                        .foregroundColor(colorScheme == .light ? .black : .white)
-                    Text("\(competition.ended ? "ended" : "ends") \(RelativeDateTimeFormatter().localizedString(for: competition.end, relativeTo: .now))")
+                    Text("\(competition.ended ? "ended" : "ends") \(RelativeDateTimeFormatter().localizedString(for: competition.trueEnd, relativeTo: .now))")
                         .font(.footnote)
                         .foregroundColor(.gray)
                 }
@@ -37,6 +36,7 @@ struct CompetitionDetails: View {
             }
             .padding(.vertical, 2)
         }
+        .buttonStyle(.flatLink)
     }
 }
 
