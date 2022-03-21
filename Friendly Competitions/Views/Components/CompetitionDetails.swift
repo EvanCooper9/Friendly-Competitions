@@ -36,6 +36,7 @@ struct CompetitionDetails: View {
             }
             .padding(.vertical, 2)
         }
+        .buttonStyle(.flatLink)
     }
 }
 
