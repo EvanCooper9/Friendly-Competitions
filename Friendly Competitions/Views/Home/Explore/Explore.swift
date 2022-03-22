@@ -108,7 +108,7 @@ struct Explore: View {
         if !competitions.isEmpty {
             VStack(alignment: .leading, spacing: 10) {
                 ForEach(competitions) { $competition in
-                    CompetitionDetails(competition: $competition)
+                    CompetitionDetails(competition: $competition, showParticipantCount: true)
                     if competition.id != competitions.last?.id {
                         Divider().padding(.leading)
                     }

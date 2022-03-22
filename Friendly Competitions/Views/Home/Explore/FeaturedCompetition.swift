@@ -21,7 +21,7 @@ struct FeaturedCompetition: View {
             }
             .clipped()
             .overlay {
-                CompetitionDetails(competition: $competition)
+                CompetitionDetails(competition: $competition, showParticipantCount: true)
                     .padding(.vertical, 8)
                     .padding(.horizontal)
                     .background(.ultraThinMaterial)

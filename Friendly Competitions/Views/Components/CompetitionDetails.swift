@@ -3,6 +3,7 @@ import SwiftUI
 struct CompetitionDetails: View {
 
     @Binding var competition: Competition
+    let showParticipantCount: Bool
 
     @Environment(\.colorScheme) private var colorScheme
 
@@ -32,9 +33,14 @@ struct CompetitionDetails: View {
                       let rank = standings.first(where: { $0.userId == userManager.user.id })?.rank,
                       let rankEmoji = rank.rankEmoji {
                     Text(rankEmoji)
+                } else if showParticipantCount {
+                    Label("\(competition.participants.count)", systemImage: "person.3.fill")
+                        .foregroundColor(colorScheme.textColor)
+                        .font(.footnote)
                 }
             }
             .padding(.vertical, 2)
+            .contentShape(Rectangle())
         }
         .buttonStyle(.flatLink)
     }
