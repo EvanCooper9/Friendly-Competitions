@@ -50,7 +50,7 @@ exports.sendNewCompetitionNotification = functions.firestore
 
         const userPromises = await firestore.collection("users")
             .where("id", "in", newInvitees.filter(x => !oldInvitees.includes(x)))
-            .get()
+            .get();
 
         const users = userPromises.docs.map(doc => new User(doc));
         const notificationPromises = users.map(user => {
