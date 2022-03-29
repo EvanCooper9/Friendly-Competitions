@@ -4,7 +4,6 @@ import { ActivitySummary } from "./ActivitySummary";
 import { Standing } from "./Standing";
 
 const dateFormat = "YYYY-MM-DD";
-const firestore = admin.firestore();
 
 /**
  * Competition
@@ -46,7 +45,7 @@ class Competition {
         const standings: Standing[] = [];
         this.participants.forEach(async userId => {
             let totalPoints = 0;
-            const activitySummaries = (await firestore.collection(`users/${userId}/activitySummaries`).get()).docs.map(doc => new ActivitySummary(doc));
+            const activitySummaries = (await admin.firestore().collection(`users/${userId}/activitySummaries`).get()).docs.map(doc => new ActivitySummary(doc));
             activitySummaries.forEach(activitySummary => {
                 if (!activitySummary.isIncludedInCompetition(this)) return;
                 if (this.scoringModel == 0) {
@@ -66,8 +65,8 @@ class Competition {
             standings.push(Standing.new(totalPoints, userId));
         });
         
-        const batch = firestore.batch();
-        firestore.collection(`competitions/${this.id}/standings`)
+        const batch = admin.firestore().batch();
+        admin.firestore().collection(`competitions/${this.id}/standings`)
             .listDocuments()
             .then(docs => docs.forEach(doc => batch.delete(doc)));
         batch.commit();
@@ -78,7 +77,7 @@ class Competition {
             .forEach(async (standing, index) => {
                 standing.rank = index + 1;
                 const obj = Object.assign({}, standing);
-                await firestore
+                await admin.firestore()
                     .doc(`competitions/${this.id}/standings/${standing.userId}`)
                     .set(obj);
             });

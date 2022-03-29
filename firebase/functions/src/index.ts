@@ -72,7 +72,7 @@ exports.updateCompetitionStandings = functions.https
         
         competitionsRef.docs
             .map(doc => new Competition(doc))
-            .forEach(async competition => await competition.updateStandings())
+            .forEach(async competition => await competition.updateStandings());
     });
 
 exports.cleanStaleActivitySummaries = functions.pubsub.schedule("every day 02:00")
