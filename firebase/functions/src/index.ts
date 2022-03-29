@@ -40,7 +40,6 @@ exports.sendNewCompetitionNotification = functions.firestore
 
         const oldCompetition = new Competition(change.before);
         const newCompetition = new Competition(change.after);
-
         const ownerData = await firestore.doc(`users/${newCompetition.owner}`).get();
         const owner = new User(ownerData);
 
@@ -51,7 +50,7 @@ exports.sendNewCompetitionNotification = functions.firestore
 
         const userPromises = await firestore.collection("users")
             .where("id", "in", newInvitees.filter(x => !oldInvitees.includes(x)))
-            .get();
+            .get()
 
         const users = userPromises.docs.map(doc => new User(doc));
         const notificationPromises = users.map(user => {
@@ -70,52 +69,10 @@ exports.updateCompetitionStandings = functions.https
         const competitionsRef = await firestore.collection("competitions")
             .where("participants", "array-contains", userId)
             .get();
-        const competitions = competitionsRef.docs.map(doc => new Competition(doc));
-
-        const updateCompetitions = competitions.map(async competition => {
-            let totalPoints = 0;
-            const activitySummaries = (await firestore.collection(`users/${userId}/activitySummaries`).get()).docs.map(doc => new ActivitySummary(doc));
-            activitySummaries.forEach(activitySummary => {
-                if (!activitySummary.isIncludedInCompetition(competition)) return;
-                if (competition.scoringModel == 0) {
-                    const energy = (activitySummary.activeEnergyBurned / activitySummary.activeEnergyBurnedGoal) * 100;
-                    const exercise = (activitySummary.appleExerciseTime / activitySummary.appleExerciseTimeGoal) * 100;
-                    const stand = (activitySummary.appleStandHours / activitySummary.appleStandHoursGoal) * 100;
-                    const points = energy + exercise + stand;
-                    totalPoints += parseInt(`${points}`);
-                } else if (competition.scoringModel == 1) {
-                    const energy = activitySummary.activeEnergyBurned;
-                    const exercise = activitySummary.appleExerciseTime;
-                    const stand = activitySummary.appleStandHours;
-                    const points = energy + exercise + stand;
-                    totalPoints += parseInt(`${points}`);
-                }
-            });
-
-            let existingStanding: Standing | null = null;
-            let standings = (await firestore.collection(`competitions/${competition.id}/standings`).get()).docs.map(doc => new Standing(doc));
-            standings = standings.map(standing => {
-                if (standing.userId == userId) {
-                    standing.points = totalPoints;
-                    existingStanding = standing;
-                }
-                return standing;
-            });
-            if (existingStanding == null) standings.push(Standing.new(totalPoints, userId));
-            
-            const updateStandings = standings
-                .sort((a, b) => a.points > b.points ? 1 : -1)
-                .reverse()
-                .map((standing, index) => {
-                    standing.rank = index + 1;
-                    const obj = Object.assign({}, standing);
-                    return firestore.doc(`competitions/${competition.id}/standings/${standing.userId}`).set(obj);
-                });
-            
-            return Promise.all(updateStandings);
-        });
-
-        return Promise.all(updateCompetitions);
+        
+        competitionsRef.docs
+            .map(doc => new Competition(doc))
+            .forEach(async competition => await competition.updateStandings())
     });
 
 exports.cleanStaleActivitySummaries = functions.pubsub.schedule("every day 02:00")
@@ -136,7 +93,7 @@ exports.cleanStaleActivitySummaries = functions.pubsub.schedule("every day 02:00
 
             return Promise.all(activitySummariesToDelete);
         });
-        
+
         return Promise.all(cleanUsers);
     });
 
@@ -170,8 +127,12 @@ exports.sendCompetitionCompleteNotifications = functions.pubsub.schedule("every 
                     .then(() => user.updateStatisticsWithNewRank(rank));
             });
 
-            return Promise.all(notificationPromises)
-                .then(() => competition.repeats ? competition.updateRepeatingCompetition() : Promise.resolve());
+            return Promise
+                .all(notificationPromises)
+                .then(async () => {
+                    await competition.updateRepeatingCompetition();
+                    await competition.updateStandings();
+                });
         });
 
         return Promise.all(competitionPromises);

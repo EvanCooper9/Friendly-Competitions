@@ -1,3 +1,5 @@
+import * as admin from "firebase-admin";
+
 /**
  * Standing
  */
@@ -24,6 +26,18 @@ class Standing {
      */
     static new(points: number, userId: string): Standing {
         return { points: points, rank: 0, userId: userId }; 
+    }
+
+    /**
+     * Resets the standing's points to 0
+     * @param {string} competitionId the competition that the standing is for
+     * @returns {Promise<void>} A promise that completes when the update is finished
+     */
+    async reset(competitionId: string): Promise<void> {
+        return admin.firestore()
+            .doc(`competitions/${competitionId}/standings/${this.userId}}`)
+            .update({points: 0})
+            .then();
     }
 }
 

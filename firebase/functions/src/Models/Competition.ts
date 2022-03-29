@@ -1,7 +1,10 @@
 import * as admin from "firebase-admin";
 import * as moment from "moment";
+import { ActivitySummary } from "./ActivitySummary";
+import { Standing } from "./Standing";
 
 const dateFormat = "YYYY-MM-DD";
+const firestore = admin.firestore();
 
 /**
  * Competition
@@ -15,7 +18,7 @@ class Competition {
     participants: string[];
     pendingParticipants: string[];
     repeats: boolean;
-    scoringModel: number;
+    scoringModel: ScoringModel;
 
     /**
      * Builds a competition from a firestore document
@@ -34,6 +37,51 @@ class Competition {
         const endDateString: string = document.get("end");
         this.start = new Date(startDateString);
         this.end = new Date(endDateString);
+    }
+
+    /**
+     * Updates the points and standings
+     */
+    async updateStandings() {
+        const standings: Standing[] = [];
+        this.participants.forEach(async userId => {
+            let totalPoints = 0;
+            const activitySummaries = (await firestore.collection(`users/${userId}/activitySummaries`).get()).docs.map(doc => new ActivitySummary(doc));
+            activitySummaries.forEach(activitySummary => {
+                if (!activitySummary.isIncludedInCompetition(this)) return;
+                if (this.scoringModel == 0) {
+                    const energy = (activitySummary.activeEnergyBurned / activitySummary.activeEnergyBurnedGoal) * 100;
+                    const exercise = (activitySummary.appleExerciseTime / activitySummary.appleExerciseTimeGoal) * 100;
+                    const stand = (activitySummary.appleStandHours / activitySummary.appleStandHoursGoal) * 100;
+                    const points = energy + exercise + stand;
+                    totalPoints += parseInt(`${points}`);
+                } else if (this.scoringModel == 1) {
+                    const energy = activitySummary.activeEnergyBurned;
+                    const exercise = activitySummary.appleExerciseTime;
+                    const stand = activitySummary.appleStandHours;
+                    const points = energy + exercise + stand;
+                    totalPoints += parseInt(`${points}`);
+                }
+            });
+            standings.push(Standing.new(totalPoints, userId));
+        });
+        
+        const batch = firestore.batch();
+        firestore.collection(`competitions/${this.id}/standings`)
+            .listDocuments()
+            .then(docs => docs.forEach(doc => batch.delete(doc)));
+        batch.commit();
+
+        standings
+            .sort((a, b) => a.points > b.points ? 1 : -1)
+            .reverse()
+            .forEach(async (standing, index) => {
+                standing.rank = index + 1;
+                const obj = Object.assign({}, standing);
+                await firestore
+                    .doc(`competitions/${this.id}/standings/${standing.userId}`)
+                    .set(obj);
+            });
     }
 
     /**
