@@ -27,7 +27,7 @@ struct Profile: View {
             Section {
                 Toggle("Show real name", isOn: $userManager.user.showRealName ?? true)
             } footer: {
-                Text("Turn this off to hide your name in public competitions that you join. You will still earn medals, even if this is turned off. Friends will still see your real name.")
+                Text("Turn this off to hide your name in competitions that you join. You will still earn medals, and friends will still see your real name.")
             }
 
             Section("Session") {

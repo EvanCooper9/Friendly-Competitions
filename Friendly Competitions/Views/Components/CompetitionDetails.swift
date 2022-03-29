@@ -66,3 +66,12 @@ private extension Int {
         }
     }
 }
+
+struct CompetitionDetails_Previews: PreviewProvider {
+    static var previews: some View {
+        List {
+            CompetitionDetails(competition: .constant(.mock), showParticipantCount: true, isFeatured: false)
+            CompetitionDetails(competition: .constant(.mock), showParticipantCount: true, isFeatured: false)
+        }
+    }
+}

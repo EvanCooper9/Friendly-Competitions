@@ -96,12 +96,12 @@ struct Explore: View {
             ForEach(competitions) { $competition in
                 CompetitionDetails(competition: $competition, showParticipantCount: true, isFeatured: false)
                     .padding(.horizontal)
-                    .padding(.vertical, 8)
                 if competition.id != competitions.last?.id {
                     Divider().padding(.leading)
                 }
             }
         }
+        .padding(.vertical, 8)
         .frame(maxWidth: .infinity, alignment: .leading)
         .background(Asset.Colors.listSectionBackground.swiftUIColor)
         .cornerRadius(10)
@@ -112,12 +112,12 @@ struct ExploreCompetitions_Previews: PreviewProvider {
     
     private static func setupMocks() {
         competitionsManager.appOwnedCompetitions = [.mockPublic]
-        competitionsManager.topCommunityCompetitions = [.mock, .mock]
+        competitionsManager.topCommunityCompetitions = [.mock, .mock, .mock]
     }
     
     static var previews: some View {
         Explore()
             .withEnvironmentObjects(setupMocks: setupMocks)
-            .preferredColorScheme(.dark)
+//            .preferredColorScheme(.dark)
     }
 }
