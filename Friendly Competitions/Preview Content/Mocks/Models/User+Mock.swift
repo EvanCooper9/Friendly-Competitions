@@ -7,15 +7,11 @@ extension User {
         )
     }
     static var evan: User {
-        let user = User(
+        .init(
             id: "0IQfVBJIgGdfC9CHgYefpZUQ13l1",
             email: "evan@test.com",
             name: "Evan Cooper"
         )
-        user.statistics = .mock
-        user.searchable = true
-        user.showRealName = true
-        return user
     }
 
     static var gabby: User {

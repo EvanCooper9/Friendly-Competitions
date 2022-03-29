@@ -10,24 +10,29 @@ struct FeaturedCompetition: View {
     private var end: String { competition.end.formatted(date: .abbreviated, time: .omitted) }
 
     var body: some View {
-        color
-            .aspectRatio(3/2, contentMode: .fit)
-            .overlay {
-                if let banner = competition.banner {
-                    FirestoreImage(path: banner)
-                } else {
-                    Asset.Colors.listSectionBackground.swiftUIColor
+        NavigationLink {
+            CompetitionView(competition: $competition)
+        } label: {
+            color
+                .aspectRatio(3/2, contentMode: .fit)
+                .overlay {
+                    if let banner = competition.banner {
+                        FirestoreImage(path: banner)
+                    } else {
+                        Asset.Colors.listSectionBackground.swiftUIColor
+                    }
                 }
-            }
-            .clipped()
-            .overlay {
-                CompetitionDetails(competition: $competition, showParticipantCount: true)
-                    .padding(.vertical, 8)
-                    .padding(.horizontal)
-                    .background(.ultraThinMaterial)
-                    .frame(maxHeight: .infinity, alignment: .bottom)
-            }
-            .cornerRadius(10)
+                .clipped()
+                .overlay {
+                    CompetitionDetails(competition: $competition, showParticipantCount: true, isFeatured: true)
+                        .padding(.vertical, 8)
+                        .padding(.horizontal)
+                        .background(.ultraThinMaterial)
+                        .frame(maxHeight: .infinity, alignment: .bottom)
+                }
+                .cornerRadius(10)
+        }
+        .buttonStyle(.flatLink)
     }
 
     private var color: some View {

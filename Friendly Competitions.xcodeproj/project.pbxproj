@@ -938,7 +938,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ $(arch) == \"arm64\" ]; then\n    arch -x86_64 /opt/homebrew/bin/swiftgen\nelse \n    swiftgen\nfi\n";
+			shellScript = "if [ \"${ENABLE_PREVIEWS}\" = \"YES\" ]; then\n  echo \"Previews enabled, quitting to prevent 'preview paused'.\"\n  exit 0\nfi\n\nif [ $(arch) == \"arm64\" ]; then\n    arch -x86_64 /opt/homebrew/bin/swiftgen\nelse \n    swiftgen\nfi\n";
 		};
 		C1DB3B5C27AA0CF40074BED1 /* Firebase */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -956,7 +956,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "rsync -t -r \"${PROJECT_DIR}/Friendly Competitions/Firebase/${CONFIGURATION}/GoogleService-Info.plist\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/GoogleService-Info.plist\" \n\nif [ $? -ne 0 ]; then  \n  echo \"Error copying GoogleService-Info.plist into app\"\nelse\n  echo \"GoogleService-Info.plist copied successfully\"\nfi\n\nif [ \"${ENABLE_PREVIEWS}\" = \"YES\" ]; then\n  echo \"Previews enabled, quitting to prevent 'preview paused'.\"\n  exit 0\nfi\n\n\"${BUILD_DIR%Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n\nexit 0\n";
+			shellScript = "if [ \"${ENABLE_PREVIEWS}\" = \"YES\" ]; then\n  echo \"Previews enabled, quitting to prevent 'preview paused'.\"\n  exit 0\nfi\n\nrsync -t -r \"${PROJECT_DIR}/Friendly Competitions/Firebase/${CONFIGURATION}/GoogleService-Info.plist\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/GoogleService-Info.plist\" \n\nif [ $? -ne 0 ]; then  \n  echo \"Error copying GoogleService-Info.plist into app\"\nelse\n  echo \"GoogleService-Info.plist copied successfully\"\nfi\n\n\"${BUILD_DIR%Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n\nexit 0\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 

@@ -38,13 +38,12 @@ struct CompetitionView: View {
             ForEach(standings) { standing in
                 HStack {
                     Text(standing.rank.ordinalString ?? "?").bold()
-                    if let user = competitionsManager.participants[competition.id]?.first(where: { $0.id == standing.userId }) {
-                        let displayName = displayNames[user.id] ?? user.displayName(seenBy: userManager.user)
-                        Text(displayName)
-                            .onAppear { displayNames[user.id] = displayName }
+                    if let user = competitionsManager.participants[competition.id]?.first(where: { $0.id == standing.userId }), user.visibility(by: userManager.user) == .visible {
+                        Text(user.name)
                         UserHashIDPill(user: user)
                     } else {
                         Text(standing.userId)
+                            .blur(radius: 5)
                     }
                     Spacer()
                     Text("\(standing.points)")
@@ -185,11 +184,11 @@ struct CompetitionView_Previews: PreviewProvider {
         competitionsManager.standings = [
             competition.id: [
                 .init(rank: 1, userId: "Somebody", points: 100),
-                .init(rank: 2, userId: "Rick", points: 50),
-                .init(rank: 3, userId: "Bob", points: 50),
+                .init(rank: 2, userId: "Rick", points: 75),
+                .init(rank: 3, userId: "Bob", points: 60),
                 .init(rank: 4, userId: gabby.id, points: 50),
-                .init(rank: 5, userId: evan.id, points: 50),
-                .init(rank: 6, userId: "Joe", points: 50),
+                .init(rank: 5, userId: evan.id, points: 20),
+                .init(rank: 6, userId: "Joe", points: 9),
             ]
         ]
         competitionsManager.participants = [

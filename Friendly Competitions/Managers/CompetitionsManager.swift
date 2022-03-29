@@ -268,7 +268,6 @@ final class CompetitionsManager: AnyCompetitionsManager {
             competitions.forEach { competition in
                 group.addTask { [weak self] in
                     guard let self = self else { return nil }
-
                     let standingsRef = self.database.collection("competitions/\(competition.id)/standings")
 
                     var standings = try await standingsRef
@@ -286,9 +285,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
                             .first?
                             .decoded(as: Competition.Standing.self)
 
-                        if let standing = standing {
-                            standings.append(standing)
-                        }
+                        if let standing = standing { standings.append(standing) }
                     }
 
                     return (competition.id, standings)
@@ -367,25 +364,6 @@ final class CompetitionsManager: AnyCompetitionsManager {
                 self?.pendingParticipants = newPendingParticipants
             }
         }
-    }
-}
-
-private extension Array where Element == Competition.Standing {
-    var chunkedByConsecutiveRank: [[Element]] {
-        guard var currentStanding = first else { return [] }
-        var currentChunk = [Element]()
-        var chunkedStandings = [[Competition.Standing]]()
-        forEach { standing in
-            defer { currentStanding = standing }
-            guard standing.rank - currentStanding.rank <= 1 else {
-                chunkedStandings.append(currentChunk)
-                currentChunk = [standing]
-                return
-            }
-            currentChunk.append(standing)
-        }
-        chunkedStandings.append(currentChunk)
-        return chunkedStandings
     }
 }
 

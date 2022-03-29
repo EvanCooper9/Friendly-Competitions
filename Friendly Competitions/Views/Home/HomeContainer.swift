@@ -66,6 +66,6 @@ struct HomeContainer_Previews: PreviewProvider {
         Resolver.register { userManager as AnyUserManager }
         return HomeContainer()
             .withEnvironmentObjects(setupMocks: setupMocks)
-            .preferredColorScheme(.dark)
+//            .preferredColorScheme(.dark)
     }
 }

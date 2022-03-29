@@ -20,10 +20,8 @@ struct Explore: View {
                 ExploreSection(title: "From us") {
                     ExploreCarousel(padding: Constants.horizontalPadding) {
                         ForEach($competitionsManager.appOwnedCompetitions) { $competition in
-                            competitionNavigation($competition) {
-                                FeaturedCompetition(competition: $competition)
-                                    .frame(width: UIScreen.width - (Constants.horizontalPadding * 2))
-                            }
+                            FeaturedCompetition(competition: $competition)
+                                .frame(width: UIScreen.width - (Constants.horizontalPadding * 2))
                         }
                     }
                 }
@@ -49,9 +47,7 @@ struct Explore: View {
                     } else {
                         VStack {
                             ForEach($searchResults.filter(\.wrappedValue.appOwned)) { $competition in
-                                competitionNavigation($competition) {
-                                    FeaturedCompetition(competition: $competition)
-                                }
+                                FeaturedCompetition(competition: $competition)
                             }
                             communityCompetitions($searchResults)
                         }
@@ -87,46 +83,41 @@ struct Explore: View {
             .sorted { lhs, rhs in
                 lhs.appOwned && !rhs.appOwned
             }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+        DispatchQueue.main.async {
             self.searchResults = competitions
             self.loading = false
         }
     }
 
-    private func competitionNavigation<Label: View>(_ competition: Binding<Competition>, label: () -> Label) -> some View {
-        NavigationLink {
-            CompetitionView(competition: competition)
-        } label: {
-            label()
-        }
-        .buttonStyle(.flatLink)
-    }
-
     @ViewBuilder
     private func communityCompetitions(_ competitions: Binding<[Competition]>) -> some View {
         let competitions = competitions.filter { !$0.wrappedValue.appOwned }
-        if !competitions.isEmpty {
-            VStack(alignment: .leading, spacing: 10) {
-                ForEach(competitions) { $competition in
-                    CompetitionDetails(competition: $competition, showParticipantCount: true)
-                    if competition.id != competitions.last?.id {
-                        Divider().padding(.leading)
-                    }
+        VStack {
+            ForEach(competitions) { $competition in
+                CompetitionDetails(competition: $competition, showParticipantCount: true, isFeatured: false)
+                    .padding(.horizontal)
+                    .padding(.vertical, 8)
+                if competition.id != competitions.last?.id {
+                    Divider().padding(.leading)
                 }
             }
-            .frame(maxWidth: .infinity, alignment: .leading)
-            .padding(.horizontal)
-            .padding(.vertical, 10)
-            .background(Asset.Colors.listSectionBackground.swiftUIColor)
-            .cornerRadius(10)
         }
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Asset.Colors.listSectionBackground.swiftUIColor)
+        .cornerRadius(10)
     }
 }
 
 struct ExploreCompetitions_Previews: PreviewProvider {
+    
+    private static func setupMocks() {
+        competitionsManager.appOwnedCompetitions = [.mockPublic]
+        competitionsManager.topCommunityCompetitions = [.mock, .mock]
+    }
+    
     static var previews: some View {
         Explore()
-            .withEnvironmentObjects()
-//            .preferredColorScheme(.dark)
+            .withEnvironmentObjects(setupMocks: setupMocks)
+            .preferredColorScheme(.dark)
     }
 }

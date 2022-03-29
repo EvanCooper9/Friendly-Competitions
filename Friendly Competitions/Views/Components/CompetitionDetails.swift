@@ -4,6 +4,7 @@ struct CompetitionDetails: View {
 
     @Binding var competition: Competition
     let showParticipantCount: Bool
+    let isFeatured: Bool
 
     @Environment(\.colorScheme) private var colorScheme
 
@@ -20,7 +21,7 @@ struct CompetitionDetails: View {
                     Text(competition.name)
                     Text("\(competition.ended ? "ended" : "ends") \(RelativeDateTimeFormatter().localizedString(for: competition.trueEnd, relativeTo: .now))")
                         .font(.footnote)
-                        .foregroundColor(.gray)
+                        .foregroundColor(subtitleColor)
                 }
 
                 Spacer()
@@ -43,6 +44,11 @@ struct CompetitionDetails: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.flatLink)
+    }
+    
+    private var subtitleColor: Color {
+        guard isFeatured else { return .gray }
+        return colorScheme == .light ? .gray : .white
     }
 }
 

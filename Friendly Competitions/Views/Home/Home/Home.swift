@@ -83,12 +83,12 @@ struct Home: View {
         Section {
             ForEach($competitionsManager.competitions) { $competition in
                 if competitionsFiltered ? competition.isActive : true {
-                    CompetitionDetails(competition: $competition, showParticipantCount: false)
+                    CompetitionDetails(competition: $competition, showParticipantCount: false, isFeatured: false)
                 }
             }
             ForEach($competitionsManager.invitedCompetitions) { $competition in
                 if competitionsFiltered ? competition.isActive : true {
-                    CompetitionDetails(competition: $competition, showParticipantCount: false)
+                    CompetitionDetails(competition: $competition, showParticipantCount: false, isFeatured: false)
                 }
             }
         } header: {

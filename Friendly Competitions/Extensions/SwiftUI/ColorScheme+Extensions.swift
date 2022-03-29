@@ -7,6 +7,8 @@ extension ColorScheme {
             return .black
         case .dark:
             return .white
+        @unknown default:
+            return Color(uiColor: .lightText)
         }
     }
 }
