@@ -3,17 +3,6 @@ import XCTest
 @testable import Friendly_Competitions
 
 final class CompetitionTests: XCTestCase {
-
-    func testThatEquatableIsCorrect() {
-        let idA = UUID().uuidString
-        let idB = UUID().uuidString
-        let competitionA = Competition(id: idA)
-        let competitionB = Competition(id: idB)
-        let competitionA2 = Competition(id: idA)
-        XCTAssertEqual(competitionA, competitionA2)
-        XCTAssertNotEqual(competitionA, competitionB)
-    }
-
     func testThatStartedIsCorrect() {
         XCTAssertTrue(Competition(start: .distantPast).started)
         XCTAssertFalse(Competition(start: .distantFuture).started)
