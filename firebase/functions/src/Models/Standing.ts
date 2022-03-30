@@ -5,6 +5,7 @@ class Standing {
     points: number;
     rank: number;
     userId: string;
+    date?: string;
 
     /**
      * Builds a standing record from a firestore document
@@ -14,6 +15,7 @@ class Standing {
         this.points = document.get("points");
         this.rank = document.get("rank");
         this.userId = document.get("userId");
+        this.date = document.get("date");
     }
 
     /**
@@ -23,7 +25,8 @@ class Standing {
      * @return {Standing} a new standing
      */
     static new(points: number, userId: string): Standing {
-        return { points: points, rank: 0, userId: userId }; 
+        const date = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
+        return { points: points, rank: 0, userId: userId, date: date }; 
     }
 }
 

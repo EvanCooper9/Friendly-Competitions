@@ -41,7 +41,8 @@ class Competition {
     /**
      * Updates the points and standings
      */
-    async updateStandings() {
+    async updateStandings(): Promise<void> {
+        const existingStandings = (await admin.firestore().collection(`competitions/${this.id}/standings`).get()).docs.map(doc => new Standing(doc));
         const standingPromises = this.participants.map(async userId => {
             let totalPoints = 0;
             const activitySummaries = (await admin.firestore().collection(`users/${userId}/activitySummaries`).get()).docs.map(doc => new ActivitySummary(doc));
@@ -62,14 +63,25 @@ class Competition {
                 }
             });
 
-            // Dummy standings
             if (userId.startsWith("Anonymous")) {
+                // Dummy standings
+                const existingStanding = existingStandings.find(standing => standing.userId == userId);
                 const start = moment(this.start);
-                const days = moment().diff(start, "days");    
-                totalPoints = days * getRandomInt(50, 100);
+                const days = moment().diff(start, "days");
+                const newPoints = days * getRandomInt(75, 125);
+                if (existingStanding === undefined) {
+                    totalPoints = newPoints;
+                    return Promise.resolve(Standing.new(totalPoints, userId));
+                } else if (existingStanding.date != moment().format(dateFormat)) {
+                    totalPoints = newPoints;
+                    return Promise.resolve(Standing.new(totalPoints, userId));
+                } else {
+                    existingStanding.date = moment().format(dateFormat);
+                    return Promise.resolve(existingStanding);
+                }
+            } else {
+                return Promise.resolve(Standing.new(totalPoints, userId));
             }
-
-            return Promise.resolve(Standing.new(totalPoints, userId));
         });
 
         return Promise.all(standingPromises)
@@ -85,17 +97,8 @@ class Competition {
                         batch.set(ref, obj);
                     });
                 return batch.commit();
-            });
-        
-        // const deleteBatch = admin.firestore().batch();
-        // const documents = await admin.firestore().collection(`competitions/${this.id}/standings`).listDocuments();
-        // documents
-        //     .filter(doc => standings.find(standing => standing.userId == doc.id) == undefined)
-        //     .forEach(doc => {
-        //         console.log(`deleting standing ${doc.id} from competition ${this.name}/${this.id}`);
-        //         deleteBatch.delete(doc);
-        //     });
-        // await deleteBatch.commit();
+            })
+            .then();
     }
 
     /**

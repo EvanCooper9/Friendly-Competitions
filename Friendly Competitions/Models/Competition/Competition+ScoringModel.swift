@@ -1,5 +1,5 @@
 extension Competition {
-    enum ScoringModel: Int, CaseIterable, Codable, Identifiable {
+    enum ScoringModel: Int, CaseIterable, Codable, Equatable, Identifiable {
         case percentOfGoals
         case rawNumbers
 

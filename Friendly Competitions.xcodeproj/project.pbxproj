@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		7CBF67E827F4BA910047DC81 /* User+Visibility.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7CBF67E727F4BA910047DC81 /* User+Visibility.swift */; };
 		C109E4C026E7F52E00AA10C5 /* Encodable+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C109E4BF26E7F52E00AA10C5 /* Encodable+Extensions.swift */; };
 		C109E4C826E7FF4600AA10C5 /* Decodable+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C109E4C726E7FF4600AA10C5 /* Decodable+Extensions.swift */; };
 		C10A267927E9528700FD1C2C /* ColorScheme+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10A267827E9528700FD1C2C /* ColorScheme+Extensions.swift */; };
@@ -158,6 +159,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		7CBF67E727F4BA910047DC81 /* User+Visibility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "User+Visibility.swift"; sourceTree = "<group>"; };
 		C109E4BF26E7F52E00AA10C5 /* Encodable+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Encodable+Extensions.swift"; sourceTree = "<group>"; };
 		C109E4C726E7FF4600AA10C5 /* Decodable+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Decodable+Extensions.swift"; path = "../Foundation/Decodable+Extensions.swift"; sourceTree = "<group>"; };
 		C10A267827E9528700FD1C2C /* ColorScheme+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ColorScheme+Extensions.swift"; sourceTree = "<group>"; };
@@ -585,6 +587,7 @@
 			children = (
 				C1884E4D26D59E3000C21014 /* User.swift */,
 				C16CC40827A73E6E00C26208 /* User+Statistics.swift */,
+				7CBF67E727F4BA910047DC81 /* User+Visibility.swift */,
 			);
 			path = User;
 			sourceTree = "<group>";
@@ -1002,6 +1005,7 @@
 				C12D640727A5F2FC00259237 /* CompetitionsManager.swift in Sources */,
 				C1691DC726D55FCF006FFA30 /* FriendlyCompetitions.swift in Sources */,
 				C123C9C927A74F3500375F73 /* PermissionsManager.swift in Sources */,
+				7CBF67E827F4BA910047DC81 /* User+Visibility.swift in Sources */,
 				C123C9E027A8B02300375F73 /* Bundle+Extensions.swift in Sources */,
 				C1ABB21526D6987C00716984 /* NewCompetition.swift in Sources */,
 				C1930E5427C6EB4000DB45C1 /* MockFriendsManager.swift in Sources */,

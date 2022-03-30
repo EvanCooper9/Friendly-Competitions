@@ -1,6 +1,6 @@
 import Foundation
 
-struct Competition: Codable, Identifiable {
+struct Competition: Codable, Equatable, Identifiable {
     var id = UUID().uuidString
     let name: String
 
@@ -16,12 +16,6 @@ struct Competition: Codable, Identifiable {
 
     let isPublic: Bool
     let banner: String?
-}
-
-extension Competition: Equatable {
-    static func == (lhs: Competition, rhs: Competition) -> Bool {
-        lhs.id == rhs.id
-    }
 }
 
 extension Competition {

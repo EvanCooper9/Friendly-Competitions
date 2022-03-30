@@ -66,6 +66,7 @@ exports.sendNewCompetitionNotification = functions.firestore
 exports.updateCompetitionStandings = functions.https
     .onCall(async data => {
         const userId = data.userId;
+        console.log(`updating competition standings for user: ${userId}`);
         const competitionsRef = await firestore.collection("competitions")
             .where("participants", "array-contains", userId)
             .get();

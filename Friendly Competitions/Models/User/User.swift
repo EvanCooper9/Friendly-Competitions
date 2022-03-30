@@ -1,11 +1,6 @@
 import Foundation
 
-enum Visibility {
-    case visible
-    case hidden
-}
-
-struct User: Codable, Identifiable {
+struct User: Codable, Equatable, Identifiable {
     let id: String
     let email: String
     let name: String
@@ -25,17 +20,5 @@ struct User: Codable, Identifiable {
     
     func visibility(by otherUser: User) -> Visibility {
         otherUser.id == id || friends.contains(otherUser.id) || showRealName != false ? .visible : .hidden
-    }
-}
-
-extension User: Equatable {
-    static func == (lhs: User, rhs: User) -> Bool {
-        lhs.id == rhs.id
-    }
-}
-
-extension User: Hashable {
-    func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
     }
 }
