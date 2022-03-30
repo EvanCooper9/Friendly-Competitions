@@ -38,8 +38,8 @@ final class ActivitySummaryManager: AnyActivitySummaryManager {
         upload
             .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
             .scan([ActivitySummary]()) { [weak self] previousActivitySummaries, currentActivitySummaries in
-//                guard currentActivitySummaries.last != self?.activitySummary else { return [] }
-//                guard previousActivitySummaries != currentActivitySummaries else { return [] }
+                guard currentActivitySummaries.last != self?.activitySummary else { return [] }
+                guard previousActivitySummaries != currentActivitySummaries else { return [] }
                 return currentActivitySummaries
             }
             .filter(\.isNotEmpty)
