@@ -10,6 +10,8 @@ extension Array {
         a.append(contentsOf: elements)
         return a
     }
+    
+    var isNotEmpty: Bool { !isEmpty }
 }
 
 extension Array where Element: Equatable {

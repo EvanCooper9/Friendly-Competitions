@@ -37,6 +37,11 @@ final class ActivitySummaryManager: AnyActivitySummaryManager {
 
         upload
             .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
+            .scan([ActivitySummary](), { previousActivitySummaries, currentActivitySummaries in
+                guard previousActivitySummaries != currentActivitySummaries else { return [] }
+                return currentActivitySummaries
+            })
+            .filter(\.isNotEmpty)
             .sink { [weak self] activitySummaries in
                 guard let self = self else { return }
                 Task { [activitySummaries] in
