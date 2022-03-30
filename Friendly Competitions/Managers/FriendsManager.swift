@@ -60,8 +60,6 @@ final class FriendsManager: AnyFriendsManager {
     // MARK: - Public Methods
 
     override func add(friend: User) {
-        user.outgoingFriendRequests.append(friend.id)
-
         let batch = database.batch()
 
         if !user.outgoingFriendRequests.contains(friend.id) {

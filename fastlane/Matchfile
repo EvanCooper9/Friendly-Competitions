@@ -1,10 +1,7 @@
-git_url("https://github.com/EvanCooper9/fastlane-match")
+git_url("git@github.com:EvanCooper9/fastlane-match")
 
 storage_mode("git")
 
-type("development") # The default type, can be: appstore, adhoc, enterprise or development
-
-app_identifier(["com.evancooper.FriendlyCompetitions", "com.evancooper.FriendlyCompetitions.debug"])
 username("evan.cooper@rogers.com")
 
 # For all available options run `fastlane match --help`

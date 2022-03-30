@@ -29,6 +29,45 @@
             }
           }
         }
+      },
+      "fastlane": {
+        "version": "2.205.1",
+        "bottle": {
+          "rebuild": 0,
+          "root_url": "https://ghcr.io/v2/homebrew/core",
+          "files": {
+            "arm64_monterey": {
+              "cellar": ":any",
+              "url": "https://ghcr.io/v2/homebrew/core/fastlane/blobs/sha256:ff4a3e973af57cc58b45c2dc21b93dc917209465d08e643fb760496c9de970db",
+              "sha256": "ff4a3e973af57cc58b45c2dc21b93dc917209465d08e643fb760496c9de970db"
+            },
+            "arm64_big_sur": {
+              "cellar": ":any",
+              "url": "https://ghcr.io/v2/homebrew/core/fastlane/blobs/sha256:088b9f402ba88e2e49a27680d1b586b287fd45f2e944da8dde4f467daf07d97f",
+              "sha256": "088b9f402ba88e2e49a27680d1b586b287fd45f2e944da8dde4f467daf07d97f"
+            },
+            "monterey": {
+              "cellar": ":any",
+              "url": "https://ghcr.io/v2/homebrew/core/fastlane/blobs/sha256:8871d065b2a654e48f7733b3cfcb74da6027e9961478ae6b2f5fa71535255b6f",
+              "sha256": "8871d065b2a654e48f7733b3cfcb74da6027e9961478ae6b2f5fa71535255b6f"
+            },
+            "big_sur": {
+              "cellar": ":any",
+              "url": "https://ghcr.io/v2/homebrew/core/fastlane/blobs/sha256:a8bd4ef076a84ce98f8e6f8fb348a00baffe0afaae19bded439cd2587f87b53b",
+              "sha256": "a8bd4ef076a84ce98f8e6f8fb348a00baffe0afaae19bded439cd2587f87b53b"
+            },
+            "catalina": {
+              "cellar": ":any",
+              "url": "https://ghcr.io/v2/homebrew/core/fastlane/blobs/sha256:94da2bde0f33869d175cdfdb58963de80c44de24666b32e9cc94a939666d1c33",
+              "sha256": "94da2bde0f33869d175cdfdb58963de80c44de24666b32e9cc94a939666d1c33"
+            },
+            "x86_64_linux": {
+              "cellar": ":any_skip_relocation",
+              "url": "https://ghcr.io/v2/homebrew/core/fastlane/blobs/sha256:68476a3affe93ef00b78ca9bd8d1302e7fc667ff61e71b1925fb60bec640ca81",
+              "sha256": "68476a3affe93ef00b78ca9bd8d1302e7fc667ff61e71b1925fb60bec640ca81"
+            }
+          }
+        }
       }
     }
   },
@@ -41,6 +80,14 @@
         "CLT": "",
         "Xcode": "13.2.1",
         "macOS": "12.1"
+      },
+      "big_sur": {
+        "HOMEBREW_VERSION": "3.4.3",
+        "HOMEBREW_PREFIX": "/usr/local",
+        "Homebrew/homebrew-core": "b778aca14d27b7e884485b8565426ce83cc2edee",
+        "CLT": "12.5.1.0.1.1623191612",
+        "Xcode": "13.2.1",
+        "macOS": "11.6.5"
       }
     }
   }

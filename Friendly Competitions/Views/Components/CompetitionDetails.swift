@@ -3,6 +3,8 @@ import SwiftUI
 struct CompetitionDetails: View {
 
     @Binding var competition: Competition
+    let showParticipantCount: Bool
+    let isFeatured: Bool
 
     @Environment(\.colorScheme) private var colorScheme
 
@@ -19,7 +21,7 @@ struct CompetitionDetails: View {
                     Text(competition.name)
                     Text("\(competition.ended ? "ended" : "ends") \(RelativeDateTimeFormatter().localizedString(for: competition.trueEnd, relativeTo: .now))")
                         .font(.footnote)
-                        .foregroundColor(.gray)
+                        .foregroundColor(subtitleColor)
                 }
 
                 Spacer()
@@ -32,11 +34,21 @@ struct CompetitionDetails: View {
                       let rank = standings.first(where: { $0.userId == userManager.user.id })?.rank,
                       let rankEmoji = rank.rankEmoji {
                     Text(rankEmoji)
+                } else if showParticipantCount {
+                    Label("\(competition.participants.count)", systemImage: "person.3.fill")
+                        .foregroundColor(colorScheme.textColor)
+                        .font(.footnote)
                 }
             }
             .padding(.vertical, 2)
+            .contentShape(Rectangle())
         }
         .buttonStyle(.flatLink)
+    }
+    
+    private var subtitleColor: Color {
+        guard isFeatured else { return .gray }
+        return colorScheme == .light ? .gray : .white
     }
 }
 
@@ -51,6 +63,15 @@ private extension Int {
             return "🥉"
         default:
             return nil
+        }
+    }
+}
+
+struct CompetitionDetails_Previews: PreviewProvider {
+    static var previews: some View {
+        List {
+            CompetitionDetails(competition: .constant(.mock), showParticipantCount: true, isFeatured: false)
+            CompetitionDetails(competition: .constant(.mock), showParticipantCount: true, isFeatured: false)
         }
     }
 }
