@@ -130,6 +130,7 @@ exports.sendCompetitionCompleteNotifications = functions.pubsub.schedule("every 
             return Promise
                 .all(notificationPromises)
                 .then(async () => {
+                    console.log(`sendCompetitionCompleteNotifications being called for competition ${competition.name}/${competition.id}`);
                     await competition.updateRepeatingCompetition();
                     await competition.updateStandings();
                 });

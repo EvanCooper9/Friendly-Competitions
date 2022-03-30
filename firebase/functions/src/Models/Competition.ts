@@ -17,7 +17,7 @@ class Competition {
     participants: string[];
     pendingParticipants: string[];
     repeats: boolean;
-    scoringModel: ScoringModel;
+    scoringModel: number;
 
     /**
      * Builds a competition from a firestore document
@@ -42,8 +42,7 @@ class Competition {
      * Updates the points and standings
      */
     async updateStandings() {
-        const standings: Standing[] = [];
-        this.participants.forEach(async userId => {
+        const standingPromises = this.participants.map(async userId => {
             let totalPoints = 0;
             const activitySummaries = (await admin.firestore().collection(`users/${userId}/activitySummaries`).get()).docs.map(doc => new ActivitySummary(doc));
             activitySummaries.forEach(activitySummary => {
@@ -62,30 +61,45 @@ class Competition {
                     totalPoints += parseInt(`${points}`);
                 }
             });
-            standings.push(Standing.new(totalPoints, userId));
-        });
-        
-        const batch = admin.firestore().batch();
-        admin.firestore().collection(`competitions/${this.id}/standings`)
-            .listDocuments()
-            .then(docs => docs.forEach(doc => batch.delete(doc)));
-        batch.commit();
 
-        standings
-            .sort((a, b) => a.points > b.points ? 1 : -1)
-            .reverse()
-            .forEach(async (standing, index) => {
-                standing.rank = index + 1;
-                const obj = Object.assign({}, standing);
-                await admin.firestore()
-                    .doc(`competitions/${this.id}/standings/${standing.userId}`)
-                    .set(obj);
+            // Dummy standings
+            if (userId.startsWith("Anonymous")) {
+                const start = moment(this.start);
+                const days = moment().diff(start, "days");    
+                totalPoints = days * getRandomInt(50, 100);
+            }
+
+            return Promise.resolve(Standing.new(totalPoints, userId));
+        });
+
+        return Promise.all(standingPromises)
+            .then(standings => {
+                const batch = admin.firestore().batch();
+                standings
+                    .sort((a, b) => a.points > b.points ? 1 : -1)
+                    .reverse()
+                    .forEach((standing, index) => {
+                        standing.rank = index + 1;
+                        const obj = Object.assign({}, standing);
+                        const ref = admin.firestore().doc(`competitions/${this.id}/standings/${standing.userId}`);
+                        batch.set(ref, obj);
+                    });
+                return batch.commit();
             });
+        
+        // const deleteBatch = admin.firestore().batch();
+        // const documents = await admin.firestore().collection(`competitions/${this.id}/standings`).listDocuments();
+        // documents
+        //     .filter(doc => standings.find(standing => standing.userId == doc.id) == undefined)
+        //     .forEach(doc => {
+        //         console.log(`deleting standing ${doc.id} from competition ${this.name}/${this.id}`);
+        //         deleteBatch.delete(doc);
+        //     });
+        // await deleteBatch.commit();
     }
 
     /**
      * Update a competition's start & end date if it is repeating
-     * @param {Competition} competition The competition to update
      * @return {Promise<void>} A promise that completes when the update is finished
      */
     async updateRepeatingCompetition(): Promise<void> {
@@ -109,6 +123,22 @@ class Competition {
             .update(obj)
             .then();
     }
+}
+
+/**
+ * Returns a random integer between min (inclusive) and max (inclusive).
+ * The value is no lower than min (or the next integer greater than min
+ * if min isn't an integer) and no greater than max (or the next integer
+ * lower than max if max isn't an integer).
+ * Using Math.round() will give you a non-uniform distribution!
+ * @param {number} min The minimum
+ * @param {number} max The maximum
+ * @return {number} A random number between the min/max
+ */
+function getRandomInt(min: number, max: number): number {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 export {
