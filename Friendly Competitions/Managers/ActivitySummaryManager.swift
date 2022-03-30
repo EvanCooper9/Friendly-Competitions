@@ -37,20 +37,22 @@ final class ActivitySummaryManager: AnyActivitySummaryManager {
 
         upload
             .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
-            .sink { [weak self] activitySummaries in
+            .scan([ActivitySummary]()) { [weak self] previousActivitySummaries, currentActivitySummaries in
+                guard currentActivitySummaries.last != self?.activitySummary else { return [] }
+                guard previousActivitySummaries != currentActivitySummaries else { return [] }
+                return currentActivitySummaries
+            }
+            .filter(\.isNotEmpty)
+            .sinkAsync { [weak self] activitySummaries in
                 guard let self = self else { return }
-                Task { [activitySummaries] in
-                    try await self.upload(activitySummaries: activitySummaries)
-                    try await self.competitionsManager.updateStandings()
-                }
+                try await self.upload(activitySummaries: activitySummaries)
+                try await self.competitionsManager.updateStandings()
             }
             .store(in: &cancellables)
 
         query
             .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
-            .sink {
-                Task { [weak self] in try await self?.requestActivitySummaries() }
-            }
+            .sinkAsync { [weak self] in try await self?.requestActivitySummaries() }
             .store(in: &cancellables)
 
         healthKitManager.registerBackgroundDeliveryReceiver(self)

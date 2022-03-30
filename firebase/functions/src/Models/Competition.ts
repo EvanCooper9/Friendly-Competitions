@@ -1,5 +1,7 @@
 import * as admin from "firebase-admin";
 import * as moment from "moment";
+import { ActivitySummary } from "./ActivitySummary";
+import { Standing } from "./Standing";
 
 const dateFormat = "YYYY-MM-DD";
 
@@ -37,8 +39,70 @@ class Competition {
     }
 
     /**
+     * Updates the points and standings
+     */
+    async updateStandings(): Promise<void> {
+        const existingStandings = (await admin.firestore().collection(`competitions/${this.id}/standings`).get()).docs.map(doc => new Standing(doc));
+        const standingPromises = this.participants.map(async userId => {
+            let totalPoints = 0;
+            const activitySummaries = (await admin.firestore().collection(`users/${userId}/activitySummaries`).get()).docs.map(doc => new ActivitySummary(doc));
+            activitySummaries.forEach(activitySummary => {
+                if (!activitySummary.isIncludedInCompetition(this)) return;
+                if (this.scoringModel == 0) {
+                    const energy = (activitySummary.activeEnergyBurned / activitySummary.activeEnergyBurnedGoal) * 100;
+                    const exercise = (activitySummary.appleExerciseTime / activitySummary.appleExerciseTimeGoal) * 100;
+                    const stand = (activitySummary.appleStandHours / activitySummary.appleStandHoursGoal) * 100;
+                    const points = energy + exercise + stand;
+                    totalPoints += parseInt(`${points}`);
+                } else if (this.scoringModel == 1) {
+                    const energy = activitySummary.activeEnergyBurned;
+                    const exercise = activitySummary.appleExerciseTime;
+                    const stand = activitySummary.appleStandHours;
+                    const points = energy + exercise + stand;
+                    totalPoints += parseInt(`${points}`);
+                }
+            });
+
+            if (userId.startsWith("Anonymous")) {
+                // Dummy standings
+                const existingStanding = existingStandings.find(standing => standing.userId == userId);
+                const start = moment(this.start);
+                const days = moment().diff(start, "days");
+                const newPoints = days * getRandomInt(75, 125);
+                if (existingStanding === undefined) {
+                    totalPoints = newPoints;
+                    return Promise.resolve(Standing.new(totalPoints, userId));
+                } else if (existingStanding.date != moment().format(dateFormat)) {
+                    totalPoints = newPoints;
+                    return Promise.resolve(Standing.new(totalPoints, userId));
+                } else {
+                    existingStanding.date = moment().format(dateFormat);
+                    return Promise.resolve(existingStanding);
+                }
+            } else {
+                return Promise.resolve(Standing.new(totalPoints, userId));
+            }
+        });
+
+        return Promise.all(standingPromises)
+            .then(standings => {
+                const batch = admin.firestore().batch();
+                standings
+                    .sort((a, b) => a.points > b.points ? 1 : -1)
+                    .reverse()
+                    .forEach((standing, index) => {
+                        standing.rank = index + 1;
+                        const obj = Object.assign({}, standing);
+                        const ref = admin.firestore().doc(`competitions/${this.id}/standings/${standing.userId}`);
+                        batch.set(ref, obj);
+                    });
+                return batch.commit();
+            })
+            .then();
+    }
+
+    /**
      * Update a competition's start & end date if it is repeating
-     * @param {Competition} competition The competition to update
      * @return {Promise<void>} A promise that completes when the update is finished
      */
     async updateRepeatingCompetition(): Promise<void> {
@@ -62,6 +126,22 @@ class Competition {
             .update(obj)
             .then();
     }
+}
+
+/**
+ * Returns a random integer between min (inclusive) and max (inclusive).
+ * The value is no lower than min (or the next integer greater than min
+ * if min isn't an integer) and no greater than max (or the next integer
+ * lower than max if max isn't an integer).
+ * Using Math.round() will give you a non-uniform distribution!
+ * @param {number} min The minimum
+ * @param {number} max The maximum
+ * @return {number} A random number between the min/max
+ */
+function getRandomInt(min: number, max: number): number {
+    min = Math.ceil(min);
+    max = Math.floor(max);
+    return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
 export {

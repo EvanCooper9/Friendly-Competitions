@@ -46,6 +46,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
         }
     }
 
+    
     private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Lifecycle
@@ -62,12 +63,8 @@ final class CompetitionsManager: AnyCompetitionsManager {
             )
             .map { _ in () }
             .prepend(())
-            .sink { [weak self] in
-                guard let self = self else { return }
-                Task {
-                    try await self.updateStandings()
-                }
-            }
+            .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
+            .sinkAsync { [weak self] in try await self?.updateStandings() }
             .store(in: &cancellables)
     }
 

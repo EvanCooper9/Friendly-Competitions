@@ -1,5 +1,5 @@
 extension User {
-    struct Statistics: Codable {
+    struct Statistics: Codable, Equatable {
         let golds: Int
         let silvers: Int
         let bronzes: Int
