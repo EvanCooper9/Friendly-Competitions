@@ -1,8 +1,11 @@
 import Foundation
 
-fileprivate let animals = ["alligator", "anteater", "armadillo", "auroch", "axolotl", "badger", "bat", "beaver", "buffalo", "camel", "capybara", "chameleon", "cheetah", "chinchilla", "chipmunk", "chupacabra", "cormorant", "coyote", "crow", "dingo", "dinosaur", "dog", "dolphin", "dragon", "duck", "octopus", "elephant", "ferret", "fox", "frog", "giraffe", "gopher", "grizzly", "hedgehog", "hippo", "hyena", "jackal", "ibex", "ifrit", "iguana", "koala", "kraken", "lemur", "leopard", "liger", "lion", "llama", "manatee", "mink", "monkey", "narwhal", "orangutan", "otter", "panda", "penguin", "platypus", "pumpkin", "python", "quagga", "rabbit", "raccoon", "rhino", "sheep", "shrew", "skunk", "squirrel", "tiger", "turtle", "unicorn", "walrus", "wolf", "wolverine", "wombat"]
+enum Visibility {
+    case visible
+    case hidden
+}
 
-final class User: Codable, Identifiable {
+struct User: Codable, Identifiable {
     let id: String
     let email: String
     let name: String
@@ -19,16 +22,9 @@ final class User: Codable, Identifiable {
         let endIndex = id.index(id.startIndex, offsetBy: 4)
         return "#" + id[..<endIndex].uppercased()
     }
-
-    init(id: String, email: String, name: String) {
-        self.id = id
-        self.email = email
-        self.name = name
-    }
-
-    func displayName(seenBy otherUser: User) -> String {
-        let showRealName = otherUser.id == id || otherUser.friends.contains(id) || showRealName == true
-        return showRealName ? name : "Anonymous \(animals.randomElement()!.localizedCapitalized)"
+    
+    func visibility(by otherUser: User) -> Visibility {
+        otherUser.id == id || friends.contains(otherUser.id) || showRealName != false ? .visible : .hidden
     }
 }
 
@@ -43,5 +39,3 @@ extension User: Hashable {
         hasher.combine(id)
     }
 }
-
-extension User: ObservableObject {}

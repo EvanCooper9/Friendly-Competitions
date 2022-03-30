@@ -3,6 +3,13 @@ import SwiftUI
 
 struct HomeContainer: View {
 
+    private enum Tab {
+        case home
+        case explore
+    }
+
+    @State private var tab = Tab.home
+
     @StateObject private var activitySummaryManager = Resolver.resolve(AnyActivitySummaryManager.self)
     @StateObject private var competitionsManager = Resolver.resolve(AnyCompetitionsManager.self)
     @StateObject private var friendsManager = Resolver.resolve(AnyFriendsManager.self)
@@ -11,9 +18,9 @@ struct HomeContainer: View {
     @StateObject private var userManager = Resolver.resolve(AnyUserManager.self)
 
     var body: some View {
-        TabView {
-            Home()
-            Explore()
+        TabView(selection: $tab) {
+            Home().tag(Tab.home)
+            Explore().tag(Tab.explore)
         }
         .environmentObject(activitySummaryManager)
         .environmentObject(competitionsManager)
@@ -59,5 +66,6 @@ struct HomeContainer_Previews: PreviewProvider {
         Resolver.register { userManager as AnyUserManager }
         return HomeContainer()
             .withEnvironmentObjects(setupMocks: setupMocks)
+//            .preferredColorScheme(.dark)
     }
 }

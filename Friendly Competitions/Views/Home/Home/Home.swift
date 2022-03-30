@@ -25,7 +25,7 @@ struct Home: View {
             }
             .textCase(nil)
         }
-        .navigationBarTitle(userManager.user.name)
+        .navigationBarTitle(userManager.user.name.ifEmpty(Bundle.main.displayName))
         .toolbar {
             HStack {
                 Button(toggling: $presentAbout) {
@@ -83,12 +83,12 @@ struct Home: View {
         Section {
             ForEach($competitionsManager.competitions) { $competition in
                 if competitionsFiltered ? competition.isActive : true {
-                    CompetitionDetails(competition: $competition)
+                    CompetitionDetails(competition: $competition, showParticipantCount: false, isFeatured: false)
                 }
             }
             ForEach($competitionsManager.invitedCompetitions) { $competition in
                 if competitionsFiltered ? competition.isActive : true {
-                    CompetitionDetails(competition: $competition)
+                    CompetitionDetails(competition: $competition, showParticipantCount: false, isFeatured: false)
                 }
             }
         } header: {

@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		C109E4C026E7F52E00AA10C5 /* Encodable+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C109E4BF26E7F52E00AA10C5 /* Encodable+Extensions.swift */; };
 		C109E4C826E7FF4600AA10C5 /* Decodable+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C109E4C726E7FF4600AA10C5 /* Decodable+Extensions.swift */; };
+		C10A267927E9528700FD1C2C /* ColorScheme+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10A267827E9528700FD1C2C /* ColorScheme+Extensions.swift */; };
 		C10E5541272B3BB70053BBA6 /* Permission.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10E5540272B3BB70053BBA6 /* Permission.swift */; };
 		C10E5543272B3BCF0053BBA6 /* PermissionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10E5542272B3BCF0053BBA6 /* PermissionView.swift */; };
 		C10E5548272B47080053BBA6 /* XCAssets+Generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10E5547272B47080053BBA6 /* XCAssets+Generated.swift */; };
@@ -159,6 +160,7 @@
 /* Begin PBXFileReference section */
 		C109E4BF26E7F52E00AA10C5 /* Encodable+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Encodable+Extensions.swift"; sourceTree = "<group>"; };
 		C109E4C726E7FF4600AA10C5 /* Decodable+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "Decodable+Extensions.swift"; path = "../Foundation/Decodable+Extensions.swift"; sourceTree = "<group>"; };
+		C10A267827E9528700FD1C2C /* ColorScheme+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ColorScheme+Extensions.swift"; sourceTree = "<group>"; };
 		C10E5540272B3BB70053BBA6 /* Permission.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Permission.swift; sourceTree = "<group>"; };
 		C10E5542272B3BCF0053BBA6 /* PermissionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionView.swift; sourceTree = "<group>"; };
 		C10E5547272B47080053BBA6 /* XCAssets+Generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "XCAssets+Generated.swift"; sourceTree = "<group>"; };
@@ -379,6 +381,7 @@
 			children = (
 				C132945527DF6D9E00117548 /* Binding+Extensions.swift */,
 				C123C9C627A74C4000375F73 /* Button+Extensions.swift */,
+				C10A267827E9528700FD1C2C /* ColorScheme+Extensions.swift */,
 				C12D63EF27A4D5B300259237 /* View+Extensions.swift */,
 				C132336C27BF0C0F00196D81 /* View+CornerRadius.swift */,
 			);
@@ -935,7 +938,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ $(arch) == \"arm64\" ]; then\n    arch -x86_64 /opt/homebrew/bin/swiftgen\nelse \n    swiftgen\nfi\n";
+			shellScript = "if [ \"${ENABLE_PREVIEWS}\" = \"YES\" ]; then\n  echo \"Previews enabled, quitting to prevent 'preview paused'.\"\n  exit 0\nfi\n\nif [ $(arch) == \"arm64\" ]; then\n    arch -x86_64 /opt/homebrew/bin/swiftgen\nelse \n    swiftgen\nfi\n";
 		};
 		C1DB3B5C27AA0CF40074BED1 /* Firebase */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -953,7 +956,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "rsync -t -r \"${PROJECT_DIR}/Friendly Competitions/Firebase/${CONFIGURATION}/GoogleService-Info.plist\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/GoogleService-Info.plist\" \n\nif [ $? -ne 0 ]; then  \n  echo \"Error copying GoogleService-Info.plist into app\"\nelse\n  echo \"GoogleService-Info.plist copied successfully\"\nfi\n\nif [ \"${ENABLE_PREVIEWS}\" = \"YES\" ]; then\n  echo \"Previews enabled, quitting to prevent 'preview paused'.\"\n  exit 0\nfi\n\n\"${BUILD_DIR%Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n\nexit 0\n";
+			shellScript = "if [ \"${ENABLE_PREVIEWS}\" = \"YES\" ]; then\n  echo \"Previews enabled, quitting to prevent 'preview paused'.\"\n  exit 0\nfi\n\nrsync -t -r \"${PROJECT_DIR}/Friendly Competitions/Firebase/${CONFIGURATION}/GoogleService-Info.plist\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/GoogleService-Info.plist\" \n\nif [ $? -ne 0 ]; then  \n  echo \"Error copying GoogleService-Info.plist into app\"\nelse\n  echo \"GoogleService-Info.plist copied successfully\"\nfi\n\n\"${BUILD_DIR%Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n\nexit 0\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1013,6 +1016,7 @@
 				C184A6E626D87FD4007CEF9B /* JSONEncoder+Extensions.swift in Sources */,
 				C15522A026E793DA00FE0DA7 /* ActivitySummary+Mock.swift in Sources */,
 				C12BA6E426F60B34009DAE38 /* DateInterval+Extensions.swift in Sources */,
+				C10A267927E9528700FD1C2C /* ColorScheme+Extensions.swift in Sources */,
 				C132336727BEBB1600196D81 /* UIScreen+Extensions.swift in Sources */,
 				C19B7F2627BD843000BCA4B9 /* Explore.swift in Sources */,
 				C1930E4927C5A6F900DB45C1 /* ExploreSection.swift in Sources */,
