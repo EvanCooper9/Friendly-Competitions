@@ -1,5 +1,6 @@
 import Combine
 import Firebase
+import FirebaseAnalytics
 import FirebaseCrashlytics
 import FirebaseFirestore
 import Resolver
@@ -60,6 +61,7 @@ final class UserManager: AnyUserManager {
             .addSnapshotListener { [weak self] snapshot, _ in
                 guard let self = self, let user = try? snapshot?.decoded(as: User.self) else { return }
                 Crashlytics.crashlytics().setUserID(user.id)
+                Analytics.setUserID(user.id)
                 DispatchQueue.main.async {
                     self.user = user
                 }

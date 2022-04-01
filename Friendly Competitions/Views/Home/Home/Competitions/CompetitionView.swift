@@ -17,8 +17,6 @@ struct CompetitionView: View {
     @State private var actionRequiringConfirmation: Action?
     @State private var showInviteFriend = false
 
-    @State private var displayNames = [User.ID: String]()
-
     var body: some View {
         List {
             standings
@@ -29,6 +27,13 @@ struct CompetitionView: View {
             actions
         }
         .navigationTitle(competition.name)
+        .registerScreenView(
+            name: "Competition",
+            parameters: [
+                "id": competition.id,
+                "name": competition.name
+            ]
+        )
     }
 
     @ViewBuilder
@@ -125,24 +130,20 @@ struct CompetitionView: View {
             }
         }
         .confirmationDialog(
-            "Are you sure?",
-            isPresented: .isNotNil($actionRequiringConfirmation),
+            "Are your sure",
+            presenting: $actionRequiringConfirmation,
             titleVisibility: .visible
-        ) {
+        ) { action in
             Button("Yes", role: .destructive) {
-                guard let actionRequiringConfirmation = actionRequiringConfirmation else { return }
-                switch actionRequiringConfirmation {
+                switch action {
                 case .leave:
                     competitionsManager.leave(competition)
                 case .delete:
                     competitionsManager.delete(competition)
                 }
-                self.actionRequiringConfirmation = nil
                 presentationMode.wrappedValue.dismiss()
             }
-            Button("Cancel", role: .cancel) {
-                actionRequiringConfirmation = nil
-            }
+            Button("Cancel", role: .cancel) { actionRequiringConfirmation = nil }
         }
         .sheet(isPresented: $showInviteFriend) {
             List {
@@ -160,16 +161,6 @@ struct CompetitionView: View {
             }
             .navigationTitle("Invite a friend")
             .embeddedInNavigationView()
-        }
-    }
-}
-
-extension Binding {
-    static func isNotNil<T>(_ binding: Binding<T?>) -> Binding<Bool> {
-        .init {
-            binding.wrappedValue != nil
-        } set: { b in
-            // do nothing
         }
     }
 }

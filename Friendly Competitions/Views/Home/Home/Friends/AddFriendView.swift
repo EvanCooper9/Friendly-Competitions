@@ -51,6 +51,7 @@ struct AddFriendView: View {
         .navigationTitle("Search for Friends")
         .onAppear(perform: handleDeepLink)
         .embeddedInNavigationView()
+        .registerScreenView(name: "Add Friend")
     }
 
     private func share() {

@@ -44,6 +44,13 @@ struct FriendView: View {
             Button("Yes", role: .destructive) { friendsManager.delete(friend: friend) }
             Button("Cancel", role: .cancel) {}
         }
+        .registerScreenView(
+            name: "Friend",
+            parameters: [
+                "id": friend.id,
+                "name": friend.name
+            ]
+        )
     }
 }
 

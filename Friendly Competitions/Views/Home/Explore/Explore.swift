@@ -65,6 +65,7 @@ struct Explore: View {
         .navigationTitle("Explore")
         .embeddedInNavigationView()
         .tabItem { Label("Explore", systemImage: "sparkle.magnifyingglass") }
+        .registerScreenView(name: "Explore")
     }
 
     private func search() async throws {

@@ -21,6 +21,7 @@ struct PermissionsView: View {
         }
         .navigationTitle("Permissions needed")
         .embeddedInNavigationView()
+        .registerScreenView(name: "Permissions")
     }
 }
 

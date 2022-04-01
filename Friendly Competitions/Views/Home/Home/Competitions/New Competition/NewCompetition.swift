@@ -30,6 +30,7 @@ struct NewCompetition: View {
         .navigationTitle("New Competition")
         .embeddedInNavigationView()
         .sheet(isPresented: $presentAddFriends) { AddFriendView() }
+        .registerScreenView(name: "New Competition")
     }
 
     private var details: some View {

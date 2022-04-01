@@ -47,6 +47,7 @@ struct About: View {
             }
             .textCase(nil)
         }
+        .registerScreenView(name: "About")
     }
 }
 
