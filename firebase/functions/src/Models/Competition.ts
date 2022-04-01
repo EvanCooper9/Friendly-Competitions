@@ -67,7 +67,7 @@ class Competition {
                 // Dummy standings
                 const existingStanding = existingStandings.find(standing => standing.userId == userId);
                 const start = moment(this.start);
-                const days = moment().diff(start, "days");
+                const days = moment().diff(start, "days") + 1;
                 const newPoints = days * getRandomInt(75, 125);
                 if (existingStanding === undefined) {
                     totalPoints = newPoints;
