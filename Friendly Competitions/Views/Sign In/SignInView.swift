@@ -48,7 +48,7 @@ struct SignInView: View {
             }()
             color.ignoresSafeArea()
         })
-        .registerScreenView(name: "SignIn")
+        .registerScreenView(name: "Sign In")
     }
 }
 
