@@ -65,15 +65,24 @@ exports.sendNewCompetitionNotification = functions.firestore
 
 exports.updateCompetitionStandings = functions.https
     .onCall(async data => {
+        const competitionId = data.competitionId;
         const userId = data.userId;
-        console.log(`updating competition standings for user: ${userId}`);
-        const competitionsRef = await firestore.collection("competitions")
-            .where("participants", "array-contains", userId)
-            .get();
-        
-        competitionsRef.docs
-            .map(doc => new Competition(doc))
-            .forEach(async competition => await competition.updateStandings());
+
+        if (competitionId !== undefined) {
+            const data = await firestore.doc(`competitions/${competitionId}`).get();
+            if (data === undefined) return;
+            const competition = new Competition(data);
+            await competition.updateStandings();
+        } else if (userId !== undefined) {
+            console.log(`updating competition standings for user: ${userId}`);
+            const competitionsRef = await firestore.collection("competitions")
+                .where("participants", "array-contains", userId)
+                .get();
+            
+            competitionsRef.docs
+                .map(doc => new Competition(doc))
+                .forEach(async competition => await competition.updateStandings());
+        }
     });
 
 exports.cleanStaleActivitySummaries = functions.pubsub.schedule("every day 02:00")

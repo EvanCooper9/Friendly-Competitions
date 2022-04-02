@@ -133,6 +133,11 @@
 		C1F7DFF526D8010A00B46F91 /* CollectionReference+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F7DFF426D8010A00B46F91 /* CollectionReference+Extensions.swift */; };
 		C1F9D7CD26FF871A00B25651 /* NotificationManaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F9D7CC26FF871A00B25651 /* NotificationManaging.swift */; };
 		C1F9D7CF26FF874800B25651 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = C1F9D7CE26FF874800B25651 /* FirebaseMessaging */; };
+		ED438FF727F7B3B600D72F99 /* View+ConfirmationDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED438FF627F7B3B600D72F99 /* View+ConfirmationDialog.swift */; };
+		ED438FF927F7C2B900D72F99 /* View+Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED438FF827F7C2B900D72F99 /* View+Analytics.swift */; };
+		ED438FFB27F7D18600D72F99 /* AnalyticsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED438FFA27F7D18600D72F99 /* AnalyticsManager.swift */; };
+		ED927EF427F7AB1E006E78A0 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = ED927EF327F7AB1E006E78A0 /* FirebaseAnalytics */; };
+		ED927EF827F7ACE0006E78A0 /* FirebaseAnalyticsSwift-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = ED927EF727F7ACE0006E78A0 /* FirebaseAnalyticsSwift-Beta */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -280,6 +285,9 @@
 		C1EBB16627AD7AF600376E59 /* UserDefaultsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsTests.swift; sourceTree = "<group>"; };
 		C1F7DFF426D8010A00B46F91 /* CollectionReference+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CollectionReference+Extensions.swift"; sourceTree = "<group>"; };
 		C1F9D7CC26FF871A00B25651 /* NotificationManaging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManaging.swift; sourceTree = "<group>"; };
+		ED438FF627F7B3B600D72F99 /* View+ConfirmationDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+ConfirmationDialog.swift"; sourceTree = "<group>"; };
+		ED438FF827F7C2B900D72F99 /* View+Analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Analytics.swift"; sourceTree = "<group>"; };
+		ED438FFA27F7D18600D72F99 /* AnalyticsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -296,6 +304,8 @@
 			files = (
 				C1DB3B5B27AA0AC20074BED1 /* FirebasePerformance in Frameworks */,
 				C1F9D7CF26FF874800B25651 /* FirebaseMessaging in Frameworks */,
+				ED927EF427F7AB1E006E78A0 /* FirebaseAnalytics in Frameworks */,
+				ED927EF827F7ACE0006E78A0 /* FirebaseAnalyticsSwift-Beta in Frameworks */,
 				C1C8B24726F3FB9C008D6B1B /* HealthKit.framework in Frameworks */,
 				C1C8B24926F3FBA3008D6B1B /* HealthKitUI.framework in Frameworks */,
 				C123C9D627A8989500375F73 /* FirebaseFunctions in Frameworks */,
@@ -384,8 +394,10 @@
 				C132945527DF6D9E00117548 /* Binding+Extensions.swift */,
 				C123C9C627A74C4000375F73 /* Button+Extensions.swift */,
 				C10A267827E9528700FD1C2C /* ColorScheme+Extensions.swift */,
-				C12D63EF27A4D5B300259237 /* View+Extensions.swift */,
+				ED438FF827F7C2B900D72F99 /* View+Analytics.swift */,
+				ED438FF627F7B3B600D72F99 /* View+ConfirmationDialog.swift */,
 				C132336C27BF0C0F00196D81 /* View+CornerRadius.swift */,
+				C12D63EF27A4D5B300259237 /* View+Extensions.swift */,
 			);
 			path = SwiftUI;
 			sourceTree = "<group>";
@@ -736,6 +748,7 @@
 			isa = PBXGroup;
 			children = (
 				C1401F8D26D97C3D0080F74F /* ActivitySummaryManager.swift */,
+				ED438FFA27F7D18600D72F99 /* AnalyticsManager.swift */,
 				C1E4C7C227B6EB400090239A /* AuthenticationManager.swift */,
 				C12D640627A5F2FC00259237 /* CompetitionsManager.swift */,
 				C1E1A9D027A6D9D700E8E360 /* FriendsManager.swift */,
@@ -856,6 +869,8 @@
 				C123C9E827A9AF4800375F73 /* Algorithms */,
 				C1DB3B5A27AA0AC20074BED1 /* FirebasePerformance */,
 				C13F922927BFFEB500FC6880 /* FirebaseStorage */,
+				ED927EF327F7AB1E006E78A0 /* FirebaseAnalytics */,
+				ED927EF727F7ACE0006E78A0 /* FirebaseAnalyticsSwift-Beta */,
 			);
 			productName = CompyBoi;
 			productReference = C1691DC326D55FCF006FFA30 /* Friendly Competitions.app */;
@@ -1015,6 +1030,8 @@
 				C132335F27BEA97A00196D81 /* FlatLinkStyle.swift in Sources */,
 				C132945227DB8DF000117548 /* ImageAsset+Extensions.swift in Sources */,
 				C1691DD926D5603D006FFA30 /* ActivityRingView.swift in Sources */,
+				ED438FF727F7B3B600D72F99 /* View+ConfirmationDialog.swift in Sources */,
+				ED438FFB27F7D18600D72F99 /* AnalyticsManager.swift in Sources */,
 				C1884E4826D5894000C21014 /* Home.swift in Sources */,
 				C155229C26E793B300FE0DA7 /* User+Mock.swift in Sources */,
 				C184A6E626D87FD4007CEF9B /* JSONEncoder+Extensions.swift in Sources */,
@@ -1085,6 +1102,7 @@
 				C1E4AB9826FCC8BD00B1AF12 /* ActivitySummaryInfoView.swift in Sources */,
 				C16ADDD626D9126800E34E04 /* JSONDecoder+Extensions.swift in Sources */,
 				C16CC40627A7332800C26208 /* FriendView.swift in Sources */,
+				ED438FF927F7C2B900D72F99 /* View+Analytics.swift in Sources */,
 				C123C9CB27A8541200375F73 /* AddFriendListItem.swift in Sources */,
 				C1884E4E26D59E3100C21014 /* User.swift in Sources */,
 			);
@@ -1438,6 +1456,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = C1386C7C26D566210096E952 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseMessaging;
+		};
+		ED927EF327F7AB1E006E78A0 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C1386C7C26D566210096E952 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		ED927EF727F7ACE0006E78A0 /* FirebaseAnalyticsSwift-Beta */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = C1386C7C26D566210096E952 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = "FirebaseAnalyticsSwift-Beta";
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

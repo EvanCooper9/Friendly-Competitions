@@ -8,6 +8,7 @@ extension Resolver: ResolverRegistering {
 
         // Managers
         register(AnyActivitySummaryManager.self) { ActivitySummaryManager() }.scope(.shared)
+        register(AnyAnalyticsManager.self) { AnalyticsManager() }.scope(.shared)
         register(AnyAuthenticationManager.self) { AuthenticationManager() }.scope(.shared)
         register(AnyCompetitionsManager.self) { CompetitionsManager() }.scope(.shared)
         register(AnyFriendsManager.self) { FriendsManager() }.scope(.shared)

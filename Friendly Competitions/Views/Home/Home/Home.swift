@@ -65,6 +65,7 @@ struct Home: View {
         .tabItem {
             Label("Home", systemImage: "house")
         }
+        .registerScreenView(name: "Home")
     }
 
     private var activitySummary: some View {

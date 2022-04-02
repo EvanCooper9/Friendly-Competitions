@@ -50,6 +50,7 @@ struct Profile: View {
             Button("Yes", role: .destructive, action: userManager.deleteAccount)
             Button("Cancel", role: .cancel) {}
         }
+        .registerScreenView(name: "Profile")
     }
 }
 
