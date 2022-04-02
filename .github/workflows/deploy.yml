@@ -3,6 +3,8 @@ name: Deploy to AppStore Connect
 on:
   release:
     types: [published]
+  pull_request:
+    branches: [release/*]
 
 concurrency: 
   group: ${{ github.ref }}
