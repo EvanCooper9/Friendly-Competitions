@@ -67,16 +67,15 @@ class Competition {
                 // Dummy standings
                 const existingStanding = existingStandings.find(standing => standing.userId == userId);
                 const start = moment(this.start);
-                const days = moment().diff(start, "days");
-                const newPoints = days * getRandomInt(75, 125);
+                const days = moment().diff(start, "days") + 1;
+                const todaysPoints = getRandomInt(75, 125);
                 if (existingStanding === undefined) {
-                    totalPoints = newPoints;
-                    return Promise.resolve(Standing.new(totalPoints, userId));
+                    const poits = days * todaysPoints;
+                    return Promise.resolve(Standing.new(poits, userId));
                 } else if (existingStanding.date != moment().format(dateFormat)) {
-                    totalPoints = newPoints;
-                    return Promise.resolve(Standing.new(totalPoints, userId));
+                    const poits = existingStanding.points + todaysPoints;
+                    return Promise.resolve(Standing.new(poits, userId));
                 } else {
-                    existingStanding.date = moment().format(dateFormat);
                     return Promise.resolve(existingStanding);
                 }
             } else {

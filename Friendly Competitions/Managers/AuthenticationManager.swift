@@ -47,6 +47,6 @@ final class AuthenticationManager: AnyAuthenticationManager {
     }
 
     private func registerUserManager(with user: User) {
-        Resolver.register { UserManager(user: user) as AnyUserManager }.scope(.application)
+        Resolver.register(AnyUserManager.self) { UserManager(user: user) }.scope(.application)
     }
 }

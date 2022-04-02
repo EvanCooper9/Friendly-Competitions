@@ -8,7 +8,7 @@ extension Encodable {
 }
 
 extension Encodable {
-    func encoded() throws -> Data {
-        try JSONEncoder.shared.encode(self)
+    func encoded(using encoder: JSONEncoder = .shared) throws -> Data {
+        try encoder.encode(self)
     }
 }

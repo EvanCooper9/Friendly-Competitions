@@ -1,3 +1,4 @@
+import Resolver
 import UserNotifications
 import UIKit
 
@@ -7,6 +8,8 @@ protocol NotificationManaging {
 }
 
 final class NotificationManager: NSObject, NotificationManaging {
+    
+    @Injected private var analyticsManager: AnyAnalyticsManager
 
     override init() {
         super.init()
@@ -27,9 +30,10 @@ final class NotificationManager: NSObject, NotificationManaging {
     func requestPermissions(_ completion: @escaping (PermissionStatus) -> Void) {
         UNUserNotificationCenter.current().requestAuthorization(
             options: [.alert, .badge, .sound],
-            completionHandler: { [weak self] granted, error in
+            completionHandler: { [weak self] authorized, error in
                 guard let self = self else { return }
-                if granted {
+                self.analyticsManager.log(event: .healthKitPermissions(authorized: authorized))
+                if authorized {
                     DispatchQueue.main.async {
                         self.setupNotifications()
                     }

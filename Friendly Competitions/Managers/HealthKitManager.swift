@@ -40,6 +40,8 @@ final class HealthKitManager: AnyHealthKitManager {
     override var permissionStatus: PermissionStatus { storedPermissionStatus ?? .notDetermined }
 
     // MARK: - Private Properties
+    
+    @Injected private var analyticsManager: AnyAnalyticsManager
 
     private let healthStore = HKHealthStore()
     private var hasRegisteredForBackgroundDelivery = false
@@ -80,6 +82,7 @@ final class HealthKitManager: AnyHealthKitManager {
             completion: { [weak self] authorized, error in
                 guard let self = self else { return }
                 let permissionStatus: PermissionStatus = authorized ? .authorized : .denied
+                self.analyticsManager.log(event: .notificationPermissions(authorized: authorized))
                 DispatchQueue.main.async {
                     self.storedPermissionStatus = permissionStatus
                     self.registerForBackgroundDelivery()
