@@ -46,6 +46,9 @@ struct CompetitionView: View {
                     if let user = competitionsManager.participants[competition.id]?.first(where: { $0.id == standing.userId }), user.visibility(by: userManager.user) == .visible {
                         Text(user.name)
                         UserHashIDPill(user: user)
+                    } else if standing.userId == userManager.user.id {
+                        Text(userManager.user.name)
+                        UserHashIDPill(user: userManager.user)
                     } else {
                         Text(standing.userId)
                             .blur(radius: 5)
@@ -142,6 +145,7 @@ struct CompetitionView: View {
                     competitionsManager.delete(competition)
                 }
                 presentationMode.wrappedValue.dismiss()
+                actionRequiringConfirmation = nil
             }
             Button("Cancel", role: .cancel) { actionRequiringConfirmation = nil }
         }

@@ -1,6 +1,5 @@
 import Combine
 import Firebase
-import FirebaseAnalytics
 import FirebaseCrashlytics
 import FirebaseFirestore
 import Resolver
@@ -18,6 +17,7 @@ class AnyUserManager: ObservableObject {
 
 final class UserManager: AnyUserManager {
 
+    @Injected private var analyticsManager: AnyAnalyticsManager
     @Injected private var database: Firestore
 
     private var userListener: ListenerRegistration?
@@ -60,8 +60,7 @@ final class UserManager: AnyUserManager {
         userListener = database.document("users/\(user.id)")
             .addSnapshotListener { [weak self] snapshot, _ in
                 guard let self = self, let user = try? snapshot?.decoded(as: User.self) else { return }
-                Crashlytics.crashlytics().setUserID(user.id)
-                Analytics.setUserID(user.id)
+                self.analyticsManager.set(userId: user.id)
                 DispatchQueue.main.async {
                     self.user = user
                 }
