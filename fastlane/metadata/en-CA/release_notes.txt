@@ -1,6 +1,4 @@
-New features:
-• Take control of your privacy. Prevent your name from being displayed in public competitions and hide youself from search.
-
-Bug fixes:
-• Fixed an issue where the standing for public competitions appeared empty if you hadn't joined.
-• Fixed an issue where public competitions that had already ended were showing on the explore page.
+Improvements
+• Users who choose to hide their name in public competitions will have their name blurred instead of being assigned a random alias
+• More efficient competition standing calculations
+• Added analytics for better troubleshooting 

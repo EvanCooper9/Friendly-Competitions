@@ -528,10 +528,10 @@
 		C155CA6F27AC1245005F49F4 /* Models */ = {
 			isa = PBXGroup;
 			children = (
+				C132944927DAB12200117548 /* DeepLinkTests.swift */,
 				C1E35D4727B45FEB00833EB2 /* Competition */,
 				C1E35D4827B45FF000833EB2 /* Permissions */,
 				C132944827DAB10700117548 /* User */,
-				C132944927DAB12200117548 /* DeepLinkTests.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";

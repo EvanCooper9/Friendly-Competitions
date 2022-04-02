@@ -8,6 +8,7 @@ final class ResolverTests: XCTestCase {
         Resolver.registerAllServices()
         Resolver.register(AnyUserManager.self) { UserManager(user: .evan) }
         XCTAssertTrue(Resolver.resolve(AnyActivitySummaryManager.self) is ActivitySummaryManager)
+        XCTAssertTrue(Resolver.resolve(AnyAnalyticsManager.self) is AnalyticsManager)
         XCTAssertTrue(Resolver.resolve(AnyAuthenticationManager.self) is AuthenticationManager)
         XCTAssertTrue(Resolver.resolve(AnyCompetitionsManager.self) is CompetitionsManager)
         XCTAssertTrue(Resolver.resolve(AnyFriendsManager.self) is FriendsManager)
