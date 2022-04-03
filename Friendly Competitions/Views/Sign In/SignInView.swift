@@ -3,9 +3,11 @@ import SwiftUI
 struct SignInView: View {
 
     @Environment(\.colorScheme) private var colorScheme
-    @StateObject private var viewModel = SignInViewModel()
-    @State private var email = ""
-    @State private var password = ""
+    @EnvironmentObject private var authenticationManager: AnyAuthenticationManager
+        
+    @State private var signingInWithEmail = true
+    @State private var email = "test@test.com"
+    @State private var password = "Password1"
 
     var body: some View {
         VStack(spacing: 10) {
@@ -30,11 +32,62 @@ struct SignInView: View {
                 .fontWeight(.light)
                 .multilineTextAlignment(.center)
             Spacer()
-            if viewModel.isLoading { ProgressView() }
-            SignInWithAppleButton()
+            
+//            if viewModel.isLoading { ProgressView() }
+        
+            if signingInWithEmail {
+                VStack {
+                    TextField(text: $email, prompt: Text("Email")) {
+                        Image(systemName: "envelope.fill")
+                    }
+                    .textContentType(.emailAddress)
+                    .disableAutocorrection(true)
+                    Divider()
+                    SecureField(text: $password, prompt: Text("Password")) {
+                        Image(systemName: "key.fill")
+                    }
+                    .textContentType(.password)
+                    .onSubmit {
+                        authenticationManager.signIn(email: email, password: password)
+                    }
+                }
+//                .background(.white)
+                .cornerRadius(10)
+                .frame(height: 60)
+//                .padding(.horizontal, 20)
+                .padding(.leading, 20)
+            } else {
+                SignInWithAppleButton()
+                    .frame(maxWidth: .infinity, maxHeight: 60)
+                    .onTapGesture(perform: authenticationManager.signInWithApple)
+//                    .disabled(viewModel.isLoading)
+                    .animation(.default, value: signingInWithEmail)
+            }
+            #if DEBUG
+            HStack {
+                if signingInWithEmail {
+                    Button {
+                        signingInWithEmail.toggle()
+                    } label: {
+                        Label("Back", systemImage: "chevron.left")
+                            .frame(maxWidth: .infinity)
+                    }
+                }
+                HStack {
+                    Image(systemName: "envelope.fill")
+                    Text(signingInWithEmail ? "Sign in" : "Sign in with email")
+                        .font(.title2.weight(.semibold))
+                }
+                .onTapGesture {
+                    signingInWithEmail ? authenticationManager.signIn(email: email, password: password) : signingInWithEmail.toggle()
+                }
                 .frame(maxWidth: .infinity, maxHeight: 60)
-                .onTapGesture(perform: viewModel.signInWithApple)
-                .disabled(viewModel.isLoading)
+                .background(.blue)
+                .foregroundColor(.white)
+                .cornerRadius(7)
+                .contentShape(Rectangle())
+            }
+            #endif
         }
         .padding()
         .background(content: {
@@ -55,7 +108,6 @@ struct SignInView: View {
 struct WelcomeView_Previews: PreviewProvider {
     static var previews: some View {
         SignInView()
-        SignInView()
-            .preferredColorScheme(.dark)
+            .withEnvironmentObjects()
     }
 }

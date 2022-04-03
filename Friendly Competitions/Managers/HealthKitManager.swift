@@ -3,16 +3,14 @@ import HealthKit
 import Resolver
 import SwiftUI
 
-protocol HealthKitBackgroundDeliveryReceiving {
-    func trigger()
-}
-
 class AnyHealthKitManager: ObservableObject {
+    
+    let backgroundDeliveryReceived = PassthroughSubject<Void, Never>()
+    
     var permissionStatus: PermissionStatus { .authorized }
     func execute(_ query: HKQuery) {}
     func requestPermissions(_ completion: @escaping (PermissionStatus) -> Void) {}
     func registerForBackgroundDelivery() {}
-    func registerBackgroundDeliveryReceiver(_ backgroundDeliverReceiver: HealthKitBackgroundDeliveryReceiving) {}
 }
 
 final class HealthKitManager: AnyHealthKitManager {
@@ -45,7 +43,6 @@ final class HealthKitManager: AnyHealthKitManager {
 
     private let healthStore = HKHealthStore()
     private var hasRegisteredForBackgroundDelivery = false
-    private var backgroundDeliverReceivers = [HealthKitBackgroundDeliveryReceiving]()
 
     @AppStorage("healthKitStoredPermissionStatus") private var storedPermissionStatus: PermissionStatus?
 
@@ -95,27 +92,19 @@ final class HealthKitManager: AnyHealthKitManager {
     override func registerForBackgroundDelivery() {
         guard storedPermissionStatus == .authorized || storedPermissionStatus == .done else { return }
         guard !hasRegisteredForBackgroundDelivery else {
-            for backgroundDeliverReceiver in self.backgroundDeliverReceivers {
-                backgroundDeliverReceiver.trigger()
-            }
+            backgroundDeliveryReceived.send()
             return
         }
 
         for sampleType in Constants.backgroundDeliveryTypes {
             let query = HKObserverQuery(sampleType: sampleType, predicate: nil) { [weak self] query, completion, error in
                 guard let self = self else { return }
-                for backgroundDeliverReceiver in self.backgroundDeliverReceivers {
-                    backgroundDeliverReceiver.trigger()
-                }
+                self.backgroundDeliveryReceived.send()
                 completion()
             }
             healthStore.execute(query)
             healthStore.enableBackgroundDelivery(for: sampleType, frequency: .immediate) { _, _ in }
         }
         hasRegisteredForBackgroundDelivery.toggle()
-    }
-
-    override func registerBackgroundDeliveryReceiver(_ backgroundDeliverReceiver: HealthKitBackgroundDeliveryReceiving) {
-        backgroundDeliverReceivers.append(backgroundDeliverReceiver)
     }
 }
