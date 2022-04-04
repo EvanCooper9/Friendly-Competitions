@@ -46,12 +46,9 @@ final class CompetitionsManager: AnyCompetitionsManager {
     private var user: User { userManager.user }
 
     private var updateTask: Task<Void, Error>? {
-        willSet {
-            updateTask?.cancel()
-        }
+        willSet { updateTask?.cancel() }
     }
 
-    
     private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Lifecycle

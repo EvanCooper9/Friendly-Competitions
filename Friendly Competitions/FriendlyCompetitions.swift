@@ -17,11 +17,14 @@ struct FriendlyCompetitions: App {
 
     var body: some Scene {
         WindowGroup {
-            if authenticationManager.loggedIn {
-                HomeContainer()
-            } else {
-                SignInView()
+            Group {
+                if authenticationManager.loggedIn {
+                    HomeContainer()
+                } else {
+                    SignInView()
+                }
             }
+            .environmentObject(authenticationManager)
         }
     }
 }

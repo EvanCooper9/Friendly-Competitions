@@ -56,12 +56,6 @@ struct Home: View {
             presentPermissions = permissionsManager.requiresPermission
         }
         .onChange(of: permissionsManager.requiresPermission) { presentPermissions = $0 }
-        .environmentObject(appState)
-        .environmentObject(activitySummaryManager)
-        .environmentObject(competitionsManager)
-        .environmentObject(friendsManager)
-        .environmentObject(permissionsManager)
-        .environmentObject(userManager)
         .tabItem {
             Label("Home", systemImage: "house")
         }
