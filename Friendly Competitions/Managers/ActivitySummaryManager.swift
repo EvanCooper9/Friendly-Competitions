@@ -55,7 +55,10 @@ final class ActivitySummaryManager: AnyActivitySummaryManager {
             .sinkAsync { [weak self] in try await self?.requestActivitySummaries() }
             .store(in: &cancellables)
 
-        healthKitManager.registerBackgroundDeliveryReceiver(self)
+        healthKitManager.backgroundDeliveryReceived
+            .sink { [weak self] in self?.query.send() }
+            .store(in: &cancellables)
+        
         healthKitManager.registerForBackgroundDelivery()
     }
 
@@ -106,12 +109,11 @@ final class ActivitySummaryManager: AnyActivitySummaryManager {
     /// Don't call this directly, call `upload` instead
     private func upload(activitySummaries: [ActivitySummary]) async throws {
         let batch = database.batch()
-        try activitySummaries
-            .forEach { activitySummary in
-                let documentId = DateFormatter.dateDashed.string(from: activitySummary.date)
-                let document = database.document("users/\(user.id)/activitySummaries/\(documentId)")
-                let _ = try batch.setDataEncodable(activitySummary, forDocument: document)
-            }
+        try activitySummaries.forEach { activitySummary in
+            let documentId = DateFormatter.dateDashed.string(from: activitySummary.date)
+            let document = database.document("users/\(user.id)/activitySummaries/\(documentId)")
+            let _ = try batch.setDataEncodable(activitySummary, forDocument: document)
+        }
         try await batch.commit()
     }
 
@@ -123,11 +125,5 @@ final class ActivitySummaryManager: AnyActivitySummaryManager {
         var endDateComponents = calendar.dateComponents(units, from: dateInterval.end)
         endDateComponents.calendar = calendar
         return HKQuery.predicate(forActivitySummariesBetweenStart: startDateComponents, end: endDateComponents)
-    }
-}
-
-extension ActivitySummaryManager: HealthKitBackgroundDeliveryReceiving {
-    func trigger() {
-        query.send(())
     }
 }

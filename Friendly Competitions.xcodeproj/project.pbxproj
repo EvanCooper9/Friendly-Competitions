@@ -33,7 +33,6 @@
 		C123C9E927A9AF4800375F73 /* Algorithms in Frameworks */ = {isa = PBXBuildFile; productRef = C123C9E827A9AF4800375F73 /* Algorithms */; };
 		C12BA6E426F60B34009DAE38 /* DateInterval+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C12BA6E326F60B34009DAE38 /* DateInterval+Extensions.swift */; };
 		C12D63F027A4D5B300259237 /* View+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C12D63EF27A4D5B300259237 /* View+Extensions.swift */; };
-		C12D640427A5EABD00259237 /* SignInViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C12D640327A5EABD00259237 /* SignInViewModel.swift */; };
 		C12D640727A5F2FC00259237 /* CompetitionsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C12D640627A5F2FC00259237 /* CompetitionsManager.swift */; };
 		C1300FDC27C83E3B002E2C52 /* BundleTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1300FDB27C83E3B002E2C52 /* BundleTests.swift */; };
 		C1300FDF27C9642F002E2C52 /* XCTestCase+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1300FDE27C9642F002E2C52 /* XCTestCase+Extensions.swift */; };
@@ -92,7 +91,7 @@
 		C1930E4727C58D3800DB45C1 /* Bool+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1930E4627C58D3800DB45C1 /* Bool+Extensions.swift */; };
 		C1930E4927C5A6F900DB45C1 /* ExploreSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1930E4827C5A6F900DB45C1 /* ExploreSection.swift */; };
 		C1930E4D27C6730A00DB45C1 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C1930E4C27C6730A00DB45C1 /* Colors.xcassets */; };
-		C1930E5027C6755200DB45C1 /* Color+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1930E4F27C6755200DB45C1 /* Color+Extensions.swift */; };
+		C1930E5027C6755200DB45C1 /* ColorAsset+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1930E4F27C6755200DB45C1 /* ColorAsset+Extensions.swift */; };
 		C1930E5227C68E5F00DB45C1 /* CompetitionDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1930E5127C68E5F00DB45C1 /* CompetitionDetails.swift */; };
 		C1930E5427C6EB4000DB45C1 /* MockFriendsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1930E5327C6EB4000DB45C1 /* MockFriendsManager.swift */; };
 		C1930E5627C6FBF500DB45C1 /* ResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1930E5527C6FBF500DB45C1 /* ResolverTests.swift */; };
@@ -138,6 +137,8 @@
 		ED438FFB27F7D18600D72F99 /* AnalyticsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED438FFA27F7D18600D72F99 /* AnalyticsManager.swift */; };
 		ED927EF427F7AB1E006E78A0 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = ED927EF327F7AB1E006E78A0 /* FirebaseAnalytics */; };
 		ED927EF827F7ACE0006E78A0 /* FirebaseAnalyticsSwift-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = ED927EF727F7ACE0006E78A0 /* FirebaseAnalyticsSwift-Beta */; };
+		EDC5FC3F27FA7C1B00F2882D /* View+Banner.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC5FC3E27FA7C1B00F2882D /* View+Banner.swift */; };
+		EDC5FC4127FA7F3700F2882D /* Color+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC5FC4027FA7F3700F2882D /* Color+Extensions.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -187,7 +188,6 @@
 		C123C9E227A9810100375F73 /* NewCompetitionEditorConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCompetitionEditorConfig.swift; sourceTree = "<group>"; };
 		C12BA6E326F60B34009DAE38 /* DateInterval+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DateInterval+Extensions.swift"; sourceTree = "<group>"; };
 		C12D63EF27A4D5B300259237 /* View+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extensions.swift"; sourceTree = "<group>"; };
-		C12D640327A5EABD00259237 /* SignInViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInViewModel.swift; sourceTree = "<group>"; };
 		C12D640627A5F2FC00259237 /* CompetitionsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionsManager.swift; sourceTree = "<group>"; };
 		C1300FDB27C83E3B002E2C52 /* BundleTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BundleTests.swift; sourceTree = "<group>"; };
 		C1300FDE27C9642F002E2C52 /* XCTestCase+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "XCTestCase+Extensions.swift"; sourceTree = "<group>"; };
@@ -249,7 +249,7 @@
 		C1930E4627C58D3800DB45C1 /* Bool+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Bool+Extensions.swift"; sourceTree = "<group>"; };
 		C1930E4827C5A6F900DB45C1 /* ExploreSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreSection.swift; sourceTree = "<group>"; };
 		C1930E4C27C6730A00DB45C1 /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
-		C1930E4F27C6755200DB45C1 /* Color+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Extensions.swift"; sourceTree = "<group>"; };
+		C1930E4F27C6755200DB45C1 /* ColorAsset+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ColorAsset+Extensions.swift"; sourceTree = "<group>"; };
 		C1930E5127C68E5F00DB45C1 /* CompetitionDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionDetails.swift; sourceTree = "<group>"; };
 		C1930E5327C6EB4000DB45C1 /* MockFriendsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockFriendsManager.swift; sourceTree = "<group>"; };
 		C1930E5527C6FBF500DB45C1 /* ResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResolverTests.swift; sourceTree = "<group>"; };
@@ -288,6 +288,8 @@
 		ED438FF627F7B3B600D72F99 /* View+ConfirmationDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+ConfirmationDialog.swift"; sourceTree = "<group>"; };
 		ED438FF827F7C2B900D72F99 /* View+Analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Analytics.swift"; sourceTree = "<group>"; };
 		ED438FFA27F7D18600D72F99 /* AnalyticsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsManager.swift; sourceTree = "<group>"; };
+		EDC5FC3E27FA7C1B00F2882D /* View+Banner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Banner.swift"; sourceTree = "<group>"; };
+		EDC5FC4027FA7F3700F2882D /* Color+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Extensions.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -393,8 +395,10 @@
 			children = (
 				C132945527DF6D9E00117548 /* Binding+Extensions.swift */,
 				C123C9C627A74C4000375F73 /* Button+Extensions.swift */,
+				EDC5FC4027FA7F3700F2882D /* Color+Extensions.swift */,
 				C10A267827E9528700FD1C2C /* ColorScheme+Extensions.swift */,
 				ED438FF827F7C2B900D72F99 /* View+Analytics.swift */,
+				EDC5FC3E27FA7C1B00F2882D /* View+Banner.swift */,
 				ED438FF627F7B3B600D72F99 /* View+ConfirmationDialog.swift */,
 				C132336C27BF0C0F00196D81 /* View+CornerRadius.swift */,
 				C12D63EF27A4D5B300259237 /* View+Extensions.swift */,
@@ -424,7 +428,6 @@
 			isa = PBXGroup;
 			children = (
 				C1691DDD26D561D5006FFA30 /* SignInView.swift */,
-				C12D640327A5EABD00259237 /* SignInViewModel.swift */,
 			);
 			path = "Sign In";
 			sourceTree = "<group>";
@@ -657,7 +660,7 @@
 		C1930E4E27C6754100DB45C1 /* SwiftGen */ = {
 			isa = PBXGroup;
 			children = (
-				C1930E4F27C6755200DB45C1 /* Color+Extensions.swift */,
+				C1930E4F27C6755200DB45C1 /* ColorAsset+Extensions.swift */,
 				C132945127DB8DF000117548 /* ImageAsset+Extensions.swift */,
 			);
 			path = SwiftGen;
@@ -1008,7 +1011,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C12D640427A5EABD00259237 /* SignInViewModel.swift in Sources */,
 				C132336127BEAF9200196D81 /* String+Extensions.swift in Sources */,
 				C1691DDB26D560C5006FFA30 /* SignInWithAppleButton.swift in Sources */,
 				C13F922C27BFFF9900FC6880 /* StorageManager.swift in Sources */,
@@ -1062,6 +1064,7 @@
 				C123C9DE27A8AF5100375F73 /* About.swift in Sources */,
 				C19EAFE3272B30E0008BCFDD /* PermissionsView.swift in Sources */,
 				C1ABB21326D6971900716984 /* TimeInterval+Extensions.swift in Sources */,
+				EDC5FC4127FA7F3700F2882D /* Color+Extensions.swift in Sources */,
 				C10E5543272B3BCF0053BBA6 /* PermissionView.swift in Sources */,
 				C1185A2526D6717C002E2377 /* ActivitySummary.swift in Sources */,
 				C1EA986726D6DBAA00219E84 /* Date+Extensions.swift in Sources */,
@@ -1079,7 +1082,7 @@
 				C16ADDD826D9128F00E34E04 /* DateFormatter+Extensions.swift in Sources */,
 				C1691DDE26D561D5006FFA30 /* SignInView.swift in Sources */,
 				C155229E26E793C600FE0DA7 /* Competition+Mock.swift in Sources */,
-				C1930E5027C6755200DB45C1 /* Color+Extensions.swift in Sources */,
+				C1930E5027C6755200DB45C1 /* ColorAsset+Extensions.swift in Sources */,
 				C1C8B24226F3FB47008D6B1B /* HealthKitManager.swift in Sources */,
 				C10EB3EC26E94E2200487F1B /* UserDefaults+Extensions.swift in Sources */,
 				C15522A826E7973A00FE0DA7 /* DocumentReference+Extensions.swift in Sources */,
@@ -1096,6 +1099,7 @@
 				C123C9C727A74C4100375F73 /* Button+Extensions.swift in Sources */,
 				C15522A426E7943A00FE0DA7 /* DocumentSnapshot+Extensions.swift in Sources */,
 				C1A4696A26DA823C00254105 /* Resolver.swift in Sources */,
+				EDC5FC3F27FA7C1B00F2882D /* View+Banner.swift in Sources */,
 				C1C8B24326F3FB47008D6B1B /* ActivitySummaryManager.swift in Sources */,
 				C1ABB20E26D683BA00716984 /* AddFriendView.swift in Sources */,
 				C10E5548272B47080053BBA6 /* XCAssets+Generated.swift in Sources */,

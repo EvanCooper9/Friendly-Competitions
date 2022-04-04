@@ -59,11 +59,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
         fetchCompetitionData()
 
         Publishers
-            .CombineLatest3(
-                competitions.publisher,
-                appOwnedCompetitions.publisher,
-                invitedCompetitions.publisher
-            )
+            .CombineLatest3($competitions, $appOwnedCompetitions, $invitedCompetitions)
             .map { _ in () }
             .prepend(())
             .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
