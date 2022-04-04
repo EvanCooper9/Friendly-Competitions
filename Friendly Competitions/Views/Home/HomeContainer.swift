@@ -10,24 +10,24 @@ struct HomeContainer: View {
 
     @State private var tab = Tab.home
 
-    @StateObject private var activitySummaryManager = Resolver.resolve(AnyActivitySummaryManager.self)
-    @StateObject private var competitionsManager = Resolver.resolve(AnyCompetitionsManager.self)
-    @StateObject private var friendsManager = Resolver.resolve(AnyFriendsManager.self)
-    @StateObject private var permissionsManager = Resolver.resolve(AnyPermissionsManager.self)
-    @StateObject private var storageManager = Resolver.resolve(AnyStorageManager.self)
-    @StateObject private var userManager = Resolver.resolve(AnyUserManager.self)
+//    @StateObject private var activitySummaryManager = Resolver.resolve(AnyActivitySummaryManager.self)
+//    @StateObject private var competitionsManager = Resolver.resolve(AnyCompetitionsManager.self)
+//    @StateObject private var friendsManager = Resolver.resolve(AnyFriendsManager.self)
+//    @StateObject private var permissionsManager = Resolver.resolve(AnyPermissionsManager.self)
+//    @StateObject private var storageManager = Resolver.resolve(AnyStorageManager.self)
+//    @StateObject private var userManager = Resolver.resolve(AnyUserManager.self)
 
     var body: some View {
         TabView(selection: $tab) {
             Home().tag(Tab.home)
             Explore().tag(Tab.explore)
         }
-        .environmentObject(activitySummaryManager)
-        .environmentObject(competitionsManager)
-        .environmentObject(friendsManager)
-        .environmentObject(permissionsManager)
-        .environmentObject(storageManager)
-        .environmentObject(userManager)
+//        .environmentObject(activitySummaryManager)
+//        .environmentObject(competitionsManager)
+//        .environmentObject(friendsManager)
+//        .environmentObject(permissionsManager)
+//        .environmentObject(storageManager)
+//        .environmentObject(userManager)
     }
 }
 

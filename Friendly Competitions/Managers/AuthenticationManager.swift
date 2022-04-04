@@ -12,10 +12,23 @@ enum SignInMethod {
     case email(_ email: String, password: String)
 }
 
+enum SignUpError: LocalizedError {
+    case passwordMatch
+    
+    var errorDescription: String? { localizedDescription }
+    var localizedDescription: String {
+        switch self {
+        case .passwordMatch:
+            return "Passwords do not match"
+        }
+    }
+}
+
 class AnyAuthenticationManager: NSObject, ObservableObject {
     @AppStorage("loggedIn") var loggedIn = false
     
     func signIn(with signInMethod: SignInMethod) async throws {}
+    func signUp(name: String, email: String, password: String, passwordConfirmation: String) async throws {}
 }
 
 final class AuthenticationManager: AnyAuthenticationManager {
@@ -44,6 +57,12 @@ final class AuthenticationManager: AnyAuthenticationManager {
         }
     }
     
+    override func signUp(name: String, email: String, password: String, passwordConfirmation: String) async throws {
+        guard password == passwordConfirmation else { throw SignUpError.passwordMatch }
+        let firebaseUser = try await Auth.auth().createUser(withEmail: email, password: password).user
+        try await updateFirestoreUserWithAuthUser(firebaseUser, email: email, displayName: name)
+    }
+    
     // MARK: - Private Methods
     
     private func signInWithApple() {
@@ -62,7 +81,9 @@ final class AuthenticationManager: AnyAuthenticationManager {
     
     private func signIn(email: String, password: String) async throws {
         let result = try await Auth.auth().signIn(withEmail: email, password: password)
-        try await updateFirestoreUserWithAuthUser(result.user, email: email, displayName: result.user.displayName ?? "")
+        let firebaseUser = result.user
+        let user = try await database.document("users/\(firebaseUser.uid)").getDocument().decoded(as: User.self)
+        try await updateFirestoreUserWithAuthUser(firebaseUser, email: email, displayName: firebaseUser.displayName ?? user.name.ifEmpty(""))
     }
     
     private func listenForAuth() {
@@ -72,6 +93,7 @@ final class AuthenticationManager: AnyAuthenticationManager {
             guard let firebaseUser = firebaseUser else {
                 DispatchQueue.main.async {
                     self.currentUser = nil
+                    self.userListener = nil
                     self.loggedIn = false
                 }
                 return
@@ -130,14 +152,16 @@ final class AuthenticationManager: AnyAuthenticationManager {
         let existingUserManager = Resolver.optional(AnyUserManager.self)
         guard existingUserManager == nil || existingUserManager?.user.id != user.id else { return }
         
-        let userManager = UserManager(user: user)
-        userListener = userManager.$user
-            .sink { [weak self] user in
-                DispatchQueue.main.async {
-                    self?.currentUser = user
+        Resolver.register(AnyUserManager.self) { [weak self] in
+            let userManager = UserManager(user: user)
+            self?.userListener = userManager.$user
+                .sink { [weak self] user in
+                    DispatchQueue.main.async {
+                        self?.currentUser = user
+                    }
                 }
-            }
-        Resolver.register(AnyUserManager.self) { userManager }.scope(.application)
+            return userManager
+        }.scope(.shared)
     }
     
     private func updateFirestoreUserWithAuthUser(_ firebaseUser: FirebaseAuth.User, email: String, displayName: String) async throws {
@@ -173,15 +197,8 @@ extension AuthenticationManager: ASAuthorizationControllerDelegate {
             rawNonce: currentNonce
         )
 
-//        isLoading = true
-
         // Sign in with Firebase.
         Auth.auth().signIn(with: credential) { [weak self] authResult, error in
-
-//            defer {
-//                self?.isLoading = false
-//            }
-
             if let error = error {
                 // Error. If error.code == .MissingOrInvalidNonce, make sure
                 // you're sending the SHA256-hashed nonce as a hex string with

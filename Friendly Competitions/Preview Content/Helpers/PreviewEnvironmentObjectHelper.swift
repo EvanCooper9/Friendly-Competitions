@@ -1,3 +1,4 @@
+import Resolver
 import SwiftUI
 
 fileprivate struct Container {
@@ -28,7 +29,16 @@ extension PreviewProvider {
 
 extension View {
     func withEnvironmentObjects(setupMocks: @escaping () -> Void = {}) -> some View {
-        self
+        Resolver.register { Container.activitySummaryManager }
+        Resolver.register { Container.analyticsManager }
+        Resolver.register { Container.authenticationManager }
+        Resolver.register { Container.competitionsManager }
+        Resolver.register { Container.friendsManager }
+        Resolver.register { Container.healthKitManager }
+        Resolver.register { Container.permissionsManager }
+        Resolver.register { Container.storageManager }
+        Resolver.register { Container.userManager }
+        return self
             .environmentObject(Container.appState)
             .environmentObject(Container.activitySummaryManager)
             .environmentObject(Container.analyticsManager)

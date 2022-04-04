@@ -1,10 +1,11 @@
+import Resolver
 import SwiftUI
 
 struct FirestoreImage: View {
 
     let path: String
 
-    @EnvironmentObject private var storageManager: AnyStorageManager
+    @InjectedObject private var storageManager: AnyStorageManager
 
     @State private var failed = false
     @State private var imageData: Data?

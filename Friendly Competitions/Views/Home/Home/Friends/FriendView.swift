@@ -1,10 +1,11 @@
+import Resolver
 import SwiftUI
 
 struct FriendView: View {
 
     let friend: User
 
-    @EnvironmentObject private var friendsManager: AnyFriendsManager
+    @InjectedObject private var friendsManager: AnyFriendsManager
 
     @State private var showConfirmDelete = false
 

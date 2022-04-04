@@ -1,3 +1,4 @@
+import Resolver
 import SwiftUI
 
 struct CompetitionView: View {
@@ -5,9 +6,9 @@ struct CompetitionView: View {
     @Binding var competition: Competition
 
     @Environment(\.presentationMode) private var presentationMode
-    @EnvironmentObject private var competitionsManager: AnyCompetitionsManager
-    @EnvironmentObject private var friendsManager: AnyFriendsManager
-    @EnvironmentObject private var userManager: AnyUserManager
+    @InjectedObject private var competitionsManager: AnyCompetitionsManager
+    @InjectedObject private var friendsManager: AnyFriendsManager
+    @InjectedObject private var userManager: AnyUserManager
 
     private enum Action {
         case leave, delete

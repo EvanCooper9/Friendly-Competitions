@@ -1,10 +1,11 @@
+import Resolver
 import SwiftUI
 
 struct Profile: View {
 
     @Environment(\.presentationMode) private var presentationMode
-    @EnvironmentObject private var authenticationManager: AnyAuthenticationManager
-    @EnvironmentObject private var userManager: AnyUserManager
+    @InjectedObject private var authenticationManager: AnyAuthenticationManager
+    @InjectedObject private var userManager: AnyUserManager
     @State private var presentDeleteAccountAlert = false
 
     var body: some View {

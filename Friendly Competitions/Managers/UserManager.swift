@@ -32,7 +32,6 @@ final class UserManager: AnyUserManager {
             .dropFirst(2) // 1: init, 2: local listener
             .removeDuplicates()
             .sinkAsync { [weak self] newUser in
-                print(newUser)
                 try await self?.update()
             }
             .store(in: &cancellables)
@@ -44,8 +43,8 @@ final class UserManager: AnyUserManager {
     }
 
     override func deleteAccount() {
-        Task {
-            try await database.document("users/\(user.id)").delete()
+        Task { [weak self] in
+            try await self?.database.document("users/\(user.id)").delete()
             try await Auth.auth().currentUser?.delete()
         }
     }

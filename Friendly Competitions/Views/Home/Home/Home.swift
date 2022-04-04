@@ -1,14 +1,15 @@
+import Resolver
 import SwiftUI
 
 struct Home: View {
 
     @StateObject private var appState = AppState()
 
-    @EnvironmentObject private var activitySummaryManager: AnyActivitySummaryManager
-    @EnvironmentObject private var competitionsManager: AnyCompetitionsManager
-    @EnvironmentObject private var friendsManager: AnyFriendsManager
-    @EnvironmentObject private var permissionsManager: AnyPermissionsManager
-    @EnvironmentObject private var userManager: AnyUserManager
+    @InjectedObject private var activitySummaryManager: AnyActivitySummaryManager
+    @InjectedObject private var competitionsManager: AnyCompetitionsManager
+    @InjectedObject private var friendsManager: AnyFriendsManager
+    @InjectedObject private var permissionsManager: AnyPermissionsManager
+    @InjectedObject private var userManager: AnyUserManager
 
     @State private var presentAbout = false
     @State private var presentPermissions = false

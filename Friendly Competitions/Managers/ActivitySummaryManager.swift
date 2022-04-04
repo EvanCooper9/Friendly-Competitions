@@ -61,6 +61,10 @@ final class ActivitySummaryManager: AnyActivitySummaryManager {
         
         healthKitManager.registerForBackgroundDelivery()
     }
+    
+    deinit {
+        activitySummary = nil
+    }
 
     // MARK: - Public Methods
 
@@ -87,7 +91,7 @@ final class ActivitySummaryManager: AnyActivitySummaryManager {
             }
 
         try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-            let query = HKActivitySummaryQuery(predicate: self.predicate(for: dateInterval)) { [weak self] query, hkActivitySummaries, error in
+            let query = HKActivitySummaryQuery(predicate: predicate(for: dateInterval)) { [weak self] query, hkActivitySummaries, error in
                 if let error = error {
                     continuation.resume(throwing: error)
                     return

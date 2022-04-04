@@ -3,10 +3,20 @@ import Firebase
 import FirebaseFirestore
 
 extension CollectionReference {
+    
+    private enum Constants {
+        static let chunkSize = 10
+    }
+    
     func addDocumentEncodable<T: Encodable>(_ data: T, completion: ((Error?) -> Void)? = nil) throws {
         addDocument(data: try data.jsonDictionary(), completion: completion)
     }
-
+    
+    /// Perform a where-in query with chunking. Firestore only allows for 10 elements in the query array.
+    /// - Parameters:
+    ///   - field: The name of the field to query
+    ///   - values: The array the contains the values to match
+    /// - Returns: An array of query doucment snapshots
     func whereFieldWithChunking(_ field: String, in values: [Any]) async throws -> [QueryDocumentSnapshot] {
         try await whereFieldWithChunkingHelper(field, values: values, contains: true)
     }
@@ -18,7 +28,7 @@ extension CollectionReference {
 
     private func whereFieldWithChunkingHelper(_ field: String, values: [Any], contains: Bool) async throws -> [QueryDocumentSnapshot] {
         try await withThrowingTaskGroup(of: [QueryDocumentSnapshot].self) { group -> [QueryDocumentSnapshot] in
-            values.chunks(ofCount: 10).forEach { chunk in
+            values.chunks(ofCount: Constants.chunkSize).forEach { chunk in
                 group.addTask { [weak self] in
                     guard let self = self else { return [] }
                     let query = contains ?

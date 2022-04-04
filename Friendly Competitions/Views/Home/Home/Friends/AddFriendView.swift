@@ -1,12 +1,13 @@
+import Resolver
 import SwiftUI
 
 struct AddFriendView: View {
 
     @State private var friendReferral: User?
 
-    @EnvironmentObject private var appState: AppState
-    @EnvironmentObject private var friendsManager: AnyFriendsManager
-    @EnvironmentObject private var userManager: AnyUserManager
+    @InjectedObject private var appState: AppState
+    @InjectedObject private var friendsManager: AnyFriendsManager
+    @InjectedObject private var userManager: AnyUserManager
 
     var body: some View {
         List {

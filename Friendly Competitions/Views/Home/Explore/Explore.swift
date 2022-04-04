@@ -1,3 +1,4 @@
+import Resolver
 import SwiftUI
 
 struct Explore: View {
@@ -8,7 +9,7 @@ struct Explore: View {
 
     @Environment(\.colorScheme) private var colorScheme
 
-    @EnvironmentObject private var competitionsManager: AnyCompetitionsManager
+    @InjectedObject private var competitionsManager: AnyCompetitionsManager
 
     @State private var searchResults = [Competition]()
     @State private var searchText = ""
@@ -68,26 +69,21 @@ struct Explore: View {
         .registerScreenView(name: "Explore")
     }
 
+    @MainActor
     private func search() async throws {
         guard !searchText.isEmpty else {
-            DispatchQueue.main.async {
-                self.searchResults = []
-                self.loading = false
-            }
+            searchResults = []
+            loading = false
             return
         }
-        DispatchQueue.main.async {
-            self.loading = true
-        }
+        loading = true
         let competitions = try await competitionsManager
             .search(searchText)
             .sorted { lhs, rhs in
                 lhs.appOwned && !rhs.appOwned
             }
-        DispatchQueue.main.async {
-            self.searchResults = competitions
-            self.loading = false
-        }
+        searchResults = competitions
+        loading = false
     }
 
     @ViewBuilder

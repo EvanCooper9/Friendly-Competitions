@@ -1,3 +1,4 @@
+import Resolver
 import SwiftUI
 
 struct NewCompetition: View {
@@ -5,9 +6,9 @@ struct NewCompetition: View {
     @State private var editorConfig = NewCompetitionEditorConfig()
 
     @Environment(\.presentationMode) private var presentationMode
-    @EnvironmentObject private var competitionManager: AnyCompetitionsManager
-    @EnvironmentObject private var friendsManager: AnyFriendsManager
-    @EnvironmentObject private var userManager: AnyUserManager
+    @InjectedObject private var competitionManager: AnyCompetitionsManager
+    @InjectedObject private var friendsManager: AnyFriendsManager
+    @InjectedObject private var userManager: AnyUserManager
     @State private var presentAddFriends = false
 
     var body: some View {

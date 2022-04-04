@@ -33,6 +33,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
     }
     
     private enum Constants {
+        static let maxParticipantsToFetch = 10
         static let updateStandingsFirebaseFunctionName = "updateCompetitionStandings"
     }
 
@@ -137,9 +138,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
     override func invite(_ user: User, to competition: Competition) {
         var competition = competition
         competition.pendingParticipants.append(user.id)
-        var pendingParticipants = pendingParticipants[competition.id] ?? []
-        pendingParticipants.append(user)
-        self.pendingParticipants[competition.id] = pendingParticipants
+        pendingParticipants[competition.id]?.append(user)
         update(competition: competition)
         analyticsManager.log(event: .inviteFriendToCompetition(id: competition.id, friendId: user.id))
     }
@@ -168,7 +167,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
     }
 
     override func search(_ searchText: String) async throws -> [Competition] {
-        try await self.database.collection("competitions")
+        try await database.collection("competitions")
             .whereField("isPublic", isEqualTo: true)
             .getDocuments()
             .documents
@@ -182,14 +181,15 @@ final class CompetitionsManager: AnyCompetitionsManager {
     override func updateStandings() async throws {
         try await Functions.functions()
             .httpsCallable(Constants.updateStandingsFirebaseFunctionName)
-            .call(["userId": self.user.id])
+            .call(["userId": userManager.user.id])
         fetchCompetitionData()
     }
 
     // MARK: - Private Methods
     
     private func fetchCompetitionData() {
-        updateTask = Task(priority: .medium) {
+        updateTask = Task(priority: .medium) { [weak self] in
+            guard let self = self else { return }
             let allCompetitions = self.competitions + self.appOwnedCompetitions + self.topCommunityCompetitions + self.invitedCompetitions
             try await self.fetchStandings(for: allCompetitions)
             try await self.fetchParticipants(for: allCompetitions)
@@ -282,7 +282,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
 
                     var standings = try await standingsRef
                         .order(by: "rank")
-                        .limit(to: 10)
+                        .limit(to: Constants.maxParticipantsToFetch)
                         .getDocuments()
                         .documents
                         .decoded(asArrayOf: Competition.Standing.self)
@@ -302,7 +302,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
                 }
             }
 
-            var newStandings = self.standings.removeOldCompetitions(current: self.competitions)
+            var newStandings = standings.removeOldCompetitions(current: competitions)
             for try await (competitionId, standings) in group.compactMap({ $0 }) {
                 newStandings[competitionId] = standings
             }
@@ -333,7 +333,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
                 }
             }
 
-            var newParticipants = self.participants.removeOldCompetitions(current: self.competitions)
+            var newParticipants = participants.removeOldCompetitions(current: competitions)
             for try await (competitionId, participants) in group.compactMap({ $0 }) {
                 newParticipants[competitionId] = participants
             }
@@ -364,7 +364,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
                 }
             }
 
-            var newPendingParticipants = self.pendingParticipants.removeOldCompetitions(current: self.competitions)
+            var newPendingParticipants = pendingParticipants.removeOldCompetitions(current: competitions)
             for try await (competitionId, participants) in group.compactMap({ $0 }) {
                 newPendingParticipants[competitionId] = participants
             }

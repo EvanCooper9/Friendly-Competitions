@@ -21,7 +21,7 @@ struct FriendlyCompetitions: App {
                 if authenticationManager.loggedIn {
                     HomeContainer()
                 } else {
-                    SignInView()
+                    SignIn()
                 }
             }
             .environmentObject(authenticationManager)

@@ -1,3 +1,4 @@
+import Resolver
 import SwiftUI
 
 struct CompetitionDetails: View {
@@ -8,8 +9,8 @@ struct CompetitionDetails: View {
 
     @Environment(\.colorScheme) private var colorScheme
 
-    @EnvironmentObject private var competitionsManager: AnyCompetitionsManager
-    @EnvironmentObject private var userManager: AnyUserManager
+    @InjectedObject private var competitionsManager: AnyCompetitionsManager
+    @InjectedObject private var userManager: AnyUserManager
 
     var body: some View {
         NavigationLink(destination: CompetitionView(competition: $competition)) {
