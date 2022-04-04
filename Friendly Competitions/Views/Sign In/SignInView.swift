@@ -5,9 +5,16 @@ struct SignInView: View {
     @Environment(\.colorScheme) private var colorScheme
     @EnvironmentObject private var authenticationManager: AnyAuthenticationManager
         
-    @State private var signingInWithEmail = true
-    @State private var email = "test@test.com"
-    @State private var password = "Password1"
+    @State private var loading = false
+    @State private var error: Error?
+    @State private var signingInWithEmail = false
+    @State private var email = ""
+    @State private var password = ""
+    
+    private var emailButtonDisabled: Bool {
+        guard signingInWithEmail else { return false }
+        return loading || email.isEmpty || password.isEmpty
+    }
 
     var body: some View {
         VStack(spacing: 10) {
@@ -17,11 +24,8 @@ struct SignInView: View {
                 .aspectRatio(contentMode: .fit)
                 .padding()
                 .background(content: {
-                    ActivityRingView(activitySummary: nil)
-                        .clipShape(Circle())
-                        .if(!isPreview) { v in
-                            v.shadow(radius: 10)
-                        }
+                    ActivityRingView()
+                        .shadow(radius: 10)
                 })
             
             Spacer()
@@ -32,64 +36,70 @@ struct SignInView: View {
                 .fontWeight(.light)
                 .multilineTextAlignment(.center)
             Spacer()
-            
-//            if viewModel.isLoading { ProgressView() }
-        
+                    
             if signingInWithEmail {
                 VStack {
-                    TextField(text: $email, prompt: Text("Email")) {
+                    HStack {
                         Image(systemName: "envelope.fill")
+                            .frame(width: 20, alignment: .center)
+                        TextField("Email", text: $email)
+                            .textContentType(.emailAddress)
+                            .disableAutocorrection(true)
+                            .textInputAutocapitalization(.never)
                     }
-                    .textContentType(.emailAddress)
-                    .disableAutocorrection(true)
                     Divider()
-                    SecureField(text: $password, prompt: Text("Password")) {
+                        .padding(.leading)
+                        .padding(.vertical, 5)
+                    HStack {
                         Image(systemName: "key.fill")
-                    }
-                    .textContentType(.password)
-                    .onSubmit {
-                        authenticationManager.signIn(email: email, password: password)
+                            .frame(width: 20, alignment: .center)
+                        SecureField("Password", text: $password)
+                            .textContentType(.password)
+                            .onSubmit { signIn(with: .email(email, password: password)) }
                     }
                 }
-//                .background(.white)
-                .cornerRadius(10)
-                .frame(height: 60)
-//                .padding(.horizontal, 20)
                 .padding(.leading, 20)
+                .frame(height: 72)
             } else {
-                SignInWithAppleButton()
-                    .frame(maxWidth: .infinity, maxHeight: 60)
-                    .onTapGesture(perform: authenticationManager.signInWithApple)
-//                    .disabled(viewModel.isLoading)
-                    .animation(.default, value: signingInWithEmail)
+                Button {
+                    signIn(with: .apple)
+                } label: {
+                    Label("Sign in with Apple", systemImage: "applelogo")
+                        .font(.title2.weight(.semibold))
+                        .padding()
+                }
+                .foregroundColor(colorScheme == .light ? .white : .black)
+                .tint(colorScheme == .light ? .black : .white)
+                .buttonStyle(.borderedProminent)
+                .disabled(loading)
+                .animation(.default, value: signingInWithEmail)
             }
             #if DEBUG
             HStack {
                 if signingInWithEmail {
-                    Button {
-                        signingInWithEmail.toggle()
-                    } label: {
+                    Button(toggling: $signingInWithEmail) {
                         Label("Back", systemImage: "chevron.left")
                             .frame(maxWidth: .infinity)
                     }
+                    .disabled(loading)
                 }
-                HStack {
-                    Image(systemName: "envelope.fill")
-                    Text(signingInWithEmail ? "Sign in" : "Sign in with email")
+                Button {
+                    signingInWithEmail ?
+                        signIn(with: .email(email, password: password)) :
+                        signingInWithEmail.toggle()
+                } label: {
+                    Label(signingInWithEmail ? "Sign in" : "Sign in with Email", systemImage: "envelope.fill")
                         .font(.title2.weight(.semibold))
+                        .padding()
                 }
-                .onTapGesture {
-                    signingInWithEmail ? authenticationManager.signIn(email: email, password: password) : signingInWithEmail.toggle()
-                }
-                .frame(maxWidth: .infinity, maxHeight: 60)
-                .background(.blue)
-                .foregroundColor(.white)
-                .cornerRadius(7)
-                .contentShape(Rectangle())
+                .buttonStyle(.borderedProminent)
+                .disabled(emailButtonDisabled)
+                .animation(.default, value: signingInWithEmail)
             }
             #endif
         }
         .padding()
+        .errorBanner(presenting: $error)
         .background(content: {
             let color: Color = {
                 switch colorScheme {
@@ -103,11 +113,29 @@ struct SignInView: View {
         })
         .registerScreenView(name: "Sign In")
     }
+    
+    private func signIn(with signInMethod: SignInMethod) {
+        loading = true
+        Task {
+            var errorToShow: Error?
+            do {
+                try await authenticationManager.signIn(with: signInMethod)
+            } catch {
+                errorToShow = error
+            }
+            
+            DispatchQueue.main.async { [errorToShow] in
+                error = errorToShow
+                loading = false
+            }
+        }
+    }
 }
 
 struct WelcomeView_Previews: PreviewProvider {
     static var previews: some View {
         SignInView()
             .withEnvironmentObjects()
+//            .preferredColorScheme(.dark)
     }
 }

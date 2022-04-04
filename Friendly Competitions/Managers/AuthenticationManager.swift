@@ -7,11 +7,15 @@ import FirebaseFirestore
 import Resolver
 import SwiftUI
 
+enum SignInMethod {
+    case apple
+    case email(_ email: String, password: String)
+}
+
 class AnyAuthenticationManager: NSObject, ObservableObject {
     @AppStorage("loggedIn") var loggedIn = false
     
-    func signInWithApple() {}
-    func signIn(email: String, password: String) {}
+    func signIn(with signInMethod: SignInMethod) async throws {}
 }
 
 final class AuthenticationManager: AnyAuthenticationManager {
@@ -31,7 +35,18 @@ final class AuthenticationManager: AnyAuthenticationManager {
         }
     }
     
-    override func signInWithApple() {
+    override func signIn(with signInMethod: SignInMethod) async throws {
+        switch signInMethod {
+        case .apple:
+            signInWithApple()
+        case .email(let email, let password):
+            try await signIn(email: email, password: password)
+        }
+    }
+    
+    // MARK: - Private Methods
+    
+    private func signInWithApple() {
         let nonce = randomNonceString()
         currentNonce = nonce
         let appleIDProvider = ASAuthorizationAppleIDProvider()
@@ -45,19 +60,10 @@ final class AuthenticationManager: AnyAuthenticationManager {
         authorizationController.performRequests()
     }
     
-    override func signIn(email: String, password: String) {
-        Auth.auth().signIn(withEmail: email, password: password) { [weak self] result, error in
-            if let error = error {
-                print(error)
-                return
-            }
-            
-            guard let firebaseUser = result?.user else { return }
-            self?.updateFirestoreUserWithAuthUser(firebaseUser, email: email, displayName: "Test User")
-        }
+    private func signIn(email: String, password: String) async throws {
+        let result = try await Auth.auth().signIn(withEmail: email, password: password)
+        try await updateFirestoreUserWithAuthUser(result.user, email: email, displayName: result.user.displayName ?? "")
     }
-    
-    // MARK: - Private Methods
     
     private func listenForAuth() {
         Auth.auth().addStateDidChangeListener { [weak self] auth, firebaseUser in
@@ -134,18 +140,19 @@ final class AuthenticationManager: AnyAuthenticationManager {
         Resolver.register(AnyUserManager.self) { userManager }.scope(.application)
     }
     
-    private func updateFirestoreUserWithAuthUser(_ firebaseUser: FirebaseAuth.User, email: String, displayName: String) {
+    private func updateFirestoreUserWithAuthUser(_ firebaseUser: FirebaseAuth.User, email: String, displayName: String) async throws {
         let userJson = [
             "id": firebaseUser.uid,
             "email": email,
             "name": displayName
         ]
-        database.document("users/\(firebaseUser.uid)").updateData(userJson) { [weak self] error in
-            guard let nsError = error as NSError?,
-                nsError.domain == "FIRFirestoreErrorDomain",
-                nsError.code == 5 else { return }
+        
+        do {
+            try await database.document("users/\(firebaseUser.uid)").updateData(userJson)
+        } catch {
+            guard let nsError = error as NSError?, nsError.domain == "FIRFirestoreErrorDomain", nsError.code == 5 else { return }
             let user = User(id: firebaseUser.uid, email: email, name: displayName)
-            try? self?.database.document("users/\(user.id)").setDataEncodable(user, completion: nil)
+            try await database.document("users/\(user.id)").setDataEncodable(user)
         }
     }
 }

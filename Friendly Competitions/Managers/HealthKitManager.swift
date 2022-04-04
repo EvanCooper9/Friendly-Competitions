@@ -4,9 +4,7 @@ import Resolver
 import SwiftUI
 
 class AnyHealthKitManager: ObservableObject {
-    
     let backgroundDeliveryReceived = PassthroughSubject<Void, Never>()
-    
     var permissionStatus: PermissionStatus { .authorized }
     func execute(_ query: HKQuery) {}
     func requestPermissions(_ completion: @escaping (PermissionStatus) -> Void) {}

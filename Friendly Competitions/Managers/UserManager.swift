@@ -29,7 +29,7 @@ final class UserManager: AnyUserManager {
         listenForUser()
 
         $user
-            .dropFirst(2) // 1: from init, 2: local listener
+            .dropFirst(2) // 1: init, 2: local listener
             .removeDuplicates()
             .sinkAsync { [weak self] newUser in
                 print(newUser)
