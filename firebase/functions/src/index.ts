@@ -53,12 +53,14 @@ exports.sendNewCompetitionNotification = functions.firestore
             .get();
 
         const users = userPromises.docs.map(doc => new User(doc));
-        const notificationPromises = users.map(user => {
-            const message = change.before.exists ?
-                `You've been invited to ${newCompetition.name}` : // invited by somebody to existing competition
-                `${owner.name} invited you to ${newCompetition.name}`; // invited by owner to new competition
-            return notifications.sendNotificationsToUser(user, "Competition invite", message);
-        });
+        const notificationPromises = users
+            .filter(user => !user.id.startsWith('Anonymous'))
+            .map(user => {
+                const message = change.before.exists ?
+                    `You've been invited to ${newCompetition.name}` : // invited by somebody to existing competition
+                    `${owner.name} invited you to ${newCompetition.name}`; // invited by owner to new competition
+                return notifications.sendNotificationsToUser(user, "Competition invite", message);
+            });
 
         return Promise.all(notificationPromises);
     });
@@ -120,22 +122,24 @@ exports.sendCompetitionCompleteNotifications = functions.pubsub.schedule("every 
 
             const standingsRef = await firestore.collection(`competitions/${competition.id}/standings`).get();
             const standings = standingsRef.docs.map(doc => new Standing(doc));
-            const notificationPromises = competition.participants.map(async participantId => {
-                const userRef = await firestore.doc(`users/${participantId}`).get();
-                const user = new User(userRef);
-                const standing = standings.find(standing => standing.userId == user.id);
-                if (standing == null) return null;
+            const notificationPromises = competition.participants
+                .filter(participantId => !participantId.startsWith("Anonymous"))
+                .map(async participantId => {
+                    const userRef = await firestore.doc(`users/${participantId}`).get();
+                    const user = new User(userRef);
+                    const standing = standings.find(standing => standing.userId == user.id);
+                    if (standing == null) return null;
 
-                const rank = standing.rank;
-                const ordinal = ["st", "nd", "rd"][((rank+90)%100-10)%10-1] || "th";
-                return notifications
-                    .sendNotificationsToUser(
-                        user,
-                        "Competition complete!",
-                        `You placed ${rank}${ordinal} in ${competition.name}!`
-                    )
-                    .then(() => user.updateStatisticsWithNewRank(rank));
-            });
+                    const rank = standing.rank;
+                    const ordinal = ["st", "nd", "rd"][((rank+90)%100-10)%10-1] || "th";
+                    return notifications
+                        .sendNotificationsToUser(
+                            user,
+                            "Competition complete!",
+                            `You placed ${rank}${ordinal} in ${competition.name}!`
+                        )
+                        .then(() => user.updateStatisticsWithNewRank(rank));
+                });
 
             return Promise
                 .all(notificationPromises)

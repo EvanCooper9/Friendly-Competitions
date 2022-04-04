@@ -60,19 +60,13 @@ final class FriendsManager: AnyFriendsManager {
     // MARK: - Public Methods
 
     override func add(friend: User) {
-        let batch = database.batch()
-
-        if !user.outgoingFriendRequests.contains(friend.id) {
-            let outgoingFriendRequests = user.outgoingFriendRequests.appending(friend.id)
-            batch.updateData(["outgoingFriendRequests": outgoingFriendRequests], forDocument: database.document("users/\(user.id)"))
+        if !userManager.user.outgoingFriendRequests.contains(friend.id) {
+            userManager.user.outgoingFriendRequests.append(friend.id)
         }
 
         if !friend.incomingFriendRequests.contains(user.id) {
-            let incomingFriendRequests = friend.incomingFriendRequests.appending(user.id)
-            batch.updateData(["incomingFriendRequests": incomingFriendRequests], forDocument: database.document("users/\(friend.id)"))
+            database.document("users/\(friend.id)").updateData(["incomingFriendRequests": friend.incomingFriendRequests.appending(user.id)])
         }
-
-        batch.commit()
     }
 
     override func acceptFriendRequest(from friendRequest: User) {
@@ -213,6 +207,7 @@ final class FriendsManager: AnyFriendsManager {
 
     private func searchUsers() async throws {
         let users = try await database.collection("users")
+            .whereField("searchable", isEqualTo: true)
             .getDocuments()
             .documents
             .decoded(asArrayOf: User.self)

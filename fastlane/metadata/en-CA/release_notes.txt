@@ -1,4 +1,7 @@
 Improvements
 • Users who choose to hide their name in public competitions will have their name blurred instead of being assigned a random alias
 • More efficient competition standing calculations
-• Added analytics for better troubleshooting 
+• Added analytics for better troubleshooting
+
+Bug fixes:
+• Fixed an issue where friend requests could disappear, and settings could reset
