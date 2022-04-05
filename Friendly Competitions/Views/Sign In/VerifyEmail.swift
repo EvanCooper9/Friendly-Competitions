@@ -33,7 +33,6 @@ struct VerifyEmail: View {
                 Button("Send again", systemImage: "paperplane.fill") {
                     try await authenticationManager.resendEmailVerification()
                 }
-                .buttonStyle(.bordered)
             }
             
             Spacer()

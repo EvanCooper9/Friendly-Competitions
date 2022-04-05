@@ -432,8 +432,8 @@
 			isa = PBXGroup;
 			children = (
 				C1691DDD26D561D5006FFA30 /* SignIn.swift */,
-				EDC373D127FB5B0C00318245 /* VerifyEmail.swift */,
 				EDC373CF27FB39A500318245 /* EmailSignInForm.swift */,
+				EDC373D127FB5B0C00318245 /* VerifyEmail.swift */,
 			);
 			path = "Sign In";
 			sourceTree = "<group>";

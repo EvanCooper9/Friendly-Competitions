@@ -46,7 +46,7 @@ struct SignIn: View {
                     } label: {
                         Label("Sign in with Apple", systemImage: "applelogo")
                             .font(.title2.weight(.semibold))
-                            .padding()
+                            .padding(8)
                             .frame(maxWidth: .infinity)
                     }
                     .foregroundColor(colorScheme == .light ? .white : .black)
@@ -57,7 +57,7 @@ struct SignIn: View {
                     Button(toggling: $signingInWithEmail) {
                         Label(signingInWithEmail ? "Sign in" : "Sign in with Email", systemImage: "envelope.fill")
                             .font(.title2.weight(.semibold))
-                            .padding()
+                            .padding(8)
                             .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.borderedProminent)
