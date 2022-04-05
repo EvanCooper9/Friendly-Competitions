@@ -26,19 +26,21 @@ struct VerifyEmail: View {
             VStack(alignment: .leading, spacing: 10) {
                 Text("Verify your account")
                     .font(.title)
+                    .padding(.bottom, -5)
                 Text("Follow the instructions sent to \(userManager.user.email) to complete your account")
                     .fixedSize(horizontal: false, vertical: true)
                     .foregroundColor(.gray)
                 Button("Send again", systemImage: "paperplane.fill") {
                     try await authenticationManager.resendEmailVerification()
                 }
+                .buttonStyle(.bordered)
             }
             
             Spacer()
             Spacer()
             Spacer()
         }
-        .padding()
+        .padding(.horizontal)
         .onAppear(perform: pollCheckEmail)
     }
     
