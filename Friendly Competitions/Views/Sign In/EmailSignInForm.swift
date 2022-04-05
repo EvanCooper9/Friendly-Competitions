@@ -29,7 +29,6 @@ struct EmailSignInForm: View {
                 Button(signUp ? "Sign in" : "Sign up", toggling: $signUp)
             }
             .font(.callout)
-            .padding(.trailing)
             .disabled(loading)
             
             VStack(spacing: 5) {
@@ -38,6 +37,7 @@ struct EmailSignInForm: View {
                         Image(systemName: "person.fill")
                             .frame(width: 20, alignment: .center)
                         TextField("Name", text: $name)
+                            .textContentType(.name)
                     }
                     Divider().padding(.leading)
                 }
@@ -69,7 +69,6 @@ struct EmailSignInForm: View {
                 }
             }
             .disabled(loading)
-            .padding(.horizontal, 20)
 
             HStack {
                 if loading {
