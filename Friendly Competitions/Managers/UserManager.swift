@@ -12,12 +12,12 @@ class AnyUserManager: ObservableObject {
     }
 
     func deleteAccount() {}
-    func signOut() {}
 }
 
 final class UserManager: AnyUserManager {
 
     @Injected private var analyticsManager: AnyAnalyticsManager
+    @Injected private var authenticationManager: AnyAuthenticationManager
     @Injected private var database: Firestore
 
     private var userListener: ListenerRegistration?
@@ -45,12 +45,9 @@ final class UserManager: AnyUserManager {
     override func deleteAccount() {
         Task { [weak self] in
             try await self?.database.document("users/\(user.id)").delete()
-            try await Auth.auth().currentUser?.delete()
+            try await authenticationManager.deleteAccount()
+            try await authenticationManager.signOut()
         }
-    }
-
-    override func signOut() {
-        try? Auth.auth().signOut()
     }
 
     // MARK: - Private Methods

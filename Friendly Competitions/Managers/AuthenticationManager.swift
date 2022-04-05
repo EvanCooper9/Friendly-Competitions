@@ -25,10 +25,16 @@ enum SignUpError: LocalizedError {
 }
 
 class AnyAuthenticationManager: NSObject, ObservableObject {
+    @AppStorage("emailVerified") var emailVerified = false
     @AppStorage("loggedIn") var loggedIn = false
     
     func signIn(with signInMethod: SignInMethod) async throws {}
     func signUp(name: String, email: String, password: String, passwordConfirmation: String) async throws {}
+    func deleteAccount() async throws {}
+    func signOut() async throws {}
+    
+    func checkEmailVerification() async throws {}
+    func resendEmailVerification() async throws {}
 }
 
 final class AuthenticationManager: AnyAuthenticationManager {
@@ -60,7 +66,31 @@ final class AuthenticationManager: AnyAuthenticationManager {
     override func signUp(name: String, email: String, password: String, passwordConfirmation: String) async throws {
         guard password == passwordConfirmation else { throw SignUpError.passwordMatch }
         let firebaseUser = try await Auth.auth().createUser(withEmail: email, password: password).user
-        try await updateFirestoreUserWithAuthUser(firebaseUser, email: email, displayName: name)
+        let changeRequest = firebaseUser.createProfileChangeRequest()
+        changeRequest.displayName = name
+        try await changeRequest.commitChanges()
+        try await updateFirestoreUserWithAuthUser(firebaseUser)
+    }
+    
+    override func checkEmailVerification() async throws {
+        guard let firebaseUser = Auth.auth().currentUser else { return }
+        try await firebaseUser.reload()
+        DispatchQueue.main.async { [weak self] in
+            self?.emailVerified = firebaseUser.isEmailVerified
+        }
+    }
+    
+    override func resendEmailVerification() async throws {
+        guard let firebaseUser = Auth.auth().currentUser else { return }
+        try await firebaseUser.sendEmailVerification()
+    }
+    
+    override func deleteAccount() async throws {
+        try await Auth.auth().currentUser?.delete()
+    }
+
+    override func signOut() async throws {
+        try? Auth.auth().signOut()
     }
     
     // MARK: - Private Methods
@@ -80,10 +110,8 @@ final class AuthenticationManager: AnyAuthenticationManager {
     }
     
     private func signIn(email: String, password: String) async throws {
-        let result = try await Auth.auth().signIn(withEmail: email, password: password)
-        let firebaseUser = result.user
-        let user = try await database.document("users/\(firebaseUser.uid)").getDocument().decoded(as: User.self)
-        try await updateFirestoreUserWithAuthUser(firebaseUser, email: email, displayName: firebaseUser.displayName ?? user.name.ifEmpty(""))
+        let firestoreUser = try await Auth.auth().signIn(withEmail: email, password: password).user
+        try await updateFirestoreUserWithAuthUser(firestoreUser)
     }
     
     private func listenForAuth() {
@@ -98,11 +126,15 @@ final class AuthenticationManager: AnyAuthenticationManager {
                 }
                 return
             }
-
+            
             Task {
+                try await self.updateFirestoreUserWithAuthUser(firebaseUser)
                 let user = try await self.database.document("users/\(firebaseUser.uid)").getDocument().decoded(as: User.self)
                 self.registerUserManager(with: user)
+                if !firebaseUser.isEmailVerified { try await firebaseUser.sendEmailVerification() }
                 DispatchQueue.main.async {
+                    self.currentUser = user
+                    self.emailVerified = firebaseUser.isEmailVerified
                     self.loggedIn = true
                 }
             }
@@ -164,18 +196,20 @@ final class AuthenticationManager: AnyAuthenticationManager {
         }.scope(.shared)
     }
     
-    private func updateFirestoreUserWithAuthUser(_ firebaseUser: FirebaseAuth.User, email: String, displayName: String) async throws {
+    private func updateFirestoreUserWithAuthUser(_ firebaseUser: FirebaseAuth.User) async throws {
+        guard let email = firebaseUser.email else { return }
+        let name = firebaseUser.displayName ?? ""
         let userJson = [
             "id": firebaseUser.uid,
             "email": email,
-            "name": displayName
+            "name": name
         ]
         
         do {
             try await database.document("users/\(firebaseUser.uid)").updateData(userJson)
         } catch {
             guard let nsError = error as NSError?, nsError.domain == "FIRFirestoreErrorDomain", nsError.code == 5 else { return }
-            let user = User(id: firebaseUser.uid, email: email, name: displayName)
+            let user = User(id: firebaseUser.uid, email: email, name: name)
             try await database.document("users/\(user.id)").setDataEncodable(user)
         }
     }

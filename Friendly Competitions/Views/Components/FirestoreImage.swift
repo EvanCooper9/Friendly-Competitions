@@ -54,6 +54,6 @@ struct FirestoreImage: View {
 struct FirestoreImage_Previews: PreviewProvider {
     static var previews: some View {
         FirestoreImage(path: "")
-            .withEnvironmentObjects()
+            .setupMocks()
     }
 }

@@ -114,7 +114,7 @@ struct ExploreCompetitions_Previews: PreviewProvider {
     
     static var previews: some View {
         Explore()
-            .withEnvironmentObjects(setupMocks: setupMocks)
+            .setupMocks(setupMocks)
 //            .preferredColorScheme(.dark)
     }
 }

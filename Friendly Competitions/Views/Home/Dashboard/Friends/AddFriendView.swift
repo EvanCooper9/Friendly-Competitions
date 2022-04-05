@@ -106,7 +106,8 @@ struct AddFriendView_Previews: PreviewProvider {
     }
 
     static var previews: some View {
-        AddFriendView()
-            .withEnvironmentObjects(setupMocks: setupMocks)
+        registerDependencies()
+        return AddFriendView()
+            .setupMocks(setupMocks)
     }
 }

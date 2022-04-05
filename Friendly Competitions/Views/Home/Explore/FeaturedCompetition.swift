@@ -51,6 +51,6 @@ struct FeaturedCompetitionView_Previews: PreviewProvider {
         }
 //        .preferredColorScheme(.dark)
         .background(Asset.Colors.listBackground.swiftUIColor)
-        .withEnvironmentObjects()
+        .setupMocks()
     }
 }

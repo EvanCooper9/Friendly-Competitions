@@ -19,7 +19,11 @@ struct FriendlyCompetitions: App {
         WindowGroup {
             Group {
                 if authenticationManager.loggedIn {
-                    HomeContainer()
+                    if authenticationManager.emailVerified {
+                        Home()
+                    } else {
+                        VerifyEmail()
+                    }
                 } else {
                     SignIn()
                 }

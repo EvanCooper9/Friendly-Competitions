@@ -135,6 +135,6 @@ struct NewCompetitionView_Previews: PreviewProvider {
 
     static var previews: some View {
         NewCompetition()
-            .withEnvironmentObjects(setupMocks: setupMocks)
+            .setupMocks(setupMocks)
     }
 }

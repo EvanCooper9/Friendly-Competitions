@@ -33,7 +33,9 @@ struct Profile: View {
 
             Section("Session") {
                 Button("Sign out", systemImage: "person.crop.circle.badge.minus") {
-                    userManager.signOut()
+                    Task {
+                        try await authenticationManager.signOut()
+                    }
                     presentationMode.wrappedValue.dismiss()
                 }
                 Button(toggling: $presentDeleteAccountAlert) {
@@ -58,7 +60,7 @@ struct Profile: View {
 struct SettingsView_Previews: PreviewProvider {
     static var previews: some View {
         Profile()
-            .withEnvironmentObjects()
+            .setupMocks()
             .embeddedInNavigationView()
     }
 }

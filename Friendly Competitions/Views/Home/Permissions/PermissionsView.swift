@@ -37,6 +37,6 @@ struct PermissionsView_Previews: PreviewProvider {
     
     static var previews: some View {
         PermissionsView()
-            .withEnvironmentObjects(setupMocks: setupMocks)
+            .setupMocks(setupMocks)
     }
 }

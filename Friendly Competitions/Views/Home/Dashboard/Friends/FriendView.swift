@@ -58,7 +58,7 @@ struct FriendView: View {
 struct FriendView_Previews: PreviewProvider {
     static var previews: some View {
         FriendView(friend: .gabby)
-            .withEnvironmentObjects()
+            .setupMocks()
             .embeddedInNavigationView()
     }
 }

@@ -197,7 +197,7 @@ struct CompetitionView_Previews: PreviewProvider {
 
     static var previews: some View {
         CompetitionView(competition: .constant(competition))
-            .withEnvironmentObjects(setupMocks: setupMocks)
+            .setupMocks(setupMocks)
             .embeddedInNavigationView()
     }
 }

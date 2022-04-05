@@ -4,9 +4,11 @@ import SwiftUI
 struct EmailSignInForm: View {
     
     @Binding var signingInWithEmail: Bool
+    @Binding var error: Error?
     
     @InjectedObject private var authenticationManager: AnyAuthenticationManager
     
+    @State private var loading = false
     @State private var signUp = false
     @State private var name = ""
     @State private var email = ""
@@ -16,7 +18,7 @@ struct EmailSignInForm: View {
     private var submitDisabled: Bool {
         let signInConditions = email.isEmpty || password.isEmpty
         let signUpContiditions = signInConditions || name.isEmpty || passwordConfirmation.isEmpty
-        return signUp ? signUpContiditions : signInConditions
+        return loading || signUp ? signUpContiditions : signInConditions
     }
     
     var body: some View {
@@ -24,11 +26,9 @@ struct EmailSignInForm: View {
             HStack {
                 Text("\(signUp ? "Have" : "Need") an account?")
                     .foregroundColor(.gray)
-                Button(toggling: $signUp) {
-                    Text(signUp ? "Sign in" : "Sign up")
-                }
+                Button(signUp ? "Sign in" : "Sign up", toggling: $signUp)
             }
-            .font(.footnote)
+            .font(.callout)
             .padding(.trailing)
             
             VStack(spacing: 5) {
@@ -38,8 +38,7 @@ struct EmailSignInForm: View {
                             .frame(width: 20, alignment: .center)
                         TextField("Name", text: $name)
                     }
-                    Divider()
-                        .padding(.leading)
+                    Divider().padding(.leading)
                 }
                 HStack {
                     Image(systemName: "envelope.fill")
@@ -49,63 +48,71 @@ struct EmailSignInForm: View {
                         .disableAutocorrection(true)
                         .textInputAutocapitalization(.never)
                 }
-                Divider()
-                    .padding(.leading)
+                Divider().padding(.leading)
                 HStack {
                     Image(systemName: "key.fill")
                         .frame(width: 20, alignment: .center)
                     SecureField("Password", text: $password)
-                        .textContentType(.password)
+                        .textContentType(signUp ? .newPassword : .password)
                         .onSubmit(submit)
                 }
                 if signUp {
-                    Divider()
-                        .padding(.leading)
+                    Divider().padding(.leading)
                     HStack {
                         Image(systemName: "key.fill")
                             .frame(width: 20, alignment: .center)
                         SecureField("Confirm password", text: $passwordConfirmation)
-                            .textContentType(.password)
+                            .textContentType(.newPassword)
                             .onSubmit(submit)
                     }
                 }
             }
-            .padding(.leading, 20)
+            .disabled(loading)
+            .padding(.horizontal, 20)
 
             HStack {
-                if signingInWithEmail {
-                    Button(toggling: $signingInWithEmail) {
-                        Label("Back", systemImage: "chevron.left")
-                            .frame(maxWidth: .infinity)
-                    }
+                if loading {
+                    ProgressView()
+                        .frame(maxWidth: .infinity)
+                } else if signingInWithEmail {
+                    Button("Back", systemImage: "chevron.left", toggling: $signingInWithEmail)
+                        .frame(maxWidth: .infinity)
                 }
                 Button(action: submit) {
                     Label(signUp ? "Sign up" : "Sign in", systemImage: "envelope.fill")
                         .font(.title2.weight(.semibold))
+                        .padding(.vertical, 2)
+                        .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
                 .disabled(submitDisabled)
-                .frame(maxWidth: .infinity)
             }
         }
     }
     
     private func submit() {
         guard !submitDisabled else { return }
+        loading = true
         Task {
-            if signUp {
-                try await authenticationManager.signUp(name: name, email: email, password: password, passwordConfirmation: passwordConfirmation)
-            } else {
-                try await authenticationManager.signIn(with: .email(email, password: password))
+            try await Task.sleep(nanoseconds: 1_000_000_000)
+            do {
+                if signUp {
+                    try await authenticationManager.signUp(name: name, email: email, password: password, passwordConfirmation: passwordConfirmation)
+                } else {
+                    try await authenticationManager.signIn(with: .email(email, password: password))
+                }
+            } catch {
+                self.error = error
             }
+            loading = false
         }
     }
 }
 
 struct EmailSignInForm_Previews: PreviewProvider {
     static var previews: some View {
-        EmailSignInForm(signingInWithEmail: .constant(true))
-            .withEnvironmentObjects()
+        EmailSignInForm(signingInWithEmail: .constant(true), error: .constant(nil))
+            .setupMocks()
             .padding()
     }
 }

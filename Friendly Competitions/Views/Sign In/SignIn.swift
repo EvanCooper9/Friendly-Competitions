@@ -11,7 +11,7 @@ struct SignIn: View {
     @State private var signingInWithEmail = false
 
     var body: some View {
-        VStack(spacing: 20) {
+        VStack(spacing: 30) {
             
             VStack {
                 Text("Friendly Competitions")
@@ -36,7 +36,8 @@ struct SignIn: View {
                     
             if signingInWithEmail {
                 EmailSignInForm(
-                    signingInWithEmail: $signingInWithEmail
+                    signingInWithEmail: $signingInWithEmail,
+                    error: $error
                 )
             } else {
                 VStack {
@@ -45,43 +46,52 @@ struct SignIn: View {
                     } label: {
                         Label("Sign in with Apple", systemImage: "applelogo")
                             .font(.title2.weight(.semibold))
+                            .padding()
+                            .frame(maxWidth: .infinity)
                     }
                     .foregroundColor(colorScheme == .light ? .white : .black)
                     .tint(colorScheme == .light ? .black : .white)
                     .buttonStyle(.borderedProminent)
                     .disabled(loading)
 
-                    Button {
-                        withAnimation { signingInWithEmail.toggle() }
-                    } label: {
+                    Button(toggling: $signingInWithEmail) {
                         Label(signingInWithEmail ? "Sign in" : "Sign in with Email", systemImage: "envelope.fill")
                             .font(.title2.weight(.semibold))
+                            .padding()
+                            .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.borderedProminent)
                     .frame(maxWidth: .infinity)
+                    .disabled(loading)
                 }
             }
         }
         .padding()
         .errorBanner(presenting: $error)
-        .background {
-            let color: Color = {
-                switch colorScheme {
-                case .dark:
-                    return .black
-                default:
-                    return Color(red: 242/255, green: 242/255, blue: 247/255)
-                }
-            }()
-            color.ignoresSafeArea()
-        }
+        .background(color.ignoresSafeArea())
         .registerScreenView(name: "Sign In")
+        .onAppear {
+            Task {
+                try await authenticationManager.signOut()
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var color: some View {
+        switch colorScheme {
+        case .dark:
+            Color.black
+        default:
+            Color(red: 242/255, green: 242/255, blue: 247/255)
+        }
     }
     
     @MainActor
     private func signIn(with signInMethod: SignInMethod) {
         loading = true
         Task {
+            try await Task.sleep(nanoseconds: 1_000_000_000)
             var errorToShow: Error?
             do {
                 try await authenticationManager.signIn(with: signInMethod)
@@ -98,7 +108,7 @@ struct SignIn: View {
 struct WelcomeView_Previews: PreviewProvider {
     static var previews: some View {
         SignIn()
-            .withEnvironmentObjects()
+            .setupMocks()
 //            .preferredColorScheme(.dark)
     }
 }

@@ -1,10 +1,9 @@
 import Resolver
 import SwiftUI
 
-struct Home: View {
+struct Dashboard: View {
 
-    @StateObject private var appState = AppState()
-
+    @InjectedObject private var appState: AppState
     @InjectedObject private var activitySummaryManager: AnyActivitySummaryManager
     @InjectedObject private var competitionsManager: AnyCompetitionsManager
     @InjectedObject private var friendsManager: AnyFriendsManager
@@ -160,34 +159,32 @@ struct Home: View {
     }
 }
 
-struct HomeView_Previews: PreviewProvider {
-
-    private static func setupMocks() {
-        activitySummaryManager.activitySummary = .mock
-
-        let competitions: [Competition] = [.mock, .mockInvited, .mockOld, .mockPublic]
-        competitionsManager.competitions = competitions
-        competitionsManager.participants = competitions.reduce(into: [:]) { partialResult, competition in
-            partialResult[competition.id] = [.evan]
-        }
-        competitionsManager.standings = competitions.reduce(into: [:]) { partialResult, competition in
-            partialResult[competition.id] = [.mock(for: .evan)]
-        }
-
-        let friend = User.gabby
-        friendsManager.friends = [friend]
-        friendsManager.friendRequests = [friend]
-        friendsManager.friendActivitySummaries = [friend.id: .mock]
-
-        permissionsManager.requiresPermission = false
-        permissionsManager.permissionStatus = [
-            .health: .authorized,
-            .notifications: .authorized
-        ]
-    }
-
+struct Dashboard_Previews: PreviewProvider {
     static var previews: some View {
-        Home()
-            .withEnvironmentObjects(setupMocks: setupMocks)
+        registerDependencies()
+        return Dashboard()
+            .setupMocks {
+                activitySummaryManager.activitySummary = .mock
+
+                let competitions: [Competition] = [.mock, .mockInvited, .mockOld, .mockPublic]
+                competitionsManager.competitions = competitions
+                competitionsManager.participants = competitions.reduce(into: [:]) { partialResult, competition in
+                    partialResult[competition.id] = [.evan]
+                }
+                competitionsManager.standings = competitions.reduce(into: [:]) { partialResult, competition in
+                    partialResult[competition.id] = [.mock(for: .evan)]
+                }
+
+                let friend = User.gabby
+                friendsManager.friends = [friend]
+                friendsManager.friendRequests = [friend]
+                friendsManager.friendActivitySummaries = [friend.id: .mock]
+
+                permissionsManager.requiresPermission = false
+                permissionsManager.permissionStatus = [
+                    .health: .authorized,
+                    .notifications: .authorized
+                ]
+            }
     }
 }
