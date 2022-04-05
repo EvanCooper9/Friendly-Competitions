@@ -18,7 +18,7 @@ struct EmailSignInForm: View {
     private var submitDisabled: Bool {
         let signInConditions = email.isEmpty || password.isEmpty
         let signUpContiditions = signInConditions || name.isEmpty || passwordConfirmation.isEmpty
-        return loading || signUp ? signUpContiditions : signInConditions
+        return loading || (signUp ? signUpContiditions : signInConditions)
     }
     
     var body: some View {
@@ -30,6 +30,7 @@ struct EmailSignInForm: View {
             }
             .font(.callout)
             .padding(.trailing)
+            .disabled(loading)
             
             VStack(spacing: 5) {
                 if signUp {
@@ -73,15 +74,15 @@ struct EmailSignInForm: View {
             HStack {
                 if loading {
                     ProgressView()
-                        .frame(maxWidth: .infinity)
+                        .frame(maxWidth: .infinity, minHeight: 20) // hmmm...minHeight required to avoid weird layout
                 } else if signingInWithEmail {
                     Button("Back", systemImage: "chevron.left", toggling: $signingInWithEmail)
-                        .frame(maxWidth: .infinity)
+                        .frame(maxWidth: .infinity, minHeight: 20) // hmmm...minHeight required to avoid weird layout
                 }
+                
                 Button(action: submit) {
                     Label(signUp ? "Sign up" : "Sign in", systemImage: "envelope.fill")
                         .font(.title2.weight(.semibold))
-                        .padding(.vertical, 2)
                         .frame(maxWidth: .infinity)
                 }
                 .buttonStyle(.borderedProminent)
@@ -94,7 +95,6 @@ struct EmailSignInForm: View {
         guard !submitDisabled else { return }
         loading = true
         Task {
-            try await Task.sleep(nanoseconds: 1_000_000_000)
             do {
                 if signUp {
                     try await authenticationManager.signUp(name: name, email: email, password: password, passwordConfirmation: passwordConfirmation)

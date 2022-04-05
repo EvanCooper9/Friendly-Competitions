@@ -71,9 +71,7 @@ struct SignIn: View {
         .background(color.ignoresSafeArea())
         .registerScreenView(name: "Sign In")
         .onAppear {
-            Task {
-                try await authenticationManager.signOut()
-            }
+            try? authenticationManager.signOut()
         }
     }
     
@@ -91,7 +89,6 @@ struct SignIn: View {
     private func signIn(with signInMethod: SignInMethod) {
         loading = true
         Task {
-            try await Task.sleep(nanoseconds: 1_000_000_000)
             var errorToShow: Error?
             do {
                 try await authenticationManager.signIn(with: signInMethod)

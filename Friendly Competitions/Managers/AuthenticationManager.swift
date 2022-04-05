@@ -31,7 +31,7 @@ class AnyAuthenticationManager: NSObject, ObservableObject {
     func signIn(with signInMethod: SignInMethod) async throws {}
     func signUp(name: String, email: String, password: String, passwordConfirmation: String) async throws {}
     func deleteAccount() async throws {}
-    func signOut() async throws {}
+    func signOut() throws {}
     
     func checkEmailVerification() async throws {}
     func resendEmailVerification() async throws {}
@@ -70,6 +70,7 @@ final class AuthenticationManager: AnyAuthenticationManager {
         changeRequest.displayName = name
         try await changeRequest.commitChanges()
         try await updateFirestoreUserWithAuthUser(firebaseUser)
+        try await firebaseUser.sendEmailVerification()
     }
     
     override func checkEmailVerification() async throws {
@@ -82,15 +83,19 @@ final class AuthenticationManager: AnyAuthenticationManager {
     
     override func resendEmailVerification() async throws {
         guard let firebaseUser = Auth.auth().currentUser else { return }
-        try await firebaseUser.sendEmailVerification()
+        do {
+            try await firebaseUser.sendEmailVerification()
+        } catch {
+            print(error)
+        }
     }
     
     override func deleteAccount() async throws {
         try await Auth.auth().currentUser?.delete()
     }
 
-    override func signOut() async throws {
-        try? Auth.auth().signOut()
+    override func signOut() throws {
+        try Auth.auth().signOut()
     }
     
     // MARK: - Private Methods
@@ -110,8 +115,7 @@ final class AuthenticationManager: AnyAuthenticationManager {
     }
     
     private func signIn(email: String, password: String) async throws {
-        let firestoreUser = try await Auth.auth().signIn(withEmail: email, password: password).user
-        try await updateFirestoreUserWithAuthUser(firestoreUser)
+        try await Auth.auth().signIn(withEmail: email, password: password)
     }
     
     private func listenForAuth() {
@@ -131,7 +135,6 @@ final class AuthenticationManager: AnyAuthenticationManager {
                 try await self.updateFirestoreUserWithAuthUser(firebaseUser)
                 let user = try await self.database.document("users/\(firebaseUser.uid)").getDocument().decoded(as: User.self)
                 self.registerUserManager(with: user)
-                if !firebaseUser.isEmailVerified { try await firebaseUser.sendEmailVerification() }
                 DispatchQueue.main.async {
                     self.currentUser = user
                     self.emailVerified = firebaseUser.isEmailVerified

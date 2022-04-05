@@ -9,12 +9,8 @@ struct VerifyEmail: View {
     var body: some View {
         VStack(spacing: 50) {
             
-            Button {
-                Task {
-                    try await authenticationManager.signOut()
-                }
-            } label: {
-                Label("Sign in", systemImage: "chevron.left")
+            Button("Sign in", systemImage: "chevron.left") {
+                try authenticationManager.signOut()
             }
             .frame(maxWidth: .infinity, alignment: .leading)
             
