@@ -3,6 +3,7 @@ import SwiftUI
 fileprivate struct Container {
     static let appState = AppState()
     static let activitySummaryManager = AnyActivitySummaryManager()
+    static let analyticsManager = AnyAnalyticsManager()
     static let authenticationManager = AnyAuthenticationManager()
     static let competitionsManager = AnyCompetitionsManager()
     static let friendsManager = AnyFriendsManager()
@@ -13,7 +14,9 @@ fileprivate struct Container {
 }
 
 extension PreviewProvider {
+    static var appState: AppState { Container.appState }
     static var activitySummaryManager: AnyActivitySummaryManager { Container.activitySummaryManager }
+    static var analyticsManager: AnyAnalyticsManager { Container.analyticsManager }
     static var authenticationManager: AnyAuthenticationManager { Container.authenticationManager }
     static var competitionsManager: AnyCompetitionsManager { Container.competitionsManager }
     static var friendsManager: AnyFriendsManager { Container.friendsManager }
@@ -28,6 +31,7 @@ extension View {
         self
             .environmentObject(Container.appState)
             .environmentObject(Container.activitySummaryManager)
+            .environmentObject(Container.analyticsManager)
             .environmentObject(Container.authenticationManager)
             .environmentObject(Container.competitionsManager)
             .environmentObject(Container.friendsManager)

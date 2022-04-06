@@ -17,6 +17,7 @@ class AnyUserManager: ObservableObject {
 
 final class UserManager: AnyUserManager {
 
+    @Injected private var analyticsManager: AnyAnalyticsManager
     @Injected private var database: Firestore
 
     private var userListener: ListenerRegistration?
@@ -27,10 +28,14 @@ final class UserManager: AnyUserManager {
         super.init(user: user)
         listenForUser()
 
-        $user.sinkAsync { [weak self] _ in
-            try await self?.update()
-        }
-        .store(in: &cancellables)
+        $user
+            .dropFirst(2) // 1: init, 2: local listener
+            .removeDuplicates()
+            .sinkAsync { [weak self] newUser in
+                print(newUser)
+                try await self?.update()
+            }
+            .store(in: &cancellables)
     }
 
     deinit {
@@ -59,10 +64,8 @@ final class UserManager: AnyUserManager {
         userListener = database.document("users/\(user.id)")
             .addSnapshotListener { [weak self] snapshot, _ in
                 guard let self = self, let user = try? snapshot?.decoded(as: User.self) else { return }
-                Crashlytics.crashlytics().setUserID(user.id)
-                DispatchQueue.main.async {
-                    self.user = user
-                }
+                self.analyticsManager.set(userId: user.id)
+                self.user = user
             }
     }
 }

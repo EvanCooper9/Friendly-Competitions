@@ -31,10 +31,15 @@ final class CompetitionsManager: AnyCompetitionsManager {
     private struct SearchResult: Decodable {
         let name: String
     }
+    
+    private enum Constants {
+        static let updateStandingsFirebaseFunctionName = "updateCompetitionStandings"
+    }
 
     // MARK: - Private Properties
 
     @LazyInjected private var activitySummaryManager: AnyActivitySummaryManager
+    @Injected private var analyticsManager: AnyAnalyticsManager
     @Injected private var database: Firestore
     @Injected private var userManager: AnyUserManager
 
@@ -54,13 +59,10 @@ final class CompetitionsManager: AnyCompetitionsManager {
     override init() {
         super.init()
         listen()
+        fetchCompetitionData()
 
         Publishers
-            .CombineLatest3(
-                competitions.publisher,
-                appOwnedCompetitions.publisher,
-                invitedCompetitions.publisher
-            )
+            .CombineLatest3($competitions, $appOwnedCompetitions, $invitedCompetitions)
             .map { _ in () }
             .prepend(())
             .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
@@ -79,9 +81,8 @@ final class CompetitionsManager: AnyCompetitionsManager {
         competitions.append(competition)
         invitedCompetitions.remove(competition)
         update(competition: competition)
-        Task {
-            try await activitySummaryManager.update()
-        }
+        
+        analyticsManager.log(event: .acceptCompetition(id: competition.id))
     }
 
     override func createCompetition(with config: NewCompetitionEditorConfig) {
@@ -102,6 +103,8 @@ final class CompetitionsManager: AnyCompetitionsManager {
             try await self?.database.document("competitions/\(competition.id)").setDataEncodable(competition)
             try await activitySummaryManager.update()
         }
+        
+        analyticsManager.log(event: .createCompetition(name: config.name))
     }
 
     override func decline(_ competition: Competition) {
@@ -110,6 +113,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
         invitedCompetitions.remove(competition)
         standings[competition.id] = nil
         update(competition: competition)
+        analyticsManager.log(event: .declineCompetition(id: competition.id))
     }
 
     override func delete(_ competition: Competition) {
@@ -130,6 +134,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
             batch.deleteDocument(self.database.document("competitions/\(competition.id)"))
             try await batch.commit()
         }
+        analyticsManager.log(event: .deleteCompetition(id: competition.id))
     }
 
     override func invite(_ user: User, to competition: Competition) {
@@ -139,6 +144,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
         pendingParticipants.append(user)
         self.pendingParticipants[competition.id] = pendingParticipants
         update(competition: competition)
+        analyticsManager.log(event: .inviteFriendToCompetition(id: competition.id, friendId: user.id))
     }
 
     override func join(_ competition: Competition) {
@@ -146,9 +152,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
         var competition = competition
         competition.participants.append(user.id)
         update(competition: competition)
-        Task {
-            try await activitySummaryManager.update()
-        }
+        analyticsManager.log(event: .joinCompetition(id: competition.id))
     }
 
     override func leave(_ competition: Competition) {
@@ -163,6 +167,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
             try await self?.database.document("competitions/\(competition.id)/standings/\(user.id)").delete()
             try await self?.database.document("competitions/\(competition.id)").updateDataEncodable(competition)
         }
+        analyticsManager.log(event: .leaveCompetition(id: competition.id))
     }
 
     override func search(_ searchText: String) async throws -> [Competition] {
@@ -179,17 +184,28 @@ final class CompetitionsManager: AnyCompetitionsManager {
 
     override func updateStandings() async throws {
         try await Functions.functions()
-            .httpsCallable("updateCompetitionStandings")
+            .httpsCallable(Constants.updateStandingsFirebaseFunctionName)
             .call(["userId": self.user.id])
-        updateTask = Task(priority: .medium) {
-            let competitionGroups = self.competitions + self.appOwnedCompetitions + self.topCommunityCompetitions + self.invitedCompetitions
-            try await self.updateStandings(for: competitionGroups)
-            try await self.updateParticipants(for: competitionGroups)
-            try await self.updatePendingParticipants(for: competitionGroups)
-        }
+        fetchCompetitionData()
     }
 
     // MARK: - Private Methods
+    
+    private func fetchCompetitionData() {
+        updateTask = Task(priority: .medium) {
+            let allCompetitions = self.competitions + self.appOwnedCompetitions + self.topCommunityCompetitions + self.invitedCompetitions
+            try await self.fetchStandings(for: allCompetitions)
+            try await self.fetchParticipants(for: allCompetitions)
+            try await self.fetchPendingParticipants(for: allCompetitions)
+        }
+    }
+    
+    private func updateStandings(of competition: Competition) async throws {
+        try await Functions.functions()
+            .httpsCallable(Constants.updateStandingsFirebaseFunctionName)
+            .call(["competitionId": competition.id])
+        fetchCompetitionData()
+    }
 
     private func update(competition: Competition) {
         if let index = competitions.firstIndex(where: { $0.id == competition.id }) {
@@ -201,7 +217,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
         }
         Task { [weak self, competition] in
             try await self?.database.document("competitions/\(competition.id)").updateDataEncodable(competition)
-            try await self?.updateStandings()
+            try await self?.updateStandings(of: competition)
         }
     }
 
@@ -254,7 +270,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
             }
     }
 
-    private func updateStandings(for competitions: [Competition]) async throws {
+    private func fetchStandings(for competitions: [Competition]) async throws {
         guard !competitions.isEmpty else {
             DispatchQueue.main.async { [weak self] in
                 self?.standings = [:]
@@ -301,7 +317,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
         }
     }
 
-    private func updateParticipants(for competitions: [Competition]) async throws {
+    private func fetchParticipants(for competitions: [Competition]) async throws {
         guard !competitions.isEmpty else {
             DispatchQueue.main.async { [weak self] in
                 self?.participants = [:]
@@ -332,7 +348,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
         }
     }
 
-    private func updatePendingParticipants(for competitions: [Competition]) async throws {
+    private func fetchPendingParticipants(for competitions: [Competition]) async throws {
         guard !competitions.isEmpty else {
             DispatchQueue.main.async { [weak self] in
                 self?.pendingParticipants = [:]

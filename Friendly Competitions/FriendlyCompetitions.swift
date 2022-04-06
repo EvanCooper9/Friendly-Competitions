@@ -19,8 +19,10 @@ struct FriendlyCompetitions: App {
         WindowGroup {
             if authenticationManager.loggedIn {
                 HomeContainer()
+                    .environmentObject(authenticationManager)
             } else {
                 SignInView()
+                    .environmentObject(authenticationManager)
             }
         }
     }

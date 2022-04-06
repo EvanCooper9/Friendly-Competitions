@@ -10,7 +10,8 @@ lane :deploy do
     match(
         type: "appstore", 
         app_identifier: "com.evancooper.FriendlyCompetitions",
-        readonly: true
+        readonly: true,
+        git_basic_authorization: ENV["MATCH_GIT_BASIC_AUTHORIZATION"]
     )
     increment_build_number(
         build_number: latest_testflight_build_number + 1
