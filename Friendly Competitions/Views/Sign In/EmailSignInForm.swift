@@ -3,10 +3,19 @@ import SwiftUI
 
 struct EmailSignInForm: View {
     
-    @Binding var signingInWithEmail: Bool
-    @Binding var error: Error?
+    private enum Field: Hashable {
+        case name
+        case email
+        case password
+        case passwordConfirmation
+    }
     
+    @Binding var signingInWithEmail: Bool
+    
+    @InjectedObject private var appState: AppState
     @InjectedObject private var authenticationManager: AnyAuthenticationManager
+    
+    @FocusState private var focus: Field?
     
     @State private var loading = false
     @State private var signUp = false
@@ -17,8 +26,8 @@ struct EmailSignInForm: View {
     
     private var submitDisabled: Bool {
         let signInConditions = email.isEmpty || password.isEmpty
-        let signUpContiditions = signInConditions || name.isEmpty || passwordConfirmation.isEmpty
-        return loading || (signUp ? signUpContiditions : signInConditions)
+        let signUpConditions = signInConditions || name.isEmpty || passwordConfirmation.isEmpty
+        return loading || (signUp ? signUpConditions : signInConditions)
     }
     
     var body: some View {
@@ -38,6 +47,8 @@ struct EmailSignInForm: View {
                             .frame(width: 20, alignment: .center)
                         TextField("Name", text: $name)
                             .textContentType(.name)
+                            .focused($focus, equals: .name)
+                            .onSubmit { focus = .email }
                     }
                     Divider().padding(.leading)
                 }
@@ -48,6 +59,8 @@ struct EmailSignInForm: View {
                         .textContentType(.emailAddress)
                         .disableAutocorrection(true)
                         .textInputAutocapitalization(.never)
+                        .focused($focus, equals: .email)
+                        .onSubmit { focus = .password }
                 }
                 Divider().padding(.leading)
                 HStack {
@@ -55,7 +68,22 @@ struct EmailSignInForm: View {
                         .frame(width: 20, alignment: .center)
                     SecureField("Password", text: $password)
                         .textContentType(signUp ? .newPassword : .password)
-                        .onSubmit(submit)
+                        .focused($focus, equals: .password)
+                        .onSubmit { focus = signUp ? .passwordConfirmation : nil }
+                    if !signUp {
+                        Button("Forgot?") {
+                            loading = true
+                            do {
+                                try await authenticationManager.sendPasswordReset(to: email)
+                                appState.hudState = .success(text: "Password reset instructions have been sent to your email")
+                            } catch {
+                                appState.hudState = .error(error)
+                            }
+                            loading = false
+                        }
+                        .font(.callout)
+                        .disabled(loading)
+                    }
                 }
                 if signUp {
                     Divider().padding(.leading)
@@ -64,11 +92,11 @@ struct EmailSignInForm: View {
                             .frame(width: 20, alignment: .center)
                         SecureField("Confirm password", text: $passwordConfirmation)
                             .textContentType(.newPassword)
-                            .onSubmit(submit)
+                            .focused($focus, equals: .passwordConfirmation)
+                            .onSubmit { focus = nil }
                     }
                 }
             }
-            .disabled(loading)
 
             HStack {
                 if loading {
@@ -91,9 +119,9 @@ struct EmailSignInForm: View {
     }
     
     private func submit() {
-        guard !submitDisabled else { return }
-        loading = true
-        Task {
+        Task { [email, password] in
+            focus = nil
+            loading = true
             do {
                 if signUp {
                     try await authenticationManager.signUp(name: name, email: email, password: password, passwordConfirmation: passwordConfirmation)
@@ -101,7 +129,7 @@ struct EmailSignInForm: View {
                     try await authenticationManager.signIn(with: .email(email, password: password))
                 }
             } catch {
-                self.error = error
+                appState.hudState = .error(error)
             }
             loading = false
         }
@@ -110,7 +138,7 @@ struct EmailSignInForm: View {
 
 struct EmailSignInForm_Previews: PreviewProvider {
     static var previews: some View {
-        EmailSignInForm(signingInWithEmail: .constant(true), error: .constant(nil))
+        EmailSignInForm(signingInWithEmail: .constant(true))
             .setupMocks()
             .padding()
     }

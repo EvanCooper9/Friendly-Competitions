@@ -33,9 +33,7 @@ struct Profile: View {
 
             Section("Session") {
                 Button("Sign out", systemImage: "person.crop.circle.badge.minus") {
-                    Task {
-                        try await authenticationManager.signOut()
-                    }
+                    try authenticationManager.signOut()
                     presentationMode.wrappedValue.dismiss()
                 }
                 Button(toggling: $presentDeleteAccountAlert) {

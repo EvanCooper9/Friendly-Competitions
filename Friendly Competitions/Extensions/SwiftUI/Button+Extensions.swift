@@ -1,5 +1,15 @@
 import SwiftUI
 
+extension Button where Label == Text {
+    init<S: StringProtocol>(_ title: S, asyncAction: @escaping () async throws -> Void) {
+        self = Button(title, action: {
+            Task {
+                try await asyncAction()
+            }
+        })
+    }
+}
+
 extension Button {
     init(toggling toggle: Binding<Bool>, @ViewBuilder label: () -> Label, animated: Bool = false) {
         self = Button {
@@ -9,6 +19,16 @@ extension Button {
                 }
             } else {
                 toggle.wrappedValue.toggle()
+            }
+        } label: {
+            label()
+        }
+    }
+    
+    init(asyncAction: @escaping () async throws -> Void, @ViewBuilder label: () -> Label) {
+        self = Button {
+            Task {
+                try await asyncAction()
             }
         } label: {
             label()

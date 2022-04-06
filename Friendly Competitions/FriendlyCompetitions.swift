@@ -9,6 +9,8 @@ struct FriendlyCompetitions: App {
 
     @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
 
+    /// Can't use `@InjectedObject` or else Firebase crashes because `FirebaseApp.configure` isn't called first.
+    @StateObject private var appState = Resolver.resolve(AppState.self)
     @StateObject private var authenticationManager = Resolver.resolve(AnyAuthenticationManager.self)
 
     init() {
@@ -28,7 +30,7 @@ struct FriendlyCompetitions: App {
                     SignIn()
                 }
             }
-            .environmentObject(authenticationManager)
+            .hud(state: $appState.hudState)
         }
     }
 }

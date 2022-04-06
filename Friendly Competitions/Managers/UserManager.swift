@@ -46,7 +46,7 @@ final class UserManager: AnyUserManager {
         Task { [weak self] in
             try await self?.database.document("users/\(user.id)").delete()
             try await authenticationManager.deleteAccount()
-            try await authenticationManager.signOut()
+            try authenticationManager.signOut()
         }
     }
 

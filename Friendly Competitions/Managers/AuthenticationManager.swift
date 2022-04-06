@@ -35,11 +35,12 @@ class AnyAuthenticationManager: NSObject, ObservableObject {
     
     func checkEmailVerification() async throws {}
     func resendEmailVerification() async throws {}
+    func sendPasswordReset(to email: String) async throws {}
 }
 
 final class AuthenticationManager: AnyAuthenticationManager {
 
-    @Injected private var database: Firestore
+    @LazyInjected private var database: Firestore
     
     @Published(storedWithKey: "currentUser") private var currentUser: User? = nil
     
@@ -60,6 +61,7 @@ final class AuthenticationManager: AnyAuthenticationManager {
             signInWithApple()
         case .email(let email, let password):
             try await signIn(email: email, password: password)
+            print(#function, #line)
         }
     }
     
@@ -83,11 +85,11 @@ final class AuthenticationManager: AnyAuthenticationManager {
     
     override func resendEmailVerification() async throws {
         guard let firebaseUser = Auth.auth().currentUser else { return }
-        do {
-            try await firebaseUser.sendEmailVerification()
-        } catch {
-            print(error)
-        }
+        try await firebaseUser.sendEmailVerification()
+    }
+    
+    override func sendPasswordReset(to email: String) async throws {
+        try await Auth.auth().sendPasswordReset(withEmail: email)
     }
     
     override func deleteAccount() async throws {

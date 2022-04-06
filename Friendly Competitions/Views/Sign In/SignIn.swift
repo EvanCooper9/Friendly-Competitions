@@ -4,10 +4,10 @@ import SwiftUI
 struct SignIn: View {
 
     @Environment(\.colorScheme) private var colorScheme
+    @InjectedObject private var appState: AppState
     @InjectedObject private var authenticationManager: AnyAuthenticationManager
 
     @State private var loading = false
-    @State private var error: Error?
     @State private var signingInWithEmail = false
 
     var body: some View {
@@ -35,14 +35,17 @@ struct SignIn: View {
             Spacer()
                     
             if signingInWithEmail {
-                EmailSignInForm(
-                    signingInWithEmail: $signingInWithEmail,
-                    error: $error
-                )
+                EmailSignInForm(signingInWithEmail: $signingInWithEmail)
             } else {
                 VStack {
                     Button {
-                        signIn(with: .apple)
+                        loading = true
+                        do {
+                            try await authenticationManager.signIn(with: .apple)
+                        } catch {
+                            appState.hudState = .error(error)
+                        }
+                        loading = false
                     } label: {
                         Label("Sign in with Apple", systemImage: "applelogo")
                             .font(.title2.weight(.semibold))
@@ -67,9 +70,9 @@ struct SignIn: View {
             }
         }
         .padding()
-        .errorBanner(presenting: $error)
+//        .errorBanner(presenting: $error)
         .background(color.ignoresSafeArea())
-        .registerScreenView(name: "Sign In")
+//        .registerScreenView(name: "Sign In")
         .onAppear {
             try? authenticationManager.signOut()
         }
@@ -84,28 +87,11 @@ struct SignIn: View {
             Color(red: 242/255, green: 242/255, blue: 247/255)
         }
     }
-    
-    @MainActor
-    private func signIn(with signInMethod: SignInMethod) {
-        loading = true
-        Task {
-            var errorToShow: Error?
-            do {
-                try await authenticationManager.signIn(with: signInMethod)
-            } catch {
-                errorToShow = error
-            }
-            
-            loading = false
-            error = errorToShow
-        }
-    }
 }
 
 struct WelcomeView_Previews: PreviewProvider {
     static var previews: some View {
         SignIn()
             .setupMocks()
-//            .preferredColorScheme(.dark)
     }
 }
