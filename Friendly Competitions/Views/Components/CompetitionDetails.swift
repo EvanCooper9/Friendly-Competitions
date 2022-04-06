@@ -13,7 +13,9 @@ struct CompetitionDetails: View {
     @InjectedObject private var userManager: AnyUserManager
 
     var body: some View {
-        NavigationLink(destination: CompetitionView(competition: $competition)) {
+        print(Self._printChanges())
+        print(competition)
+        return NavigationLink(destination: CompetitionView(competition: $competition)) {
             HStack(alignment: .center) {
                 if competition.owner == Bundle.main.id {
                     AppIcon(size: UIFont.preferredFont(forTextStyle: .title2).pointSize)

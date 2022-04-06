@@ -135,6 +135,7 @@
 		ED438FF727F7B3B600D72F99 /* View+ConfirmationDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED438FF627F7B3B600D72F99 /* View+ConfirmationDialog.swift */; };
 		ED438FF927F7C2B900D72F99 /* View+Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED438FF827F7C2B900D72F99 /* View+Analytics.swift */; };
 		ED438FFB27F7D18600D72F99 /* AnalyticsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED438FFA27F7D18600D72F99 /* AnalyticsManager.swift */; };
+		ED493E9727FDE47300A94F4A /* AuthenticationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED493E9627FDE47300A94F4A /* AuthenticationServices.framework */; };
 		ED927EF427F7AB1E006E78A0 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = ED927EF327F7AB1E006E78A0 /* FirebaseAnalytics */; };
 		ED927EF827F7ACE0006E78A0 /* FirebaseAnalyticsSwift-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = ED927EF727F7ACE0006E78A0 /* FirebaseAnalyticsSwift-Beta */; };
 		EDC373D027FB39A500318245 /* EmailSignInForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC373CF27FB39A500318245 /* EmailSignInForm.swift */; };
@@ -290,6 +291,7 @@
 		ED438FF627F7B3B600D72F99 /* View+ConfirmationDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+ConfirmationDialog.swift"; sourceTree = "<group>"; };
 		ED438FF827F7C2B900D72F99 /* View+Analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Analytics.swift"; sourceTree = "<group>"; };
 		ED438FFA27F7D18600D72F99 /* AnalyticsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsManager.swift; sourceTree = "<group>"; };
+		ED493E9627FDE47300A94F4A /* AuthenticationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AuthenticationServices.framework; path = System/Library/Frameworks/AuthenticationServices.framework; sourceTree = SDKROOT; };
 		EDC373CF27FB39A500318245 /* EmailSignInForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailSignInForm.swift; sourceTree = "<group>"; };
 		EDC373D127FB5B0C00318245 /* VerifyEmail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyEmail.swift; sourceTree = "<group>"; };
 		EDC5FC3E27FA7C1B00F2882D /* View+HUD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+HUD.swift"; sourceTree = "<group>"; };
@@ -316,6 +318,7 @@
 				C1C8B24926F3FBA3008D6B1B /* HealthKitUI.framework in Frameworks */,
 				C123C9D627A8989500375F73 /* FirebaseFunctions in Frameworks */,
 				C119B03226FE67A300B56703 /* FirebaseCrashlytics in Frameworks */,
+				ED493E9727FDE47300A94F4A /* AuthenticationServices.framework in Frameworks */,
 				C1EA986526D6C32400219E84 /* Resolver in Frameworks */,
 				C1EA986B26D6FFBE00219E84 /* FirebaseFirestore in Frameworks */,
 				C13F922A27BFFEB500FC6880 /* FirebaseStorage in Frameworks */,
@@ -598,6 +601,7 @@
 		C1691DD526D56024006FFA30 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				ED493E9627FDE47300A94F4A /* AuthenticationServices.framework */,
 				C1C8B24826F3FBA3008D6B1B /* HealthKitUI.framework */,
 				C1C8B24626F3FB9C008D6B1B /* HealthKit.framework */,
 			);

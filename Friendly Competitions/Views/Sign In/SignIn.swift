@@ -70,12 +70,8 @@ struct SignIn: View {
             }
         }
         .padding()
-//        .errorBanner(presenting: $error)
         .background(color.ignoresSafeArea())
-//        .registerScreenView(name: "Sign In")
-        .onAppear {
-            try? authenticationManager.signOut()
-        }
+        .registerScreenView(name: "Sign In")
     }
     
     @ViewBuilder
