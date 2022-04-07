@@ -35,26 +35,31 @@ struct EmailSignInForm: View {
             HStack {
                 Text("\(signUp ? "Have" : "Need") an account?")
                     .foregroundColor(.gray)
-                Button(signUp ? "Sign in" : "Sign up", toggling: $signUp)
+                Button(signUp ? "Sign in" : "Sign up") {
+                    signUp.toggle()
+                    focus = signUp ? .name : .email
+                }
             }
+            .padding(.trailing)
             .font(.callout)
             .disabled(loading)
             
             VStack(spacing: 5) {
                 if signUp {
-                    HStack {
+                    inputField {
                         Image(systemName: "person.fill")
                             .frame(width: 20, alignment: .center)
+                            .foregroundColor(.gray)
                         TextField("Name", text: $name)
                             .textContentType(.name)
                             .focused($focus, equals: .name)
                             .onSubmit { focus = .email }
                     }
-                    Divider().padding(.leading)
                 }
-                HStack {
+                inputField {
                     Image(systemName: "envelope.fill")
                         .frame(width: 20, alignment: .center)
+                        .foregroundColor(.gray)
                     TextField("Email", text: $email)
                         .textContentType(.emailAddress)
                         .disableAutocorrection(true)
@@ -62,16 +67,16 @@ struct EmailSignInForm: View {
                         .focused($focus, equals: .email)
                         .onSubmit { focus = .password }
                 }
-                Divider().padding(.leading)
-                HStack {
+                inputField {
                     Image(systemName: "key.fill")
                         .frame(width: 20, alignment: .center)
+                        .foregroundColor(.gray)
                     SecureField("Password", text: $password)
                         .textContentType(signUp ? .newPassword : .password)
                         .focused($focus, equals: .password)
                         .onSubmit { focus = signUp ? .passwordConfirmation : nil }
                     if !signUp {
-                        Button("Forgot?") {
+                        Button(systemImage: "questionmark.circle") {
                             loading = true
                             do {
                                 try await authenticationManager.sendPasswordReset(to: email)
@@ -86,10 +91,10 @@ struct EmailSignInForm: View {
                     }
                 }
                 if signUp {
-                    Divider().padding(.leading)
-                    HStack {
+                    inputField {
                         Image(systemName: "key.fill")
                             .frame(width: 20, alignment: .center)
+                            .foregroundColor(.gray)
                         SecureField("Confirm password", text: $passwordConfirmation)
                             .textContentType(.newPassword)
                             .focused($focus, equals: .passwordConfirmation)
@@ -99,13 +104,14 @@ struct EmailSignInForm: View {
             }
 
             HStack {
-                if loading {
-                    ProgressView()
-                        .frame(maxWidth: .infinity, minHeight: 20) // hmmm...minHeight required to avoid weird layout
-                } else if signingInWithEmail {
-                    Button("Back", systemImage: "chevron.left", toggling: $signingInWithEmail)
-                        .frame(maxWidth: .infinity, minHeight: 20) // hmmm...minHeight required to avoid weird layout
+                Group {
+                    if loading {
+                        ProgressView()
+                    } else if signingInWithEmail {
+                        Button("Back", systemImage: "chevron.left", toggling: $signingInWithEmail)
+                    }
                 }
+                .frame(maxWidth: .infinity, minHeight: 20) // hmmm...minHeight required to avoid weird layout
                 
                 Button(action: submit) {
                     Label(signUp ? "Sign up" : "Sign in", systemImage: "envelope.fill")
@@ -116,6 +122,7 @@ struct EmailSignInForm: View {
                 .disabled(submitDisabled)
             }
         }
+        .onAppear { focus = .email }
     }
     
     private func submit() {
@@ -133,6 +140,20 @@ struct EmailSignInForm: View {
             }
             loading = false
         }
+    }
+    
+    @ViewBuilder
+    private func inputField<Content: View>(@ViewBuilder inputContent: () -> Content) -> some View {
+        HStack {
+            inputContent()
+        }
+        .padding(.horizontal)
+        .padding(.vertical, 10)
+        .overlay(
+            Capsule()
+                .stroke(lineWidth: 0.05)
+                .foregroundColor(.gray)
+        )
     }
 }
 

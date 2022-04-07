@@ -36,6 +36,16 @@ extension Button {
     }
 }
 
+extension Button where Label == Image {
+    init(systemImage: String, asyncAction: @escaping () async throws -> Void) {
+        self = Button {
+            try await asyncAction()
+        } label: {
+            Image(systemName: systemImage)
+        }
+    }
+}
+
 extension Button where Label == Text {
     init<S: StringProtocol>(_ title: S, toggling toggle: Binding<Bool>, animated: Bool = false) {
         self = Button(title) {

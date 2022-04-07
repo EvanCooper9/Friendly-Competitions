@@ -23,14 +23,16 @@ struct SignIn: View {
             }
             .padding(.vertical, 30)
             
-            Image("logo")
-                .resizable()
-                .aspectRatio(contentMode: .fit)
-                .padding()
-                .background {
-                    ActivityRingView()
-                        .shadow(radius: 10)
-                }
+            if !signingInWithEmail {
+                Image("logo")
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .padding()
+                    .background {
+                        ActivityRingView()
+                            .shadow(radius: 10)
+                    }
+            }
             
             Spacer()
                     
