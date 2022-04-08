@@ -37,11 +37,7 @@ final class ActivitySummaryManager: AnyActivitySummaryManager {
 
         upload
             .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
-            .scan([ActivitySummary]()) { [weak self] previousActivitySummaries, currentActivitySummaries in
-                guard currentActivitySummaries.last != self?.activitySummary else { return [] }
-                guard previousActivitySummaries != currentActivitySummaries else { return [] }
-                return currentActivitySummaries
-            }
+            .removeDuplicates()
             .filter(\.isNotEmpty)
             .sinkAsync { [weak self] activitySummaries in
                 guard let self = self else { return }
@@ -99,8 +95,10 @@ final class ActivitySummaryManager: AnyActivitySummaryManager {
 
                 let activitySummaries = hkActivitySummaries?.map(\.activitySummary) ?? []
                 self?.upload.send(activitySummaries)
-                DispatchQueue.main.async { [weak self] in
-                    self?.activitySummary = activitySummaries.first(where: \.date.isToday)
+                if let activitySummary = activitySummaries.last, activitySummary.date.isToday {
+                    DispatchQueue.main.async { [weak self] in
+                        self?.activitySummary = activitySummary
+                    }
                 }
 
                 continuation.resume()
