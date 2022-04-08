@@ -59,6 +59,21 @@ extension Competition {
             banner: nil
         )
     }
+    
+    static var mockFuture: Competition {
+        .init(
+            name: "Back to the future",
+            owner: User.evan.id,
+            participants: [User.evan.id, User.gabby.id],
+            pendingParticipants: [],
+            scoringModel: .percentOfGoals,
+            start: .now.addingTimeInterval(2.days),
+            end: .now.addingTimeInterval(4.days),
+            repeats: false,
+            isPublic: false,
+            banner: nil
+        )
+    }
 
     static func mock(with name: String, participantCount: Int) -> Competition {
         .init(
