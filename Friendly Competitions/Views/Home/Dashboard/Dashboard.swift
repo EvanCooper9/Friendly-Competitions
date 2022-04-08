@@ -2,20 +2,24 @@ import Resolver
 import SwiftUI
 
 struct Dashboard: View {
-
-    @InjectedObject private var appState: AppState
-    @InjectedObject private var activitySummaryManager: AnyActivitySummaryManager
-    @InjectedObject private var competitionsManager: AnyCompetitionsManager
-    @InjectedObject private var friendsManager: AnyFriendsManager
-    @InjectedObject private var permissionsManager: AnyPermissionsManager
-    @InjectedObject private var userManager: AnyUserManager
-
+    
+    @StateObject private var appState = Resolver.resolve(AppState.self)
+    @StateObject private var activitySummaryManager = Resolver.resolve(AnyActivitySummaryManager.self)
+    @StateObject private var competitionsManager = Resolver.resolve(AnyCompetitionsManager.self)
+    @StateObject private var friendsManager = Resolver.resolve(AnyFriendsManager.self)
+    @StateObject private var permissionsManager = Resolver.resolve(AnyPermissionsManager.self)
+    @StateObject private var userManager = Resolver.resolve(AnyUserManager.self)
+    
     @State private var presentAbout = false
     @State private var presentPermissions = false
     @State private var presentNewCompetition = false
     @State private var presentSearchFriendsSheet = false
     @AppStorage("competitionsFiltered") var competitionsFiltered = false
-
+    
+    init() {
+        print(#function)
+    }
+    
     var body: some View {
         List {
             Group {
@@ -61,7 +65,7 @@ struct Dashboard: View {
         }
         .registerScreenView(name: "Home")
     }
-
+    
     @ViewBuilder
     private var activitySummary: some View {
         Section {
@@ -74,17 +78,17 @@ struct Dashboard: View {
             }
         }
     }
-
+    
     private var competitions: some View {
         Section {
-            ForEach($competitionsManager.competitions) { $competition in
+            ForEach(competitionsManager.competitions) { competition in
                 if competitionsFiltered ? competition.isActive : true {
-                    CompetitionDetails(competition: $competition, showParticipantCount: false, isFeatured: false)
+                    CompetitionDetails(competition: competition, showParticipantCount: false, isFeatured: false)
                 }
             }
-            ForEach($competitionsManager.invitedCompetitions) { $competition in
+            ForEach(competitionsManager.invitedCompetitions) { competition in
                 if competitionsFiltered ? competition.isActive : true {
-                    CompetitionDetails(competition: $competition, showParticipantCount: false, isFeatured: false)
+                    CompetitionDetails(competition: competition, showParticipantCount: false, isFeatured: false)
                 }
             }
         } header: {
@@ -99,7 +103,7 @@ struct Dashboard: View {
                         .font(.title2)
                 }
                 .disabled(competitionsManager.competitions.isEmpty)
-
+                
                 Button(toggling: $presentNewCompetition) {
                     Image(systemName: "plus.circle")
                         .font(.title2)
@@ -111,7 +115,7 @@ struct Dashboard: View {
             }
         }
     }
-
+    
     @ViewBuilder
     private var friends: some View {
         Section {
@@ -167,7 +171,7 @@ struct Dashboard_Previews: PreviewProvider {
         return Dashboard()
             .setupMocks {
                 activitySummaryManager.activitySummary = .mock
-
+                
                 let competitions: [Competition] = [.mock, .mockInvited, .mockOld, .mockPublic]
                 competitionsManager.competitions = competitions
                 competitionsManager.participants = competitions.reduce(into: [:]) { partialResult, competition in
@@ -176,12 +180,12 @@ struct Dashboard_Previews: PreviewProvider {
                 competitionsManager.standings = competitions.reduce(into: [:]) { partialResult, competition in
                     partialResult[competition.id] = [.mock(for: .evan)]
                 }
-
+                
                 let friend = User.gabby
                 friendsManager.friends = [friend]
                 friendsManager.friendRequests = [friend]
                 friendsManager.friendActivitySummaries = [friend.id: .mock]
-
+                
                 permissionsManager.requiresPermission = false
                 permissionsManager.permissionStatus = [
                     .health: .authorized,

@@ -12,8 +12,8 @@ struct EmailSignInForm: View {
     
     @Binding var signingInWithEmail: Bool
     
-    @InjectedObject private var appState: AppState
-    @InjectedObject private var authenticationManager: AnyAuthenticationManager
+    @StateObject private var appState = Resolver.resolve(AppState.self)
+    @StateObject private var authenticationManager = Resolver.resolve(AnyAuthenticationManager.self)
     
     @FocusState private var focus: Field?
     
@@ -151,16 +151,19 @@ struct EmailSignInForm: View {
         .padding(.vertical, 10)
         .overlay(
             Capsule()
-                .stroke(lineWidth: 0.05)
-                .foregroundColor(.gray)
+                .stroke(lineWidth: 0.15)
         )
     }
 }
 
 struct EmailSignInForm_Previews: PreviewProvider {
     static var previews: some View {
-        EmailSignInForm(signingInWithEmail: .constant(true))
-            .setupMocks()
-            .padding()
+        ZStack {
+            Color(red: 242/255, green: 242/255, blue: 247/255) // background used on sign in
+                .ignoresSafeArea()
+            EmailSignInForm(signingInWithEmail: .constant(true))
+                .setupMocks()
+                .padding()
+        }
     }
 }

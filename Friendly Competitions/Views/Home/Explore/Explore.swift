@@ -9,7 +9,7 @@ struct Explore: View {
 
     @Environment(\.colorScheme) private var colorScheme
 
-    @InjectedObject private var competitionsManager: AnyCompetitionsManager
+    @StateObject private var competitionsManager = Resolver.resolve(AnyCompetitionsManager.self)
 
     @State private var searchResults = [Competition]()
     @State private var searchText = ""
@@ -20,8 +20,8 @@ struct Explore: View {
             if searchText.isEmpty {
                 ExploreSection(title: "From us") {
                     ExploreCarousel(padding: Constants.horizontalPadding) {
-                        ForEach($competitionsManager.appOwnedCompetitions) { $competition in
-                            FeaturedCompetition(competition: $competition)
+                        ForEach(competitionsManager.appOwnedCompetitions) { competition in
+                            FeaturedCompetition(competition: competition)
                                 .frame(width: UIScreen.width - (Constants.horizontalPadding * 2))
                         }
                     }
@@ -29,7 +29,7 @@ struct Explore: View {
                 .padding(.bottom)
 
                 ExploreSection(title: "Top from the community") {
-                    communityCompetitions($competitionsManager.topCommunityCompetitions)
+                    communityCompetitions(competitionsManager.topCommunityCompetitions)
                         .padding(.horizontal, Constants.horizontalPadding)
                 }
             } else {
@@ -47,10 +47,10 @@ struct Explore: View {
                             .frame(maxWidth: .infinity, alignment: .center)
                     } else {
                         VStack {
-                            ForEach($searchResults.filter(\.wrappedValue.appOwned)) { $competition in
-                                FeaturedCompetition(competition: $competition)
+                            ForEach(searchResults.filter(\.appOwned)) { competition in
+                                FeaturedCompetition(competition: competition)
                             }
-                            communityCompetitions($searchResults)
+                            communityCompetitions(searchResults)
                         }
                         .padding(.horizontal, Constants.horizontalPadding)
                     }
@@ -87,11 +87,11 @@ struct Explore: View {
     }
 
     @ViewBuilder
-    private func communityCompetitions(_ competitions: Binding<[Competition]>) -> some View {
-        let competitions = competitions.filter { !$0.wrappedValue.appOwned }
+    private func communityCompetitions(_ competitions: [Competition]) -> some View {
+        let competitions = competitions.filter { !$0.appOwned }
         VStack {
-            ForEach(competitions) { $competition in
-                CompetitionDetails(competition: $competition, showParticipantCount: true, isFeatured: false)
+            ForEach(competitions) { competition in
+                CompetitionDetails(competition: competition, showParticipantCount: true, isFeatured: false)
                     .padding(.horizontal)
                 if competition.id != competitions.last?.id {
                     Divider().padding(.leading)

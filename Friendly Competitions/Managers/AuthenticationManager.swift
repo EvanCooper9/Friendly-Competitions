@@ -62,7 +62,7 @@ final class AuthenticationManager: AnyAuthenticationManager {
     }
     
     override func signIn(with signInMethod: SignInMethod) async throws {
-        Resolver.reset()
+        ResolverScope.cached.reset()
         switch signInMethod {
         case .apple:
             signInWithApple()

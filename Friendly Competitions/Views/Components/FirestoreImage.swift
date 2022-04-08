@@ -5,7 +5,7 @@ struct FirestoreImage: View {
 
     let path: String
 
-    @InjectedObject private var storageManager: AnyStorageManager
+    @StateObject private var storageManager = Resolver.resolve(AnyStorageManager.self)
 
     @State private var failed = false
     @State private var imageData: Data?

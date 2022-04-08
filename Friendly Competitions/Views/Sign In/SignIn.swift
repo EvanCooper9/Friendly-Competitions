@@ -4,8 +4,8 @@ import SwiftUI
 struct SignIn: View {
 
     @Environment(\.colorScheme) private var colorScheme
-    @InjectedObject private var appState: AppState
-    @InjectedObject private var authenticationManager: AnyAuthenticationManager
+    @StateObject private var appState = Resolver.resolve(AppState.self)
+    @StateObject private var authenticationManager = Resolver.resolve(AnyAuthenticationManager.self)
 
     @State private var loading = false
     @State private var signingInWithEmail = false
@@ -22,8 +22,11 @@ struct SignIn: View {
                     .multilineTextAlignment(.center)
             }
             .padding(.vertical, 30)
-            
-            if !signingInWithEmail {
+                    
+            if signingInWithEmail {
+                EmailSignInForm(signingInWithEmail: $signingInWithEmail)
+                Spacer()
+            } else {
                 Image("logo")
                     .resizable()
                     .aspectRatio(contentMode: .fit)
@@ -32,13 +35,8 @@ struct SignIn: View {
                         ActivityRingView()
                             .shadow(radius: 10)
                     }
-            }
-            
-            Spacer()
-                    
-            if signingInWithEmail {
-                EmailSignInForm(signingInWithEmail: $signingInWithEmail)
-            } else {
+                
+                Spacer()
                 VStack {
                     Button {
                         loading = true

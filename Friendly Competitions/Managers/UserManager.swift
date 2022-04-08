@@ -16,8 +16,8 @@ class AnyUserManager: ObservableObject {
 
 final class UserManager: AnyUserManager {
 
-    @Injected private var analyticsManager: AnyAnalyticsManager
-    @Injected private var authenticationManager: AnyAuthenticationManager
+    @InjectedObject private var analyticsManager: AnyAnalyticsManager
+    @InjectedObject private var authenticationManager: AnyAuthenticationManager
     @Injected private var database: Firestore
 
     private var userListener: ListenerRegistration?
@@ -46,7 +46,7 @@ final class UserManager: AnyUserManager {
         Task { [weak self] in
             try await self?.database.document("users/\(user.id)").delete()
             try await authenticationManager.deleteAccount()
-            try authenticationManager.signOut()
+            try await authenticationManager.signOut()
         }
     }
 

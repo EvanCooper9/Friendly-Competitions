@@ -6,9 +6,9 @@ struct NewCompetition: View {
     @State private var editorConfig = NewCompetitionEditorConfig()
 
     @Environment(\.presentationMode) private var presentationMode
-    @InjectedObject private var competitionManager: AnyCompetitionsManager
-    @InjectedObject private var friendsManager: AnyFriendsManager
-    @InjectedObject private var userManager: AnyUserManager
+    @StateObject private var competitionManager = Resolver.resolve(AnyCompetitionsManager.self)
+    @StateObject private var friendsManager = Resolver.resolve(AnyFriendsManager.self)
+    @StateObject private var userManager = Resolver.resolve(AnyUserManager.self)
     @State private var presentAddFriends = false
 
     var body: some View {

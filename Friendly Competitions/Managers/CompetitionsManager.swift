@@ -66,12 +66,6 @@ final class CompetitionsManager: AnyCompetitionsManager {
             .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
             .sinkAsync { [weak self] in try await self?.updateStandings() }
             .store(in: &cancellables)
-        
-        $competitions
-            .sink { _ in
-                print("got new value")
-            }
-            .store(in: &cancellables)
     }
 
     // MARK: - Public Methods

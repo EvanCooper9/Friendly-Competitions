@@ -3,12 +3,12 @@ import SwiftUI
 
 struct CompetitionView: View {
 
-    @Binding var competition: Competition
+    let competition: Competition
 
     @Environment(\.presentationMode) private var presentationMode
-    @InjectedObject private var competitionsManager: AnyCompetitionsManager
-    @InjectedObject private var friendsManager: AnyFriendsManager
-    @InjectedObject private var userManager: AnyUserManager
+    @StateObject private var competitionsManager = Resolver.resolve(AnyCompetitionsManager.self)
+    @StateObject private var friendsManager = Resolver.resolve(AnyFriendsManager.self)
+    @StateObject private var userManager = Resolver.resolve(AnyUserManager.self)
 
     private enum Action {
         case leave, delete
@@ -44,12 +44,18 @@ struct CompetitionView: View {
             ForEach(standings) { standing in
                 HStack {
                     Text(standing.rank.ordinalString ?? "?").bold()
-                    if let user = competitionsManager.participants[competition.id]?.first(where: { $0.id == standing.userId }), user.visibility(by: userManager.user) == .visible {
-                        Text(user.name)
-                        UserHashIDPill(user: user)
-                    } else if standing.userId == userManager.user.id {
+                    
+                    if standing.userId == userManager.user.id {
                         Text(userManager.user.name)
                         UserHashIDPill(user: userManager.user)
+                    } else if let user = competitionsManager.participants[competition.id]?.first(where: { $0.id == standing.userId }) {
+                        if user.visibility(by: userManager.user) == .visible {
+                            Text(user.name)
+                            UserHashIDPill(user: user)
+                        } else {
+                            Text(user.name)
+                                .blur(radius: 5)
+                        }
                     } else {
                         Text(standing.userId)
                             .blur(radius: 5)
@@ -196,7 +202,7 @@ struct CompetitionView_Previews: PreviewProvider {
     }
 
     static var previews: some View {
-        CompetitionView(competition: .constant(competition))
+        CompetitionView(competition: competition)
             .setupMocks(setupMocks)
             .embeddedInNavigationView()
     }

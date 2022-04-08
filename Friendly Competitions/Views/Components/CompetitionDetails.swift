@@ -2,20 +2,20 @@ import Resolver
 import SwiftUI
 
 struct CompetitionDetails: View {
-
-    @Binding var competition: Competition
+    
+    let competition: Competition
     let showParticipantCount: Bool
     let isFeatured: Bool
 
     @Environment(\.colorScheme) private var colorScheme
 
-    @InjectedObject private var competitionsManager: AnyCompetitionsManager
-    @InjectedObject private var userManager: AnyUserManager
+    @StateObject private var competitionsManager = Resolver.resolve(AnyCompetitionsManager.self)
+    @StateObject private var userManager = Resolver.resolve(AnyUserManager.self)
 
     var body: some View {
         print(Self._printChanges())
         print(competition)
-        return NavigationLink(destination: CompetitionView(competition: $competition)) {
+        return NavigationLink(destination: CompetitionView(competition: competition)) {
             HStack(alignment: .center) {
                 if competition.owner == Bundle.main.id {
                     AppIcon(size: UIFont.preferredFont(forTextStyle: .title2).pointSize)
@@ -73,8 +73,8 @@ private extension Int {
 struct CompetitionDetails_Previews: PreviewProvider {
     static var previews: some View {
         List {
-            CompetitionDetails(competition: .constant(.mock), showParticipantCount: true, isFeatured: false)
-            CompetitionDetails(competition: .constant(.mock), showParticipantCount: true, isFeatured: false)
+            CompetitionDetails(competition: .mock, showParticipantCount: true, isFeatured: false)
+            CompetitionDetails(competition: .mock, showParticipantCount: true, isFeatured: false)
         }
     }
 }

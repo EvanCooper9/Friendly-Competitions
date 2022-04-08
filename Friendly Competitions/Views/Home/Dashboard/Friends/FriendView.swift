@@ -5,7 +5,7 @@ struct FriendView: View {
 
     let friend: User
 
-    @InjectedObject private var friendsManager: AnyFriendsManager
+    @StateObject private var friendsManager = Resolver.resolve(AnyFriendsManager.self)
 
     @State private var showConfirmDelete = false
 

@@ -3,8 +3,8 @@ import SwiftUI
 
 struct VerifyEmail: View {
     
-    @InjectedObject private var authenticationManager: AnyAuthenticationManager
-    @InjectedObject private var userManager: AnyUserManager
+    @StateObject private var authenticationManager = Resolver.resolve(AnyAuthenticationManager.self)
+    @StateObject private var userManager = Resolver.resolve(AnyUserManager.self)
     
     var body: some View {
         VStack(spacing: 50) {

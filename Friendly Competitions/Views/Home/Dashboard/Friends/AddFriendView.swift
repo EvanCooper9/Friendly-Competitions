@@ -5,9 +5,9 @@ struct AddFriendView: View {
 
     @State private var friendReferral: User?
 
-    @InjectedObject private var appState: AppState
-    @InjectedObject private var friendsManager: AnyFriendsManager
-    @InjectedObject private var userManager: AnyUserManager
+    @StateObject private var appState = Resolver.resolve(AppState.self)
+    @StateObject private var friendsManager = Resolver.resolve(AnyFriendsManager.self)
+    @StateObject private var userManager = Resolver.resolve(AnyUserManager.self)
 
     var body: some View {
         List {

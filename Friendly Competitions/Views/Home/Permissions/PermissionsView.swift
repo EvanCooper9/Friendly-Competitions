@@ -3,7 +3,7 @@ import SwiftUI
 
 struct PermissionsView: View {
 
-    @InjectedObject private var permissionsManager: AnyPermissionsManager
+    @StateObject private var permissionsManager = Resolver.resolve(AnyPermissionsManager.self)
 
     var body: some View {
         List {
