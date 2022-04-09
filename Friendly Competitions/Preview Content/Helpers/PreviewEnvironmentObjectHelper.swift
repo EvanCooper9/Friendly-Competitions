@@ -46,18 +46,17 @@ extension PreviewProvider {
 
 extension View {
     func setupMocks(_ setupMocks: @escaping () -> Void = {}) -> some View {
-        Container.registerDependencies()
-        return self
-            .environmentObject(Container.appState)
-            .environmentObject(Container.activitySummaryManager)
-            .environmentObject(Container.analyticsManager)
-            .environmentObject(Container.authenticationManager)
-            .environmentObject(Container.competitionsManager)
-            .environmentObject(Container.friendsManager)
-            .environmentObject(Container.healthKitManager)
-            .environmentObject(Container.permissionsManager)
-            .environmentObject(Container.storageManager)
-            .environmentObject(Container.userManager)
+        self
+//            .environmentObject(Container.appState)
+//            .environmentObject(Container.activitySummaryManager)
+//            .environmentObject(Container.analyticsManager)
+//            .environmentObject(Container.authenticationManager)
+//            .environmentObject(Container.competitionsManager)
+//            .environmentObject(Container.friendsManager)
+//            .environmentObject(Container.healthKitManager)
+//            .environmentObject(Container.permissionsManager)
+//            .environmentObject(Container.storageManager)
+//            .environmentObject(Container.userManager)
             .onAppear(perform: setupMocks)
     }
 }

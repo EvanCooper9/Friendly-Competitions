@@ -1,11 +1,10 @@
-import Resolver
 import SwiftUI
 
 struct FriendView: View {
 
     let friend: User
 
-    @StateObject private var friendsManager = Resolver.resolve(AnyFriendsManager.self)
+    @EnvironmentObject private var friendsManager: AnyFriendsManager
 
     @State private var showConfirmDelete = false
 

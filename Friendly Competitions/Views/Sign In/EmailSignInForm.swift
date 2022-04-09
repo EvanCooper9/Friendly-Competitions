@@ -1,4 +1,3 @@
-import Resolver
 import SwiftUI
 
 struct EmailSignInForm: View {
@@ -12,16 +11,16 @@ struct EmailSignInForm: View {
     
     @Binding var signingInWithEmail: Bool
     
-    @StateObject private var appState = Resolver.resolve(AppState.self)
-    @StateObject private var authenticationManager = Resolver.resolve(AnyAuthenticationManager.self)
+    @EnvironmentObject private var appState: AppState
+    @EnvironmentObject private var authenticationManager: AnyAuthenticationManager
     
     @FocusState private var focus: Field?
     
     @State private var loading = false
     @State private var signUp = false
     @State private var name = ""
-    @State private var email = ""
-    @State private var password = ""
+    @State private var email = "evancmcooper@gmail.com"
+    @State private var password = "Password"
     @State private var passwordConfirmation = ""
     
     private var submitDisabled: Bool {

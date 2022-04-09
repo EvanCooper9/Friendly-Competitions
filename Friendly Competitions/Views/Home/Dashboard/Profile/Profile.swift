@@ -4,8 +4,12 @@ import SwiftUI
 struct Profile: View {
     
     @Environment(\.presentationMode) private var presentationMode
-    @StateObject private var authenticationManager = Resolver.resolve(AnyAuthenticationManager.self)
-    @StateObject private var userManager = Resolver.resolve(AnyUserManager.self)
+    
+    // Since this is presented from the navigation view toolbar,
+    // the environment objects don't exist
+    @InjectedObject private var authenticationManager: AnyAuthenticationManager
+    @InjectedObject private var userManager: AnyUserManager
+    
     @State private var presentDeleteAccountAlert = false
     
     var body: some View {

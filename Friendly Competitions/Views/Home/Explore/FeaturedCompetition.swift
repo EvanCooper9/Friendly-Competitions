@@ -1,4 +1,3 @@
-import Resolver
 import SwiftUI
 
 struct FeaturedCompetition: View {

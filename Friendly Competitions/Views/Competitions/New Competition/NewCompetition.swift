@@ -1,14 +1,14 @@
-import Resolver
 import SwiftUI
 
 struct NewCompetition: View {
 
-    @State private var editorConfig = NewCompetitionEditorConfig()
-
     @Environment(\.presentationMode) private var presentationMode
-    @StateObject private var competitionManager = Resolver.resolve(AnyCompetitionsManager.self)
-    @StateObject private var friendsManager = Resolver.resolve(AnyFriendsManager.self)
-    @StateObject private var userManager = Resolver.resolve(AnyUserManager.self)
+    
+    @EnvironmentObject private var competitionManager: AnyCompetitionsManager
+    @EnvironmentObject private var friendsManager: AnyFriendsManager
+    @EnvironmentObject private var userManager: AnyUserManager
+    
+    @State private var editorConfig = NewCompetitionEditorConfig()
     @State private var presentAddFriends = false
 
     var body: some View {
@@ -130,7 +130,7 @@ struct NewCompetition: View {
 struct NewCompetitionView_Previews: PreviewProvider {
 
     private static func setupMocks() {
-        friendsManager.friends = [.gabby]
+//        friendsManager.friends = [.gabby]
     }
 
     static var previews: some View {

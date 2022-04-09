@@ -1,11 +1,11 @@
-import Resolver
 import SwiftUI
 
 struct SignIn: View {
 
     @Environment(\.colorScheme) private var colorScheme
-    @StateObject private var appState = Resolver.resolve(AppState.self)
-    @StateObject private var authenticationManager = Resolver.resolve(AnyAuthenticationManager.self)
+    
+    @EnvironmentObject private var appState: AppState
+    @EnvironmentObject private var authenticationManager: AnyAuthenticationManager
 
     @State private var loading = false
     @State private var signingInWithEmail = false

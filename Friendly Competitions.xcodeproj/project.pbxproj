@@ -389,8 +389,8 @@
 		C123C9E127A980EA00375F73 /* New Competition */ = {
 			isa = PBXGroup;
 			children = (
-				C123C9E227A9810100375F73 /* NewCompetitionEditorConfig.swift */,
 				C1ABB21426D6987C00716984 /* NewCompetition.swift */,
+				C123C9E227A9810100375F73 /* NewCompetitionEditorConfig.swift */,
 			);
 			path = "New Competition";
 			sourceTree = "<group>";

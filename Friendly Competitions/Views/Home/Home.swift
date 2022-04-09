@@ -2,18 +2,36 @@ import Resolver
 import SwiftUI
 
 struct Home: View {
-
-    private enum Tab {
-        case dashboard
-        case explore
+        
+    @StateObject private var activitySummaryManager = Resolver.resolve(AnyActivitySummaryManager.self)
+    @StateObject private var competitionsManager = Resolver.resolve(AnyCompetitionsManager.self)
+    @StateObject private var friendsManager = Resolver.resolve(AnyFriendsManager.self)
+    @StateObject private var permissionsManager = Resolver.resolve(AnyPermissionsManager.self)
+    @StateObject private var storageManager = Resolver.resolve(AnyStorageManager.self)
+    @StateObject private var userManager = Resolver.resolve(AnyUserManager.self)
+    
+    init() {
+        print(#function)
     }
-
-    @State private var tab = Tab.dashboard
-
+    
     var body: some View {
-        TabView(selection: $tab) {
-            Dashboard().tag(Tab.dashboard)
-            Explore().tag(Tab.explore)
+        TabView {
+            Dashboard()
+                .environmentObject(activitySummaryManager)
+                .environmentObject(competitionsManager)
+                .environmentObject(friendsManager)
+                .environmentObject(permissionsManager)
+                .environmentObject(storageManager)
+                .environmentObject(userManager)
+                .embeddedInNavigationView()
+                .tabItem { Label("Home", systemImage: "house") }
+            Explore()
+                .environmentObject(activitySummaryManager)
+                .environmentObject(competitionsManager)
+                .environmentObject(friendsManager)
+                .environmentObject(permissionsManager)
+                .environmentObject(storageManager)
+                .environmentObject(userManager)
         }
     }
 }
@@ -43,8 +61,7 @@ struct HomeContainer_Previews: PreviewProvider {
     }
 
     static var previews: some View {
-        registerDependencies()
-        return Home()
+        Home()
             .setupMocks(setupMocks)
     }
 }

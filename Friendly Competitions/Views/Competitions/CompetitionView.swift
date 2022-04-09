@@ -1,4 +1,3 @@
-import Resolver
 import SwiftUI
 
 struct CompetitionView: View {
@@ -6,9 +5,10 @@ struct CompetitionView: View {
     let competition: Competition
 
     @Environment(\.presentationMode) private var presentationMode
-    @StateObject private var competitionsManager = Resolver.resolve(AnyCompetitionsManager.self)
-    @StateObject private var friendsManager = Resolver.resolve(AnyFriendsManager.self)
-    @StateObject private var userManager = Resolver.resolve(AnyUserManager.self)
+    
+    @EnvironmentObject private var competitionsManager: AnyCompetitionsManager
+    @EnvironmentObject private var friendsManager: AnyFriendsManager
+    @EnvironmentObject private var userManager: AnyUserManager
 
     private enum Action {
         case leave, delete
@@ -181,24 +181,24 @@ struct CompetitionView_Previews: PreviewProvider {
     private static let competition = Competition.mock
 
     private static func setupMocks() {
-        let evan = User.evan
-        let gabby = User.gabby
-        competitionsManager.standings = [
-            competition.id: [
-                .init(rank: 1, userId: "Somebody", points: 100),
-                .init(rank: 2, userId: "Rick", points: 75),
-                .init(rank: 3, userId: "Bob", points: 60),
-                .init(rank: 4, userId: gabby.id, points: 50),
-                .init(rank: 5, userId: evan.id, points: 20),
-                .init(rank: 6, userId: "Joe", points: 9),
-            ]
-        ]
-        competitionsManager.participants = [
-            competition.id: [evan, gabby]
-        ]
-        competitionsManager.pendingParticipants = [
-            competition.id: [gabby]
-        ]
+//        let evan = User.evan
+//        let gabby = User.gabby
+//        competitionsManager.standings = [
+//            competition.id: [
+//                .init(rank: 1, userId: "Somebody", points: 100),
+//                .init(rank: 2, userId: "Rick", points: 75),
+//                .init(rank: 3, userId: "Bob", points: 60),
+//                .init(rank: 4, userId: gabby.id, points: 50),
+//                .init(rank: 5, userId: evan.id, points: 20),
+//                .init(rank: 6, userId: "Joe", points: 9),
+//            ]
+//        ]
+//        competitionsManager.participants = [
+//            competition.id: [evan, gabby]
+//        ]
+//        competitionsManager.pendingParticipants = [
+//            competition.id: [gabby]
+//        ]
     }
 
     static var previews: some View {

@@ -1,4 +1,3 @@
-import Resolver
 import SwiftUI
 
 struct CompetitionDetails: View {
@@ -9,8 +8,8 @@ struct CompetitionDetails: View {
 
     @Environment(\.colorScheme) private var colorScheme
 
-    @StateObject private var competitionsManager = Resolver.resolve(AnyCompetitionsManager.self)
-    @StateObject private var userManager = Resolver.resolve(AnyUserManager.self)
+    @EnvironmentObject private var competitionsManager: AnyCompetitionsManager
+    @EnvironmentObject private var userManager: AnyUserManager
 
     var body: some View {
         print(Self._printChanges())

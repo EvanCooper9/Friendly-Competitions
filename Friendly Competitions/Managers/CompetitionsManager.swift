@@ -5,14 +5,14 @@ import Resolver
 import SwiftUI
 
 class AnyCompetitionsManager: ObservableObject {
-
-    @Published(storedWithKey: "competitions") var competitions = [Competition]()
-    @Published(storedWithKey: "invitedCompetitions") var invitedCompetitions = [Competition]()
-    @Published(storedWithKey: "standings") var standings = [Competition.ID : [Competition.Standing]]()
-    @Published(storedWithKey: "participants") var participants = [Competition.ID: [User]]()
-    @Published(storedWithKey: "pendingParticipants") var pendingParticipants = [Competition.ID: [User]]()
-    @Published(storedWithKey: "appOwnedCompetitions") var appOwnedCompetitions = [Competition]()
-    @Published(storedWithKey: "topCommunityCompetitions") var topCommunityCompetitions = [Competition]()
+    
+    @Published(storedWithKey: .competitions) var competitions = [Competition]()
+    @Published(storedWithKey: .invitedCompetitions) var invitedCompetitions = [Competition]()
+    @Published(storedWithKey: .standings) var standings = [Competition.ID : [Competition.Standing]]()
+    @Published(storedWithKey: .participants) var participants = [Competition.ID: [User]]()
+    @Published(storedWithKey: .pendingParticipants) var pendingParticipants = [Competition.ID: [User]]()
+    @Published(storedWithKey: .appOwnedCompetitions) var appOwnedCompetitions = [Competition]()
+    @Published(storedWithKey: .topCommunityCompetitions) var topCommunityCompetitions = [Competition]()
 
     func accept(_ competition: Competition) {}
     func createCompetition(with config: NewCompetitionEditorConfig) {}
@@ -39,7 +39,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
 
     // MARK: - Private Properties
 
-    @LazyInjected private var activitySummaryManager: AnyActivitySummaryManager
+//    @LazyInjected private var activitySummaryManager: AnyActivitySummaryManager
     @Injected private var analyticsManager: AnyAnalyticsManager
     @Injected private var database: Firestore
     @Injected private var userManager: AnyUserManager
@@ -56,8 +56,8 @@ final class CompetitionsManager: AnyCompetitionsManager {
 
     override init() {
         super.init()
-        listen()
-        fetchCompetitionData()
+//        listen()
+//        fetchCompetitionData()
 
         Publishers
             .CombineLatest3($competitions, $appOwnedCompetitions, $invitedCompetitions)
@@ -66,6 +66,10 @@ final class CompetitionsManager: AnyCompetitionsManager {
             .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
             .sinkAsync { [weak self] in try await self?.updateStandings() }
             .store(in: &cancellables)
+    }
+    
+    deinit {
+        print(#function)
     }
 
     // MARK: - Public Methods
@@ -99,7 +103,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
         competitions.append(competition)
         Task { [weak self, competition] in
             try await self?.database.document("competitions/\(competition.id)").setDataEncodable(competition)
-            try await activitySummaryManager.update()
+//            try await activitySummaryManager.update()
         }
         
         analyticsManager.log(event: .createCompetition(name: config.name))

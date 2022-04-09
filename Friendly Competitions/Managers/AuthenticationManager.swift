@@ -48,7 +48,7 @@ final class AuthenticationManager: AnyAuthenticationManager {
 
     @LazyInjected private var database: Firestore
     
-    @Published(storedWithKey: "currentUser") private var currentUser: User? = nil
+    @Published(storedWithKey: .currentUser) private var currentUser: User? = nil
     
     private var currentNonce: String?
     private var userListener: AnyCancellable?
@@ -62,7 +62,6 @@ final class AuthenticationManager: AnyAuthenticationManager {
     }
     
     override func signIn(with signInMethod: SignInMethod) async throws {
-        ResolverScope.cached.reset()
         switch signInMethod {
         case .apple:
             signInWithApple()
@@ -193,7 +192,7 @@ final class AuthenticationManager: AnyAuthenticationManager {
     }
 
     private func registerUserManager(with user: User) {
-        Resolver.register(AnyUserManager.self) { [weak self] in
+        Resolver.register(AnyUserManager.self) { [weak self, user] in
             let userManager = UserManager(user: user)
             self?.userListener = userManager.$user
                 .sink { [weak self] user in
@@ -202,7 +201,7 @@ final class AuthenticationManager: AnyAuthenticationManager {
                     }
                 }
             return userManager
-        }.scope(.cached)
+        }.scope(.shared)
     }
     
     private func updateFirestoreUserWithAuthUser(_ firebaseUser: FirebaseAuth.User) async throws {

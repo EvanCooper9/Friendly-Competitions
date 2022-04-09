@@ -1,11 +1,10 @@
-import Resolver
 import SwiftUI
 
 struct FirestoreImage: View {
 
     let path: String
 
-    @StateObject private var storageManager = Resolver.resolve(AnyStorageManager.self)
+    @EnvironmentObject private var storageManager: AnyStorageManager
 
     @State private var failed = false
     @State private var imageData: Data?

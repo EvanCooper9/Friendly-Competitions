@@ -1,13 +1,12 @@
-import Resolver
 import SwiftUI
 
 struct AddFriendView: View {
 
     @State private var friendReferral: User?
 
-    @StateObject private var appState = Resolver.resolve(AppState.self)
-    @StateObject private var friendsManager = Resolver.resolve(AnyFriendsManager.self)
-    @StateObject private var userManager = Resolver.resolve(AnyUserManager.self)
+    @EnvironmentObject private var appState: AppState
+    @EnvironmentObject private var friendsManager: AnyFriendsManager
+    @EnvironmentObject private var userManager: AnyUserManager
 
     var body: some View {
         List {
@@ -87,9 +86,9 @@ struct AddFriendView: View {
         guard case let .friendReferral(referralId) = appState.deepLink else { return }
         Task {
             let friendReferral = try await friendsManager.user(withId: referralId)
-            DispatchQueue.main.async {
+            DispatchQueue.main.async { [weak appState] in
                 self.friendReferral = friendReferral
-                self.appState.deepLink = nil
+                appState?.deepLink = nil
             }
         }
     }
@@ -106,8 +105,7 @@ struct AddFriendView_Previews: PreviewProvider {
     }
 
     static var previews: some View {
-        registerDependencies()
-        return AddFriendView()
+        AddFriendView()
             .setupMocks(setupMocks)
     }
 }

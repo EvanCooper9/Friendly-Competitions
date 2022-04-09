@@ -6,8 +6,8 @@ import SwiftUI
 
 class AnyFriendsManager: ObservableObject {
 
-    @Published(storedWithKey: "friends") var friends = [User]()
-    @Published(storedWithKey: "friendActivitySummaries") var friendActivitySummaries = [User.ID: ActivitySummary]()
+    @Published(storedWithKey: .friends) var friends = [User]()
+    @Published(storedWithKey: .friendActivitySummaries) var friendActivitySummaries = [User.ID: ActivitySummary]()
     @Published var friendRequests = [User]()
     @Published var searchResults = [User]()
     @Published var searchText = ""

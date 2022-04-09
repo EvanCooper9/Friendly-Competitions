@@ -1,4 +1,3 @@
-import Resolver
 import SwiftUI
 
 struct Explore: View {
@@ -9,7 +8,7 @@ struct Explore: View {
 
     @Environment(\.colorScheme) private var colorScheme
 
-    @StateObject private var competitionsManager = Resolver.resolve(AnyCompetitionsManager.self)
+    @EnvironmentObject private var competitionsManager: AnyCompetitionsManager
 
     @State private var searchResults = [Competition]()
     @State private var searchText = ""

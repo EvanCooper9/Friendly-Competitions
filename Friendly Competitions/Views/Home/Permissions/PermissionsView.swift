@@ -1,9 +1,8 @@
-import Resolver
 import SwiftUI
 
 struct PermissionsView: View {
 
-    @StateObject private var permissionsManager = Resolver.resolve(AnyPermissionsManager.self)
+    @EnvironmentObject private var permissionsManager: PermissionsManager
 
     var body: some View {
         List {

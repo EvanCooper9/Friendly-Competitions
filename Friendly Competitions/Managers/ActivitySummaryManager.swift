@@ -7,7 +7,7 @@ import HealthKit
 import Resolver
 
 class AnyActivitySummaryManager: ObservableObject {
-    @Published(storedWithKey: "activitySummary") var activitySummary: ActivitySummary? = nil
+    @Published(storedWithKey: .activitySummary) var activitySummary: ActivitySummary? = nil
     func update() async throws {}
 }
 

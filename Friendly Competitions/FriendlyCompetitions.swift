@@ -2,7 +2,9 @@ import Firebase
 import Resolver
 import SwiftUI
 
-var isPreview: Bool { ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1" }
+#if DEBUG
+let isPreview = ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"
+#endif
 
 @main
 struct FriendlyCompetitions: App {
@@ -10,7 +12,7 @@ struct FriendlyCompetitions: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
 
     /// Can't use `@InjectedObject` or else Firebase crashes because `FirebaseApp.configure` isn't called first.
-    @StateObject private var appState = Resolver.resolve(AppState.self)
+    @StateObject private var appState = AppState()
     @StateObject private var authenticationManager = Resolver.resolve(AnyAuthenticationManager.self)
 
     init() {
@@ -31,6 +33,8 @@ struct FriendlyCompetitions: App {
                 }
             }
             .hud(state: $appState.hudState)
+            .environmentObject(appState)
+            .environmentObject(authenticationManager)
         }
     }
 }

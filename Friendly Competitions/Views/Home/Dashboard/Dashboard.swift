@@ -1,15 +1,14 @@
-import Resolver
 import SwiftUI
 
 struct Dashboard: View {
-    
-    @StateObject private var appState = Resolver.resolve(AppState.self)
-    @StateObject private var activitySummaryManager = Resolver.resolve(AnyActivitySummaryManager.self)
-    @StateObject private var competitionsManager = Resolver.resolve(AnyCompetitionsManager.self)
-    @StateObject private var friendsManager = Resolver.resolve(AnyFriendsManager.self)
-    @StateObject private var permissionsManager = Resolver.resolve(AnyPermissionsManager.self)
-    @StateObject private var userManager = Resolver.resolve(AnyUserManager.self)
-    
+        
+    @EnvironmentObject private var appState: AppState
+    @EnvironmentObject private var activitySummaryManager: AnyActivitySummaryManager
+    @EnvironmentObject private var competitionsManager: AnyCompetitionsManager
+    @EnvironmentObject private var friendsManager: AnyFriendsManager
+    @EnvironmentObject private var permissionsManager: AnyPermissionsManager
+    @EnvironmentObject private var userManager: AnyUserManager
+        
     @State private var presentAbout = false
     @State private var presentPermissions = false
     @State private var presentNewCompetition = false
@@ -42,14 +41,13 @@ struct Dashboard: View {
                 }
             }
         }
-        .embeddedInNavigationView()
         .sheet(isPresented: $presentAbout) { About() }
         .sheet(isPresented: $presentSearchFriendsSheet) { AddFriendView() }
         .sheet(isPresented: $presentNewCompetition) { NewCompetition() }
         .sheet(isPresented: $presentPermissions) { PermissionsView() }
-        .onOpenURL { url in
-            appState.deepLink = DeepLink(from: url)
-            switch appState.deepLink {
+        .onOpenURL { [weak appState] url in
+            appState?.deepLink = DeepLink(from: url)
+            switch appState?.deepLink {
             case .friendReferral:
                 presentSearchFriendsSheet.toggle()
             default:
@@ -60,9 +58,6 @@ struct Dashboard: View {
             presentPermissions = permissionsManager.requiresPermission
         }
         .onChange(of: permissionsManager.requiresPermission) { presentPermissions = $0 }
-        .tabItem {
-            Label("Home", systemImage: "house")
-        }
         .registerScreenView(name: "Home")
     }
     
@@ -166,31 +161,33 @@ struct Dashboard: View {
 }
 
 struct Dashboard_Previews: PreviewProvider {
+    
+    private static func setupMocks() {
+        activitySummaryManager.activitySummary = .mock
+        
+        let competitions: [Competition] = [.mock, .mockInvited, .mockOld, .mockPublic]
+        competitionsManager.competitions = competitions
+        competitionsManager.participants = competitions.reduce(into: [:]) { partialResult, competition in
+            partialResult[competition.id] = [.evan]
+        }
+        competitionsManager.standings = competitions.reduce(into: [:]) { partialResult, competition in
+            partialResult[competition.id] = [.mock(for: .evan)]
+        }
+        
+        let friend = User.gabby
+        friendsManager.friends = [friend]
+        friendsManager.friendRequests = [friend]
+        friendsManager.friendActivitySummaries = [friend.id: .mock]
+        
+        permissionsManager.requiresPermission = false
+        permissionsManager.permissionStatus = [
+            .health: .authorized,
+            .notifications: .authorized
+        ]
+    }
+    
     static var previews: some View {
-        registerDependencies()
-        return Dashboard()
-            .setupMocks {
-                activitySummaryManager.activitySummary = .mock
-                
-                let competitions: [Competition] = [.mock, .mockInvited, .mockOld, .mockPublic]
-                competitionsManager.competitions = competitions
-                competitionsManager.participants = competitions.reduce(into: [:]) { partialResult, competition in
-                    partialResult[competition.id] = [.evan]
-                }
-                competitionsManager.standings = competitions.reduce(into: [:]) { partialResult, competition in
-                    partialResult[competition.id] = [.mock(for: .evan)]
-                }
-                
-                let friend = User.gabby
-                friendsManager.friends = [friend]
-                friendsManager.friendRequests = [friend]
-                friendsManager.friendActivitySummaries = [friend.id: .mock]
-                
-                permissionsManager.requiresPermission = false
-                permissionsManager.permissionStatus = [
-                    .health: .authorized,
-                    .notifications: .authorized
-                ]
-            }
+        Dashboard()
+            .setupMocks(setupMocks)
     }
 }

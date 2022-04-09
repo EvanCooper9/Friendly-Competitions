@@ -1,10 +1,9 @@
-import Resolver
 import SwiftUI
 
 struct VerifyEmail: View {
     
-    @StateObject private var authenticationManager = Resolver.resolve(AnyAuthenticationManager.self)
-    @StateObject private var userManager = Resolver.resolve(AnyUserManager.self)
+    @EnvironmentObject private var authenticationManager: AnyAuthenticationManager
+    @EnvironmentObject private var userManager: AnyUserManager
     
     var body: some View {
         VStack(spacing: 50) {
@@ -55,7 +54,7 @@ struct VerifyEmail: View {
 
 struct VerifyEmail_Previews: PreviewProvider {
     static var previews: some View {
-        registerDependencies()
-        return VerifyEmail()
+        VerifyEmail()
+            .setupMocks()
     }
 }
