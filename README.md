@@ -11,7 +11,7 @@ Compete against groups of friends in fitness. Just like Apple's fitness cometiti
 
 # Setup for contributors
 ## Homebrew
-Instal [homebrew](https://brew.sh) and run the following:
+Instal [homebrew](https://brew.sh) and run the following command:
 ```shell
 brew bundle
 ```
@@ -35,13 +35,13 @@ Stores all user & competition data
 ### [Functions](https://firebase.google.com/docs/functions)
 Sends notifications, computes competition scores, cleans up old data. 
 
-Some setup is required for the functions to be available to the app: 
+To deploy this project's functions, run the following commands:
 ```
 cd firebase/functions
 npm install
 npm run-script deploy
 ```
-> Note: This firebase services requires the [Blaze plan](https://firebase.google.com/pricing). You can also explore [emulating functions](https://firebase.google.com/docs/functions/get-started#emulate-execution-of-your-functions) instead of upgrading to the Blaze plan, or disable it's usage in the iOS client.
+> Note: To deploy functions, this service requires the [Blaze plan](https://firebase.google.com/pricing). You can also explore [emulating functions](https://firebase.google.com/docs/functions/get-started#emulate-execution-of-your-functions) instead of upgrading to the Blaze plan, or disable it's usage in the iOS client.
 
 ### [Storage](https://firebase.google.com/docs/storage)
 Stores images, nothing else for now
