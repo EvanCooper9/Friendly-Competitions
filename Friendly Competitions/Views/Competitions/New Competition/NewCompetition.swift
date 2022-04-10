@@ -1,4 +1,5 @@
 import SwiftUI
+import HealthKit
 
 struct NewCompetition: View {
 
@@ -60,35 +61,51 @@ struct NewCompetition: View {
             }
         }
     }
-
+    
+    @State private var constrainToWorkout = false
+    @State private var _workout: HKWorkoutActivityType?
     private var scoring: some View {
         Section {
-            Picker("Scoring model", selection: $viewModel.scoringModel) {
-                ForEach(Competition.ScoringModel.allCases) { scoringModel in
-                    Text(scoringModel.displayName)
-                        .tag(scoringModel)
+            Toggle("Constrain to workout", isOn: $constrainToWorkout)
+            if constrainToWorkout {
+                Picker("Workout", selection: $_workout) {
+                    ForEach(HKWorkoutActivityType.supported) { workout in
+                        Text(workout.description!)
+                            .tag(workout as HKWorkoutActivityType?)
+                    }
+                }
+            } else {
+                Picker("Scoring model", selection: $viewModel.scoringModel) {
+                    ForEach(Competition.ScoringModel.allCases) { scoringModel in
+                        Text(scoringModel.displayName)
+                            .tag(scoringModel)
+                    }
                 }
             }
         } header: {
             Text("Scoring")
         } footer: {
-            NavigationLink("What's this?") {
-                List {
-                    Section {
-                        ForEach(Competition.ScoringModel.allCases) { scoringModel in
-                            VStack(alignment: .leading, spacing: 5) {
-                                Text(scoringModel.displayName)
-                                    .font(.title3)
-                                Text(scoringModel.description)
-                                    .foregroundColor(.gray)
+            if constrainToWorkout {
+                Text("You can constrain a competition to a specific workout. Points can only be earned by completing the specified workout.")
+            } else {
+                NavigationLink("What's this?") {
+                    List {
+                        Section {
+                            ForEach(Competition.ScoringModel.allCases) { scoringModel in
+                                VStack(alignment: .leading, spacing: 5) {
+                                    Text(scoringModel.displayName)
+                                        .font(.title3)
+                                    Text(scoringModel.description)
+                                        .foregroundColor(.gray)
+                                }
+                                .padding(.vertical, 8)
                             }
-                            .padding(.vertical, 8)
+                        } footer: {
+                            Text("Scoring models will affect how scores are calculated")
                         }
-                    } footer: {
-                        Text("Scoring models will affect how scores are calculated")
                     }
+                    .navigationTitle("Scoring models")
                 }
-                .navigationTitle("Scoring models")
             }
         }
     }
