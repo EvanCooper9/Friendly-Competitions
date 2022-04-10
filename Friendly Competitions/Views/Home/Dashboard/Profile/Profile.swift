@@ -3,26 +3,20 @@ import SwiftUI
 
 struct Profile: View {
     
-    @Environment(\.presentationMode) private var presentationMode
-    
-    // Since this is presented from the navigation view toolbar,
-    // the environment objects don't exist
-    @InjectedObject private var authenticationManager: AnyAuthenticationManager
-    @InjectedObject private var userManager: AnyUserManager
+    @StateObject private var viewModel = ProfileViewModel()
     
     @State private var presentDeleteAccountAlert = false
     
     var body: some View {
         Form {
-            UserInfoSection(user: userManager.user)
+            UserInfoSection(user: viewModel.user)
             
             Section("Statistics") {
-                StatisticsView(statistics: userManager.user.statistics ?? .zero)
+                StatisticsView(statistics: viewModel.user.statistics ?? .zero)
             }
             
             Section {
-                Toggle("Searchable", isOn: $userManager.user.searchable ?? true)
-                
+                Toggle("Searchable", isOn: $viewModel.user.searchable ?? true)
             } header: {
                 Text("Privacy")
             } footer: {
@@ -30,15 +24,14 @@ struct Profile: View {
             }
             
             Section {
-                Toggle("Show real name", isOn: $userManager.user.showRealName ?? true)
+                Toggle("Show real name", isOn: $viewModel.user.showRealName ?? true)
             } footer: {
                 Text("Turn this off to hide your name in competitions that you join. You will still earn medals, and friends will still see your real name.")
             }
             
             Section("Session") {
                 Button("Sign out", systemImage: "person.crop.circle.badge.minus") {
-                    try authenticationManager.signOut()
-                    presentationMode.wrappedValue.dismiss()
+                    viewModel.signOut()
                 }
                 Button(toggling: $presentDeleteAccountAlert) {
                     Label("Delete account", systemImage: "trash")
@@ -52,7 +45,7 @@ struct Profile: View {
             isPresented: $presentDeleteAccountAlert,
             titleVisibility: .visible
         ) {
-            Button("Yes", role: .destructive, action: userManager.deleteAccount)
+            Button("Yes", role: .destructive, action: viewModel.deleteAccount)
             Button("Cancel", role: .cancel) {}
         }
         .registerScreenView(name: "Profile")

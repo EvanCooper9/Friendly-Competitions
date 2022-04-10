@@ -39,25 +39,24 @@ final class CompetitionsManager: AnyCompetitionsManager {
 
     // MARK: - Private Properties
 
-//    @LazyInjected private var activitySummaryManager: AnyActivitySummaryManager
+    @LazyInjected private var activitySummaryManager: AnyActivitySummaryManager
     @Injected private var analyticsManager: AnyAnalyticsManager
     @Injected private var database: Firestore
     @Injected private var userManager: AnyUserManager
-
-    private var user: User { userManager.user }
 
     private var updateTask: Task<Void, Error>? {
         willSet { updateTask?.cancel() }
     }
 
     private var cancellables = Set<AnyCancellable>()
+    private var listenerBag = ListenerBag()
 
     // MARK: - Lifecycle
 
     override init() {
         super.init()
-//        listen()
-//        fetchCompetitionData()
+        listen()
+        fetchCompetitionData()
 
         Publishers
             .CombineLatest3($competitions, $appOwnedCompetitions, $invitedCompetitions)
@@ -69,16 +68,22 @@ final class CompetitionsManager: AnyCompetitionsManager {
     }
     
     deinit {
-        print(#function)
+        competitions.removeAll()
+        invitedCompetitions.removeAll()
+        standings.removeAll()
+        participants.removeAll()
+        pendingParticipants.removeAll()
+        appOwnedCompetitions.removeAll()
+        topCommunityCompetitions.removeAll()
     }
 
     // MARK: - Public Methods
 
     override func accept(_ competition: Competition) {
         var competition = competition
-        competition.pendingParticipants.remove(user.id)
-        if !competition.participants.contains(user.id) {
-            competition.participants.append(user.id)
+        competition.pendingParticipants.remove(userManager.user.id)
+        if !competition.participants.contains(userManager.user.id) {
+            competition.participants.append(userManager.user.id)
         }
         competitions.append(competition)
         invitedCompetitions.remove(competition)
@@ -90,8 +95,8 @@ final class CompetitionsManager: AnyCompetitionsManager {
     override func createCompetition(with config: NewCompetitionEditorConfig) {
         let competition = Competition(
             name: config.name,
-            owner: user.id,
-            participants: [user.id],
+            owner: userManager.user.id,
+            participants: [userManager.user.id],
             pendingParticipants: config.invitees,
             scoringModel: config.scoringModel,
             start: config.start,
@@ -103,7 +108,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
         competitions.append(competition)
         Task { [weak self, competition] in
             try await self?.database.document("competitions/\(competition.id)").setDataEncodable(competition)
-//            try await activitySummaryManager.update()
+            try await activitySummaryManager.update()
         }
         
         analyticsManager.log(event: .createCompetition(name: config.name))
@@ -111,7 +116,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
 
     override func decline(_ competition: Competition) {
         var competition = competition
-        competition.pendingParticipants.remove(user.id)
+        competition.pendingParticipants.remove(userManager.user.id)
         invitedCompetitions.remove(competition)
         standings[competition.id] = nil
         update(competition: competition)
@@ -148,24 +153,25 @@ final class CompetitionsManager: AnyCompetitionsManager {
     }
 
     override func join(_ competition: Competition) {
-        guard !competition.participants.contains(user.id) else { return }
+        guard !competition.participants.contains(userManager.user.id) else { return }
         var competition = competition
-        competition.participants.append(user.id)
+        competition.participants.append(userManager.user.id)
         update(competition: competition)
         analyticsManager.log(event: .joinCompetition(id: competition.id))
     }
 
     override func leave(_ competition: Competition) {
         var competition = competition
-        competition.participants.remove(user.id)
+        competition.participants.remove(userManager.user.id)
         competitions.remove(competition)
         standings[competition.id] = nil
         participants[competition.id] = nil
         pendingParticipants[competition.id] = nil
         update(competition: competition)
-        Task { [weak self, competition] in
-            try await self?.database.document("competitions/\(competition.id)/standings/\(user.id)").delete()
-            try await self?.database.document("competitions/\(competition.id)").updateDataEncodable(competition)
+        Task { [weak self, competition, weak userManager] in
+            guard let self = self, let userManager = userManager else { return }
+            try await self.database.document("competitions/\(competition.id)/standings/\(userManager.user.id)").delete()
+            try await self.database.document("competitions/\(competition.id)").updateDataEncodable(competition)
         }
         analyticsManager.log(event: .leaveCompetition(id: competition.id))
     }
@@ -224,7 +230,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
 
     private func listen() {
         database.collection("competitions")
-            .whereField("participants", arrayContains: user.id)
+            .whereField("participants", arrayContains: userManager.user.id)
             .addSnapshotListener { snapshot, error in
                 guard let snapshot = snapshot else { return }
                 let competitions = snapshot.documents.decoded(asArrayOf: Competition.self)
@@ -232,9 +238,10 @@ final class CompetitionsManager: AnyCompetitionsManager {
                     self?.competitions = competitions
                 }
             }
+            .store(in: listenerBag)
 
         database.collection("competitions")
-            .whereField("pendingParticipants", arrayContains: user.id)
+            .whereField("pendingParticipants", arrayContains: userManager.user.id)
             .addSnapshotListener { snapshot, error in
                 guard let snapshot = snapshot else { return }
                 let competitions = snapshot.documents.decoded(asArrayOf: Competition.self)
@@ -242,6 +249,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
                     self?.invitedCompetitions = competitions
                 }
             }
+            .store(in: listenerBag)
 
         database.collection("competitions")
             .whereField("isPublic", isEqualTo: true)
@@ -253,11 +261,12 @@ final class CompetitionsManager: AnyCompetitionsManager {
                     self?.appOwnedCompetitions = competitions
                 }
             }
+            .store(in: listenerBag)
 
         database.collection("competitions")
             .whereField("isPublic", isEqualTo: true)
             .whereField("owner", isNotEqualTo: Bundle.main.id)
-            .getDocuments { snapshot, error in
+            .addSnapshotListener { snapshot, error in
                 guard let snapshot = snapshot else { return }
                 let competitions = snapshot.documents
                     .decoded(asArrayOf: Competition.self)
@@ -269,6 +278,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
                     self?.topCommunityCompetitions = Array(competitions)
                 }
             }
+            .store(in: listenerBag)
     }
 
     private func fetchStandings(for competitions: [Competition]) async throws {
@@ -280,8 +290,8 @@ final class CompetitionsManager: AnyCompetitionsManager {
         }
         try await withThrowingTaskGroup(of: (Competition.ID, [Competition.Standing])?.self) { group in
             competitions.forEach { competition in
-                group.addTask { [weak self] in
-                    guard let self = self else { return nil }
+                group.addTask { [weak self, weak userManager] in
+                    guard let self = self, let userManager = userManager else { return nil }
                     let standingsRef = self.database.collection("competitions/\(competition.id)/standings")
 
                     var standings = try await standingsRef
@@ -291,9 +301,9 @@ final class CompetitionsManager: AnyCompetitionsManager {
                         .documents
                         .decoded(asArrayOf: Competition.Standing.self)
 
-                    if !standings.contains(where: { $0.userId == self.userManager.user.id }) {
+                    if !standings.contains(where: { $0.userId == userManager.user.id }) {
                         let standing = try await standingsRef
-                            .whereField("userId", isEqualTo: self.userManager.user.id)
+                            .whereField("userId", isEqualTo: userManager.user.id)
                             .getDocuments()
                             .documents
                             .first?

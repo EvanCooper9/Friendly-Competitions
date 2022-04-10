@@ -1,20 +1,26 @@
 import SwiftUI
 
 struct CompetitionDetails: View {
-    
+
     let competition: Competition
     let showParticipantCount: Bool
     let isFeatured: Bool
 
     @Environment(\.colorScheme) private var colorScheme
-
-    @EnvironmentObject private var competitionsManager: AnyCompetitionsManager
-    @EnvironmentObject private var userManager: AnyUserManager
+    
+    @StateObject private var viewModel: CompetitionDetailsViewModel
+    
+    init(competition: Competition, showParticipantCount: Bool, isFeatured: Bool) {
+        _viewModel = StateObject(wrappedValue: CompetitionDetailsViewModel(competition: competition))
+        self.competition = competition
+        self.showParticipantCount = showParticipantCount
+        self.isFeatured = isFeatured
+    }
 
     var body: some View {
-        print(Self._printChanges())
-        print(competition)
-        return NavigationLink(destination: CompetitionView(competition: competition)) {
+        NavigationLink {
+            CompetitionView(competition: competition)
+        } label: {
             HStack(alignment: .center) {
                 if competition.owner == Bundle.main.id {
                     AppIcon(size: UIFont.preferredFont(forTextStyle: .title2).pointSize)
@@ -28,14 +34,9 @@ struct CompetitionDetails: View {
 
                 Spacer()
 
-                if competition.pendingParticipants.contains(userManager.user.id) {
+                if viewModel.isInvitation {
                     Text("Invited")
                         .foregroundColor(.gray)
-                } else if competition.ended,
-                      let standings = competitionsManager.standings[competition.id],
-                      let rank = standings.first(where: { $0.userId == userManager.user.id })?.rank,
-                      let rankEmoji = rank.rankEmoji {
-                    Text(rankEmoji)
                 } else if showParticipantCount {
                     Label("\(competition.participants.count)", systemImage: "person.3.fill")
                         .foregroundColor(colorScheme.textColor)
@@ -51,21 +52,6 @@ struct CompetitionDetails: View {
     private var subtitleColor: Color {
         guard isFeatured else { return .gray }
         return colorScheme == .light ? .gray : .white
-    }
-}
-
-private extension Int {
-    var rankEmoji: String? {
-        switch self {
-        case 1:
-            return "🥇"
-        case 2:
-            return "🥈"
-        case 3:
-            return "🥉"
-        default:
-            return nil
-        }
     }
 }
 

@@ -20,9 +20,8 @@ final class UserManager: AnyUserManager {
     @InjectedObject private var authenticationManager: AnyAuthenticationManager
     @Injected private var database: Firestore
 
-    private var userListener: ListenerRegistration?
-
     private var cancellables = Set<AnyCancellable>()
+    private var listenerBag = ListenerBag()
 
     override init(user: User) {
         super.init(user: user)
@@ -35,11 +34,6 @@ final class UserManager: AnyUserManager {
                 try await self?.update()
             }
             .store(in: &cancellables)
-    }
-
-    deinit {
-        userListener?.remove()
-        userListener = nil
     }
 
     override func deleteAccount() {
@@ -57,11 +51,12 @@ final class UserManager: AnyUserManager {
     }
 
     private func listenForUser() {
-        userListener = database.document("users/\(user.id)")
+        database.document("users/\(user.id)")
             .addSnapshotListener { [weak self] snapshot, _ in
                 guard let self = self, let user = try? snapshot?.decoded(as: User.self) else { return }
                 self.analyticsManager.set(userId: user.id)
                 self.user = user
             }
+            .store(in: listenerBag)
     }
 }

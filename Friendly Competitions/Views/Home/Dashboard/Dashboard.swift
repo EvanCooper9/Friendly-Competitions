@@ -1,23 +1,17 @@
+import Resolver
 import SwiftUI
 
 struct Dashboard: View {
-        
+    
+    @StateObject private var viewModel = DashboardViewModel()
+    
     @EnvironmentObject private var appState: AppState
-    @EnvironmentObject private var activitySummaryManager: AnyActivitySummaryManager
-    @EnvironmentObject private var competitionsManager: AnyCompetitionsManager
-    @EnvironmentObject private var friendsManager: AnyFriendsManager
-    @EnvironmentObject private var permissionsManager: AnyPermissionsManager
-    @EnvironmentObject private var userManager: AnyUserManager
         
     @State private var presentAbout = false
     @State private var presentPermissions = false
     @State private var presentNewCompetition = false
     @State private var presentSearchFriendsSheet = false
     @AppStorage("competitionsFiltered") var competitionsFiltered = false
-    
-    init() {
-        print(#function)
-    }
     
     var body: some View {
         List {
@@ -28,7 +22,7 @@ struct Dashboard: View {
             }
             .textCase(nil)
         }
-        .navigationBarTitle(userManager.user.name.ifEmpty(Bundle.main.displayName))
+        .navigationBarTitle(viewModel.user.name.ifEmpty(Bundle.main.displayName))
         .toolbar {
             HStack {
                 Button(toggling: $presentAbout) {
@@ -44,31 +38,27 @@ struct Dashboard: View {
         .sheet(isPresented: $presentAbout) { About() }
         .sheet(isPresented: $presentSearchFriendsSheet) { AddFriendView() }
         .sheet(isPresented: $presentNewCompetition) { NewCompetition() }
-        .sheet(isPresented: $presentPermissions) { PermissionsView() }
-        .onOpenURL { [weak appState] url in
-            appState?.deepLink = DeepLink(from: url)
-            switch appState?.deepLink {
+        .sheet(isPresented: $viewModel.requiresPermissions) { PermissionsView() }
+        .onOpenURL { url in
+            appState.deepLink = DeepLink(from: url)
+            switch appState.deepLink {
             case .friendReferral:
                 presentSearchFriendsSheet.toggle()
             default:
                 break
             }
         }
-        .onAppear {
-            presentPermissions = permissionsManager.requiresPermission
-        }
-        .onChange(of: permissionsManager.requiresPermission) { presentPermissions = $0 }
         .registerScreenView(name: "Home")
     }
     
     @ViewBuilder
     private var activitySummary: some View {
         Section {
-            ActivitySummaryInfoView(activitySummary: activitySummaryManager.activitySummary)
+            ActivitySummaryInfoView(activitySummary: viewModel.activitySummary)
         } header: {
             Text("Activity").font(.title3)
         } footer: {
-            if activitySummaryManager.activitySummary == nil {
+            if viewModel.activitySummary == nil {
                 Text("Have you worn your watch today? We can't find any activity summaries yet. If this is a mistake, please make sure that permissions are enabled in the Health app.")
             }
         }
@@ -76,12 +66,12 @@ struct Dashboard: View {
     
     private var competitions: some View {
         Section {
-            ForEach(competitionsManager.competitions) { competition in
+            ForEach(viewModel.competitions) { competition in
                 if competitionsFiltered ? competition.isActive : true {
                     CompetitionDetails(competition: competition, showParticipantCount: false, isFeatured: false)
                 }
             }
-            ForEach(competitionsManager.invitedCompetitions) { competition in
+            ForEach(viewModel.invitedCompetitions) { competition in
                 if competitionsFiltered ? competition.isActive : true {
                     CompetitionDetails(competition: competition, showParticipantCount: false, isFeatured: false)
                 }
@@ -97,7 +87,7 @@ struct Dashboard: View {
                     Image(systemName: "line.3.horizontal.decrease.circle\(competitionsFiltered ? ".fill" : "")")
                         .font(.title2)
                 }
-                .disabled(competitionsManager.competitions.isEmpty)
+                .disabled(viewModel.competitions.isEmpty)
                 
                 Button(toggling: $presentNewCompetition) {
                     Image(systemName: "plus.circle")
@@ -105,7 +95,7 @@ struct Dashboard: View {
                 }
             }
         } footer: {
-            if competitionsManager.competitions.isEmpty {
+            if viewModel.competitions.isEmpty {
                 Text("Start a competition against your friends!")
             }
         }
@@ -114,29 +104,31 @@ struct Dashboard: View {
     @ViewBuilder
     private var friends: some View {
         Section {
-            ForEach(friendsManager.friends) { friend in
-                NavigationLink(destination: FriendView(friend: friend)) {
+            ForEach(viewModel.friends) { friend in
+                NavigationLink {
+                    FriendView(friend: friend)
+                } label: {
                     HStack {
-                        ActivityRingView(activitySummary: friendsManager.friendActivitySummaries[friend.id]?.hkActivitySummary)
+                        ActivityRingView(activitySummary: viewModel.friendActivitySummaries[friend.id]?.hkActivitySummary)
                             .frame(width: 35, height: 35)
                         Text(friend.name)
                         Spacer()
                     }
                 }
             }
-            ForEach(friendsManager.friendRequests) { friendRequest in
+            ForEach(viewModel.friendRequests) { friendRequest in
                 HStack {
                     Image(systemName: "person.crop.circle.badge.questionmark")
                         .font(.title)
                         .frame(width: 35, height: 35)
                     Text(friendRequest.name)
                     Spacer()
-                    Button("Accept", action: { friendsManager.acceptFriendRequest(from: friendRequest) })
+                    Button("Accept", action: { viewModel.acceptFriendRequest(from: friendRequest) })
                         .foregroundColor(.blue)
                         .buttonStyle(.borderless)
                     Text("/")
                         .fontWeight(.ultraLight)
-                    Button("Decline", action: { friendsManager.declineFriendRequest(from: friendRequest) })
+                    Button("Decline", action: { viewModel.declineFriendRequest(from: friendRequest) })
                         .foregroundColor(.red)
                         .padding(.trailing, 10)
                         .buttonStyle(.borderless)
@@ -153,7 +145,7 @@ struct Dashboard: View {
                 }
             }
         } footer: {
-            if friendsManager.friends.isEmpty && friendsManager.friendRequests.isEmpty {
+            if viewModel.friends.isEmpty && viewModel.friendRequests.isEmpty {
                 Text("Add friends to get started!")
             }
         }
@@ -189,5 +181,6 @@ struct Dashboard_Previews: PreviewProvider {
     static var previews: some View {
         Dashboard()
             .setupMocks(setupMocks)
+            .embeddedInNavigationView()
     }
 }

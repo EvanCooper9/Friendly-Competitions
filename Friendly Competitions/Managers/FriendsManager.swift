@@ -56,6 +56,11 @@ final class FriendsManager: AnyFriendsManager {
             .sink { [weak self] _ in self?.queueUpdates() }
             .store(in: &cancellables)
     }
+    
+    deinit {
+        friends.removeAll()
+        friendActivitySummaries.removeAll()
+    }
 
     // MARK: - Public Methods
 
