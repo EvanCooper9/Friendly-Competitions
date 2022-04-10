@@ -8,6 +8,12 @@ class AnyStorageManager: ObservableObject {
 }
 
 final class StorageManager: AnyStorageManager {
+    
+    // MARK: - Lifecycle
+    
+    deinit {
+        // remove storage
+    }
 
     // MARK: - Private Properties
 

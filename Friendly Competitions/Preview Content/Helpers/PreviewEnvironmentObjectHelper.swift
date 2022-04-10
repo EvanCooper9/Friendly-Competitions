@@ -1,3 +1,4 @@
+import Resolver
 import SwiftUI
 
 fileprivate struct Container {
@@ -11,6 +12,19 @@ fileprivate struct Container {
     static let permissionsManager = AnyPermissionsManager()
     static let storageManager = AnyStorageManager()
     static let userManager = AnyUserManager(user: .evan)
+    
+    static func registerDependencies() {
+        Resolver.register { Container.appState }.scope(.application)
+        Resolver.register { Container.activitySummaryManager }.scope(.application)
+        Resolver.register { Container.analyticsManager }.scope(.application)
+        Resolver.register { Container.authenticationManager }.scope(.application)
+        Resolver.register { Container.competitionsManager }.scope(.application)
+        Resolver.register { Container.friendsManager }.scope(.application)
+        Resolver.register { Container.healthKitManager }.scope(.application)
+        Resolver.register { Container.permissionsManager }.scope(.application)
+        Resolver.register { Container.storageManager }.scope(.application)
+        Resolver.register { Container.userManager }.scope(.application)
+    }
 }
 
 extension PreviewProvider {
@@ -24,11 +38,16 @@ extension PreviewProvider {
     static var permissionsManager: AnyPermissionsManager { Container.permissionsManager }
     static var storageManager: AnyStorageManager { Container.storageManager }
     static var userManager: AnyUserManager { Container.userManager }
+    
+    static func registerDependencies() {
+        Container.registerDependencies()
+    }
 }
 
 extension View {
-    func withEnvironmentObjects(setupMocks: @escaping () -> Void = {}) -> some View {
-        self
+    func setupMocks(_ setupMocks: @escaping () -> Void = {}) -> some View {
+        Container.registerDependencies()
+        return self
             .environmentObject(Container.appState)
             .environmentObject(Container.activitySummaryManager)
             .environmentObject(Container.analyticsManager)

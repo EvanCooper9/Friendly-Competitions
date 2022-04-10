@@ -1,6 +1,9 @@
 import FirebaseAnalytics
 import FirebaseCrashlytics
 import Foundation
+import Resolver
+
+let analytics = Resolver.resolve(AnyAnalyticsManager.self)
 
 enum AnalyticsEvent: Codable {
     
@@ -16,6 +19,9 @@ enum AnalyticsEvent: Codable {
     // permissions
     case notificationPermissions(authorized: Bool)
     case healthKitPermissions(authorized: Bool)
+    
+    // errors
+    case decodingError(error: String)
 }
 
 class AnyAnalyticsManager: ObservableObject {

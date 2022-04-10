@@ -7,7 +7,7 @@ extension DocumentSnapshot {
         do {
             return try JSONDecoder.shared.decode(T.self, from: data)
         } catch {
-            print(error)
+            analytics.log(event: .decodingError(error: error.localizedDescription))
             throw error
         }
     }

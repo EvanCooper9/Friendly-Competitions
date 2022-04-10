@@ -10,6 +10,7 @@ import { User } from "./Models/User";
  */
 async function sendNotificationsToUser(user: User, title: string, body: string): Promise<void> {
     const tokens = user.notificationTokens;
+    if (tokens === undefined) return;
     const notifications = tokens.map(async token => {
         return await sendNotification(token, title, body)
             .catch(() => {

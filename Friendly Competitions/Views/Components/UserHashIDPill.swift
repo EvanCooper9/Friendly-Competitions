@@ -1,11 +1,11 @@
 import SwiftUI
 
-struct UserHashIDPill: View {
+struct IDPill: View {
 
-    let user: User
+    let id: String
 
     var body: some View {
-        Text(user.hashId)
+        Text(id)
             .font(.footnote)
             .foregroundColor(.gray)
             .padding(.horizontal, 8)
@@ -15,8 +15,8 @@ struct UserHashIDPill: View {
     }
 }
 
-struct UserHashIDPill_Previews: PreviewProvider {
+struct IDPill_Previews: PreviewProvider {
     static var previews: some View {
-        UserHashIDPill(user: .evan)
+        IDPill(id: User.evan.hashId)
     }
 }

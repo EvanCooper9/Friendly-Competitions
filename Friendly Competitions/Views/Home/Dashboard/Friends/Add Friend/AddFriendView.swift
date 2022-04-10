@@ -2,16 +2,12 @@ import SwiftUI
 
 struct AddFriendView: View {
 
-    @State private var friendReferral: User?
-
-    @EnvironmentObject private var appState: AppState
-    @EnvironmentObject private var friendsManager: AnyFriendsManager
-    @EnvironmentObject private var userManager: AnyUserManager
-
+    @StateObject private var viewModel = AddFriendViewModel()
+    
     var body: some View {
         List {
 
-            if let friendReferral = friendReferral, friendReferral.id != userManager.user.id {
+            if let friendReferral = viewModel.friendReferral {
                 Section("Shared with you") {
                     AddFriendListItem(
                         friend: friendReferral,
@@ -19,24 +15,24 @@ struct AddFriendView: View {
                         disabledIf: friendReferral
                             .incomingFriendRequests
                             .appending(contentsOf: friendReferral.friends)
-                            .contains(userManager.user.id)
-                    ) { friendsManager.add(friend: friendReferral) }
+                            .contains(viewModel.user.id)
+                    ) { viewModel.add(friendReferral) }
                 }
             }
 
             Section {
-                ForEach(friendsManager.searchResults) { friend in
+                ForEach(viewModel.searchResults) { friend in
                     AddFriendListItem(
                         friend: friend,
                         action: .friendRequest,
                         disabledIf: friend
                             .incomingFriendRequests
                             .appending(contentsOf: friend.friends)
-                            .contains(userManager.user.id)
-                    ) { friendsManager.add(friend: friend) }
+                            .contains(viewModel.user.id)
+                    ) { viewModel.add(friend) }
                 }
             } header: {
-                if !friendsManager.searchResults.isEmpty {
+                if !viewModel.searchResults.isEmpty {
                     Text("Search results")
                 }
             } footer: {
@@ -47,9 +43,8 @@ struct AddFriendView: View {
             }
         }
         .listStyle(.insetGrouped)
-        .searchable(text: $friendsManager.searchText)
+        .searchable(text: $viewModel.searchText, placement: .navigationBarDrawer(displayMode: .always))
         .navigationTitle("Search for Friends")
-        .onAppear(perform: handleDeepLink)
         .embeddedInNavigationView()
         .registerScreenView(name: "Add Friend")
     }
@@ -58,7 +53,7 @@ struct AddFriendView: View {
         Task {
             let activityItems: [Any] = [
                 "Add me in Friendly Competitions!",
-                URL(string: "https://friendly-competitions.evancooper.tech/invite/\(userManager.user.id)")!
+                URL(string: "https://friendly-competitions.evancooper.tech/invite/\(viewModel.user.id)")!
             ]
             let activityVC = UIActivityViewController(
                 activityItems: activityItems,
@@ -81,17 +76,6 @@ struct AddFriendView: View {
             }
         }
     }
-
-    private func handleDeepLink() {
-        guard case let .friendReferral(referralId) = appState.deepLink else { return }
-        Task {
-            let friendReferral = try await friendsManager.user(withId: referralId)
-            DispatchQueue.main.async {
-                self.friendReferral = friendReferral
-                self.appState.deepLink = nil
-            }
-        }
-    }
 }
 
 struct AddFriendView_Previews: PreviewProvider {
@@ -101,11 +85,10 @@ struct AddFriendView_Previews: PreviewProvider {
         friendsManager.friends = [friend]
         friendsManager.friendActivitySummaries = [friend.id: .mock]
         friendsManager.friendRequests = [friend]
-        friendsManager.searchResults = [.gabby, .evan]
     }
 
     static var previews: some View {
         AddFriendView()
-            .withEnvironmentObjects(setupMocks: setupMocks)
+            .setupMocks(setupMocks)
     }
 }

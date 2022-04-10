@@ -2,7 +2,7 @@ import SwiftUI
 
 struct FeaturedCompetition: View {
 
-    @Binding var competition: Competition
+    let competition: Competition
 
     @Environment(\.colorScheme) private var colorScheme
 
@@ -11,7 +11,7 @@ struct FeaturedCompetition: View {
 
     var body: some View {
         NavigationLink {
-            CompetitionView(competition: $competition)
+            CompetitionView(competition: competition)
         } label: {
             color
                 .aspectRatio(3/2, contentMode: .fit)
@@ -24,7 +24,7 @@ struct FeaturedCompetition: View {
                 }
                 .clipped()
                 .overlay {
-                    CompetitionDetails(competition: $competition, showParticipantCount: true, isFeatured: true)
+                    CompetitionDetails(competition: competition, showParticipantCount: true, isFeatured: true)
                         .padding(.vertical, 8)
                         .padding(.horizontal)
                         .background(.ultraThinMaterial)
@@ -43,13 +43,13 @@ struct FeaturedCompetition: View {
 struct FeaturedCompetitionView_Previews: PreviewProvider {
     static var previews: some View {
         ScrollView {
-            FeaturedCompetition(competition: .constant(.mockPublic))
+            FeaturedCompetition(competition: .mockPublic)
                 .padding()
-            FeaturedCompetition(competition: .constant(.mockPublic))
+            FeaturedCompetition(competition: .mockPublic)
                 .padding()
         }
 //        .preferredColorScheme(.dark)
         .background(Asset.Colors.listBackground.swiftUIColor)
-        .withEnvironmentObjects()
+        .setupMocks()
     }
 }

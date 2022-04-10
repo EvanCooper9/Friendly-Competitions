@@ -1,26 +1,29 @@
 import SwiftUI
 
 struct CompetitionView: View {
-
-    @Binding var competition: Competition
+    
+    let competition: Competition
 
     @Environment(\.presentationMode) private var presentationMode
-    @EnvironmentObject private var competitionsManager: AnyCompetitionsManager
-    @EnvironmentObject private var friendsManager: AnyFriendsManager
-    @EnvironmentObject private var userManager: AnyUserManager
+    
+    @StateObject private var viewModel: CompetitionViewModel
 
     private enum Action {
         case leave, delete
     }
 
-    @State private var showAreYouSure = false
     @State private var actionRequiringConfirmation: Action?
     @State private var showInviteFriend = false
+    
+    init(competition: Competition) {
+        _viewModel = .init(wrappedValue: CompetitionViewModel(competition: competition))
+        self.competition = competition
+    }
 
     var body: some View {
         List {
             standings
-            if !competition.pendingParticipants.isEmpty {
+            if !viewModel.pendingParticipants.isEmpty {
                 pendingInvites
             }
             details
@@ -38,30 +41,14 @@ struct CompetitionView: View {
 
     @ViewBuilder
     private var standings: some View {
-        let standings = competitionsManager.standings[competition.id] ?? []
         Section {
-            ForEach(standings) { standing in
-                HStack {
-                    Text(standing.rank.ordinalString ?? "?").bold()
-                    if let user = competitionsManager.participants[competition.id]?.first(where: { $0.id == standing.userId }), user.visibility(by: userManager.user) == .visible {
-                        Text(user.name)
-                        UserHashIDPill(user: user)
-                    } else if standing.userId == userManager.user.id {
-                        Text(userManager.user.name)
-                        UserHashIDPill(user: userManager.user)
-                    } else {
-                        Text(standing.userId)
-                            .blur(radius: 5)
-                    }
-                    Spacer()
-                    Text("\(standing.points)")
-                }
-                .foregroundColor(standing.userId == userManager.user.id ? .blue : nil)
+            ForEach(viewModel.standings) {
+                UserRowItem(config: $0)
             }
         } header: {
             Text("Standings")
         } footer: {
-            if standings.isEmpty {
+            if viewModel.standings.isEmpty {
                 Text("Nothing here, yet.")
             }
         }
@@ -69,8 +56,8 @@ struct CompetitionView: View {
 
     private var pendingInvites: some View {
         Section("Pending invites") {
-            ForEach(competitionsManager.pendingParticipants[competition.id] ?? []) {
-                Text($0.name)
+            ForEach(viewModel.pendingParticipants) {
+                UserRowItem(config: $0)
             }
         }
     }
@@ -106,30 +93,24 @@ struct CompetitionView: View {
                 }
             }
 
-            if competition.participants.contains(userManager.user.id) {
+            if competition.participants.contains(viewModel.user.id) {
                 Button("Leave competition", systemImage: "person.crop.circle.badge.minus") {
                     actionRequiringConfirmation = .leave
                 }
                 .foregroundColor(.red)
 
-                if competition.owner == userManager.user.id {
+                if competition.owner == viewModel.user.id {
                     Button("Delete competition", systemImage: "trash") {
                         actionRequiringConfirmation = .delete
                     }
                     .foregroundColor(.red)
                 }
-            } else if competition.pendingParticipants.contains(userManager.user.id) {
-                Button("Accept invite", systemImage: "person.crop.circle.badge.checkmark") {
-                    competitionsManager.accept(competition)
-                }
-                Button("Decline invite", systemImage: "person.crop.circle.badge.xmark") {
-                    competitionsManager.decline(competition)
-                }
-                .foregroundColor(.red)
+            } else if competition.pendingParticipants.contains(viewModel.user.id) {
+                Button("Accept invite", systemImage: "person.crop.circle.badge.checkmark", action: viewModel.accept)
+                Button("Decline invite", systemImage: "person.crop.circle.badge.xmark", action: viewModel.decline)
+                    .foregroundColor(.red)
             } else {
-                Button("Join competition", systemImage: "person.crop.circle.badge.checkmark") {
-                    competitionsManager.join(competition)
-                }
+                Button("Join competition", systemImage: "person.crop.circle.badge.checkmark", action: viewModel.join)
             }
         }
         .confirmationDialog(
@@ -140,9 +121,9 @@ struct CompetitionView: View {
             Button("Yes", role: .destructive) {
                 switch action {
                 case .leave:
-                    competitionsManager.leave(competition)
+                    viewModel.leave()
                 case .delete:
-                    competitionsManager.delete(competition)
+                    viewModel.delete()
                 }
                 presentationMode.wrappedValue.dismiss()
                 actionRequiringConfirmation = nil
@@ -152,20 +133,41 @@ struct CompetitionView: View {
         .sheet(isPresented: $showInviteFriend) {
             List {
                 Section {
-                    ForEach(friendsManager.friends) { friend in
+                    ForEach(viewModel.friends) { friend in
                         AddFriendListItem(
                             friend: friend,
                             action: .competitionInvite,
                             disabledIf: competition.pendingParticipants.contains(friend.id) || competition.participants.contains(friend.id)
-                        ) { competitionsManager.invite(friend, to: competition) }
+                        ) { viewModel.invite(friend) }
                     }
                 } footer: {
-                    Text("Friends who join in-progress competitions will have their scores from missed days retroactively uploaded.")
+                    Text("People who join in-progress competitions will have their scores from missed days retroactively uploaded.")
                 }
             }
             .navigationTitle("Invite a friend")
             .embeddedInNavigationView()
         }
+    }
+}
+
+private struct UserRowItem: View {
+    let config: CompetitionViewModel.StandingViewConfig
+    var body: some View {
+        HStack {
+            if let rank = config.rank {
+                Text(rank).bold()
+            }
+            Text(config.name)
+                .blur(radius: config.blurred ? 5 : 0)
+            if let idPillText = config.idPillText {
+                IDPill(id: idPillText)
+            }
+            Spacer()
+            if let points = config.points {
+                Text(points)
+            }
+        }
+        .foregroundColor(config.highlighted ? .blue : nil)
     }
 }
 
@@ -195,8 +197,8 @@ struct CompetitionView_Previews: PreviewProvider {
     }
 
     static var previews: some View {
-        CompetitionView(competition: .constant(competition))
-            .withEnvironmentObjects(setupMocks: setupMocks)
+        CompetitionView(competition: competition)
+            .setupMocks(setupMocks)
             .embeddedInNavigationView()
     }
 }

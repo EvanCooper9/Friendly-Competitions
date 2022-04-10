@@ -1,3 +1,3 @@
 extension Bool {
-    var flipped: Bool { !self }
+    var not: Bool { !self }
 }

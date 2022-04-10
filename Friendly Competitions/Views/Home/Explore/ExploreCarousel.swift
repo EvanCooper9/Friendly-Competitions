@@ -21,9 +21,9 @@ struct ExploreCarousel_Previews: PreviewProvider {
     static var previews: some View {
         ScrollView {
             ExploreCarousel(padding: 20) {
-                FeaturedCompetition(competition: .constant(.mockPublic))
+                FeaturedCompetition(competition: .mockPublic)
                     .frame(width: UIScreen.width - 40)
-                FeaturedCompetition(competition: .constant(.mockPublic))
+                FeaturedCompetition(competition: .mockPublic)
                     .frame(width: UIScreen.width - 40)
             }
             .aspectRatio(3/2, contentMode: .fit)

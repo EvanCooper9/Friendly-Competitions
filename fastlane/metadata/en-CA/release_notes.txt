@@ -1,4 +1,7 @@
-Improvements
+New features: 
+• You can now sign in with email and password
+
+Improvements:
 • Users who choose to hide their name in public competitions will have their name blurred instead of being assigned a random alias
 • More efficient competition standing calculations
 • Added analytics for better troubleshooting
