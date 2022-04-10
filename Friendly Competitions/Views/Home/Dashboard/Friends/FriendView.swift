@@ -3,29 +3,30 @@ import SwiftUI
 struct FriendView: View {
 
     let friend: User
-
-    @EnvironmentObject private var friendsManager: AnyFriendsManager
-
+    
+    @StateObject private var viewModel: FriendViewModel
+    
     @State private var showConfirmDelete = false
-
-    private var activitySummary: ActivitySummary? {
-        friendsManager.friendActivitySummaries[friend.id]
+    
+    init(friend: User) {
+        self.friend = friend
+        _viewModel = .init(wrappedValue: .init(friend: friend))
     }
-
+    
     var body: some View {
         List {
             Section {
-                ActivitySummaryInfoView(activitySummary: activitySummary)
+                ActivitySummaryInfoView(activitySummary: viewModel.activitySummary)
             } header: {
                 Text("Today's activity")
             } footer: {
-                if activitySummary == nil {
+                if viewModel.activitySummary == nil {
                     Text("Nothing here, yet!")
                 }
             }
 
             Section("Stats") {
-                StatisticsView(statistics: friend.statistics ?? .zero)
+                StatisticsView(statistics: viewModel.statistics)
             }
 
             Section {
@@ -41,7 +42,7 @@ struct FriendView: View {
             isPresented: $showConfirmDelete,
             titleVisibility: .visible
         ) {
-            Button("Yes", role: .destructive) { friendsManager.delete(friend: friend) }
+            Button("Yes", role: .destructive, action: viewModel.delete)
             Button("Cancel", role: .cancel) {}
         }
         .registerScreenView(
@@ -57,7 +58,7 @@ struct FriendView: View {
 struct FriendView_Previews: PreviewProvider {
     static var previews: some View {
         FriendView(friend: .gabby)
-            .withEnvironmentObjects()
+            .setupMocks()
             .embeddedInNavigationView()
     }
 }

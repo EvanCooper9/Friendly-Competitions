@@ -54,7 +54,7 @@ exports.sendNewCompetitionNotification = functions.firestore
 
         const users = userPromises.docs.map(doc => new User(doc));
         const notificationPromises = users
-            .filter(user => !user.id.startsWith('Anonymous'))
+            .filter(user => !user.id.startsWith("Anonymous"))
             .map(user => {
                 const message = change.before.exists ?
                     `You've been invited to ${newCompetition.name}` : // invited by somebody to existing competition

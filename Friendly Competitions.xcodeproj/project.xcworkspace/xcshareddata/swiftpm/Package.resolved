@@ -20,6 +20,15 @@
         }
       },
       {
+        "package": "CombineExt",
+        "repositoryURL": "https://github.com/CombineCommunity/CombineExt",
+        "state": {
+          "branch": "main",
+          "revision": "ee629dbf13be6c5facb9ecc812e0976bc639bb74",
+          "version": null
+        }
+      },
+      {
         "package": "Firebase",
         "repositoryURL": "https://github.com/firebase/firebase-ios-sdk",
         "state": {
@@ -51,8 +60,8 @@
         "repositoryURL": "https://github.com/google/GoogleUtilities.git",
         "state": {
           "branch": null,
-          "revision": "b3bb0c5551fb3f80ca939829639ab5b093edd14f",
-          "version": "7.7.0"
+          "revision": "f4abe56ce62a779e64b525eb133c8fc2a84bbc1f",
+          "version": "7.7.1"
         }
       },
       {
@@ -96,8 +105,8 @@
         "repositoryURL": "https://github.com/google/promises.git",
         "state": {
           "branch": null,
-          "revision": "611337c330350c9c1823ad6d671e7f936af5ee13",
-          "version": "2.0.0"
+          "revision": "46c1e6b5ac09d8f82c991061c659f67e573d425d",
+          "version": "2.1.0"
         }
       },
       {
@@ -114,8 +123,8 @@
         "repositoryURL": "https://github.com/apple/swift-algorithms.git",
         "state": {
           "branch": null,
-          "revision": "2327673b0e9c7e90e6b1826376526ec3627210e4",
-          "version": "0.2.1"
+          "revision": "b14b7f4c528c942f121c8b860b9410b2bf57825e",
+          "version": "1.0.0"
         }
       },
       {
@@ -123,8 +132,8 @@
         "repositoryURL": "https://github.com/apple/swift-numerics",
         "state": {
           "branch": null,
-          "revision": "6583ac70c326c3ee080c1d42d9ca3361dca816cd",
-          "version": "0.1.0"
+          "revision": "0a5bc04095a675662cf24757cc0640aa2204253b",
+          "version": "1.0.2"
         }
       },
       {

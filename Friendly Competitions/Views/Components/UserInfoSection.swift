@@ -8,7 +8,7 @@ struct UserInfoSection: View {
         Section("Profile") {
             HStack {
                 ImmutableListItemView(value: user.name, valueType: .name)
-                UserHashIDPill(user: user)
+                IDPill(id: user.hashId)
             }
             ImmutableListItemView(value: user.email, valueType: .email)
         }

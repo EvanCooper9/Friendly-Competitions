@@ -2,14 +2,14 @@ import SwiftUI
 
 struct PermissionsView: View {
 
-    @EnvironmentObject private var permissionsManager: AnyPermissionsManager
+    @StateObject private var viewModel = PermissionsViewModel()
 
     var body: some View {
         List {
             Section {
-                ForEach(Array(permissionsManager.permissionStatus.keys)) { permission in
-                    PermissionView(permission: permission, status: permissionsManager.permissionStatus[permission]!) {
-                        permissionsManager.request(permission)
+                ForEach(viewModel.permissionStatuses, id: \.0) { permission, permissionStatus in
+                    PermissionView(permission: permission, status: permissionStatus) {
+                        viewModel.request(permission)
                     }
                 }
             } header: {
@@ -36,6 +36,6 @@ struct PermissionsView_Previews: PreviewProvider {
     
     static var previews: some View {
         PermissionsView()
-            .withEnvironmentObjects(setupMocks: setupMocks)
+            .setupMocks(setupMocks)
     }
 }

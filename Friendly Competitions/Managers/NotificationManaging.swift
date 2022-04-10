@@ -9,7 +9,7 @@ protocol NotificationManaging {
 
 final class NotificationManager: NSObject, NotificationManaging {
     
-    @Injected private var analyticsManager: AnyAnalyticsManager
+    @WeakLazyInjected<AnyAnalyticsManager> private var analyticsManager
 
     override init() {
         super.init()
@@ -32,7 +32,7 @@ final class NotificationManager: NSObject, NotificationManaging {
             options: [.alert, .badge, .sound],
             completionHandler: { [weak self] authorized, error in
                 guard let self = self else { return }
-                self.analyticsManager.log(event: .healthKitPermissions(authorized: authorized))
+                self.analyticsManager?.log(event: .healthKitPermissions(authorized: authorized))
                 if authorized {
                     DispatchQueue.main.async {
                         self.setupNotifications()
