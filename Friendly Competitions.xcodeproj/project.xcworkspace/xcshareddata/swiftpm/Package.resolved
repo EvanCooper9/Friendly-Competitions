@@ -21,7 +21,7 @@
       },
       {
         "package": "CombineExt",
-        "repositoryURL": "git@github.com:CombineCommunity/CombineExt.git",
+        "repositoryURL": "https://github.com/CombineCommunity/CombineExt",
         "state": {
           "branch": "main",
           "revision": "ee629dbf13be6c5facb9ecc812e0976bc639bb74",

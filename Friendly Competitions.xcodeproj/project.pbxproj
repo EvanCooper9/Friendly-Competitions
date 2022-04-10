@@ -1505,7 +1505,7 @@
 		};
 		ED83605B2803369D0038FACE /* XCRemoteSwiftPackageReference "CombineExt" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "git@github.com:CombineCommunity/CombineExt.git";
+			repositoryURL = "https://github.com/CombineCommunity/CombineExt";
 			requirement = {
 				branch = main;
 				kind = branch;
