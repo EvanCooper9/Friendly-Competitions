@@ -27,7 +27,11 @@ struct CompetitionDetails: View {
                 }
                 VStack(alignment: .leading) {
                     Text(competition.name)
-                    Text("\(competition.ended ? "ended" : "ends") \(RelativeDateTimeFormatter().localizedString(for: competition.trueEnd, relativeTo: .now))")
+                    
+                    let referenceDate = competition.started ? competition.trueEnd : competition.start
+                    let endString = competition.ended ? "ended" : "ends"
+                    let startString = "starts"
+                    Text("\(competition.started ? endString : startString) \(RelativeDateTimeFormatter().localizedString(for: referenceDate, relativeTo: .now))")
                         .font(.footnote)
                         .foregroundColor(subtitleColor)
                 }
@@ -57,9 +61,14 @@ struct CompetitionDetails: View {
 
 struct CompetitionDetails_Previews: PreviewProvider {
     static var previews: some View {
-        List {
-            CompetitionDetails(competition: .mock, showParticipantCount: true, isFeatured: false)
-            CompetitionDetails(competition: .mock, showParticipantCount: true, isFeatured: false)
+        NavigationView {
+            List {
+                CompetitionDetails(competition: .mockFuture, showParticipantCount: true, isFeatured: false)
+                CompetitionDetails(competition: .mock, showParticipantCount: true, isFeatured: false)
+                CompetitionDetails(competition: .mockOld, showParticipantCount: true, isFeatured: false)
+            }
+            .navigationTitle("Previews")
         }
+        .withEnvironmentObjects()
     }
 }
