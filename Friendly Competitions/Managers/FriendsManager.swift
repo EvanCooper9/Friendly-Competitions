@@ -9,28 +9,19 @@ class AnyFriendsManager: ObservableObject {
     @Published(storedWithKey: .friends) var friends = [User]()
     @Published(storedWithKey: .friendActivitySummaries) var friendActivitySummaries = [User.ID: ActivitySummary]()
     @Published var friendRequests = [User]()
-    @Published var searchResults = [User]()
-    @Published var searchText = ""
 
     func add(friend: User) {}
     func acceptFriendRequest(from: User) {}
     func declineFriendRequest(from: User) {}
     func delete(friend: User) {}
     func user(withId id: String) async throws -> User? { nil }
+    func search(with text: String) async throws -> [User] { [] }
 }
 
 final class FriendsManager: AnyFriendsManager {
-
-    // MARK: - Public Properties
-
-    override var searchText: String {
-        didSet {
-            guard !searchText.isEmpty else {
-                searchResults.removeAll()
-                return
-            }
-            searchTask = Task { try await searchUsers() }
-        }
+    
+    private struct SearchResult: Decodable {
+        let name: String
     }
 
     // MARK: - Private Properties
@@ -135,6 +126,22 @@ final class FriendsManager: AnyFriendsManager {
             .first?
             .decoded(as: User.self)
     }
+    
+    override func search(with text: String) async throws -> [User] {
+        guard !text.isEmpty else { return [] }
+        return try await database.collection("users")
+            .whereField("searchable", isEqualTo: true)
+            .getDocuments()
+            .documents
+            .decoded(asArrayOf: User.self)
+            .filter { someUser in
+                someUser.name
+                    .lowercased()
+                    .split(separator: " ")
+                    .contains { $0.starts(with: text.lowercased()) }
+            }
+            .sorted(by: \.name)
+    }
 
     // MARK: - Private Methods
 
@@ -207,28 +214,6 @@ final class FriendsManager: AnyFriendsManager {
 
         DispatchQueue.main.async { [weak self] in
             self?.friendRequests = friendRequests
-        }
-    }
-
-    private func searchUsers() async throws {
-        let users = try await database.collection("users")
-            .whereField("searchable", isEqualTo: true)
-            .getDocuments()
-            .documents
-            .decoded(asArrayOf: User.self)
-            .filter { someUser in
-                guard !user.friends.appending(user.id).contains(someUser.id) else { return false }
-                return someUser.name
-                    .lowercased()
-                    .split(separator: " ")
-                    .contains { $0.starts(with: searchText.lowercased()) }
-            }
-            .sorted(by: \.name)
-
-        try Task.checkCancellation()
-
-        DispatchQueue.main.async { [weak self] in
-            self?.searchResults = users
         }
     }
 }

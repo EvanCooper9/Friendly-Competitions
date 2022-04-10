@@ -4,11 +4,8 @@ struct NewCompetition: View {
 
     @Environment(\.presentationMode) private var presentationMode
     
-    @EnvironmentObject private var competitionManager: AnyCompetitionsManager
-    @EnvironmentObject private var friendsManager: AnyFriendsManager
-    @EnvironmentObject private var userManager: AnyUserManager
+    @StateObject private var viewModel = NewCompetitionViewModel()
     
-    @State private var editorConfig = NewCompetitionEditorConfig()
     @State private var presentAddFriends = false
 
     var body: some View {
@@ -19,13 +16,13 @@ struct NewCompetition: View {
 
             Section {
                 Button("Create") {
-                    competitionManager.createCompetition(with: editorConfig)
+                    viewModel.create()
                     presentationMode.wrappedValue.dismiss()
                 }
-                .disabled(editorConfig.createDisabled)
+                .disabled(viewModel.createDisabled)
                 .frame(maxWidth: .infinity)
             } footer: {
-                Text(editorConfig.disabledReason ?? "")
+                Text(viewModel.disabledReason ?? "")
             }
         }
         .navigationTitle("New Competition")
@@ -36,27 +33,27 @@ struct NewCompetition: View {
 
     private var details: some View {
         Section {
-            TextField("Name", text: $editorConfig.name)
+            TextField("Name", text: $viewModel.name)
             DatePicker(
                 "Starts",
-                selection: $editorConfig.start,
+                selection: $viewModel.start,
                 in: PartialRangeFrom(.now),
                 displayedComponents: [.date]
             )
             DatePicker(
                 "Ends",
-                selection: $editorConfig.end,
-                in: PartialRangeFrom(editorConfig.start.addingTimeInterval(1.days)),
+                selection: $viewModel.end,
+                in: PartialRangeFrom(viewModel.start.addingTimeInterval(1.days)),
                 displayedComponents: [.date]
             )
-            Toggle("Repeats", isOn: $editorConfig.repeats)
-            Toggle("Public", isOn: $editorConfig.isPublic)
+            Toggle("Repeats", isOn: $viewModel.repeats)
+            Toggle("Public", isOn: $viewModel.isPublic)
         } header: {
             Text("Details")
         } footer: {
-            if !editorConfig.detailsFooterTexts.isEmpty {
+            if !viewModel.detailsFooterTexts.isEmpty {
                 VStack(alignment: .leading, spacing: 10) {
-                    ForEach(editorConfig.detailsFooterTexts, id: \.self) { text in
+                    ForEach(viewModel.detailsFooterTexts, id: \.self) { text in
                         Text(text)
                     }
                 }
@@ -66,7 +63,7 @@ struct NewCompetition: View {
 
     private var scoring: some View {
         Section {
-            Picker("Scoring model", selection: $editorConfig.scoringModel) {
+            Picker("Scoring model", selection: $viewModel.scoringModel) {
                 ForEach(Competition.ScoringModel.allCases) { scoringModel in
                     Text(scoringModel.displayName)
                         .tag(scoringModel)
@@ -99,7 +96,7 @@ struct NewCompetition: View {
     private var friendsView: some View {
         Section("Invite friends") {
             List {
-                if friendsManager.friends.isEmpty {
+                if viewModel.friends.isEmpty {
                     LazyHStack {
                         Text("Nothing here, yet!")
                         Button("Add friends.", toggling: $presentAddFriends)
@@ -107,19 +104,19 @@ struct NewCompetition: View {
                     .padding(.vertical, 6)
                 }
 
-                ForEach(friendsManager.friends) { friend in
+                ForEach(viewModel.friends) { friend in
                     HStack {
                         Text(friend.name)
                         Spacer()
-                        if editorConfig.invitees.contains(friend.id) {
+                        if viewModel.invitees.contains(friend.id) {
                             Image(systemName: "checkmark.circle.fill")
                         }
                     }
                     .contentShape(Rectangle())
                     .onTapGesture {
-                        editorConfig.invitees.contains(friend.id) ?
-                            editorConfig.invitees.remove(friend.id) :
-                            editorConfig.invitees.append(friend.id)
+                        viewModel.invitees.contains(friend.id) ?
+                            viewModel.invitees.remove(friend.id) :
+                            viewModel.invitees.append(friend.id)
                     }
                 }
             }
@@ -130,7 +127,7 @@ struct NewCompetition: View {
 struct NewCompetitionView_Previews: PreviewProvider {
 
     private static func setupMocks() {
-//        friendsManager.friends = [.gabby]
+        friendsManager.friends = [.gabby]
     }
 
     static var previews: some View {

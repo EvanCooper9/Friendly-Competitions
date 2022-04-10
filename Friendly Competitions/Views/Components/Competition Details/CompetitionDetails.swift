@@ -69,6 +69,6 @@ struct CompetitionDetails_Previews: PreviewProvider {
             }
             .navigationTitle("Previews")
         }
-        .withEnvironmentObjects()
+        .setupMocks()
     }
 }

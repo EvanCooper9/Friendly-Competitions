@@ -12,11 +12,6 @@ enum SignInMethod {
     case email(_ email: String, password: String)
 }
 
-enum SignInProvider: String {
-    case apple = "apple.com"
-    case email = "password"
-}
-
 enum SignUpError: LocalizedError {
     case passwordMatch
     
@@ -32,7 +27,6 @@ enum SignUpError: LocalizedError {
 class AnyAuthenticationManager: NSObject, ObservableObject {
     @AppStorage("emailVerified") var emailVerified = false
     @AppStorage("loggedIn") var loggedIn = false
-    @Published var signInProvider: SignInProvider?
     
     func signIn(with signInMethod: SignInMethod) async throws {}
     func signUp(name: String, email: String, password: String, passwordConfirmation: String) async throws {}
@@ -144,7 +138,6 @@ final class AuthenticationManager: AnyAuthenticationManager {
                 self.registerUserManager(with: user)
                 DispatchQueue.main.async {
                     self.currentUser = user
-                    self.signInProvider = .init(rawValue: firebaseUser.providerID)
                     self.emailVerified = firebaseUser.isEmailVerified
                     self.loggedIn = true
                 }

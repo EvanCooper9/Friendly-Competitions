@@ -27,7 +27,7 @@ struct AddFriendListItem: View {
     var body: some View {
         HStack {
             Text(friend.name)
-            UserHashIDPill(user: friend)
+            IDPill(id: friend.hashId)
             Spacer()
             Button(action.title(actionCompleted: buttonDisabled)) {
                 requested = true

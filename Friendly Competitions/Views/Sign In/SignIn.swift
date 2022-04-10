@@ -3,12 +3,8 @@ import SwiftUI
 struct SignIn: View {
 
     @Environment(\.colorScheme) private var colorScheme
-    
-    @EnvironmentObject private var appState: AppState
-    @EnvironmentObject private var authenticationManager: AnyAuthenticationManager
 
-    @State private var loading = false
-    @State private var signingInWithEmail = false
+    @StateObject private var viewModel = SignInViewModel()
 
     var body: some View {
         VStack(spacing: 30) {
@@ -23,8 +19,18 @@ struct SignIn: View {
             }
             .padding(.vertical, 30)
                     
-            if signingInWithEmail {
-                EmailSignInForm(signingInWithEmail: $signingInWithEmail)
+            if viewModel.signingInWithEmail {
+                EmailSignInForm(
+                    loading: viewModel.loading,
+                    signingInWithEmail: $viewModel.signingInWithEmail,
+                    signUp: $viewModel.isSigningUp,
+                    name: $viewModel.name,
+                    email: $viewModel.email,
+                    password: $viewModel.password,
+                    passwordConfirmation: $viewModel.passwordConfirmation,
+                    onSubmit: viewModel.submit,
+                    onForgot: viewModel.forgot
+                )
                 Spacer()
             } else {
                 Image("logo")
@@ -38,15 +44,7 @@ struct SignIn: View {
                 
                 Spacer()
                 VStack {
-                    Button {
-                        loading = true
-                        do {
-                            try await authenticationManager.signIn(with: .apple)
-                        } catch {
-                            appState.hudState = .error(error)
-                        }
-                        loading = false
-                    } label: {
+                    Button(action: viewModel.submit) {
                         Label("Sign in with Apple", systemImage: "applelogo")
                             .font(.title2.weight(.semibold))
                             .padding(8)
@@ -55,17 +53,17 @@ struct SignIn: View {
                     .foregroundColor(colorScheme == .light ? .white : .black)
                     .tint(colorScheme == .light ? .black : .white)
                     .buttonStyle(.borderedProminent)
-                    .disabled(loading)
+                    .disabled(viewModel.loading)
 
-                    Button(toggling: $signingInWithEmail) {
-                        Label(signingInWithEmail ? "Sign in" : "Sign in with Email", systemImage: "envelope.fill")
+                    Button(toggling: $viewModel.signingInWithEmail) {
+                        Label(viewModel.signingInWithEmail ? "Sign in" : "Sign in with Email", systemImage: "envelope.fill")
                             .font(.title2.weight(.semibold))
                             .padding(8)
                             .frame(maxWidth: .infinity)
                     }
                     .buttonStyle(.borderedProminent)
                     .frame(maxWidth: .infinity)
-                    .disabled(loading)
+                    .disabled(viewModel.loading)
                 }
             }
         }

@@ -9,19 +9,18 @@ struct EmailSignInForm: View {
         case passwordConfirmation
     }
     
+    let loading: Bool
     @Binding var signingInWithEmail: Bool
+    @Binding var signUp: Bool
+    @Binding var name: String
+    @Binding var email: String
+    @Binding var password: String
+    @Binding var passwordConfirmation: String
     
-    @EnvironmentObject private var appState: AppState
-    @EnvironmentObject private var authenticationManager: AnyAuthenticationManager
+    var onSubmit: (() -> Void)
+    var onForgot: (() -> Void)
     
     @FocusState private var focus: Field?
-    
-    @State private var loading = false
-    @State private var signUp = false
-    @State private var name = ""
-    @State private var email = "evancmcooper@gmail.com"
-    @State private var password = "Password"
-    @State private var passwordConfirmation = ""
     
     private var submitDisabled: Bool {
         let signInConditions = email.isEmpty || password.isEmpty
@@ -75,18 +74,9 @@ struct EmailSignInForm: View {
                         .focused($focus, equals: .password)
                         .onSubmit { focus = signUp ? .passwordConfirmation : nil }
                     if !signUp {
-                        Button(systemImage: "questionmark.circle") {
-                            loading = true
-                            do {
-                                try await authenticationManager.sendPasswordReset(to: email)
-                                appState.hudState = .success(text: "Password reset instructions have been sent to your email")
-                            } catch {
-                                appState.hudState = .error(error)
-                            }
-                            loading = false
-                        }
-                        .font(.callout)
-                        .disabled(loading)
+                        Button("", systemImage: "questionmark.circle", action: onForgot)
+                            .font(.callout)
+                            .disabled(loading)
                     }
                 }
                 if signUp {
@@ -106,13 +96,13 @@ struct EmailSignInForm: View {
                 Group {
                     if loading {
                         ProgressView()
-                    } else if signingInWithEmail {
+                    } else {
                         Button("Back", systemImage: "chevron.left", toggling: $signingInWithEmail)
                     }
                 }
                 .frame(maxWidth: .infinity, minHeight: 20) // hmmm...minHeight required to avoid weird layout
                 
-                Button(action: submit) {
+                Button(action: onSubmit) {
                     Label(signUp ? "Sign up" : "Sign in", systemImage: "envelope.fill")
                         .font(.title2.weight(.semibold))
                         .frame(maxWidth: .infinity)
@@ -122,23 +112,6 @@ struct EmailSignInForm: View {
             }
         }
         .onAppear { focus = .email }
-    }
-    
-    private func submit() {
-        Task { [email, password] in
-            focus = nil
-            loading = true
-            do {
-                if signUp {
-                    try await authenticationManager.signUp(name: name, email: email, password: password, passwordConfirmation: passwordConfirmation)
-                } else {
-                    try await authenticationManager.signIn(with: .email(email, password: password))
-                }
-            } catch {
-                appState.hudState = .error(error)
-            }
-            loading = false
-        }
     }
     
     @ViewBuilder
@@ -160,9 +133,19 @@ struct EmailSignInForm_Previews: PreviewProvider {
         ZStack {
             Color(red: 242/255, green: 242/255, blue: 247/255) // background used on sign in
                 .ignoresSafeArea()
-            EmailSignInForm(signingInWithEmail: .constant(true))
-                .setupMocks()
-                .padding()
+            EmailSignInForm(
+                loading: false,
+                signingInWithEmail: .constant(false),
+                signUp: .constant(false),
+                name: .constant(""),
+                email: .constant(""),
+                password: .constant(""),
+                passwordConfirmation: .constant(""),
+                onSubmit: {},
+                onForgot: {}
+            )
+            .setupMocks()
+            .padding()
         }
     }
 }

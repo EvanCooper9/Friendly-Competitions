@@ -15,7 +15,7 @@ class AnyCompetitionsManager: ObservableObject {
     @Published(storedWithKey: .topCommunityCompetitions) var topCommunityCompetitions = [Competition]()
 
     func accept(_ competition: Competition) {}
-    func createCompetition(with config: NewCompetitionEditorConfig) {}
+    func create(_ competition: Competition) {}
     func decline(_ competition: Competition) {}
     func delete(_ competition: Competition) {}
     func invite(_ user: User, to competition: Competition) {}
@@ -92,26 +92,15 @@ final class CompetitionsManager: AnyCompetitionsManager {
         analyticsManager.log(event: .acceptCompetition(id: competition.id))
     }
 
-    override func createCompetition(with config: NewCompetitionEditorConfig) {
-        let competition = Competition(
-            name: config.name,
-            owner: userManager.user.id,
-            participants: [userManager.user.id],
-            pendingParticipants: config.invitees,
-            scoringModel: config.scoringModel,
-            start: config.start,
-            end: config.end,
-            repeats: config.repeats,
-            isPublic: config.isPublic,
-            banner: nil
-        )
+    override func create(_ competition: Competition) {
+        
         competitions.append(competition)
         Task { [weak self, competition] in
             try await self?.database.document("competitions/\(competition.id)").setDataEncodable(competition)
             try await activitySummaryManager.update()
         }
         
-        analyticsManager.log(event: .createCompetition(name: config.name))
+        analyticsManager.log(event: .createCompetition(name: competition.name))
     }
 
     override func decline(_ competition: Competition) {
