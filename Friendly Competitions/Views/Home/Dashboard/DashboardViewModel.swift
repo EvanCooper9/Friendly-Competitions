@@ -3,17 +3,15 @@ import CombineExt
 import Resolver
 import Foundation
 
-//@MainActor
 final class DashboardViewModel: ObservableObject {
     
     @Published private(set) var activitySummary: ActivitySummary?
     @Published private(set) var friendActivitySummaries = [User.ID: ActivitySummary]()
-    
     @Published private(set) var competitions = [Competition]()
     @Published private(set) var invitedCompetitions = [Competition]()
     @Published private(set) var friends = [User]()
     @Published private(set) var friendRequests = [User]()
-    @Published var user: User!
+    @Published private(set) var user: User!
     
     @Published var requiresPermissions = false
     

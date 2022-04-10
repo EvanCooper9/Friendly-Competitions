@@ -43,7 +43,7 @@ struct AddFriendView: View {
             }
         }
         .listStyle(.insetGrouped)
-        .searchable(text: $viewModel.searchText)
+        .searchable(text: $viewModel.searchText, placement: .navigationBarDrawer(displayMode: .always))
         .navigationTitle("Search for Friends")
         .embeddedInNavigationView()
         .registerScreenView(name: "Add Friend")

@@ -49,7 +49,7 @@ struct Explore: View {
             }
         }
         .background(Asset.Colors.listBackground.swiftUIColor)
-        .searchable(text: $viewModel.searchText)
+        .searchable(text: $viewModel.searchText, placement: .navigationBarDrawer(displayMode: .always))
         .navigationTitle("Explore")
         .registerScreenView(name: "Explore")
     }
