@@ -20,6 +20,7 @@ final class DashboardViewModel: ObservableObject {
     @Injected private var friendsManager: AnyFriendsManager
     @Injected private var permissionsManager: AnyPermissionsManager
     @Injected private var userManager: AnyUserManager
+    @Injected private var workoutManager: AnyWorkoutManager
     
     private var cancellables = Set<AnyCancellable>()
     

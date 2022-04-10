@@ -18,17 +18,23 @@ final class HealthKitManager: AnyHealthKitManager {
             permissionObjectTypes.compactMap { $0 as? HKSampleType }
         }
 
-        static let permissionObjectTypes: [HKObjectType] = [
-            HKQuantityType(.activeEnergyBurned),
-            HKQuantityType(.appleExerciseTime),
-            HKQuantityType(.appleMoveTime),
-            HKQuantityType(.appleStandTime),
-            HKCategoryType(.appleStandHour),
-            HKQuantityType(.stepCount),
-            HKQuantityType(.flightsClimbed),
-            .workoutType(),
-            .activitySummaryType()
-        ]
+        static let permissionObjectTypes: [HKObjectType] = {
+            let basicTypes = [
+                HKQuantityType(.activeEnergyBurned),
+                HKQuantityType(.appleExerciseTime),
+                HKQuantityType(.appleMoveTime),
+                HKQuantityType(.appleStandTime),
+                HKCategoryType(.appleStandHour),
+                .workoutType(),
+                .activitySummaryType(),
+            ]
+            
+            let workoutSampleTypes = HKWorkoutActivityType.supported
+                .map(\.samples)
+                .flatMap { $0 }
+            
+            return basicTypes.appending(contentsOf: workoutSampleTypes.map(\.0))
+        }()
     }
 
     // MARK: - Public Properties
