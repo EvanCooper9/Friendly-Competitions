@@ -42,6 +42,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
     @LazyInjected private var activitySummaryManager: AnyActivitySummaryManager
     @Injected private var analyticsManager: AnyAnalyticsManager
     @Injected private var database: Firestore
+    @Injected private var functions: Functions
     @Injected private var userManager: AnyUserManager
 
     private var updateTask: Task<Void, Error>? {
@@ -178,7 +179,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
     }
 
     override func updateStandings() async throws {
-        try await Functions.functions()
+        try await functions
             .httpsCallable(Constants.updateStandingsFirebaseFunctionName)
             .call(["userId": userManager.user.id])
         fetchCompetitionData()
@@ -197,7 +198,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
     }
     
     private func updateStandings(of competition: Competition) async throws {
-        try await Functions.functions()
+        try await functions
             .httpsCallable(Constants.updateStandingsFirebaseFunctionName)
             .call(["competitionId": competition.id])
         fetchCompetitionData()
