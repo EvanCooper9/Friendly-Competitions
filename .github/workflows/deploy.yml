@@ -19,10 +19,6 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - uses: webfactory/ssh-agent@v0.5.4
-        with:
-            ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
-
       - name: Setup GoogleService-Info.plist
         run: |
           mkdir -p "Friendly Competitions/Firebase/Release"
@@ -40,7 +36,6 @@ jobs:
           APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
           APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
           APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
 
       - uses: actions/upload-artifact@v3
