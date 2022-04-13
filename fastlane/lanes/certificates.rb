@@ -3,7 +3,7 @@ lane :certificates do
         match(
             type: "development", 
             app_identifier: "com.evancooper.FriendlyCompetitions.debug",
-            git_bearer_authorization: ENV["GITHUB_TOKEN"]
+            git_bearer_authorization: ENV["GITHUB_KEY"]
         )
         match(
             type: "appstore", 
