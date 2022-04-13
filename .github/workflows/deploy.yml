@@ -37,7 +37,7 @@ jobs:
           APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
           APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
           MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
-          SSH_KEY: ${{ secrets.SSH_KEY }}
+          MATCH_GIT_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
 
       - uses: actions/upload-artifact@v3
         with:
