@@ -1,8 +1,6 @@
 name: Deploy to AppStore Connect
 
 on:
-  pull_request:
-    branches: [main, release/*]
   release:
     types: [published]
 
