@@ -1,4 +1,23 @@
 lane :certificates do
-    match(type: "development", app_identifier: "com.evancooper.FriendlyCompetitions.debug")
-    match(type: "appstore", app_identifier: "com.evancooper.FriendlyCompetitions")
+    if is_ci
+        match(
+            type: "development", 
+            app_identifier: "com.evancooper.FriendlyCompetitions.debug",
+            git_bearer_authorization: ENV["GITHUB_TOKEN"]
+        )
+        match(
+            type: "appstore", 
+            app_identifier: "com.evancooper.FriendlyCompetitions",
+            git_bearer_authorization: ENV["GITHUB_TOKEN"]
+        )
+    else
+        match(
+            type: "development", 
+            app_identifier: "com.evancooper.FriendlyCompetitions.debug"
+        )
+        match(
+            type: "appstore", 
+            app_identifier: "com.evancooper.FriendlyCompetitions"
+        )
+    end
 end
