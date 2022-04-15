@@ -12,7 +12,7 @@ final class VerifyEmailViewModel: ObservableObject {
     private var cancellables = Set<AnyCancellable>()
     
     init() {
-        self.user = user
+        self.user = userManager.user
         userManager.$user
             .assign(to: \.user, on: self, ownership: .weak)
             .store(in: &cancellables)
