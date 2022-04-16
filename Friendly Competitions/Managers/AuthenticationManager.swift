@@ -50,8 +50,14 @@ final class AuthenticationManager: AnyAuthenticationManager {
     override init() {
         super.init()
         listenForAuth()
-        if loggedIn, let currentUser = currentUser {
+        
+        if let firebaseUser = Auth.auth().currentUser, let currentUser = currentUser {
+            emailVerified = firebaseUser.isEmailVerified
+            loggedIn = true
             registerUserManager(with: currentUser)
+        } else {
+            emailVerified = false
+            loggedIn = false
         }
     }
     
