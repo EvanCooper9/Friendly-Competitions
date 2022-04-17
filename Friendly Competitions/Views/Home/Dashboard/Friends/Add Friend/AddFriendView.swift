@@ -51,12 +51,8 @@ struct AddFriendView: View {
 
     private func share() {
         Task {
-            let activityItems: [Any] = [
-                "Add me in Friendly Competitions!",
-                URL(string: "https://friendly-competitions.evancooper.tech/invite/\(viewModel.user.id)")!
-            ]
             let activityVC = UIActivityViewController(
-                activityItems: activityItems,
+                activityItems: viewModel.referralItems,
                 applicationActivities: nil
             )
             activityVC.excludedActivityTypes = [.mail, .addToReadingList, .assignToContact, .markupAsPDF, .openInIBooks, .saveToCameraRoll, .print]

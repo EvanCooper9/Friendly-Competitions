@@ -7,8 +7,9 @@ final class AddFriendViewModel: ObservableObject {
     @Published private(set) var friendReferral: User?
     @Published var searchText = ""
     @Published var searchResults = [User]()
-    
     @Published private(set) var user: User!
+
+    private(set) var referralItems: [Any]!
     
     @Injected private var appState: AppState
     @Injected private var friendsManager: AnyFriendsManager
@@ -18,6 +19,11 @@ final class AddFriendViewModel: ObservableObject {
     
     init() {
         self.user = userManager.user
+        self.referralItems = [
+            "Add me in Friendly Competitions!",
+            DeepLink.friendReferral(id: user.id).url
+        ]
+        
         userManager.$user
             .assign(to: \.user, on: self, ownership: .weak)
             .store(in: &cancellables)
