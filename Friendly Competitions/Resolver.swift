@@ -3,6 +3,11 @@ import FirebaseFirestore
 import FirebaseStorage
 import Resolver
 
+private enum FirebaseEmulation {
+    static let enabled = false
+    static let host = "localhost"
+}
+
 extension Resolver: ResolverRegistering {
     public static func registerAllServices() {
 
@@ -22,7 +27,35 @@ extension Resolver: ResolverRegistering {
         register { AppState() }.scope(.shared)
 
         // Firebase
-        register { Firestore.firestore() }.scope(.application)
-        register { Storage.storage().reference() }.scope(.application)
+        register(Firestore.self) {
+            let firestore = Firestore.firestore()
+            let settings = firestore.settings
+            settings.isPersistenceEnabled = false
+            if FirebaseEmulation.enabled {
+                settings.host = "\(FirebaseEmulation.host):8080"
+                settings.isSSLEnabled = false
+            }
+            firestore.settings = settings
+            return firestore
+        }
+        .scope(.application)
+        
+        register(Functions.self) {
+            let functions = Functions.functions()
+            if FirebaseEmulation.enabled {
+                functions.useEmulator(withHost: FirebaseEmulation.host, port: 5001)
+            }
+            return functions
+        }
+        .scope(.application)
+        
+        register(StorageReference.self) {
+            let storage = Storage.storage()
+            if FirebaseEmulation.enabled {
+                storage.useEmulator(withHost: FirebaseEmulation.host, port: 9199)
+            }
+            return storage.reference()
+        }
+        .scope(.application)
     }
 }
