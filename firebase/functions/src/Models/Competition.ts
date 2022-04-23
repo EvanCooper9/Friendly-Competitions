@@ -2,8 +2,15 @@ import * as admin from "firebase-admin";
 import * as moment from "moment";
 import { ActivitySummary } from "./ActivitySummary";
 import { Standing } from "./Standing";
+import { Workout } from "./Workout";
+import { WorkoutType } from "./WorkoutType";
 
 const dateFormat = "YYYY-MM-DD";
+
+enum ScoringModel {
+    percentOfGoals = 0,
+    rawNumbers = 1
+}
 
 /**
  * Competition
@@ -17,7 +24,8 @@ class Competition {
     participants: string[];
     pendingParticipants: string[];
     repeats: boolean;
-    scoringModel: number;
+    workoutType?: WorkoutType;
+    scoringModel?: ScoringModel;
 
     /**
      * Builds a competition from a firestore document
@@ -30,7 +38,9 @@ class Competition {
         this.participants = document.get("participants");
         this.pendingParticipants = document.get("pendingParticipants");
         this.repeats = document.get("repeats");
-        this.scoringModel = document.get("scoringModel");
+
+        this.workoutType = document.get("workoutType") as WorkoutType;
+        this.scoringModel = document.get("scoringModel") as ScoringModel;
 
         const startDateString: string = document.get("start");
         const endDateString: string = document.get("end");
@@ -45,23 +55,53 @@ class Competition {
         const existingStandings = (await admin.firestore().collection(`competitions/${this.id}/standings`).get()).docs.map(doc => new Standing(doc));
         const standingPromises = this.participants.map(async userId => {
             let totalPoints = 0;
-            const activitySummaries = (await admin.firestore().collection(`users/${userId}/activitySummaries`).get()).docs.map(doc => new ActivitySummary(doc));
-            activitySummaries.forEach(activitySummary => {
-                if (!activitySummary.isIncludedInCompetition(this)) return;
-                if (this.scoringModel == 0) {
-                    const energy = (activitySummary.activeEnergyBurned / activitySummary.activeEnergyBurnedGoal) * 100;
-                    const exercise = (activitySummary.appleExerciseTime / activitySummary.appleExerciseTimeGoal) * 100;
-                    const stand = (activitySummary.appleStandHours / activitySummary.appleStandHoursGoal) * 100;
-                    const points = energy + exercise + stand;
-                    totalPoints += parseInt(`${points}`);
-                } else if (this.scoringModel == 1) {
-                    const energy = activitySummary.activeEnergyBurned;
-                    const exercise = activitySummary.appleExerciseTime;
-                    const stand = activitySummary.appleStandHours;
-                    const points = energy + exercise + stand;
-                    totalPoints += parseInt(`${points}`);
-                }
-            });
+
+            const workoutType = this.workoutType;
+            const scoringModel = this.scoringModel;
+            if (workoutType != undefined) {
+                const workoutsPromise = await admin.firestore()
+                    .collection(`users/${userId}/workouts`)
+                    .where("type", "==", workoutType)
+                    .get();
+                workoutsPromise.docs
+                    .map(doc => new Workout(doc))
+                    .filter(workout => workout.isIncludedInCompetition(this))
+                    .forEach(workout => {
+                        switch (workoutType) {
+                            case WorkoutType.running: {
+                                console.log("running");
+                            }
+                            case WorkoutType.walking: {
+                                console.log("walking");
+                            }
+                        }
+                    });
+            } else if (scoringModel != undefined) {
+                const activitySummariesPromise = await admin.firestore().collection(`users/${userId}/activitySummaries`).get()
+                activitySummariesPromise.docs
+                    .map(doc => new ActivitySummary(doc))
+                    .filter(activitySummary => activitySummary.isIncludedInCompetition(this))
+                    .forEach(activitySummary => {
+                        switch (scoringModel) {
+                            case ScoringModel.percentOfGoals: {
+                                console.log("percent of goals");
+                                const energy = (activitySummary.activeEnergyBurned / activitySummary.activeEnergyBurnedGoal) * 100;
+                                const exercise = (activitySummary.appleExerciseTime / activitySummary.appleExerciseTimeGoal) * 100;
+                                const stand = (activitySummary.appleStandHours / activitySummary.appleStandHoursGoal) * 100;
+                                const points = energy + exercise + stand;
+                                totalPoints += parseInt(`${points}`);
+                            }
+                            case ScoringModel.rawNumbers: {
+                                console.log("raw numbers");
+                                const energy = activitySummary.activeEnergyBurned;
+                                const exercise = activitySummary.appleExerciseTime;
+                                const stand = activitySummary.appleStandHours;
+                                const points = energy + exercise + stand;
+                                totalPoints += parseInt(`${points}`);
+                            }
+                        }
+                    });
+            }
 
             if (userId.startsWith("Anonymous")) {
                 // Dummy standings

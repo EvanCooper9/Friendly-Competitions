@@ -9,7 +9,8 @@ struct Competition: Codable, Equatable, Identifiable {
     var participants: [String]
     var pendingParticipants: [String]
 
-    let scoringModel: ScoringModel
+    var scoringModel: ScoringModel?
+    var workoutType: WorkoutType?
 
     let start: Date
     let end: Date
@@ -17,8 +18,6 @@ struct Competition: Codable, Equatable, Identifiable {
 
     let isPublic: Bool
     let banner: String?
-    
-    var workoutType: HKWorkoutActivityType?
 }
 
 extension Competition {

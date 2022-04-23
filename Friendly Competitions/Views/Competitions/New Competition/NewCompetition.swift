@@ -62,16 +62,14 @@ struct NewCompetition: View {
         }
     }
     
-    @State private var constrainToWorkout = false
-    @State private var _workout: HKWorkoutActivityType?
     private var scoring: some View {
         Section {
-            Toggle("Constrain to workout", isOn: $constrainToWorkout)
-            if constrainToWorkout {
-                Picker("Workout", selection: $_workout) {
-                    ForEach(HKWorkoutActivityType.supported) { workout in
-                        Text(workout.description!)
-                            .tag(workout as HKWorkoutActivityType?)
+            Toggle("Constrain to workout", isOn: $viewModel.constrainToWorkout)
+            if viewModel.constrainToWorkout {
+                Picker("Workout", selection: $viewModel.workoutType) {
+                    ForEach(WorkoutType.allCases) { workoutType in
+                        Text(workoutType.rawValue.localizedCapitalized)
+                            .tag(workoutType as WorkoutType?)
                     }
                 }
             } else {
@@ -85,7 +83,7 @@ struct NewCompetition: View {
         } header: {
             Text("Scoring")
         } footer: {
-            if constrainToWorkout {
+            if viewModel.constrainToWorkout {
                 Text("You can constrain a competition to a specific workout. Points can only be earned by completing the specified workout.")
             } else {
                 NavigationLink("What's this?") {

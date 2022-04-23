@@ -4,7 +4,7 @@ import FirebaseStorage
 import Resolver
 
 private enum FirebaseEmulation {
-    static let enabled = false
+    static let enabled = true
     static let host = "localhost"
 }
 
@@ -51,9 +51,9 @@ extension Resolver: ResolverRegistering {
         
         register(StorageReference.self) {
             let storage = Storage.storage()
-            if FirebaseEmulation.enabled {
-                storage.useEmulator(withHost: FirebaseEmulation.host, port: 9199)
-            }
+//            if FirebaseEmulation.enabled {
+//                storage.useEmulator(withHost: FirebaseEmulation.host, port: 9199)
+//            }
             return storage.reference()
         }
         .scope(.application)

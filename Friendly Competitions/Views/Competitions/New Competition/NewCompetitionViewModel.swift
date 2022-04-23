@@ -14,6 +14,9 @@ final class NewCompetitionViewModel: ObservableObject {
     @Published var repeats = false
     @Published var isPublic = false
     @Published var invitees = [String]()
+    
+    @Published var constrainToWorkout = false
+    @Published var workoutType: WorkoutType?
     @Published var scoringModel = Competition.ScoringModel.percentOfGoals
     
     var detailsFooterTexts: [String] {
@@ -57,7 +60,8 @@ final class NewCompetitionViewModel: ObservableObject {
             owner: userManager.user.id,
             participants: [userManager.user.id],
             pendingParticipants: invitees,
-            scoringModel: scoringModel,
+            scoringModel: constrainToWorkout ? nil : scoringModel,
+            workoutType: constrainToWorkout ? workoutType : nil,
             start: start,
             end: end,
             repeats: repeats,

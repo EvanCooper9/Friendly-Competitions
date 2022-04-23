@@ -2,15 +2,25 @@ import Resolver
 import SwiftUI
 
 struct Home: View {
+    
+    private enum Tab {
+        case dashboard
+        case explore
+    }
+    
+    @State private var tab = Tab.dashboard
+    
     var body: some View {
-        TabView {
+        TabView(selection: $tab) {
             Dashboard()
                 .embeddedInNavigationView()
                 .tabItem { Label("Home", systemImage: "house.fill") }
+                .tag(Tab.dashboard)
         
             Explore()
                 .embeddedInNavigationView()
                 .tabItem { Label("Explore", systemImage: "sparkle.magnifyingglass") }
+                .tag(Tab.explore)
         }
     }
 }

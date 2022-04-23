@@ -72,10 +72,21 @@ struct CompetitionView: View {
                 value: competition.end.formatted(date: .abbreviated, time: .omitted),
                 valueType: .date(description: competition.ended ? "Ended" : "Ends")
             )
-            ImmutableListItemView(
-                value: competition.scoringModel.displayName,
-                valueType: .other(systemImage: "plusminus.circle", description: "Scoring model")
-            )
+            
+            if let scoringModel = competition.scoringModel {
+                ImmutableListItemView(
+                    value: scoringModel.displayName,
+                    valueType: .other(systemImage: "plusminus.circle", description: "Scoring model")
+                )
+            }
+            
+            if let workoutType = competition.workoutType {
+                ImmutableListItemView(
+                    value: workoutType.rawValue.localizedCapitalized,
+                    valueType: .other(systemImage: "figure.walk.circle", description: "Workout")
+                )
+            }
+            
             if competition.repeats {
                 ImmutableListItemView(
                     value: "Yes",

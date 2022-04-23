@@ -51,7 +51,9 @@ final class WorkoutManager: AnyWorkoutManager {
 //        let workoutTypes = competitionsManager.competitions
 //            .compactMap(\.workoutType)
 //            .uniqued()
-        let workoutTypes = HKWorkoutActivityType.supported
+//            .map(\.hkWorkoutActivityType)
+        let workoutTypes = WorkoutType.allCases
+            .map(\.hkWorkoutActivityType)
         
         let totalPoints = try await withThrowingTaskGroup(of: (HKWorkoutActivityType, [HKQuantityType: [Date: Double]]).self) { group -> [HKWorkoutActivityType: [HKQuantityType: [Date: Double]]] in
             workoutTypes.forEach { workoutType in
@@ -71,10 +73,9 @@ final class WorkoutManager: AnyWorkoutManager {
         
         let workouts = totalPoints.flatMap { workoutType, pointsBySampleTypeByDate in
             pointsBySampleTypeByDate.flatMap { sampleType, pointsByDate in
-                pointsByDate.map { date, points -> Workout in
-                    let dateString = DateFormatter.dateDashed.string(from: date)
+                pointsByDate.compactMap { date, points -> Workout? in
+                    guard let workoutType = WorkoutType(hkWorkoutActivityType: workoutType) else { return nil }
                     return Workout(
-                        id: "\(dateString)_\(workoutType.rawValue)",
                         type: workoutType,
                         date: date,
                         points: Int(points)

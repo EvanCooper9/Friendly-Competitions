@@ -2,8 +2,11 @@ import Foundation
 import HealthKit
 
 struct Workout: Codable {
-    var id = UUID().uuidString
-    let type: HKWorkoutActivityType
+    let type: WorkoutType
     let date: Date
     let points: Int
+}
+
+extension Workout: Identifiable {
+    var id: String { "\(DateFormatter.dateDashed.string(from: date))_\(type)" }
 }
