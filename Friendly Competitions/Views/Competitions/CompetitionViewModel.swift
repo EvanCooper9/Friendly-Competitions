@@ -13,22 +13,26 @@ final class CompetitionViewModel: ObservableObject {
         let points: Int?
         let highlighted: Bool
     }
-
+    
+    @Published var competition: Competition
     @Published var standings = [StandingViewConfig]()
     @Published var pendingParticipants = [StandingViewConfig]()
     @Published var user: User!
     @Published var friends = [User]()
+        
+    @Published var competitionInfoConfig: CompetitionInfo.Config
 
     @Injected private var competitionsManager: AnyCompetitionsManager
     @Injected private var friendsManager: AnyFriendsManager
     @Injected private var userManager: AnyUserManager
     
-    private let competition: Competition
     private var cancellables = Set<AnyCancellable>()
     
     init(competition: Competition) {
         self.competition = competition
+        self.competitionInfoConfig = .init(canEdit: false)
         user = userManager.user
+        competitionInfoConfig.canEdit = user.id == competition.owner
         
         competitionsManager.$standings
             .map { [weak self] standings -> [StandingViewConfig] in
@@ -83,6 +87,15 @@ final class CompetitionViewModel: ObservableObject {
         userManager.$user
             .assign(to: \.user, on: self, ownership: .weak)
             .store(in: &cancellables)
+    }
+    
+    func editTapped() {
+        competitionInfoConfig.editing.toggle()
+    }
+    
+    func saveTapped() {
+        competitionInfoConfig.editing.toggle()
+        competitionsManager.update(competition)
     }
     
     func accept() {

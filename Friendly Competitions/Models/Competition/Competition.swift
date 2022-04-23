@@ -2,19 +2,19 @@ import Foundation
 
 struct Competition: Codable, Equatable, Identifiable {
     var id = UUID().uuidString
-    let name: String
+    var name: String
 
     let owner: String
     var participants: [String]
     var pendingParticipants: [String]
 
-    let scoringModel: ScoringModel
+    var scoringModel: ScoringModel
 
-    let start: Date
-    let end: Date
-    let repeats: Bool
+    var start: Date
+    var end: Date
+    var repeats: Bool
 
-    let isPublic: Bool
+    var isPublic: Bool
     let banner: String?
 }
 

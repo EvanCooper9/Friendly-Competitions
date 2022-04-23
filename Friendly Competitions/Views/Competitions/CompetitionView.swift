@@ -2,8 +2,6 @@ import SwiftUI
 
 struct CompetitionView: View {
     
-    let competition: Competition
-
     @Environment(\.presentationMode) private var presentationMode
     
     @StateObject private var viewModel: CompetitionViewModel
@@ -17,7 +15,6 @@ struct CompetitionView: View {
     
     init(competition: Competition) {
         _viewModel = .init(wrappedValue: CompetitionViewModel(competition: competition))
-        self.competition = competition
     }
 
     var body: some View {
@@ -26,17 +23,35 @@ struct CompetitionView: View {
             if !viewModel.pendingParticipants.isEmpty {
                 pendingInvites
             }
-            details
+            
+            CompetitionInfo(competition: $viewModel.competition, config: $viewModel.competitionInfoConfig)
+            
             actions
         }
-        .navigationTitle(competition.name)
+        .navigationTitle(viewModel.competition.name)
+        .toolbar {
+            toolbar
+        }
         .registerScreenView(
             name: "Competition",
             parameters: [
-                "id": competition.id,
-                "name": competition.name
+                "id": viewModel.competition.id,
+                "name": viewModel.competition.name
             ]
         )
+    }
+    
+    @ViewBuilder
+    private var toolbar: some View {
+        if viewModel.competitionInfoConfig.canEdit {
+            HStack {
+                if viewModel.competitionInfoConfig.editing {
+                    Button("Save", action: viewModel.saveTapped)
+                }
+                Button(viewModel.competitionInfoConfig.editButtonTitle, action: viewModel.editTapped)
+                    .font(viewModel.competitionInfoConfig.editing ? .body.bold() : .body)
+            }
+        }
     }
 
     @ViewBuilder
@@ -62,50 +77,27 @@ struct CompetitionView: View {
         }
     }
 
-    private var details: some View {
-        Section("Details") {
-            ImmutableListItemView(
-                value: competition.start.formatted(date: .abbreviated, time: .omitted),
-                valueType: .date(description: competition.started ? "Started" : "Starts")
-            )
-            ImmutableListItemView(
-                value: competition.end.formatted(date: .abbreviated, time: .omitted),
-                valueType: .date(description: competition.ended ? "Ended" : "Ends")
-            )
-            ImmutableListItemView(
-                value: competition.scoringModel.displayName,
-                valueType: .other(systemImage: "plusminus.circle", description: "Scoring model")
-            )
-            if competition.repeats {
-                ImmutableListItemView(
-                    value: "Yes",
-                    valueType: .other(systemImage: "repeat.circle", description: "Restarts")
-                )
-            }
-        }
-    }
-
     private var actions: some View {
         Section {
-            if !competition.ended {
+            if !viewModel.competition.ended {
                 Button("Invite a friend", systemImage: "person.crop.circle.badge.plus") {
                     showInviteFriend.toggle()
                 }
             }
 
-            if competition.participants.contains(viewModel.user.id) {
+            if viewModel.competition.participants.contains(viewModel.user.id) {
                 Button("Leave competition", systemImage: "person.crop.circle.badge.minus") {
                     actionRequiringConfirmation = .leave
                 }
                 .foregroundColor(.red)
 
-                if competition.owner == viewModel.user.id {
+                if viewModel.competition.owner == viewModel.user.id {
                     Button("Delete competition", systemImage: "trash") {
                         actionRequiringConfirmation = .delete
                     }
                     .foregroundColor(.red)
                 }
-            } else if competition.pendingParticipants.contains(viewModel.user.id) {
+            } else if viewModel.competition.pendingParticipants.contains(viewModel.user.id) {
                 Button("Accept invite", systemImage: "person.crop.circle.badge.checkmark", action: viewModel.accept)
                 Button("Decline invite", systemImage: "person.crop.circle.badge.xmark", action: viewModel.decline)
                     .foregroundColor(.red)
@@ -137,7 +129,7 @@ struct CompetitionView: View {
                         AddFriendListItem(
                             friend: friend,
                             action: .competitionInvite,
-                            disabledIf: competition.pendingParticipants.contains(friend.id) || competition.participants.contains(friend.id)
+                            disabledIf: viewModel.competition.pendingParticipants.contains(friend.id) || viewModel.competition.participants.contains(friend.id)
                         ) { viewModel.invite(friend) }
                     }
                 } footer: {
