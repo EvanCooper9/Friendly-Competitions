@@ -831,9 +831,9 @@
 		C1F7DFF226D7F77900B46F91 /* Competitions */ = {
 			isa = PBXGroup;
 			children = (
-				EDBEA16E281459C000058A47 /* Components */,
 				C1EA986826D6E8C900219E84 /* CompetitionView.swift */,
 				ED901B4E280249B000FE619E /* CompetitionViewModel.swift */,
+				EDBEA16E281459C000058A47 /* Components */,
 				C123C9E127A980EA00375F73 /* New Competition */,
 			);
 			path = Competitions;

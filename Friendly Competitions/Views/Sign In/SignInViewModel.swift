@@ -17,19 +17,16 @@ final class SignInViewModel: ObservableObject {
     
     private let hud = PassthroughSubject<HUDState, Never>()
     private let isLoading = PassthroughSubject<Bool, Never>()
-    private var cancellables = Set<AnyCancellable>()
     
     init() {
         hud
             .receive(on: RunLoop.main)
             .map { $0 as HUDState? }
-            .assign(to: \.appState.hudState, on: self, ownership: .weak)
-            .store(in: &cancellables)
+            .assign(to: &appState.$hudState)
         
         isLoading
             .receive(on: RunLoop.main)
-            .assign(to: \.loading, on: self, ownership: .weak)
-            .store(in: &cancellables)
+            .assign(to: &$loading)
     }
     
     func forgot() {

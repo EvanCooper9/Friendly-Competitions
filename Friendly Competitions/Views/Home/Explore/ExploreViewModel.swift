@@ -17,13 +17,8 @@ final class ExploreViewModel: ObservableObject {
     
     init() {
         
-        competitionsManager.$appOwnedCompetitions
-            .assign(to: \.appOwnedCompetitions, on: self, ownership: .weak)
-            .store(in: &cancellables)
-        
-        competitionsManager.$topCommunityCompetitions
-            .assign(to: \.topCommunityCompetitions, on: self, ownership: .weak)
-            .store(in: &cancellables)
+        competitionsManager.$appOwnedCompetitions.assign(to: &$appOwnedCompetitions)
+        competitionsManager.$topCommunityCompetitions.assign(to: &$topCommunityCompetitions)
         
         $searchText
             .sinkAsync { [weak self] searchText in

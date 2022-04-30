@@ -58,8 +58,7 @@ final class CompetitionViewModel: ObservableObject {
                     )
                 }
             }
-            .assign(to: \.standings, on: self, ownership: .weak)
-            .store(in: &cancellables)
+            .assign(to: &$standings)
         
         competitionsManager.$pendingParticipants
             .map { [weak self] pendingParticipants in
@@ -77,12 +76,9 @@ final class CompetitionViewModel: ObservableObject {
                     )
                 }
             }
-            .assign(to: \.pendingParticipants, on: self, ownership: .weak)
-            .store(in: &cancellables)
+            .assign(to: &$pendingParticipants)
         
-        friendsManager.$friends
-            .assign(to: \.friends, on: self, ownership: .weak)
-            .store(in: &cancellables)
+        friendsManager.$friends.assign(to: &$friends)
         
         userManager.$user
             .assign(to: \.user, on: self, ownership: .weak)

@@ -8,15 +8,12 @@ final class PermissionsViewModel: ObservableObject {
     
     @Injected private var permissionsManager: AnyPermissionsManager
     
-    private var cancellables = Set<AnyCancellable>()
-    
     init() {
         permissionsManager.$permissionStatus
             .map { statuses in
                 statuses.map { ($0, $1) }
             }
-            .assign(to: \.permissionStatuses, on: self, ownership: .weak)
-            .store(in: &cancellables)
+            .assign(to: &$permissionStatuses)
     }
     
     func request(_ permission: Permission) {

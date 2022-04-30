@@ -25,8 +25,8 @@ final class AddFriendViewModel: ObservableObject {
         ]
         
         userManager.$user
-            .assign(to: \.user, on: self, ownership: .weak)
-            .store(in: &cancellables)
+            .map { $0 as User? }
+            .assign(to: &$user)
     
         $searchText
             .sinkAsync { [weak self] searchText in

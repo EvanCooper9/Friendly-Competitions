@@ -10,6 +10,9 @@ struct NewCompetition: View {
 
     var body: some View {
         Form {
+            
+            CompetitionInfo(competition: $viewModel.competition, config: .constant(.init(canEdit: true, editing: true)))
+            
             details
             scoring
             friendsView
@@ -33,21 +36,21 @@ struct NewCompetition: View {
 
     private var details: some View {
         Section {
-            TextField("Name", text: $viewModel.name)
+            TextField("Name", text: $viewModel.competition.name)
             DatePicker(
                 "Starts",
-                selection: $viewModel.start,
+                selection: $viewModel.competition.start,
                 in: PartialRangeFrom(.now),
                 displayedComponents: [.date]
             )
             DatePicker(
                 "Ends",
-                selection: $viewModel.end,
-                in: PartialRangeFrom(viewModel.start.addingTimeInterval(1.days)),
+                selection: $viewModel.competition.end,
+                in: PartialRangeFrom(viewModel.competition.start.addingTimeInterval(1.days)),
                 displayedComponents: [.date]
             )
-            Toggle("Repeats", isOn: $viewModel.repeats)
-            Toggle("Public", isOn: $viewModel.isPublic)
+            Toggle("Repeats", isOn: $viewModel.competition.repeats)
+            Toggle("Public", isOn: $viewModel.competition.isPublic)
         } header: {
             Text("Details")
         } footer: {
@@ -63,7 +66,7 @@ struct NewCompetition: View {
 
     private var scoring: some View {
         Section {
-            Picker("Scoring model", selection: $viewModel.scoringModel) {
+            Picker("Scoring model", selection: $viewModel.competition.scoringModel) {
                 ForEach(Competition.ScoringModel.allCases) { scoringModel in
                     Text(scoringModel.displayName)
                         .tag(scoringModel)

@@ -20,39 +20,16 @@ final class DashboardViewModel: ObservableObject {
     @Injected private var friendsManager: AnyFriendsManager
     @Injected private var permissionsManager: AnyPermissionsManager
     @Injected private var userManager: AnyUserManager
-    
-    private var cancellables = Set<AnyCancellable>()
-    
+        
     init() {
         user = userManager.user
-        
-        activitySummaryManager.$activitySummary
-            .assign(to: \.activitySummary, on: self, ownership: .weak)
-            .store(in: &cancellables)
-        
-        competitionsManager.$competitions
-            .assign(to: \.competitions, on: self, ownership: .weak)
-            .store(in: &cancellables)
-        
-        friendsManager.$friends
-            .assign(to: \.friends, on: self, ownership: .weak)
-            .store(in: &cancellables)
-        
-        friendsManager.$friendActivitySummaries
-            .assign(to: \.friendActivitySummaries, on: self, ownership: .weak)
-            .store(in: &cancellables)
-        
-        friendsManager.$friendRequests
-            .assign(to: \.friendRequests, on: self, ownership: .weak)
-            .store(in: &cancellables)
-        
-        permissionsManager.$requiresPermission
-            .assign(to: \.requiresPermissions, on: self, ownership: .weak)
-            .store(in: &cancellables)
-        
-        userManager.$user
-            .assign(to: \.user, on: self, ownership: .weak)
-            .store(in: &cancellables)
+        activitySummaryManager.$activitySummary.assign(to: &$activitySummary)
+        competitionsManager.$competitions.assign(to: &$competitions)
+        friendsManager.$friends.assign(to: &$friends)
+        friendsManager.$friendActivitySummaries.assign(to: &$friendActivitySummaries)
+        friendsManager.$friendRequests.assign(to: &$friendRequests)
+        permissionsManager.$requiresPermission.assign(to: &$requiresPermissions)
+        userManager.$user.map { $0 as User? }.assign(to: &$user)
     }
     
     func acceptFriendRequest(from user: User) {

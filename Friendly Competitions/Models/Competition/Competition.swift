@@ -3,19 +3,15 @@ import Foundation
 struct Competition: Codable, Equatable, Identifiable {
     var id = UUID().uuidString
     var name: String
-
-    let owner: String
+    var owner: String
     var participants: [String]
     var pendingParticipants: [String]
-
     var scoringModel: ScoringModel
-
     var start: Date
     var end: Date
     var repeats: Bool
-
     var isPublic: Bool
-    let banner: String?
+    var banner: String?
 }
 
 extension Competition {
