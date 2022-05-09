@@ -14,4 +14,15 @@ final class DeepLinkTests: XCTestCase {
         let deepLink = DeepLink(from: url)
         XCTAssertEqual(deepLink, .competitionInvite(id: "abc123"))
     }
+    
+    func testThatUrlIsCorrect() {
+        XCTAssertEqual(
+            DeepLink.friendReferral(id: #function).url,
+            URL(string: "https://friendly-competitions.app/friend/\(#function)")!
+        )
+        XCTAssertEqual(
+            DeepLink.competitionInvite(id: #function).url,
+            URL(string: "https://friendly-competitions.app/competition/\(#function)")!
+        )
+    }
 }
