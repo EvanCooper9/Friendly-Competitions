@@ -357,11 +357,10 @@ final class CompetitionsManager: AnyCompetitionsManager {
             }
             return
         }
-        try await withThrowingTaskGroup(of: (Competition.ID, [User])?.self) { group in
+        try await withThrowingTaskGroup(of: (Competition.ID, [User]).self) { group in
             competitions.forEach { competition in
-                guard !competition.pendingParticipants.isEmpty else { return }
                 group.addTask { [weak self] in
-                    guard let self = self else { return nil }
+                    guard let self = self, competition.pendingParticipants.isNotEmpty else { return (competition.id, []) }
                     let participants = try await self.database.collection("users")
                         .whereFieldWithChunking("id", in: competition.pendingParticipants)
                         .decoded(asArrayOf: User.self)
@@ -369,14 +368,14 @@ final class CompetitionsManager: AnyCompetitionsManager {
                 }
             }
 
-            var newPendingParticipants = pendingParticipants.removeOldCompetitions(current: competitions)
-            for try await (competitionId, participants) in group.compactMap({ $0 }) {
-                newPendingParticipants[competitionId] = participants
+            var pendingParticipants = [Competition.ID: [User]]()
+            for try await (competitionId, participants) in group {
+                pendingParticipants[competitionId] = participants
             }
 
             try Task.checkCancellation()
-            DispatchQueue.main.async { [weak self, newPendingParticipants] in
-                self?.pendingParticipants = newPendingParticipants
+            DispatchQueue.main.async { [weak self, pendingParticipants] in
+                self?.pendingParticipants = pendingParticipants
             }
         }
     }

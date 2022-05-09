@@ -5,9 +5,7 @@ struct CompetitionInfo: View {
     struct Config {
         var canEdit: Bool
         var editing: Bool
-        
-        var onSave: (() -> Void)? = nil
-                
+                        
         init(canEdit: Bool, editing: Bool = false) {
             self.canEdit = canEdit
             self.editing = editing

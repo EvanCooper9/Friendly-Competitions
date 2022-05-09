@@ -36,7 +36,7 @@ struct Dashboard: View {
             }
         }
         .sheet(isPresented: $presentAbout) { About() }
-        .sheet(isPresented: $presentSearchFriendsSheet) { AddFriendView() }
+        .sheet(isPresented: $presentSearchFriendsSheet) { InviteFriends(action: .addFriend) }
         .sheet(isPresented: $presentNewCompetition) { NewCompetition() }
         .sheet(isPresented: $viewModel.requiresPermissions) { PermissionsView() }
         .onOpenURL { url in

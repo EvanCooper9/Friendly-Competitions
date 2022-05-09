@@ -3,28 +3,30 @@ import CombineExt
 import Resolver
 
 final class CompetitionViewModel: ObservableObject {
-
-    struct StandingViewConfig: Identifiable {
-        let id: String
-        let rank: String?
-        let name: String
-        let idPillText: String?
-        let blurred: Bool
-        let points: Int?
-        let highlighted: Bool
+    
+    private enum ActionRequiringConfirmation {
+        case deleteCompetition
+        case leaveCompetition
     }
     
+    @Published var confirmationRequired = false
     @Published var competition: Competition
-    @Published var standings = [StandingViewConfig]()
-    @Published var pendingParticipants = [StandingViewConfig]()
+    @Published var standings = [CompetitionParticipantView.Config]()
+    @Published var pendingParticipants = [CompetitionParticipantView.Config]()
     @Published var user: User!
     @Published var friends = [User]()
-        
     @Published var competitionInfoConfig: CompetitionInfo.Config
+    
+    var showInviteButton: Bool { competition.repeats || !competition.ended }
+    var showDeleteButton: Bool { competition.owner == userManager.user.id }
 
     @Injected private var competitionsManager: AnyCompetitionsManager
     @Injected private var friendsManager: AnyFriendsManager
     @Injected private var userManager: AnyUserManager
+    
+    private var actionRequiringConfirmation: ActionRequiringConfirmation? {
+        didSet { confirmationRequired = actionRequiringConfirmation != nil }
+    }
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -34,8 +36,12 @@ final class CompetitionViewModel: ObservableObject {
         user = userManager.user
         competitionInfoConfig.canEdit = user.id == competition.owner
         
+        competitionsManager.$competitions
+            .compactMap { $0.first { $0.id == competition.id } }
+            .assign(to: &$competition)
+        
         competitionsManager.$standings
-            .map { [weak self] standings -> [StandingViewConfig] in
+            .map { [weak self] standings -> [CompetitionParticipantView.Config] in
                 guard let self = self, let standings = standings[competition.id] else { return [] }
                 let participants = self.competitionsManager.participants[competition.id] ?? []
                 
@@ -47,7 +53,7 @@ final class CompetitionViewModel: ObservableObject {
                     
                     let visibility = user?.visibility(by: self.user) ?? .hidden
                     
-                    return StandingViewConfig(
+                    return CompetitionParticipantView.Config(
                         id: standing.id,
                         rank: standing.rank.ordinalString ?? "?",
                         name: user?.name ?? standing.userId,
@@ -65,7 +71,7 @@ final class CompetitionViewModel: ObservableObject {
                 guard let self = self, let pendingParticipants = pendingParticipants[competition.id] else { return [] }
                 return pendingParticipants.map { user in
                     let visibility = user.visibility(by: self.user)
-                    return StandingViewConfig(
+                    return CompetitionParticipantView.Config(
                         id: user.id,
                         rank: nil,
                         name: user.name,
@@ -106,15 +112,25 @@ final class CompetitionViewModel: ObservableObject {
         competitionsManager.join(competition)
     }
     
-    func leave() {
-        competitionsManager.leave(competition)
+    func leaveTapped() {
+        actionRequiringConfirmation = .leaveCompetition
     }
     
-    func delete() {
-        competitionsManager.delete(competition)
+    func deleteTapped() {
+        actionRequiringConfirmation = .deleteCompetition
     }
     
     func invite(_ friend: User) {
         competitionsManager.invite(friend, to: competition)
+    }
+    
+    func confirm() {
+        guard let action = actionRequiringConfirmation else { return }
+        switch action {
+        case .deleteCompetition:
+            competitionsManager.delete(competition)
+        case .leaveCompetition:
+            competitionsManager.leave(competition)
+        }
     }
 }

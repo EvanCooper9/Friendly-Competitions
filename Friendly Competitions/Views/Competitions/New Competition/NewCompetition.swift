@@ -10,10 +10,11 @@ struct NewCompetition: View {
 
     var body: some View {
         Form {
-            
-            CompetitionInfo(competition: $viewModel.competition, config: .constant(.init(canEdit: true, editing: true)))
-            
-            details
+            CompetitionInfo(
+                competition: $viewModel.competition,
+                config: $viewModel.competitionInfoConfig
+            )
+
             scoring
             friendsView
 
@@ -30,38 +31,8 @@ struct NewCompetition: View {
         }
         .navigationTitle("New Competition")
         .embeddedInNavigationView()
-        .sheet(isPresented: $presentAddFriends) { AddFriendView() }
+        .sheet(isPresented: $presentAddFriends) { InviteFriends(action: .addFriend) }
         .registerScreenView(name: "New Competition")
-    }
-
-    private var details: some View {
-        Section {
-            TextField("Name", text: $viewModel.competition.name)
-            DatePicker(
-                "Starts",
-                selection: $viewModel.competition.start,
-                in: PartialRangeFrom(.now),
-                displayedComponents: [.date]
-            )
-            DatePicker(
-                "Ends",
-                selection: $viewModel.competition.end,
-                in: PartialRangeFrom(viewModel.competition.start.addingTimeInterval(1.days)),
-                displayedComponents: [.date]
-            )
-            Toggle("Repeats", isOn: $viewModel.competition.repeats)
-            Toggle("Public", isOn: $viewModel.competition.isPublic)
-        } header: {
-            Text("Details")
-        } footer: {
-            if !viewModel.detailsFooterTexts.isEmpty {
-                VStack(alignment: .leading, spacing: 10) {
-                    ForEach(viewModel.detailsFooterTexts, id: \.self) { text in
-                        Text(text)
-                    }
-                }
-            }
-        }
     }
 
     private var scoring: some View {
@@ -98,29 +69,27 @@ struct NewCompetition: View {
 
     private var friendsView: some View {
         Section("Invite friends") {
-            List {
-                if viewModel.friends.isEmpty {
-                    LazyHStack {
-                        Text("Nothing here, yet!")
-                        Button("Add friends.", toggling: $presentAddFriends)
-                    }
-                    .padding(.vertical, 6)
+            if viewModel.friends.isEmpty {
+                LazyHStack {
+                    Text("Nothing here, yet!")
+                    Button("Add friends.", toggling: $presentAddFriends)
                 }
+                .padding(.vertical, 6)
+            }
 
-                ForEach(viewModel.friends) { friend in
-                    HStack {
-                        Text(friend.name)
-                        Spacer()
-                        if viewModel.invitees.contains(friend.id) {
-                            Image(systemName: "checkmark.circle.fill")
-                        }
+            ForEach(viewModel.friends) { friend in
+                HStack {
+                    Text(friend.name)
+                    Spacer()
+                    if viewModel.invitees.contains(friend.id) {
+                        Image(systemName: "checkmark.circle.fill")
                     }
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        viewModel.invitees.contains(friend.id) ?
-                            viewModel.invitees.remove(friend.id) :
-                            viewModel.invitees.append(friend.id)
-                    }
+                }
+                .contentShape(Rectangle())
+                .onTapGesture {
+                    viewModel.invitees.contains(friend.id) ?
+                        viewModel.invitees.remove(friend.id) :
+                        viewModel.invitees.append(friend.id)
                 }
             }
         }
