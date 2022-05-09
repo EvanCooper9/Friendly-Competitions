@@ -120,7 +120,7 @@
 		ED438FF727F7B3B600D72F99 /* View+ConfirmationDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED438FF627F7B3B600D72F99 /* View+ConfirmationDialog.swift */; };
 		ED438FF927F7C2B900D72F99 /* View+Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED438FF827F7C2B900D72F99 /* View+Analytics.swift */; };
 		ED438FFB27F7D18600D72F99 /* AnalyticsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED438FFA27F7D18600D72F99 /* AnalyticsManager.swift */; };
-		ED4878252826F43800AC1E2C /* CompetitionParticipant.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED4878242826F43800AC1E2C /* CompetitionParticipant.swift */; };
+		ED4878252826F43800AC1E2C /* CompetitionParticipantView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED4878242826F43800AC1E2C /* CompetitionParticipantView.swift */; };
 		ED4878282826F4F600AC1E2C /* SwiftUIX in Frameworks */ = {isa = PBXBuildFile; productRef = ED4878272826F4F600AC1E2C /* SwiftUIX */; };
 		ED48782E282747BD00AC1E2C /* InviteFriends.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED48782D282747BD00AC1E2C /* InviteFriends.swift */; };
 		ED487830282747CE00AC1E2C /* InviteFriendsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED48782F282747CE00AC1E2C /* InviteFriendsViewModel.swift */; };
@@ -295,7 +295,7 @@
 		ED438FF627F7B3B600D72F99 /* View+ConfirmationDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+ConfirmationDialog.swift"; sourceTree = "<group>"; };
 		ED438FF827F7C2B900D72F99 /* View+Analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Analytics.swift"; sourceTree = "<group>"; };
 		ED438FFA27F7D18600D72F99 /* AnalyticsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsManager.swift; sourceTree = "<group>"; };
-		ED4878242826F43800AC1E2C /* CompetitionParticipant.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionParticipant.swift; sourceTree = "<group>"; };
+		ED4878242826F43800AC1E2C /* CompetitionParticipantView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionParticipantView.swift; sourceTree = "<group>"; };
 		ED48782B2827360B00AC1E2C /* SwiftUIX */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = SwiftUIX; path = ../SwiftUIX; sourceTree = "<group>"; };
 		ED48782D282747BD00AC1E2C /* InviteFriends.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteFriends.swift; sourceTree = "<group>"; };
 		ED48782F282747CE00AC1E2C /* InviteFriendsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteFriendsViewModel.swift; sourceTree = "<group>"; };
@@ -912,7 +912,7 @@
 			isa = PBXGroup;
 			children = (
 				EDBEA16F281459D200058A47 /* CompetitionInfo.swift */,
-				ED4878242826F43800AC1E2C /* CompetitionParticipant.swift */,
+				ED4878242826F43800AC1E2C /* CompetitionParticipantView.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -1112,7 +1112,7 @@
 				C13F922C27BFFF9900FC6880 /* StorageManager.swift in Sources */,
 				ED901B682802504A00FE619E /* ExploreViewModel.swift in Sources */,
 				ED487830282747CE00AC1E2C /* InviteFriendsViewModel.swift in Sources */,
-				ED4878252826F43800AC1E2C /* CompetitionParticipant.swift in Sources */,
+				ED4878252826F43800AC1E2C /* CompetitionParticipantView.swift in Sources */,
 				ED901B742802649200FE619E /* VerifyEmailViewModel.swift in Sources */,
 				C109E4C026E7F52E00AA10C5 /* Encodable+Extensions.swift in Sources */,
 				C132336B27BF0AF700196D81 /* Sticker.swift in Sources */,

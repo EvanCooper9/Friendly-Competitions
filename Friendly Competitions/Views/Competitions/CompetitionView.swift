@@ -3,16 +3,8 @@ import SwiftUIX
 
 struct CompetitionView: View {
     
-    @Environment(\.presentationMode) private var presentationMode
-    
     @StateObject private var viewModel: CompetitionViewModel
 
-    private enum Action {
-        case leave
-        case delete
-    }
-
-    @State private var actionRequiringConfirmation: Action?
     @State private var showInviteFriend = false
     
     init(competition: Competition) {
@@ -48,19 +40,6 @@ struct CompetitionView: View {
             ]
         )
     }
-    
-    @ViewBuilder
-    private var toolbar: some View {
-        if viewModel.competitionInfoConfig.canEdit {
-            HStack {
-                if viewModel.competitionInfoConfig.editing {
-                    Button("Save", action: viewModel.saveTapped)
-                }
-                Button(viewModel.competitionInfoConfig.editButtonTitle, action: viewModel.editTapped)
-                    .font(viewModel.competitionInfoConfig.editing ? .body.bold() : .body)
-            }
-        }
-    }
 
     @ViewBuilder
     private var standings: some View {
@@ -88,7 +67,7 @@ struct CompetitionView: View {
     private var actions: some View {
         Section {
             if viewModel.showInviteButton {
-                Button("Invite a friend", systemImage: "person.crop.circle.badge.plus", toggling: $showInviteFriend)
+                Button("Invite a friend", systemImage: .personCropCircleBadgePlus) { showInviteFriend.toggle() }
             }
             if viewModel.showJoinButton {
                 Button("Join competition", systemImage: .personCropCircleBadgeCheckmark, action: viewModel.join)
@@ -102,14 +81,14 @@ struct CompetitionView: View {
                     .foregroundColor(.red)
             }
             if viewModel.showInvitedButtons {
-                Button("Accept invite", systemImage: "person.crop.circle.badge.checkmark", action: viewModel.accept)
-                Button("Decline invite", systemImage: "person.crop.circle.badge.xmark", action: viewModel.decline)
+                Button("Accept invite", systemImage: .personCropCircleBadgeCheckmark, action: viewModel.accept)
+                Button("Decline invite", systemImage: .personCropCircleBadgeXmark, action: viewModel.decline)
                     .foregroundColor(.red)
             }
         }
         .confirmationDialog("Are your sure", isPresented: $viewModel.confirmationRequired, titleVisibility: .visible) {
             Button("Yes", role: .destructive, action: viewModel.confirm)
-            Button("Cancel", role: .cancel) {}
+            Button("Cancel", role: .cancel, action: viewModel.retract)
         }
         .sheet(isPresented: $showInviteFriend) {
             InviteFriends(action: .competitionInvite(viewModel.competition))
@@ -127,11 +106,11 @@ struct CompetitionView_Previews: PreviewProvider {
         competitionsManager.standings = [
             competition.id: [
                 .init(rank: 1, userId: "Somebody", points: 100),
-                .init(rank: 2, userId: "Rick", points: 75)
-//                .init(rank: 3, userId: "Bob", points: 60),
-//                .init(rank: 4, userId: gabby.id, points: 50),
-//                .init(rank: 5, userId: evan.id, points: 20),
-//                .init(rank: 6, userId: "Joe", points: 9),
+                .init(rank: 2, userId: "Rick", points: 75),
+                .init(rank: 3, userId: "Bob", points: 60),
+                .init(rank: 4, userId: gabby.id, points: 50),
+                .init(rank: 5, userId: evan.id, points: 20),
+                .init(rank: 6, userId: "Joe", points: 9),
             ]
         ]
         competitionsManager.participants = [

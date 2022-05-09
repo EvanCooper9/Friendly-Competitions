@@ -58,9 +58,7 @@ final class NewCompetitionViewModel: ObservableObject {
         )
         
         friendsManager.$friends
-            .map { friends in
-                friends.map { InviteFriendsRow(id: $0.id, name: $0.name, invited: false) }
-            }
+            .map { $0.map { InviteFriendsRow(id: $0.id, name: $0.name, invited: false) } }
             .assign(to: &$friendRows)
     }
     

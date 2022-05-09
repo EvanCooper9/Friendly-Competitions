@@ -9,6 +9,8 @@ final class CompetitionViewModel: ObservableObject {
         case leaveCompetition
     }
     
+    // MARK: - Public Properties
+    
     @Published var confirmationRequired = false
     @Published var competition: Competition
     @Published var standings = [CompetitionParticipantView.Config]()
@@ -26,6 +28,8 @@ final class CompetitionViewModel: ObservableObject {
     var showJoinButton: Bool { !showLeaveButton }
     var showLeaveButton: Bool { competition.participants.contains(userManager.user.id) }
     var showInvitedButtons: Bool { competition.pendingParticipants.contains(userManager.user.id) }
+    
+    // MARK: - Private Properties
 
     @Injected private var competitionsManager: AnyCompetitionsManager
     @Injected private var friendsManager: AnyFriendsManager
@@ -36,6 +40,8 @@ final class CompetitionViewModel: ObservableObject {
     }
     
     private var cancellables = Set<AnyCancellable>()
+    
+    // MARK: - Lifecycle
     
     init(competition: Competition) {
         self.competition = competition
@@ -98,6 +104,8 @@ final class CompetitionViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
+    // MARK: - Public Methods
+    
     func editTapped() {
         competitionInfoConfig.editing.toggle()
     }
@@ -139,5 +147,9 @@ final class CompetitionViewModel: ObservableObject {
         case .leaveCompetition:
             competitionsManager.leave(competition)
         }
+    }
+    
+    func retract() {
+        actionRequiringConfirmation = nil
     }
 }
