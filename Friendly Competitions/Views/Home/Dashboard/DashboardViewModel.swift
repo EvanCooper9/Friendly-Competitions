@@ -25,6 +25,7 @@ final class DashboardViewModel: ObservableObject {
         user = userManager.user
         activitySummaryManager.$activitySummary.assign(to: &$activitySummary)
         competitionsManager.$competitions.assign(to: &$competitions)
+        competitionsManager.$invitedCompetitions.assign(to: &$invitedCompetitions)
         friendsManager.$friends.assign(to: &$friends)
         friendsManager.$friendActivitySummaries.assign(to: &$friendActivitySummaries)
         friendsManager.$friendRequests.assign(to: &$friendRequests)

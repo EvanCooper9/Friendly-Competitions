@@ -6,11 +6,11 @@ struct Home: View {
         TabView {
             Dashboard()
                 .embeddedInNavigationView()
-                .tabItem { Label("Home", systemImage: "house.fill") }
+                .tabItem { Label("Home", systemImage: .houseFill) }
         
             Explore()
                 .embeddedInNavigationView()
-                .tabItem { Label("Explore", systemImage: "sparkle.magnifyingglass") }
+                .tabItem { Label("Explore", systemImage: .sparkleMagnifyingglass) }
         }
     }
 }

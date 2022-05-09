@@ -25,14 +25,20 @@ struct CompetitionView: View {
             if !viewModel.pendingParticipants.isEmpty {
                 pendingInvites
             }
-            
             CompetitionInfo(competition: $viewModel.competition, config: $viewModel.competitionInfoConfig)
-            
             actions
         }
         .navigationTitle(viewModel.competition.name)
         .toolbar {
-            toolbar
+            if viewModel.competitionInfoConfig.canEdit {
+                HStack {
+                    if viewModel.competitionInfoConfig.editing {
+                        Button("Save", action: viewModel.saveTapped)
+                    }
+                    Button(viewModel.competitionInfoConfig.editButtonTitle, action: viewModel.editTapped)
+                        .font(viewModel.competitionInfoConfig.editing ? .body.bold() : .body)
+                }
+            }
         }
         .registerScreenView(
             name: "Competition",
@@ -84,21 +90,21 @@ struct CompetitionView: View {
             if viewModel.showInviteButton {
                 Button("Invite a friend", systemImage: "person.crop.circle.badge.plus", toggling: $showInviteFriend)
             }
-            
+            if viewModel.showJoinButton {
+                Button("Join competition", systemImage: .personCropCircleBadgeCheckmark, action: viewModel.join)
+            }
+            if viewModel.showLeaveButton {
+                Button("Leave competition", systemImage: .personCropCircleBadgeMinus, action: viewModel.leaveTapped)
+                    .foregroundColor(.red)
+            }
             if viewModel.showDeleteButton {
                 Button("Delete competition", systemImage: .trash, action: viewModel.deleteTapped)
                     .foregroundColor(.red)
             }
-
-            if viewModel.competition.participants.contains(viewModel.user.id) {
-                Button("Leave competition", systemImage: .personCropCircleBadgeMinus, action: viewModel.leaveTapped)
-                    .foregroundColor(.red)
-            } else if viewModel.competition.pendingParticipants.contains(viewModel.user.id) {
+            if viewModel.showInvitedButtons {
                 Button("Accept invite", systemImage: "person.crop.circle.badge.checkmark", action: viewModel.accept)
                 Button("Decline invite", systemImage: "person.crop.circle.badge.xmark", action: viewModel.decline)
                     .foregroundColor(.red)
-            } else {
-                Button("Join competition", systemImage: "person.crop.circle.badge.checkmark", action: viewModel.join)
             }
         }
         .confirmationDialog("Are your sure", isPresented: $viewModel.confirmationRequired, titleVisibility: .visible) {

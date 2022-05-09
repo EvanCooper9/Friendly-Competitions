@@ -14,6 +14,7 @@ struct InviteFriends: View {
                 ForEach(viewModel.rows) { row in
                     HStack {
                         Text(row.name)
+                        IDPill(id: row.pillId)
                         Spacer()
                         Button(row.buttonTitle, action: row.buttonAction)
                             .disabled(row.buttonDisabled)

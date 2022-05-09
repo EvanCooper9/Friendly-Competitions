@@ -4,13 +4,19 @@ import Resolver
 
 final class NewCompetitionViewModel: ObservableObject {
     
+    struct InviteFriendsRow: Identifiable {
+        let id: String
+        let name: String
+        var invited: Bool
+    }
+    
     private enum Constants {
         static let defaultInterval: TimeInterval = 7
     }
     
     @Published var competition: Competition
     @Published var competitionInfoConfig = CompetitionInfo.Config(canEdit: true, editing: true)
-    @Published var invitees = [String]()
+    @Published var friendRows = [InviteFriendsRow]()
     
     var detailsFooterTexts: [String] {
         var detailsTexts = [String]()
@@ -33,8 +39,6 @@ final class NewCompetitionViewModel: ObservableObject {
         return nil
     }
     
-    @Published var friends = [User]()
-    
     @Injected private var competitionsManager: AnyCompetitionsManager
     @Injected private var friendsManager: AnyFriendsManager
     @Injected private var userManager: AnyUserManager
@@ -53,12 +57,27 @@ final class NewCompetitionViewModel: ObservableObject {
             banner: nil
         )
         
-        friendsManager.$friends.assign(to: &$friends)
+        friendsManager.$friends
+            .map { friends in
+                friends.map { InviteFriendsRow(id: $0.id, name: $0.name, invited: false) }
+            }
+            .assign(to: &$friendRows)
     }
     
     func create() {
         competition.owner = userManager.user.id
         competition.participants = [userManager.user.id]
         competitionsManager.create(competition)
+    }
+    
+    func tapped(_ rowConfig: InviteFriendsRow) {
+        if competition.pendingParticipants.contains(rowConfig.id) {
+            competition.pendingParticipants.remove(rowConfig.id)
+        } else {
+            competition.pendingParticipants.append(rowConfig.id)
+        }
+        
+        guard let index = friendRows.firstIndex(where: { $0.id == rowConfig.id }) else { return }
+        friendRows[index].invited = competition.pendingParticipants.contains(rowConfig.id)
     }
 }

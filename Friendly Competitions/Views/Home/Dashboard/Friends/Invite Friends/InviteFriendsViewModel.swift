@@ -7,6 +7,7 @@ final class InviteFriendsViewModel: ObservableObject {
     struct RowConfig: Identifiable {
         let id: String
         let name: String
+        let pillId: String
         var buttonTitle: String
         var buttonDisabled: Bool
         let buttonAction: () -> Void
@@ -53,6 +54,7 @@ final class InviteFriendsViewModel: ObservableObject {
                         RowConfig(
                             id: friend.id,
                             name: friend.name,
+                            pillId: friend.hashId,
                             buttonTitle: alreadyInvited.contains(friend.id) ? "Invited" : "Invite",
                             buttonDisabled: alreadyInvited.contains(friend.id),
                             buttonAction: { [friend] in

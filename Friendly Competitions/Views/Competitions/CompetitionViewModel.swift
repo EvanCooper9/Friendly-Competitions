@@ -17,8 +17,15 @@ final class CompetitionViewModel: ObservableObject {
     @Published var friends = [User]()
     @Published var competitionInfoConfig: CompetitionInfo.Config
     
-    var showInviteButton: Bool { competition.repeats || !competition.ended }
+    var showInviteButton: Bool {
+        let joined = competition.participants.contains(userManager.user.id)
+        let active = competition.repeats || !competition.ended
+        return joined && active
+    }
     var showDeleteButton: Bool { competition.owner == userManager.user.id }
+    var showJoinButton: Bool { !showLeaveButton }
+    var showLeaveButton: Bool { competition.participants.contains(userManager.user.id) }
+    var showInvitedButtons: Bool { competition.pendingParticipants.contains(userManager.user.id) }
 
     @Injected private var competitionsManager: AnyCompetitionsManager
     @Injected private var friendsManager: AnyFriendsManager

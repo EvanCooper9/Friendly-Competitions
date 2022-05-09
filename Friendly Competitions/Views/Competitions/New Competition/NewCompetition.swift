@@ -69,7 +69,7 @@ struct NewCompetition: View {
 
     private var friendsView: some View {
         Section("Invite friends") {
-            if viewModel.friends.isEmpty {
+            if viewModel.friendRows.isEmpty {
                 LazyHStack {
                     Text("Nothing here, yet!")
                     Button("Add friends.", toggling: $presentAddFriends)
@@ -77,20 +77,16 @@ struct NewCompetition: View {
                 .padding(.vertical, 6)
             }
 
-            ForEach(viewModel.friends) { friend in
+            ForEach(viewModel.friendRows) { rowConfig in
                 HStack {
-                    Text(friend.name)
+                    Text(rowConfig.name)
                     Spacer()
-                    if viewModel.invitees.contains(friend.id) {
+                    if rowConfig.invited {
                         Image(systemName: "checkmark.circle.fill")
                     }
                 }
                 .contentShape(Rectangle())
-                .onTapGesture {
-                    viewModel.invitees.contains(friend.id) ?
-                        viewModel.invitees.remove(friend.id) :
-                        viewModel.invitees.append(friend.id)
-                }
+                .onTapGesture { viewModel.tapped(rowConfig) }
             }
         }
     }
