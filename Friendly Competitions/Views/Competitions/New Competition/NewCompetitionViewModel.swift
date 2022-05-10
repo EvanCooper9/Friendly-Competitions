@@ -15,7 +15,6 @@ final class NewCompetitionViewModel: ObservableObject {
     }
     
     @Published var competition: Competition
-    @Published var competitionInfoConfig = CompetitionInfo.Config(canEdit: true, editing: true)
     @Published var friendRows = [InviteFriendsRow]()
     
     var detailsFooterTexts: [String] {

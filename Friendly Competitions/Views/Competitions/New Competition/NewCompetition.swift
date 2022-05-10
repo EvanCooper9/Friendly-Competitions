@@ -10,14 +10,9 @@ struct NewCompetition: View {
 
     var body: some View {
         Form {
-            CompetitionInfo(
-                competition: $viewModel.competition,
-                config: $viewModel.competitionInfoConfig
-            )
-
+            CompetitionInfo(competition: $viewModel.competition, editing: true)
             scoring
             friendsView
-
             Section {
                 Button("Create") {
                     viewModel.create()

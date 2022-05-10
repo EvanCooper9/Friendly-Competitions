@@ -17,18 +17,18 @@ struct CompetitionView: View {
             if !viewModel.pendingParticipants.isEmpty {
                 pendingInvites
             }
-            CompetitionInfo(competition: $viewModel.competition, config: $viewModel.competitionInfoConfig)
+            CompetitionInfo(competition: $viewModel.competition, editing: viewModel.editing)
             actions
         }
         .navigationTitle(viewModel.competition.name)
         .toolbar {
-            if viewModel.competitionInfoConfig.canEdit {
+            if viewModel.canEdit {
                 HStack {
-                    if viewModel.competitionInfoConfig.editing {
+                    if viewModel.editing {
                         Button("Save", action: viewModel.saveTapped)
                     }
-                    Button(viewModel.competitionInfoConfig.editButtonTitle, action: viewModel.editTapped)
-                        .font(viewModel.competitionInfoConfig.editing ? .body.bold() : .body)
+                    Button(viewModel.editButtonTitle, action: viewModel.editTapped)
+                        .font(viewModel.editing ? .body.bold() : .body)
                 }
             }
         }
@@ -41,7 +41,6 @@ struct CompetitionView: View {
         )
     }
 
-    @ViewBuilder
     private var standings: some View {
         Section {
             ForEach(viewModel.standings) {

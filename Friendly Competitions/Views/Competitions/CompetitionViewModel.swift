@@ -11,13 +11,17 @@ final class CompetitionViewModel: ObservableObject {
     
     // MARK: - Public Properties
     
+    @Published var canEdit = false
     @Published var confirmationRequired = false
     @Published var competition: Competition
+    @Published var editing = false {
+        didSet { editButtonTitle = editing ? "Cancel" : "Edit" }
+    }
+    @Published var editButtonTitle = "Edit"
     @Published var standings = [CompetitionParticipantView.Config]()
     @Published var pendingParticipants = [CompetitionParticipantView.Config]()
     @Published var user: User!
     @Published var friends = [User]()
-    @Published var competitionInfoConfig: CompetitionInfo.Config
     
     var showInviteButton: Bool {
         let joined = competition.participants.contains(userManager.user.id)
@@ -45,9 +49,8 @@ final class CompetitionViewModel: ObservableObject {
     
     init(competition: Competition) {
         self.competition = competition
-        self.competitionInfoConfig = .init(canEdit: false)
         user = userManager.user
-        competitionInfoConfig.canEdit = user.id == competition.owner
+        canEdit = user.id == competition.owner
         
         competitionsManager.$competitions
             .compactMap { $0.first { $0.id == competition.id } }
@@ -107,11 +110,11 @@ final class CompetitionViewModel: ObservableObject {
     // MARK: - Public Methods
     
     func editTapped() {
-        competitionInfoConfig.editing.toggle()
+        editing.toggle()
     }
     
     func saveTapped() {
-        competitionInfoConfig.editing.toggle()
+        editing.toggle()
         competitionsManager.update(competition)
     }
     

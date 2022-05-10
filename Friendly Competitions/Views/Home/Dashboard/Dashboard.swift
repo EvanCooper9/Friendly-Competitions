@@ -51,7 +51,6 @@ struct Dashboard: View {
         .registerScreenView(name: "Home")
     }
     
-    @ViewBuilder
     private var activitySummary: some View {
         Section {
             ActivitySummaryInfoView(activitySummary: viewModel.activitySummary)
@@ -101,7 +100,6 @@ struct Dashboard: View {
         }
     }
     
-    @ViewBuilder
     private var friends: some View {
         Section {
             ForEach(viewModel.friends) { friend in

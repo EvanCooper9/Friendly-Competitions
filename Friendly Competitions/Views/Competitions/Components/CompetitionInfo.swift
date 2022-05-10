@@ -2,26 +2,12 @@ import SwiftUI
 
 struct CompetitionInfo: View {
     
-    struct Config {
-        var canEdit: Bool
-        var editing: Bool
-                        
-        init(canEdit: Bool, editing: Bool = false) {
-            self.canEdit = canEdit
-            self.editing = editing
-        }
-        
-        var editButtonTitle: String {
-            editing ? "Cancel" : "Edit"
-        }
-    }
-    
     @Binding var competition: Competition
-    @Binding var config: Config
+    let editing: Bool
     
     var body: some View {
         Section("Details") {
-            if config.editing {
+            if editing {
                 TextField("Name", text: $competition.name)
                 DatePicker(
                     "Starts",
@@ -62,12 +48,9 @@ struct CompetitionInfo: View {
 }
 
 struct CompetitionInfo_Previews: PreviewProvider {
-    
-    private static var config = CompetitionInfo.Config(canEdit: true)
-    
     static var previews: some View {
         Form {
-            CompetitionInfo(competition: .constant(.mock), config: .constant(config))
+            CompetitionInfo(competition: .constant(.mock), editing: false)
         }
     }
 }
