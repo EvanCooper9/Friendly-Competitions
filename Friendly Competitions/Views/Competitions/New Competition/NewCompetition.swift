@@ -10,10 +10,9 @@ struct NewCompetition: View {
 
     var body: some View {
         Form {
-            details
+            CompetitionInfo(competition: $viewModel.competition, editing: true)
             scoring
             friendsView
-
             Section {
                 Button("Create") {
                     viewModel.create()
@@ -27,43 +26,13 @@ struct NewCompetition: View {
         }
         .navigationTitle("New Competition")
         .embeddedInNavigationView()
-        .sheet(isPresented: $presentAddFriends) { AddFriendView() }
+        .sheet(isPresented: $presentAddFriends) { InviteFriends(action: .addFriend) }
         .registerScreenView(name: "New Competition")
-    }
-
-    private var details: some View {
-        Section {
-            TextField("Name", text: $viewModel.name)
-            DatePicker(
-                "Starts",
-                selection: $viewModel.start,
-                in: PartialRangeFrom(.now),
-                displayedComponents: [.date]
-            )
-            DatePicker(
-                "Ends",
-                selection: $viewModel.end,
-                in: PartialRangeFrom(viewModel.start.addingTimeInterval(1.days)),
-                displayedComponents: [.date]
-            )
-            Toggle("Repeats", isOn: $viewModel.repeats)
-            Toggle("Public", isOn: $viewModel.isPublic)
-        } header: {
-            Text("Details")
-        } footer: {
-            if !viewModel.detailsFooterTexts.isEmpty {
-                VStack(alignment: .leading, spacing: 10) {
-                    ForEach(viewModel.detailsFooterTexts, id: \.self) { text in
-                        Text(text)
-                    }
-                }
-            }
-        }
     }
 
     private var scoring: some View {
         Section {
-            Picker("Scoring model", selection: $viewModel.scoringModel) {
+            Picker("Scoring model", selection: $viewModel.competition.scoringModel) {
                 ForEach(Competition.ScoringModel.allCases) { scoringModel in
                     Text(scoringModel.displayName)
                         .tag(scoringModel)
@@ -95,30 +64,24 @@ struct NewCompetition: View {
 
     private var friendsView: some View {
         Section("Invite friends") {
-            List {
-                if viewModel.friends.isEmpty {
-                    LazyHStack {
-                        Text("Nothing here, yet!")
-                        Button("Add friends.", toggling: $presentAddFriends)
-                    }
-                    .padding(.vertical, 6)
+            if viewModel.friendRows.isEmpty {
+                LazyHStack {
+                    Text("Nothing here, yet!")
+                    Button("Add friends.", toggling: $presentAddFriends)
                 }
+                .padding(.vertical, 6)
+            }
 
-                ForEach(viewModel.friends) { friend in
-                    HStack {
-                        Text(friend.name)
-                        Spacer()
-                        if viewModel.invitees.contains(friend.id) {
-                            Image(systemName: "checkmark.circle.fill")
-                        }
-                    }
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        viewModel.invitees.contains(friend.id) ?
-                            viewModel.invitees.remove(friend.id) :
-                            viewModel.invitees.append(friend.id)
+            ForEach(viewModel.friendRows) { rowConfig in
+                HStack {
+                    Text(rowConfig.name)
+                    Spacer()
+                    if rowConfig.invited {
+                        Image(systemName: "checkmark.circle.fill")
                     }
                 }
+                .contentShape(Rectangle())
+                .onTapGesture { viewModel.tapped(rowConfig) }
             }
         }
     }

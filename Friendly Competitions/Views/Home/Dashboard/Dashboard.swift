@@ -36,7 +36,7 @@ struct Dashboard: View {
             }
         }
         .sheet(isPresented: $presentAbout) { About() }
-        .sheet(isPresented: $presentSearchFriendsSheet) { AddFriendView() }
+        .sheet(isPresented: $presentSearchFriendsSheet) { InviteFriends(action: .addFriend) }
         .sheet(isPresented: $presentNewCompetition) { NewCompetition() }
         .sheet(isPresented: $viewModel.requiresPermissions) { PermissionsView() }
         .onOpenURL { url in
@@ -51,7 +51,6 @@ struct Dashboard: View {
         .registerScreenView(name: "Home")
     }
     
-    @ViewBuilder
     private var activitySummary: some View {
         Section {
             ActivitySummaryInfoView(activitySummary: viewModel.activitySummary)
@@ -101,7 +100,6 @@ struct Dashboard: View {
         }
     }
     
-    @ViewBuilder
     private var friends: some View {
         Section {
             ForEach(viewModel.friends) { friend in

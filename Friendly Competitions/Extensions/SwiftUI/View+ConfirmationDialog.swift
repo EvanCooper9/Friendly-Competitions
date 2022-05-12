@@ -6,8 +6,10 @@ extension View {
             titleKey,
             isPresented: .init {
                 presenting.wrappedValue != nil
-            } set: { b in
-                // do nothing
+            } set: { isPresented in
+                if !isPresented {
+                    presenting.wrappedValue = nil
+                }
             },
             titleVisibility: titleVisibility,
             actions: {

@@ -1,6 +1,13 @@
 import SwiftUI
 
 extension Button where Label == Text {
+    
+    init<S: StringProtocol>(_ title: S, optionalAction: (() -> Void)?) {
+        self = Button(title, action: {
+            optionalAction?()
+        })
+    }
+    
     init<S: StringProtocol>(_ title: S, asyncAction: @escaping () async throws -> Void) {
         self = Button(title, action: {
             Task {

@@ -114,7 +114,6 @@ struct EmailSignInForm: View {
         .onAppear { focus = .email }
     }
     
-    @ViewBuilder
     private func inputField<Content: View>(@ViewBuilder inputContent: () -> Content) -> some View {
         HStack {
             inputContent()

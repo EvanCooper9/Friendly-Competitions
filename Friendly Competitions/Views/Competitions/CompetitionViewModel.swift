@@ -3,35 +3,61 @@ import CombineExt
 import Resolver
 
 final class CompetitionViewModel: ObservableObject {
-
-    struct StandingViewConfig: Identifiable {
-        let id: String
-        let rank: String?
-        let name: String
-        let idPillText: String?
-        let blurred: Bool
-        let points: Int?
-        let highlighted: Bool
+    
+    private enum ActionRequiringConfirmation {
+        case deleteCompetition
+        case leaveCompetition
     }
-
-    @Published var standings = [StandingViewConfig]()
-    @Published var pendingParticipants = [StandingViewConfig]()
+    
+    // MARK: - Public Properties
+    
+    @Published var canEdit = false
+    @Published var confirmationRequired = false
+    @Published var competition: Competition
+    @Published var editing = false {
+        didSet { editButtonTitle = editing ? "Cancel" : "Edit" }
+    }
+    @Published var editButtonTitle = "Edit"
+    @Published var standings = [CompetitionParticipantView.Config]()
+    @Published var pendingParticipants = [CompetitionParticipantView.Config]()
     @Published var user: User!
     @Published var friends = [User]()
+    
+    var showInviteButton: Bool {
+        let joined = competition.participants.contains(userManager.user.id)
+        let active = competition.repeats || !competition.ended
+        return joined && active
+    }
+    var showDeleteButton: Bool { competition.owner == userManager.user.id }
+    var showJoinButton: Bool { !showLeaveButton }
+    var showLeaveButton: Bool { competition.participants.contains(userManager.user.id) }
+    var showInvitedButtons: Bool { competition.pendingParticipants.contains(userManager.user.id) }
+    
+    // MARK: - Private Properties
 
     @Injected private var competitionsManager: AnyCompetitionsManager
     @Injected private var friendsManager: AnyFriendsManager
     @Injected private var userManager: AnyUserManager
     
-    private let competition: Competition
+    private var actionRequiringConfirmation: ActionRequiringConfirmation? {
+        didSet { confirmationRequired = actionRequiringConfirmation != nil }
+    }
+    
     private var cancellables = Set<AnyCancellable>()
+    
+    // MARK: - Lifecycle
     
     init(competition: Competition) {
         self.competition = competition
         user = userManager.user
+        canEdit = user.id == competition.owner
+        
+        competitionsManager.$competitions
+            .compactMap { $0.first { $0.id == competition.id } }
+            .assign(to: &$competition)
         
         competitionsManager.$standings
-            .map { [weak self] standings -> [StandingViewConfig] in
+            .map { [weak self] standings -> [CompetitionParticipantView.Config] in
                 guard let self = self, let standings = standings[competition.id] else { return [] }
                 let participants = self.competitionsManager.participants[competition.id] ?? []
                 
@@ -43,7 +69,7 @@ final class CompetitionViewModel: ObservableObject {
                     
                     let visibility = user?.visibility(by: self.user) ?? .hidden
                     
-                    return StandingViewConfig(
+                    return CompetitionParticipantView.Config(
                         id: standing.id,
                         rank: standing.rank.ordinalString ?? "?",
                         name: user?.name ?? standing.userId,
@@ -54,15 +80,14 @@ final class CompetitionViewModel: ObservableObject {
                     )
                 }
             }
-            .assign(to: \.standings, on: self, ownership: .weak)
-            .store(in: &cancellables)
+            .assign(to: &$standings)
         
         competitionsManager.$pendingParticipants
             .map { [weak self] pendingParticipants in
                 guard let self = self, let pendingParticipants = pendingParticipants[competition.id] else { return [] }
                 return pendingParticipants.map { user in
                     let visibility = user.visibility(by: self.user)
-                    return StandingViewConfig(
+                    return CompetitionParticipantView.Config(
                         id: user.id,
                         rank: nil,
                         name: user.name,
@@ -73,16 +98,24 @@ final class CompetitionViewModel: ObservableObject {
                     )
                 }
             }
-            .assign(to: \.pendingParticipants, on: self, ownership: .weak)
-            .store(in: &cancellables)
+            .assign(to: &$pendingParticipants)
         
-        friendsManager.$friends
-            .assign(to: \.friends, on: self, ownership: .weak)
-            .store(in: &cancellables)
+        friendsManager.$friends.assign(to: &$friends)
         
         userManager.$user
             .assign(to: \.user, on: self, ownership: .weak)
             .store(in: &cancellables)
+    }
+    
+    // MARK: - Public Methods
+    
+    func editTapped() {
+        editing.toggle()
+    }
+    
+    func saveTapped() {
+        editing.toggle()
+        competitionsManager.update(competition)
     }
     
     func accept() {
@@ -97,15 +130,29 @@ final class CompetitionViewModel: ObservableObject {
         competitionsManager.join(competition)
     }
     
-    func leave() {
-        competitionsManager.leave(competition)
+    func leaveTapped() {
+        actionRequiringConfirmation = .leaveCompetition
     }
     
-    func delete() {
-        competitionsManager.delete(competition)
+    func deleteTapped() {
+        actionRequiringConfirmation = .deleteCompetition
     }
     
     func invite(_ friend: User) {
         competitionsManager.invite(friend, to: competition)
+    }
+    
+    func confirm() {
+        guard let action = actionRequiringConfirmation else { return }
+        switch action {
+        case .deleteCompetition:
+            competitionsManager.delete(competition)
+        case .leaveCompetition:
+            competitionsManager.leave(competition)
+        }
+    }
+    
+    func retract() {
+        actionRequiringConfirmation = nil
     }
 }

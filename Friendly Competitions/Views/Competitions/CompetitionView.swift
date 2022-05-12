@@ -1,23 +1,14 @@
 import SwiftUI
+import SwiftUIX
 
 struct CompetitionView: View {
     
-    let competition: Competition
-
-    @Environment(\.presentationMode) private var presentationMode
-    
     @StateObject private var viewModel: CompetitionViewModel
 
-    private enum Action {
-        case leave, delete
-    }
-
-    @State private var actionRequiringConfirmation: Action?
     @State private var showInviteFriend = false
     
     init(competition: Competition) {
         _viewModel = .init(wrappedValue: CompetitionViewModel(competition: competition))
-        self.competition = competition
     }
 
     var body: some View {
@@ -26,24 +17,34 @@ struct CompetitionView: View {
             if !viewModel.pendingParticipants.isEmpty {
                 pendingInvites
             }
-            details
+            CompetitionInfo(competition: $viewModel.competition, editing: viewModel.editing)
             actions
         }
-        .navigationTitle(competition.name)
+        .navigationTitle(viewModel.competition.name)
+        .toolbar {
+            if viewModel.canEdit {
+                HStack {
+                    if viewModel.editing {
+                        Button("Save", action: viewModel.saveTapped)
+                    }
+                    Button(viewModel.editButtonTitle, action: viewModel.editTapped)
+                        .font(viewModel.editing ? .body.bold() : .body)
+                }
+            }
+        }
         .registerScreenView(
             name: "Competition",
             parameters: [
-                "id": competition.id,
-                "name": competition.name
+                "id": viewModel.competition.id,
+                "name": viewModel.competition.name
             ]
         )
     }
 
-    @ViewBuilder
     private var standings: some View {
         Section {
             ForEach(viewModel.standings) {
-                UserRowItem(config: $0)
+                CompetitionParticipantView(config: $0)
             }
         } header: {
             Text("Standings")
@@ -57,117 +58,40 @@ struct CompetitionView: View {
     private var pendingInvites: some View {
         Section("Pending invites") {
             ForEach(viewModel.pendingParticipants) {
-                UserRowItem(config: $0)
-            }
-        }
-    }
-
-    private var details: some View {
-        Section("Details") {
-            ImmutableListItemView(
-                value: competition.start.formatted(date: .abbreviated, time: .omitted),
-                valueType: .date(description: competition.started ? "Started" : "Starts")
-            )
-            ImmutableListItemView(
-                value: competition.end.formatted(date: .abbreviated, time: .omitted),
-                valueType: .date(description: competition.ended ? "Ended" : "Ends")
-            )
-            ImmutableListItemView(
-                value: competition.scoringModel.displayName,
-                valueType: .other(systemImage: "plusminus.circle", description: "Scoring model")
-            )
-            if competition.repeats {
-                ImmutableListItemView(
-                    value: "Yes",
-                    valueType: .other(systemImage: "repeat.circle", description: "Restarts")
-                )
+                CompetitionParticipantView(config: $0)
             }
         }
     }
 
     private var actions: some View {
         Section {
-            if !competition.ended {
-                Button("Invite a friend", systemImage: "person.crop.circle.badge.plus") {
-                    showInviteFriend.toggle()
-                }
+            if viewModel.showInviteButton {
+                Button("Invite a friend", systemImage: .personCropCircleBadgePlus) { showInviteFriend.toggle() }
             }
-
-            if competition.participants.contains(viewModel.user.id) {
-                Button("Leave competition", systemImage: "person.crop.circle.badge.minus") {
-                    actionRequiringConfirmation = .leave
-                }
-                .foregroundColor(.red)
-
-                if competition.owner == viewModel.user.id {
-                    Button("Delete competition", systemImage: "trash") {
-                        actionRequiringConfirmation = .delete
-                    }
+            if viewModel.showJoinButton {
+                Button("Join competition", systemImage: .personCropCircleBadgeCheckmark, action: viewModel.join)
+            }
+            if viewModel.showLeaveButton {
+                Button("Leave competition", systemImage: .personCropCircleBadgeMinus, action: viewModel.leaveTapped)
                     .foregroundColor(.red)
-                }
-            } else if competition.pendingParticipants.contains(viewModel.user.id) {
-                Button("Accept invite", systemImage: "person.crop.circle.badge.checkmark", action: viewModel.accept)
-                Button("Decline invite", systemImage: "person.crop.circle.badge.xmark", action: viewModel.decline)
+            }
+            if viewModel.showDeleteButton {
+                Button("Delete competition", systemImage: .trash, action: viewModel.deleteTapped)
                     .foregroundColor(.red)
-            } else {
-                Button("Join competition", systemImage: "person.crop.circle.badge.checkmark", action: viewModel.join)
+            }
+            if viewModel.showInvitedButtons {
+                Button("Accept invite", systemImage: .personCropCircleBadgeCheckmark, action: viewModel.accept)
+                Button("Decline invite", systemImage: .personCropCircleBadgeXmark, action: viewModel.decline)
+                    .foregroundColor(.red)
             }
         }
-        .confirmationDialog(
-            "Are your sure",
-            presenting: $actionRequiringConfirmation,
-            titleVisibility: .visible
-        ) { action in
-            Button("Yes", role: .destructive) {
-                switch action {
-                case .leave:
-                    viewModel.leave()
-                case .delete:
-                    viewModel.delete()
-                }
-                presentationMode.wrappedValue.dismiss()
-                actionRequiringConfirmation = nil
-            }
-            Button("Cancel", role: .cancel) { actionRequiringConfirmation = nil }
+        .confirmationDialog("Are your sure", isPresented: $viewModel.confirmationRequired, titleVisibility: .visible) {
+            Button("Yes", role: .destructive, action: viewModel.confirm)
+            Button("Cancel", role: .cancel, action: viewModel.retract)
         }
         .sheet(isPresented: $showInviteFriend) {
-            List {
-                Section {
-                    ForEach(viewModel.friends) { friend in
-                        AddFriendListItem(
-                            friend: friend,
-                            action: .competitionInvite,
-                            disabledIf: competition.pendingParticipants.contains(friend.id) || competition.participants.contains(friend.id)
-                        ) { viewModel.invite(friend) }
-                    }
-                } footer: {
-                    Text("People who join in-progress competitions will have their scores from missed days retroactively uploaded.")
-                }
-            }
-            .navigationTitle("Invite a friend")
-            .embeddedInNavigationView()
+            InviteFriends(action: .competitionInvite(viewModel.competition))
         }
-    }
-}
-
-private struct UserRowItem: View {
-    let config: CompetitionViewModel.StandingViewConfig
-    var body: some View {
-        HStack {
-            if let rank = config.rank {
-                Text(rank).bold()
-            }
-            Text(config.name)
-                .blur(radius: config.blurred ? 5 : 0)
-            if let idPillText = config.idPillText {
-                IDPill(id: idPillText)
-            }
-            Spacer()
-            if let points = config.points {
-                Text(points)
-            }
-        }
-        .foregroundColor(config.highlighted ? .blue : nil)
     }
 }
 

@@ -11,16 +11,13 @@ final class FriendViewModel: ObservableObject {
     
     private let friend: User
     
-    private var cancellables = Set<AnyCancellable>()
-    
     init(friend: User) {
         self.friend = friend
         statistics = friend.statistics ?? .zero
         
         friendsManager.$friendActivitySummaries
             .map { $0[friend.id] }
-            .assign(to: \.activitySummary, on: self, ownership: .weak)
-            .store(in: &cancellables)
+            .assign(to: &$activitySummary)
     }
     
     func delete() {

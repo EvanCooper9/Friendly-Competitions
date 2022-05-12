@@ -29,4 +29,15 @@ enum DeepLink: Equatable {
             return Constants.baseURL.appendingPathComponent(Constants.competition.appending(id))
         }
     }
+    
+    var itemsForSharing: [Any] {
+        let text: String
+        switch self {
+        case .friendReferral:
+            text = "Add me in Friendly Competitions!"
+        case .competitionInvite:
+            text = "Compete against me in Friendly Competitions!"
+        }
+        return [text, url.absoluteString]
+    }
 }
