@@ -8,23 +8,12 @@ final class CompetitionViewModel: ObservableObject {
         case delete
         case edit
         case leave
-        
-        var title: String {
-            switch self {
-            case .delete:
-                return "Are you sure you want to delete?"
-            case .edit:
-                return "Are you sure? Editing competition dates will re-calculate scores."
-            case .leave:
-                return "Are you sure you want to leave?"
-            }
-        }
     }
     
     // MARK: - Public Properties
     
     @Published var canEdit = false
-    var confirmationTitle: String { actionRequiringConfirmation?.title ?? "" }
+    var confirmationTitle: String { actionRequiringConfirmation?.confirmationTitle ?? "" }
     @Published var confirmationRequired = false
     @Published var competition: Competition
     @Published var editButtonTitle = "Edit"
@@ -33,23 +22,15 @@ final class CompetitionViewModel: ObservableObject {
     }
     @Published var standings = [CompetitionParticipantView.Config]()
     @Published var pendingParticipants = [CompetitionParticipantView.Config]()
-    
-    var showInviteButton: Bool {
-        let joined = competition.participants.contains(userManager.user.id)
-        let active = competition.repeats || !competition.ended
-        return joined && active
-    }
-    var showDeleteButton: Bool { competition.owner == userManager.user.id }
-    var showJoinButton: Bool { !showLeaveButton }
-    var showLeaveButton: Bool { competition.participants.contains(userManager.user.id) }
-    var showInvitedButtons: Bool { competition.pendingParticipants.contains(userManager.user.id) }
+    @Published var actions = [CompetitionViewAction]()
+    @Published var showInviteFriend = false
     
     // MARK: - Private Properties
 
     @Injected private var competitionsManager: AnyCompetitionsManager
     @Injected private var userManager: AnyUserManager
     
-    private var actionRequiringConfirmation: ActionRequiringConfirmation? {
+    private var actionRequiringConfirmation: CompetitionViewAction? {
         didSet { confirmationRequired = actionRequiringConfirmation != nil }
     }
     
@@ -60,6 +41,35 @@ final class CompetitionViewModel: ObservableObject {
     init(competition: Competition) {
         self.competition = competition
         canEdit = userManager.user.id == competition.owner
+        
+        $competition
+            .map { [weak self] competition -> [CompetitionViewAction] in
+                guard let user = self?.userManager.user else { return [] }
+                
+                var actions = [CompetitionViewAction]()
+                if competition.pendingParticipants.contains(user.id) {
+                    actions.append(contentsOf: [.acceptInvite, .declineInvite])
+                } else if competition.participants.contains(user.id) {
+                    actions.append(.leave)
+                } else {
+                    actions.append(.join)
+                }
+                
+                if competition.repeats || !competition.ended {
+                    actions.append(.invite)
+                }
+                
+                if competition.owner == user.id {
+                    actions.append(contentsOf: [.delete])
+                }
+                
+                return actions
+            }
+            .assign(to: &$actions)
+        
+        $competition
+            .map { [weak self] in $0.owner == self?.userManager.user.id }
+            .assign(to: &$canEdit)
         
         competitionsManager.$competitions
             .compactMap { $0.first { $0.id == competition.id } }
@@ -121,38 +131,12 @@ final class CompetitionViewModel: ObservableObject {
         if oldCompetition.start != competition.start || oldCompetition.end != competition.end {
             actionRequiringConfirmation = .edit
         } else {
-            editing.toggle()
-            competitionsManager.update(competition)
+            confirm()
         }
     }
     
-    func accept() {
-        competitionsManager.accept(competition)
-    }
-    
-    func decline() {
-        competitionsManager.decline(competition)
-    }
-    
-    func join() {
-        competitionsManager.join(competition)
-    }
-    
-    func leaveTapped() {
-        actionRequiringConfirmation = .leave
-    }
-    
-    func deleteTapped() {
-        actionRequiringConfirmation = .delete
-    }
-    
-    func invite(_ friend: User) {
-        competitionsManager.invite(friend, to: competition)
-    }
-    
     func confirm() {
-        guard let action = actionRequiringConfirmation else { return }
-        switch action {
+        switch actionRequiringConfirmation {
         case .delete:
             competitionsManager.delete(competition)
         case .edit:
@@ -160,10 +144,25 @@ final class CompetitionViewModel: ObservableObject {
             competitionsManager.update(competition)
         case .leave:
             competitionsManager.leave(competition)
+        default:
+            break
         }
     }
     
-    func retract() {
-        actionRequiringConfirmation = nil
+    func perform(_ action: CompetitionViewAction) {
+        switch action {
+        case .acceptInvite:
+            competitionsManager.accept(competition)
+        case .declineInvite:
+            competitionsManager.decline(competition)
+        case .delete, .leave:
+            actionRequiringConfirmation = action
+        case .edit:
+            editing.toggle()
+        case .invite:
+            showInviteFriend.toggle()
+        case .join:
+            competitionsManager.join(competition)
+        }
     }
 }
