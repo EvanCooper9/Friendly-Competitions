@@ -34,8 +34,6 @@ final class CompetitionViewModel: ObservableObject {
         didSet { confirmationRequired = actionRequiringConfirmation != nil }
     }
     
-    private var cancellables = Set<AnyCancellable>()
-    
     // MARK: - Lifecycle
     
     init(competition: Competition) {
