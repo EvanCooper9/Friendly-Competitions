@@ -6,15 +6,15 @@ import Foundation
 final class DashboardViewModel: ObservableObject {
     
     struct FriendRow: Identifiable {
-        let id: User.ID
-        let name: String
+        var id: String { user.id }
+        let user: User
         let activitySummary: ActivitySummary?
+        let isInvitation: Bool
     }
     
     @Published private(set) var activitySummary: ActivitySummary?
     @Published private(set) var competitions = [Competition]()
     @Published private(set) var friends = [FriendRow]()
-    @Published private(set) var friendRequests = [FriendRow]()
     @Published private(set) var invitedCompetitions = [Competition]()
     @Published var requiresPermissions = false
     @Published private(set) var title = Bundle.main.name
@@ -30,29 +30,31 @@ final class DashboardViewModel: ObservableObject {
         competitionsManager.$competitions.assign(to: &$competitions)
         competitionsManager.$invitedCompetitions.assign(to: &$invitedCompetitions)
         
-        friendsManager.$friendRequests
+        let friendRequests = friendsManager.$friendRequests
             .map { friendRequests in
                 friendRequests.map { friendRequest in
                     FriendRow(
-                        id: friendRequest.id,
-                        name: friendRequest.name,
-                        activitySummary: nil
+                        user: friendRequest,
+                        activitySummary: nil,
+                        isInvitation: true
                     )
                 }
             }
-            .assign(to: &$friendRequests)
         
-        friendsManager.$friends
+        let friends = friendsManager.$friends
             .combineLatest(friendsManager.$friendActivitySummaries)
             .map { friends, activitySummaries in
                 friends.map { friend in
                     FriendRow(
-                        id: friend.id,
-                        name: friend.name,
-                        activitySummary: activitySummaries[friend.id]
+                        user: friend,
+                        activitySummary: activitySummaries[friend.id],
+                        isInvitation: false
                     )
                 }
             }
+        
+        Publishers.CombineLatest(friends, friendRequests)
+            .map { $0 + $1 }
             .assign(to: &$friends)
         
         permissionsManager.$requiresPermission.assign(to: &$requiresPermissions)
