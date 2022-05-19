@@ -4,7 +4,7 @@ import FirebaseStorage
 import Resolver
 
 private enum FirebaseEmulation {
-    static let enabled = true
+    static let enabled = false
     static let host = "localhost"
 }
 

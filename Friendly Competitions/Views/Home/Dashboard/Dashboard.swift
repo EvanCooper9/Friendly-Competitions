@@ -22,16 +22,16 @@ struct Dashboard: View {
             }
             .textCase(nil)
         }
-        .navigationBarTitle(viewModel.user.name.ifEmpty(Bundle.main.displayName))
+        .navigationBarTitle(viewModel.title)
         .toolbar {
             HStack {
                 Button(toggling: $presentAbout) {
-                    Image(systemName: "questionmark.circle")
+                    Image(systemName: .questionmarkCircle)
                 }
                 NavigationLink {
                     Profile()
                 } label: {
-                    Image(systemName: "person.crop.circle")
+                    Image(systemName: .personCropCircle)
                 }
             }
         }
@@ -102,34 +102,20 @@ struct Dashboard: View {
     
     private var friends: some View {
         Section {
-            ForEach(viewModel.friends) { friend in
+            ForEach(viewModel.friends) { row in
                 NavigationLink {
-                    FriendView(friend: friend)
+                    UserView(user: row.user)
                 } label: {
                     HStack {
-                        ActivityRingView(activitySummary: viewModel.friendActivitySummaries[friend.id]?.hkActivitySummary)
+                        ActivityRingView(activitySummary: row.activitySummary?.hkActivitySummary)
                             .frame(width: 35, height: 35)
-                        Text(friend.name)
+                        Text(row.user.name)
                         Spacer()
+                        if row.isInvitation {
+                            Text("Invited")
+                                .foregroundColor(.gray)
+                        }
                     }
-                }
-            }
-            ForEach(viewModel.friendRequests) { friendRequest in
-                HStack {
-                    Image(systemName: "person.crop.circle.badge.questionmark")
-                        .font(.title)
-                        .frame(width: 35, height: 35)
-                    Text(friendRequest.name)
-                    Spacer()
-                    Button("Accept", action: { viewModel.acceptFriendRequest(from: friendRequest) })
-                        .foregroundColor(.blue)
-                        .buttonStyle(.borderless)
-                    Text("/")
-                        .fontWeight(.ultraLight)
-                    Button("Decline", action: { viewModel.declineFriendRequest(from: friendRequest) })
-                        .foregroundColor(.red)
-                        .padding(.trailing, 10)
-                        .buttonStyle(.borderless)
                 }
             }
         } header: {
@@ -143,7 +129,7 @@ struct Dashboard: View {
                 }
             }
         } footer: {
-            if viewModel.friends.isEmpty && viewModel.friendRequests.isEmpty {
+            if viewModel.friends.isEmpty {
                 Text("Add friends to get started!")
             }
         }

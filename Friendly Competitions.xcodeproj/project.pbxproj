@@ -71,7 +71,7 @@
 		C1691DDE26D561D5006FFA30 /* SignIn.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1691DDD26D561D5006FFA30 /* SignIn.swift */; };
 		C16ADDD226D9123600E34E04 /* Competition+ScoringModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C16ADDD126D9123600E34E04 /* Competition+ScoringModel.swift */; };
 		C16ADDD426D9125C00E34E04 /* Int+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C16ADDD326D9125C00E34E04 /* Int+Extensions.swift */; };
-		C16CC40627A7332800C26208 /* FriendView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C16CC40527A7332800C26208 /* FriendView.swift */; };
+		C16CC40627A7332800C26208 /* UserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C16CC40527A7332800C26208 /* UserView.swift */; };
 		C16CC40927A73E6E00C26208 /* User+Statistics.swift in Sources */ = {isa = PBXBuildFile; fileRef = C16CC40827A73E6E00C26208 /* User+Statistics.swift */; };
 		C171465027E53E8E00F56BB9 /* PreviewEnvironmentObjectHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C171464F27E53E8E00F56BB9 /* PreviewEnvironmentObjectHelper.swift */; };
 		C1884E4826D5894000C21014 /* Dashboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1884E4726D5894000C21014 /* Dashboard.swift */; };
@@ -144,13 +144,15 @@
 		ED901B6628024F0400FE619E /* Date+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED901B5D28024F0400FE619E /* Date+Extensions.swift */; };
 		ED901B682802504A00FE619E /* ExploreViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED901B672802504A00FE619E /* ExploreViewModel.swift */; };
 		ED901B6B2802525700FE619E /* FirestoreImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED901B6A2802525700FE619E /* FirestoreImageViewModel.swift */; };
-		ED901B6D2802558400FE619E /* FriendViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED901B6C2802558400FE619E /* FriendViewModel.swift */; };
+		ED901B6D2802558400FE619E /* UserViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED901B6C2802558400FE619E /* UserViewModel.swift */; };
 		ED901B6F28025FC500FE619E /* PermissionsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED901B6E28025FC500FE619E /* PermissionsViewModel.swift */; };
 		ED901B712802618700FE619E /* NewCompetitionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED901B702802618700FE619E /* NewCompetitionViewModel.swift */; };
 		ED901B742802649200FE619E /* VerifyEmailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED901B732802649200FE619E /* VerifyEmailViewModel.swift */; };
 		ED901B76280265DB00FE619E /* SignInViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED901B75280265DB00FE619E /* SignInViewModel.swift */; };
 		ED927EF427F7AB1E006E78A0 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = ED927EF327F7AB1E006E78A0 /* FirebaseAnalytics */; };
 		ED927EF827F7ACE0006E78A0 /* FirebaseAnalyticsSwift-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = ED927EF727F7ACE0006E78A0 /* FirebaseAnalyticsSwift-Beta */; };
+		EDA352902836EFB600390585 /* UserViewAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA3528F2836EFB600390585 /* UserViewAction.swift */; };
+		EDA352932836F87600390585 /* CompetitionViewAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA352922836F87600390585 /* CompetitionViewAction.swift */; };
 		EDBEA170281459D200058A47 /* CompetitionInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBEA16F281459D200058A47 /* CompetitionInfo.swift */; };
 		EDBF8C5F282D4B3500754165 /* SwiftUIX in Frameworks */ = {isa = PBXBuildFile; productRef = EDBF8C5E282D4B3500754165 /* SwiftUIX */; };
 		EDC373D027FB39A500318245 /* EmailSignInForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC373CF27FB39A500318245 /* EmailSignInForm.swift */; };
@@ -250,7 +252,7 @@
 		C1691DDD26D561D5006FFA30 /* SignIn.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignIn.swift; sourceTree = "<group>"; };
 		C16ADDD126D9123600E34E04 /* Competition+ScoringModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Competition+ScoringModel.swift"; sourceTree = "<group>"; };
 		C16ADDD326D9125C00E34E04 /* Int+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Int+Extensions.swift"; sourceTree = "<group>"; };
-		C16CC40527A7332800C26208 /* FriendView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendView.swift; sourceTree = "<group>"; };
+		C16CC40527A7332800C26208 /* UserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserView.swift; sourceTree = "<group>"; };
 		C16CC40827A73E6E00C26208 /* User+Statistics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "User+Statistics.swift"; sourceTree = "<group>"; };
 		C171464F27E53E8E00F56BB9 /* PreviewEnvironmentObjectHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewEnvironmentObjectHelper.swift; sourceTree = "<group>"; };
 		C1884E4726D5894000C21014 /* Dashboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dashboard.swift; sourceTree = "<group>"; };
@@ -316,11 +318,13 @@
 		ED901B5D28024F0400FE619E /* Date+Extensions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Date+Extensions.swift"; sourceTree = "<group>"; };
 		ED901B672802504A00FE619E /* ExploreViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreViewModel.swift; sourceTree = "<group>"; };
 		ED901B6A2802525700FE619E /* FirestoreImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreImageViewModel.swift; sourceTree = "<group>"; };
-		ED901B6C2802558400FE619E /* FriendViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendViewModel.swift; sourceTree = "<group>"; };
+		ED901B6C2802558400FE619E /* UserViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserViewModel.swift; sourceTree = "<group>"; };
 		ED901B6E28025FC500FE619E /* PermissionsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionsViewModel.swift; sourceTree = "<group>"; };
 		ED901B702802618700FE619E /* NewCompetitionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCompetitionViewModel.swift; sourceTree = "<group>"; };
 		ED901B732802649200FE619E /* VerifyEmailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyEmailViewModel.swift; sourceTree = "<group>"; };
 		ED901B75280265DB00FE619E /* SignInViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInViewModel.swift; sourceTree = "<group>"; };
+		EDA3528F2836EFB600390585 /* UserViewAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserViewAction.swift; sourceTree = "<group>"; };
+		EDA352922836F87600390585 /* CompetitionViewAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionViewAction.swift; sourceTree = "<group>"; };
 		EDBEA16F281459D200058A47 /* CompetitionInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionInfo.swift; sourceTree = "<group>"; };
 		EDBF8C60282D4B9E00754165 /* SwiftUIX */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = SwiftUIX; path = ../SwiftUIX; sourceTree = "<group>"; };
 		EDC373CF27FB39A500318245 /* EmailSignInForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailSignInForm.swift; sourceTree = "<group>"; };
@@ -736,8 +740,9 @@
 				C1884E4726D5894000C21014 /* Dashboard.swift */,
 				ED901B442802426800FE619E /* DashboardViewModel.swift */,
 				C123C9DC27A8AF4700375F73 /* About */,
-				C1F7DFF326D7F78300B46F91 /* Friends */,
+				ED48782C282747B100AC1E2C /* Invite Friends */,
 				C12D63F927A5B5CE00259237 /* Profile */,
+				EDA352912836F5EA00390585 /* User */,
 			);
 			name = Dashboard;
 			path = Home/Dashboard;
@@ -838,21 +843,12 @@
 			isa = PBXGroup;
 			children = (
 				C1EA986826D6E8C900219E84 /* CompetitionView.swift */,
+				EDA352922836F87600390585 /* CompetitionViewAction.swift */,
 				ED901B4E280249B000FE619E /* CompetitionViewModel.swift */,
 				EDBEA16E281459C000058A47 /* Components */,
 				C123C9E127A980EA00375F73 /* New Competition */,
 			);
 			path = Competitions;
-			sourceTree = "<group>";
-		};
-		C1F7DFF326D7F78300B46F91 /* Friends */ = {
-			isa = PBXGroup;
-			children = (
-				C16CC40527A7332800C26208 /* FriendView.swift */,
-				ED901B6C2802558400FE619E /* FriendViewModel.swift */,
-				ED48782C282747B100AC1E2C /* Invite Friends */,
-			);
-			path = Friends;
 			sourceTree = "<group>";
 		};
 		ED48782C282747B100AC1E2C /* Invite Friends */ = {
@@ -906,6 +902,16 @@
 				ED901B732802649200FE619E /* VerifyEmailViewModel.swift */,
 			);
 			path = "Verify Email";
+			sourceTree = "<group>";
+		};
+		EDA352912836F5EA00390585 /* User */ = {
+			isa = PBXGroup;
+			children = (
+				C16CC40527A7332800C26208 /* UserView.swift */,
+				EDA3528F2836EFB600390585 /* UserViewAction.swift */,
+				ED901B6C2802558400FE619E /* UserViewModel.swift */,
+			);
+			path = User;
 			sourceTree = "<group>";
 		};
 		EDBEA16E281459C000058A47 /* Components */ = {
@@ -1107,6 +1113,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EDA352902836EFB600390585 /* UserViewAction.swift in Sources */,
 				C132336127BEAF9200196D81 /* String+Extensions.swift in Sources */,
 				C1691DDB26D560C5006FFA30 /* SignInWithAppleButton.swift in Sources */,
 				C13F922C27BFFF9900FC6880 /* StorageManager.swift in Sources */,
@@ -1120,6 +1127,7 @@
 				C123C9DB27A8A98800375F73 /* UserManager.swift in Sources */,
 				C1E1A9D527A7037D00E8E360 /* Published+Extensions.swift in Sources */,
 				EDBEA170281459D200058A47 /* CompetitionInfo.swift in Sources */,
+				EDA352932836F87600390585 /* CompetitionViewAction.swift in Sources */,
 				C12D640727A5F2FC00259237 /* CompetitionsManager.swift in Sources */,
 				C1691DC726D55FCF006FFA30 /* FriendlyCompetitions.swift in Sources */,
 				C123C9C927A74F3500375F73 /* PermissionsManager.swift in Sources */,
@@ -1132,7 +1140,7 @@
 				C13F923327C0099800FC6880 /* MockCompetitionManager.swift in Sources */,
 				C155CA7627AC1A63005F49F4 /* Competition+Standing.swift in Sources */,
 				C123C9CD27A863F100375F73 /* UserHashIDPill.swift in Sources */,
-				ED901B6D2802558400FE619E /* FriendViewModel.swift in Sources */,
+				ED901B6D2802558400FE619E /* UserViewModel.swift in Sources */,
 				ED901B4F280249B000FE619E /* CompetitionViewModel.swift in Sources */,
 				C132335F27BEA97A00196D81 /* FlatLinkStyle.swift in Sources */,
 				C132945227DB8DF000117548 /* ImageAsset+Extensions.swift in Sources */,
@@ -1218,7 +1226,7 @@
 				C1C8B24326F3FB47008D6B1B /* ActivitySummaryManager.swift in Sources */,
 				C10E5548272B47080053BBA6 /* XCAssets+Generated.swift in Sources */,
 				C1E4AB9826FCC8BD00B1AF12 /* ActivitySummaryInfoView.swift in Sources */,
-				C16CC40627A7332800C26208 /* FriendView.swift in Sources */,
+				C16CC40627A7332800C26208 /* UserView.swift in Sources */,
 				ED438FF927F7C2B900D72F99 /* View+Analytics.swift in Sources */,
 				C1884E4E26D59E3100C21014 /* User.swift in Sources */,
 			);

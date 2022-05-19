@@ -4,8 +4,6 @@ import SwiftUIX
 struct CompetitionView: View {
     
     @StateObject private var viewModel: CompetitionViewModel
-
-    @State private var showInviteFriend = false
     
     init(competition: Competition) {
         _viewModel = .init(wrappedValue: CompetitionViewModel(competition: competition))
@@ -65,31 +63,22 @@ struct CompetitionView: View {
 
     private var actions: some View {
         Section {
-            if viewModel.showInviteButton {
-                Button("Invite a friend", systemImage: .personCropCircleBadgePlus) { showInviteFriend.toggle() }
-            }
-            if viewModel.showJoinButton {
-                Button("Join competition", systemImage: .personCropCircleBadgeCheckmark, action: viewModel.join)
-            }
-            if viewModel.showLeaveButton {
-                Button("Leave competition", systemImage: .personCropCircleBadgeMinus, action: viewModel.leaveTapped)
-                    .foregroundColor(.red)
-            }
-            if viewModel.showDeleteButton {
-                Button("Delete competition", systemImage: .trash, action: viewModel.deleteTapped)
-                    .foregroundColor(.red)
-            }
-            if viewModel.showInvitedButtons {
-                Button("Accept invite", systemImage: .personCropCircleBadgeCheckmark, action: viewModel.accept)
-                Button("Decline invite", systemImage: .personCropCircleBadgeXmark, action: viewModel.decline)
-                    .foregroundColor(.red)
+            ForEach(viewModel.actions, id: \.self) { action in
+                Button {
+                    viewModel.perform(action)
+                } label: {
+                    Label(action.buttonTitle, systemImage: action.systemImage)
+                        .if(action.destructive) { view in
+                            view.foregroundColor(.red)
+                        }
+                }
             }
         }
-        .confirmationDialog("Are your sure", isPresented: $viewModel.confirmationRequired, titleVisibility: .visible) {
+        .confirmationDialog(viewModel.confirmationTitle, isPresented: $viewModel.confirmationRequired, titleVisibility: .visible) {
             Button("Yes", role: .destructive, action: viewModel.confirm)
-            Button("Cancel", role: .cancel, action: viewModel.retract)
+            Button("Cancel", role: .cancel) {}
         }
-        .sheet(isPresented: $showInviteFriend) {
+        .sheet(isPresented: $viewModel.showInviteFriend) {
             InviteFriends(action: .competitionInvite(viewModel.competition))
         }
     }
