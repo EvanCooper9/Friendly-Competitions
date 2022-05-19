@@ -5,6 +5,7 @@ import Resolver
 final class FriendViewModel: ObservableObject {
     
     @Published var activitySummary: ActivitySummary?
+    @Published var showDeleteConfirmation = false
     @Published var statistics: User.Statistics
 
     @Injected private var friendsManager: AnyFriendsManager
@@ -14,13 +15,13 @@ final class FriendViewModel: ObservableObject {
     init(friend: User) {
         self.friend = friend
         statistics = friend.statistics ?? .zero
-        
-        friendsManager.$friendActivitySummaries
-            .map { $0[friend.id] }
-            .assign(to: &$activitySummary)
     }
     
-    func delete() {
+    func confirm() {
         friendsManager.delete(friend: friend)
+    }
+    
+    func deleteTapped() {
+        showDeleteConfirmation.toggle()
     }
 }

@@ -5,23 +5,34 @@ import Resolver
 final class CompetitionViewModel: ObservableObject {
     
     private enum ActionRequiringConfirmation {
-        case deleteCompetition
-        case leaveCompetition
+        case delete
+        case edit
+        case leave
+        
+        var title: String {
+            switch self {
+            case .delete:
+                return "Are you sure you want to delete?"
+            case .edit:
+                return "Are you sure? Editing competition dates will re-calculate scores."
+            case .leave:
+                return "Are you sure you want to leave?"
+            }
+        }
     }
     
     // MARK: - Public Properties
     
     @Published var canEdit = false
+    var confirmationTitle: String { actionRequiringConfirmation?.title ?? "" }
     @Published var confirmationRequired = false
     @Published var competition: Competition
+    @Published var editButtonTitle = "Edit"
     @Published var editing = false {
         didSet { editButtonTitle = editing ? "Cancel" : "Edit" }
     }
-    @Published var editButtonTitle = "Edit"
     @Published var standings = [CompetitionParticipantView.Config]()
     @Published var pendingParticipants = [CompetitionParticipantView.Config]()
-    @Published var user: User!
-    @Published var friends = [User]()
     
     var showInviteButton: Bool {
         let joined = competition.participants.contains(userManager.user.id)
@@ -36,7 +47,6 @@ final class CompetitionViewModel: ObservableObject {
     // MARK: - Private Properties
 
     @Injected private var competitionsManager: AnyCompetitionsManager
-    @Injected private var friendsManager: AnyFriendsManager
     @Injected private var userManager: AnyUserManager
     
     private var actionRequiringConfirmation: ActionRequiringConfirmation? {
@@ -49,8 +59,7 @@ final class CompetitionViewModel: ObservableObject {
     
     init(competition: Competition) {
         self.competition = competition
-        user = userManager.user
-        canEdit = user.id == competition.owner
+        canEdit = userManager.user.id == competition.owner
         
         competitionsManager.$competitions
             .compactMap { $0.first { $0.id == competition.id } }
@@ -67,7 +76,7 @@ final class CompetitionViewModel: ObservableObject {
                         $0.id == standing.userId
                     }
                     
-                    let visibility = user?.visibility(by: self.user) ?? .hidden
+                    let visibility = user?.visibility(by: self.userManager.user) ?? .hidden
                     
                     return CompetitionParticipantView.Config(
                         id: standing.id,
@@ -76,7 +85,7 @@ final class CompetitionViewModel: ObservableObject {
                         idPillText: visibility == .visible ? user?.hashId : nil,
                         blurred: visibility == .hidden,
                         points: standing.points,
-                        highlighted: standing.userId == self.user.id
+                        highlighted: standing.userId == self.userManager.user.id
                     )
                 }
             }
@@ -86,7 +95,7 @@ final class CompetitionViewModel: ObservableObject {
             .map { [weak self] pendingParticipants in
                 guard let self = self, let pendingParticipants = pendingParticipants[competition.id] else { return [] }
                 return pendingParticipants.map { user in
-                    let visibility = user.visibility(by: self.user)
+                    let visibility = user.visibility(by: self.userManager.user)
                     return CompetitionParticipantView.Config(
                         id: user.id,
                         rank: nil,
@@ -94,17 +103,11 @@ final class CompetitionViewModel: ObservableObject {
                         idPillText: visibility == .visible ? user.hashId : nil,
                         blurred: visibility == .hidden,
                         points: nil,
-                        highlighted: user.id == self.user.id
+                        highlighted: user.id == self.userManager.user.id
                     )
                 }
             }
             .assign(to: &$pendingParticipants)
-        
-        friendsManager.$friends.assign(to: &$friends)
-        
-        userManager.$user
-            .assign(to: \.user, on: self, ownership: .weak)
-            .store(in: &cancellables)
     }
     
     // MARK: - Public Methods
@@ -114,8 +117,13 @@ final class CompetitionViewModel: ObservableObject {
     }
     
     func saveTapped() {
-        editing.toggle()
-        competitionsManager.update(competition)
+        guard let oldCompetition = competitionsManager.competitions.first(where: { $0.id == competition.id }) else { return }
+        if oldCompetition.start != competition.start || oldCompetition.end != competition.end {
+            actionRequiringConfirmation = .edit
+        } else {
+            editing.toggle()
+            competitionsManager.update(competition)
+        }
     }
     
     func accept() {
@@ -131,11 +139,11 @@ final class CompetitionViewModel: ObservableObject {
     }
     
     func leaveTapped() {
-        actionRequiringConfirmation = .leaveCompetition
+        actionRequiringConfirmation = .leave
     }
     
     func deleteTapped() {
-        actionRequiringConfirmation = .deleteCompetition
+        actionRequiringConfirmation = .delete
     }
     
     func invite(_ friend: User) {
@@ -145,9 +153,12 @@ final class CompetitionViewModel: ObservableObject {
     func confirm() {
         guard let action = actionRequiringConfirmation else { return }
         switch action {
-        case .deleteCompetition:
+        case .delete:
             competitionsManager.delete(competition)
-        case .leaveCompetition:
+        case .edit:
+            editing.toggle()
+            competitionsManager.update(competition)
+        case .leave:
             competitionsManager.leave(competition)
         }
     }

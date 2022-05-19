@@ -22,16 +22,16 @@ struct Dashboard: View {
             }
             .textCase(nil)
         }
-        .navigationBarTitle(viewModel.user.name.ifEmpty(Bundle.main.displayName))
+        .navigationBarTitle(viewModel.title)
         .toolbar {
             HStack {
                 Button(toggling: $presentAbout) {
-                    Image(systemName: "questionmark.circle")
+                    Image(systemName: .questionmarkCircle)
                 }
                 NavigationLink {
                     Profile()
                 } label: {
-                    Image(systemName: "person.crop.circle")
+                    Image(systemName: .personCropCircle)
                 }
             }
         }
@@ -102,21 +102,22 @@ struct Dashboard: View {
     
     private var friends: some View {
         Section {
-            ForEach(viewModel.friends) { friend in
+            ForEach(viewModel.friends) { row in
                 NavigationLink {
-                    FriendView(friend: friend)
+//                    FriendView(friend: friend)
+                    Text(row.name)
                 } label: {
                     HStack {
-                        ActivityRingView(activitySummary: viewModel.friendActivitySummaries[friend.id]?.hkActivitySummary)
+                        ActivityRingView(activitySummary: row.activitySummary?.hkActivitySummary)
                             .frame(width: 35, height: 35)
-                        Text(friend.name)
+                        Text(row.name)
                         Spacer()
                     }
                 }
             }
             ForEach(viewModel.friendRequests) { friendRequest in
                 HStack {
-                    Image(systemName: "person.crop.circle.badge.questionmark")
+                    Image(systemName: .personCropCircleBadgeQuestionmarkFill)
                         .font(.title)
                         .frame(width: 35, height: 35)
                     Text(friendRequest.name)

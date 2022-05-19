@@ -85,7 +85,7 @@ struct CompetitionView: View {
                     .foregroundColor(.red)
             }
         }
-        .confirmationDialog("Are your sure", isPresented: $viewModel.confirmationRequired, titleVisibility: .visible) {
+        .confirmationDialog(viewModel.confirmationTitle, isPresented: $viewModel.confirmationRequired, titleVisibility: .visible) {
             Button("Yes", role: .destructive, action: viewModel.confirm)
             Button("Cancel", role: .cancel, action: viewModel.retract)
         }

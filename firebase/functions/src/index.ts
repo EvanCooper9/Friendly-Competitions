@@ -19,24 +19,22 @@ exports.sendIncomingFriendRequestNotification = functions.firestore
         const oldFriendRequests: string[] = oldUser.incomingFriendRequests;
         if (newFriendRequests == oldFriendRequests) return;
 
-        const notificationPromises = newFriendRequests
+        newFriendRequests
             .filter(x => !oldFriendRequests.includes(x))
-            .map(async newFriendId => {
+            .forEach(async newFriendId => {
                 const authUser = await admin.auth().getUser(newFriendId);
-                return await notifications.sendNotificationsToUser(
+                await notifications.sendNotificationsToUser(
                     newUser,
                     "Friendly Competitions",
                     `${authUser.displayName} added you as a friend`
                 );
             });
-
-        return Promise.all(notificationPromises);
     });
 
 exports.sendNewCompetitionNotification = functions.firestore
     .document("competitions/{competitionId}")
     .onWrite(async change => {
-        if (!change.after.exists) return; // deleted
+        if (!change.after.exists) return; // dseleted
 
         const oldCompetition = new Competition(change.before);
         const newCompetition = new Competition(change.after);
@@ -45,24 +43,22 @@ exports.sendNewCompetitionNotification = functions.firestore
 
         let oldInvitees = oldCompetition.pendingParticipants;
         if (oldInvitees == undefined) oldInvitees = [];
-        const newInvitees = newCompetition.pendingParticipants;
+        const newInvitees = newCompetition.pendingParticipants.filter(x => !oldInvitees.includes(x));
         if (oldInvitees == newInvitees || newInvitees.length == 0) return;
 
         const userPromises = await firestore.collection("users")
-            .where("id", "in", newInvitees.filter(x => !oldInvitees.includes(x)))
+            .where("id", "in", newInvitees)
             .get();
 
-        const users = userPromises.docs.map(doc => new User(doc));
-        const notificationPromises = users
+        userPromises.docs
+            .map(doc => new User(doc))
             .filter(user => !user.id.startsWith("Anonymous"))
-            .map(user => {
+            .forEach(async user => {
                 const message = change.before.exists ?
                     `You've been invited to ${newCompetition.name}` : // invited by somebody to existing competition
                     `${owner.name} invited you to ${newCompetition.name}`; // invited by owner to new competition
-                return notifications.sendNotificationsToUser(user, "Competition invite", message);
+                await notifications.sendNotificationsToUser(user, "Competition invite", message);
             });
-
-        return Promise.all(notificationPromises);
     });
 
 exports.updateCompetitionStandings = functions.https
@@ -144,7 +140,6 @@ exports.sendCompetitionCompleteNotifications = functions.pubsub.schedule("every 
             return Promise
                 .all(notificationPromises)
                 .then(async () => {
-                    console.log(`sendCompetitionCompleteNotifications being called for competition ${competition.name}/${competition.id}`);
                     await competition.updateRepeatingCompetition();
                     await competition.updateStandings();
                 });

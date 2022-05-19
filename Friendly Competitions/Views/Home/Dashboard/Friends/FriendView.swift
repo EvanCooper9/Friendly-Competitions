@@ -15,14 +15,8 @@ struct FriendView: View {
     
     var body: some View {
         List {
-            Section {
+            Section("Today's activity") {
                 ActivitySummaryInfoView(activitySummary: viewModel.activitySummary)
-            } header: {
-                Text("Today's activity")
-            } footer: {
-                if viewModel.activitySummary == nil {
-                    Text("Nothing here, yet!")
-                }
             }
 
             Section("Stats") {
@@ -31,18 +25,14 @@ struct FriendView: View {
 
             Section {
                 Button(toggling: $showConfirmDelete) {
-                    Label("Remove friend", systemImage: "person.crop.circle.badge.minus")
+                    Label("Remove friend", systemImage: .personCropCircleBadgeMinus)
                         .foregroundColor(.red)
                 }
             }
         }
         .navigationTitle(friend.name)
-        .confirmationDialog(
-            "Are you sure?",
-            isPresented: $showConfirmDelete,
-            titleVisibility: .visible
-        ) {
-            Button("Yes", role: .destructive, action: viewModel.delete)
+        .confirmationDialog("Are you sure?", isPresented: $viewModel.showDeleteConfirmation, titleVisibility: .visible) {
+            Button("Yes", role: .destructive, action: viewModel.confirm)
             Button("Cancel", role: .cancel) {}
         }
         .registerScreenView(
