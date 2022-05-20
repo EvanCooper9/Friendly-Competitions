@@ -9,9 +9,7 @@ final class ExploreViewModel: ObservableObject {
     @Published var searchResults = [Competition]()
     @Published var appOwnedCompetitions = [Competition]()
     @Published var topCommunityCompetitions = [Competition]()
-    
-    @Published var deepLinkedCompetition: Competition?
-    
+        
     @Injected private var competitionsManager: AnyCompetitionsManager
     
     init() {
@@ -22,7 +20,6 @@ final class ExploreViewModel: ObservableObject {
             .handleEvents(receiveOutput: { [weak self] _ in self?.loading = true })
             .flatMapLatest { [weak self] searchText -> AnyPublisher<[Competition], Never> in
                 guard let self = self else { return .just([]) }
-                
                 let subject = PassthroughSubject<[Competition], Never>()
                 Task {
                     let competitions = try await self.competitionsManager
@@ -37,20 +34,5 @@ final class ExploreViewModel: ObservableObject {
             .receive(on: RunLoop.main)
             .handleEvents(receiveOutput: { [weak self] _ in self?.loading = false })
             .assign(to: &$searchResults)
-    }
-    
-    func handle(deepLink: DeepLink?) {
-        switch deepLink {
-        case .competitionInvite(let id):
-            Task {
-                let competition = try await competitionsManager.search(byID: id)
-                DispatchQueue.main.async { [weak self] in
-                    self?.searchText = competition.name
-                    self?.searchResults = [competition]
-                }
-            }
-        default:
-            break
-        }
     }
 }

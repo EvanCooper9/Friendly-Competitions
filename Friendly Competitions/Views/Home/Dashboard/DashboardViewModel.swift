@@ -18,7 +18,7 @@ final class DashboardViewModel: ObservableObject {
     @Published private(set) var invitedCompetitions = [Competition]()
     @Published var requiresPermissions = false
     @Published private(set) var title = Bundle.main.name
-        
+    
     @Injected private var activitySummaryManager: AnyActivitySummaryManager
     @Injected private var competitionsManager: AnyCompetitionsManager
     @Injected private var friendsManager: AnyFriendsManager
@@ -70,14 +70,5 @@ final class DashboardViewModel: ObservableObject {
     
     func declineFriendRequest(from user: User) {
         friendsManager.declineFriendRequest(from: user)
-    }
-    
-    func handle(deepLink: DeepLink?) {
-        switch deepLink {
-        case .friendReferral:
-            break
-        default:
-            break
-        }
     }
 }
