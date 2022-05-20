@@ -2,7 +2,7 @@ import Foundation
 extension Competition {
     static var mock: Competition {
         .init(
-            name: "Feel the burn 🔥",
+            name: "Competition 🏃🏻",
             owner: User.evan.id,
             participants: [User.evan.id, User.gabby.id, User.andrew.id],
             pendingParticipants: [],

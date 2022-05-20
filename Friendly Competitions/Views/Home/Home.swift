@@ -3,25 +3,21 @@ import SwiftUI
 
 struct Home: View {
     
-    private enum Tab {
-        case dashboard
-        case explore
-    }
-    
-    @State private var tab = Tab.dashboard
+    @StateObject private var viewModel = HomeViewModel()
     
     var body: some View {
-        TabView(selection: $tab) {
+        TabView {
             Dashboard()
                 .embeddedInNavigationView()
-                .tabItem { Label("Home", systemImage: "house.fill") }
-                .tag(Tab.dashboard)
+                .tabItem { Label("Home", systemImage: .houseFill) }
         
             Explore()
                 .embeddedInNavigationView()
-                .tabItem { Label("Explore", systemImage: "sparkle.magnifyingglass") }
-                .tag(Tab.explore)
+                .tabItem { Label("Explore", systemImage: .sparkleMagnifyingglass) }
         }
+        .onOpenURL(perform: viewModel.handle(url:))
+        .sheet(item: $viewModel.deepLinkedCompetition) { CompetitionView(competition: $0).embeddedInNavigationView() }
+        .sheet(item: $viewModel.deepLinkedUser) { UserView(user: $0).embeddedInNavigationView() }
     }
 }
 

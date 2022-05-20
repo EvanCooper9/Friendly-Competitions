@@ -21,7 +21,9 @@ class AnyCompetitionsManager: ObservableObject {
     func invite(_ user: User, to competition: Competition) {}
     func join(_ competition: Competition) {}
     func leave(_ competition: Competition) {}
+    func update(_ competition: Competition) {}
     func search(_ searchText: String) async throws -> [Competition] { [] }
+    func search(byID competitionID: Competition.ID) async throws -> Competition { fatalError("Must be implemented by subclass") }
     func updateStandings() async throws {}
 }
 
@@ -88,7 +90,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
         }
         competitions.append(competition)
         invitedCompetitions.remove(competition)
-        update(competition: competition)
+        update(competition)
         
         analyticsManager.log(event: .acceptCompetition(id: competition.id))
     }
@@ -109,7 +111,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
         competition.pendingParticipants.remove(userManager.user.id)
         invitedCompetitions.remove(competition)
         standings[competition.id] = nil
-        update(competition: competition)
+        update(competition)
         analyticsManager.log(event: .declineCompetition(id: competition.id))
     }
 
@@ -138,7 +140,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
         var competition = competition
         competition.pendingParticipants.append(user.id)
         pendingParticipants[competition.id]?.append(user)
-        update(competition: competition)
+        update(competition)
         analyticsManager.log(event: .inviteFriendToCompetition(id: competition.id, friendId: user.id))
     }
 
@@ -146,7 +148,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
         guard !competition.participants.contains(userManager.user.id) else { return }
         var competition = competition
         competition.participants.append(userManager.user.id)
-        update(competition: competition)
+        update(competition)
         analyticsManager.log(event: .joinCompetition(id: competition.id))
     }
 
@@ -157,7 +159,7 @@ final class CompetitionsManager: AnyCompetitionsManager {
         standings[competition.id] = nil
         participants[competition.id] = nil
         pendingParticipants[competition.id] = nil
-        update(competition: competition)
+        update(competition)
         Task { [weak self, competition, weak userManager] in
             guard let self = self, let userManager = userManager else { return }
             try await self.database.document("competitions/\(competition.id)/standings/\(userManager.user.id)").delete()
@@ -177,12 +179,32 @@ final class CompetitionsManager: AnyCompetitionsManager {
             }
             .decoded(asArrayOf: Competition.self)
     }
+    
+    override func search(byID competitionID: Competition.ID) async throws -> Competition {
+        try await database.document("competitions/\(competitionID)")
+            .getDocument()
+            .decoded(as: Competition.self)
+    }
 
     override func updateStandings() async throws {
         try await functions
             .httpsCallable(Constants.updateStandingsFirebaseFunctionName)
             .call(["userId": userManager.user.id])
         fetchCompetitionData()
+    }
+    
+    override func update(_ competition: Competition) {
+        if let index = competitions.firstIndex(where: { $0.id == competition.id }) {
+            competitions[index] = competition
+        } else if let index = appOwnedCompetitions.firstIndex(where: { $0.id == competition.id }) {
+            appOwnedCompetitions[index] = competition
+        } else if let index = topCommunityCompetitions.firstIndex(where: { $0.id == competition.id }) {
+            topCommunityCompetitions[index] = competition
+        }
+        Task { [weak self, competition] in
+            try await self?.database.document("competitions/\(competition.id)").updateDataEncodable(competition)
+            try await self?.updateStandings(of: competition)
+        }
     }
 
     // MARK: - Private Methods
@@ -202,20 +224,6 @@ final class CompetitionsManager: AnyCompetitionsManager {
             .httpsCallable(Constants.updateStandingsFirebaseFunctionName)
             .call(["competitionId": competition.id])
         fetchCompetitionData()
-    }
-
-    private func update(competition: Competition) {
-        if let index = competitions.firstIndex(where: { $0.id == competition.id }) {
-            competitions[index] = competition
-        } else if let index = appOwnedCompetitions.firstIndex(where: { $0.id == competition.id }) {
-            appOwnedCompetitions[index] = competition
-        } else if let index = topCommunityCompetitions.firstIndex(where: { $0.id == competition.id }) {
-            topCommunityCompetitions[index] = competition
-        }
-        Task { [weak self, competition] in
-            try await self?.database.document("competitions/\(competition.id)").updateDataEncodable(competition)
-            try await self?.updateStandings(of: competition)
-        }
     }
 
     private func listen() {
@@ -356,11 +364,10 @@ final class CompetitionsManager: AnyCompetitionsManager {
             }
             return
         }
-        try await withThrowingTaskGroup(of: (Competition.ID, [User])?.self) { group in
+        try await withThrowingTaskGroup(of: (Competition.ID, [User]).self) { group in
             competitions.forEach { competition in
-                guard !competition.pendingParticipants.isEmpty else { return }
                 group.addTask { [weak self] in
-                    guard let self = self else { return nil }
+                    guard let self = self, competition.pendingParticipants.isNotEmpty else { return (competition.id, []) }
                     let participants = try await self.database.collection("users")
                         .whereFieldWithChunking("id", in: competition.pendingParticipants)
                         .decoded(asArrayOf: User.self)
@@ -368,14 +375,14 @@ final class CompetitionsManager: AnyCompetitionsManager {
                 }
             }
 
-            var newPendingParticipants = pendingParticipants.removeOldCompetitions(current: competitions)
-            for try await (competitionId, participants) in group.compactMap({ $0 }) {
-                newPendingParticipants[competitionId] = participants
+            var pendingParticipants = [Competition.ID: [User]]()
+            for try await (competitionId, participants) in group {
+                pendingParticipants[competitionId] = participants
             }
 
             try Task.checkCancellation()
-            DispatchQueue.main.async { [weak self, newPendingParticipants] in
-                self?.pendingParticipants = newPendingParticipants
+            DispatchQueue.main.async { [weak self, pendingParticipants] in
+                self?.pendingParticipants = pendingParticipants
             }
         }
     }

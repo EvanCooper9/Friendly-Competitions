@@ -3,20 +3,16 @@ import HealthKit
 
 struct Competition: Codable, Equatable, Identifiable {
     var id = UUID().uuidString
-    let name: String
-
-    let owner: String
+    var name: String
+    var owner: String
     var participants: [String]
     var pendingParticipants: [String]
-
     var scoringModel: ScoringModel?
     var workoutType: WorkoutType?
-
-    let start: Date
-    let end: Date
-    let repeats: Bool
-
-    let isPublic: Bool
+    var start: Date
+    var end: Date
+    var repeats: Bool
+    var isPublic: Bool
     let banner: String?
 }
 

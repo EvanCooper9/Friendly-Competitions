@@ -7,12 +7,7 @@ lane :deploy do
         duration: 1200, # optional (maximum 1200)
         in_house: false # optional but may be required if using match/sigh
     ) if is_ci
-    match(
-        type: "appstore", 
-        app_identifier: "com.evancooper.FriendlyCompetitions",
-        readonly: true,
-        git_basic_authorization: ENV["MATCH_GIT_BASIC_AUTHORIZATION"]
-    )
+    certificates
     increment_build_number(
         build_number: latest_testflight_build_number + 1
     )

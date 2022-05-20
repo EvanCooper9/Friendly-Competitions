@@ -13,7 +13,7 @@ extension WorkoutType {
         case .walking:
             self = .walking
         default:
-            self = nil
+            return nil
         }
     }
 }
