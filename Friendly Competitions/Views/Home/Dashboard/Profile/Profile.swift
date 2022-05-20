@@ -10,6 +10,7 @@ struct Profile: View {
     var body: some View {
         Form {
             UserInfoSection(user: viewModel.user)
+            Button("Share invite link", systemImage: .personCropCircleBadgePlus) { viewModel.sharedDeepLink.share() }
             
             Section("Statistics") {
                 StatisticsView(statistics: viewModel.user.statistics ?? .zero)
@@ -17,6 +18,7 @@ struct Profile: View {
             
             Section {
                 Toggle("Searchable", isOn: $viewModel.user.searchable ?? true)
+
             } header: {
                 Text("Privacy")
             } footer: {

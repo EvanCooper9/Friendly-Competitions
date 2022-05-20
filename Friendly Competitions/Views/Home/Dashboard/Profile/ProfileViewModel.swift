@@ -5,6 +5,7 @@ import Resolver
 final class ProfileViewModel: ObservableObject {
     
     @Published var user: User!
+    @Published var sharedDeepLink: DeepLink!
     
     @Injected private var authenticationManager: AnyAuthenticationManager
     @Injected private var userManager: AnyUserManager
@@ -13,6 +14,7 @@ final class ProfileViewModel: ObservableObject {
     
     init() {
         user = userManager.user
+        sharedDeepLink = .friendReferral(id: userManager.user.id)
         
         $user
             .removeDuplicates()

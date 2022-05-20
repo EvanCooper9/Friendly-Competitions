@@ -2,6 +2,9 @@ import Resolver
 import SwiftUI
 
 struct Home: View {
+    
+    @StateObject private var viewModel = HomeViewModel()
+    
     var body: some View {
         TabView {
             Dashboard()
@@ -12,6 +15,9 @@ struct Home: View {
                 .embeddedInNavigationView()
                 .tabItem { Label("Explore", systemImage: .sparkleMagnifyingglass) }
         }
+        .onOpenURL(perform: viewModel.handle(url:))
+        .sheet(item: $viewModel.deepLinkedCompetition) { CompetitionView(competition: $0).embeddedInNavigationView() }
+        .sheet(item: $viewModel.deepLinkedUser) { UserView(user: $0).embeddedInNavigationView() }
     }
 }
 

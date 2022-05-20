@@ -23,6 +23,7 @@ class AnyCompetitionsManager: ObservableObject {
     func leave(_ competition: Competition) {}
     func update(_ competition: Competition) {}
     func search(_ searchText: String) async throws -> [Competition] { [] }
+    func search(byID competitionID: Competition.ID) async throws -> Competition { fatalError("Must be implemented by subclass") }
     func updateStandings() async throws {}
 }
 
@@ -177,6 +178,12 @@ final class CompetitionsManager: AnyCompetitionsManager {
                 return searchResult.name.localizedCaseInsensitiveContains(searchText)
             }
             .decoded(asArrayOf: Competition.self)
+    }
+    
+    override func search(byID competitionID: Competition.ID) async throws -> Competition {
+        try await database.document("competitions/\(competitionID)")
+            .getDocument()
+            .decoded(as: Competition.self)
     }
 
     override func updateStandings() async throws {
