@@ -154,6 +154,7 @@
 		EDA352902836EFB600390585 /* UserViewAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA3528F2836EFB600390585 /* UserViewAction.swift */; };
 		EDA352932836F87600390585 /* CompetitionViewAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA352922836F87600390585 /* CompetitionViewAction.swift */; };
 		EDA3529528370F4C00390585 /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA3529428370F4C00390585 /* HomeViewModel.swift */; };
+		EDA35298283713C200390585 /* DeepLink+Share.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA35297283713C200390585 /* DeepLink+Share.swift */; };
 		EDBEA170281459D200058A47 /* CompetitionInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBEA16F281459D200058A47 /* CompetitionInfo.swift */; };
 		EDBF8C5F282D4B3500754165 /* SwiftUIX in Frameworks */ = {isa = PBXBuildFile; productRef = EDBF8C5E282D4B3500754165 /* SwiftUIX */; };
 		EDC373D027FB39A500318245 /* EmailSignInForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC373CF27FB39A500318245 /* EmailSignInForm.swift */; };
@@ -327,6 +328,7 @@
 		EDA3528F2836EFB600390585 /* UserViewAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserViewAction.swift; sourceTree = "<group>"; };
 		EDA352922836F87600390585 /* CompetitionViewAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionViewAction.swift; sourceTree = "<group>"; };
 		EDA3529428370F4C00390585 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
+		EDA35297283713C200390585 /* DeepLink+Share.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DeepLink+Share.swift"; sourceTree = "<group>"; };
 		EDBEA16F281459D200058A47 /* CompetitionInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionInfo.swift; sourceTree = "<group>"; };
 		EDBF8C60282D4B9E00754165 /* SwiftUIX */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = SwiftUIX; path = ../SwiftUIX; sourceTree = "<group>"; };
 		EDC373CF27FB39A500318245 /* EmailSignInForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailSignInForm.swift; sourceTree = "<group>"; };
@@ -685,7 +687,7 @@
 			isa = PBXGroup;
 			children = (
 				C1185A2426D6717C002E2377 /* ActivitySummary.swift */,
-				C114314127B9B6ED00915757 /* DeepLink.swift */,
+				EDA35296283713B200390585 /* Deep Link */,
 				C12D640527A5EDDF00259237 /* Competition */,
 				C12D63FE27A5E93600259237 /* Permission */,
 				C16CC40727A73E6200C26208 /* User */,
@@ -742,7 +744,6 @@
 				C1884E4726D5894000C21014 /* Dashboard.swift */,
 				ED901B442802426800FE619E /* DashboardViewModel.swift */,
 				C123C9DC27A8AF4700375F73 /* About */,
-				ED48782C282747B100AC1E2C /* Invite Friends */,
 				C12D63F927A5B5CE00259237 /* Profile */,
 				EDA352912836F5EA00390585 /* User */,
 			);
@@ -767,6 +768,7 @@
 				C19B7F2E27BEA69200BCA4B9 /* Dashboard */,
 				C19B7F2927BD8C5C00BCA4B9 /* Explore */,
 				C1F7DFF226D7F77900B46F91 /* Competitions */,
+				ED48782C282747B100AC1E2C /* Invite Friends */,
 				C10E5544272B44B30053BBA6 /* Permissions */,
 				C12D640227A5EA8700259237 /* Sign In */,
 				C132335D27BEA96600196D81 /* Styles */,
@@ -915,6 +917,15 @@
 				ED901B6C2802558400FE619E /* UserViewModel.swift */,
 			);
 			path = User;
+			sourceTree = "<group>";
+		};
+		EDA35296283713B200390585 /* Deep Link */ = {
+			isa = PBXGroup;
+			children = (
+				C114314127B9B6ED00915757 /* DeepLink.swift */,
+				EDA35297283713C200390585 /* DeepLink+Share.swift */,
+			);
+			path = "Deep Link";
 			sourceTree = "<group>";
 		};
 		EDBEA16E281459C000058A47 /* Components */ = {
@@ -1139,6 +1150,7 @@
 				ED901B6B2802525700FE619E /* FirestoreImageViewModel.swift in Sources */,
 				EDC373D227FB5B0C00318245 /* VerifyEmail.swift in Sources */,
 				C1ABB21526D6987C00716984 /* NewCompetition.swift in Sources */,
+				EDA35298283713C200390585 /* DeepLink+Share.swift in Sources */,
 				C1930E5427C6EB4000DB45C1 /* MockFriendsManager.swift in Sources */,
 				C13F923327C0099800FC6880 /* MockCompetitionManager.swift in Sources */,
 				C155CA7627AC1A63005F49F4 /* Competition+Standing.swift in Sources */,
