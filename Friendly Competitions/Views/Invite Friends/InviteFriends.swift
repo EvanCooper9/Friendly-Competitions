@@ -37,25 +37,8 @@ struct InviteFriends: View {
         .searchable(text: $viewModel.searchText, placement: .navigationBarDrawer(displayMode: .always))
         .navigationTitle("Invite a friend")
         .onChange(of: viewModel.sharedDeepLink) { deepLink in
-            guard let deepLink = deepLink else { return }
+            deepLink?.share()
             viewModel.sharedDeepLink = nil
-            let activityVC = UIActivityViewController(
-                activityItems: deepLink.itemsForSharing,
-                applicationActivities: nil
-            )
-            activityVC.excludedActivityTypes = [.mail, .addToReadingList, .assignToContact, .markupAsPDF, .openInIBooks, .saveToCameraRoll, .print]
-
-            let keyWindow = UIApplication.shared.connectedScenes
-                .filter { $0.activationState == .foregroundActive }
-                .compactMap { $0 as? UIWindowScene }
-                .first?
-                .windows
-                .filter(\.isKeyWindow)
-                .first
-
-            keyWindow?.rootViewController?
-                .topViewController
-                .present(activityVC, animated: true, completion: nil)
         }
         .embeddedInNavigationView()
     }

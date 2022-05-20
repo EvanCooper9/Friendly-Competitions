@@ -39,15 +39,6 @@ struct Dashboard: View {
         .sheet(isPresented: $presentSearchFriendsSheet) { InviteFriends(action: .addFriend) }
         .sheet(isPresented: $presentNewCompetition) { NewCompetition() }
         .sheet(isPresented: $viewModel.requiresPermissions) { PermissionsView() }
-        .onOpenURL { url in
-            appState.deepLink = DeepLink(from: url)
-            switch appState.deepLink {
-            case .friendReferral:
-                presentSearchFriendsSheet.toggle()
-            default:
-                break
-            }
-        }
         .registerScreenView(name: "Home")
     }
     
