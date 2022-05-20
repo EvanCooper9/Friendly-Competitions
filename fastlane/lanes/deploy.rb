@@ -14,10 +14,7 @@ lane :deploy do
     build_app(
         include_bitcode: true
     )
-    upload_to_app_store(
-        force: true,
-        precheck_include_in_app_purchases: false
-    )
+    upload_to_testflight()
     download_dsyms(
         version: "latest",
         wait_for_dsym_processing: true,
@@ -26,5 +23,11 @@ lane :deploy do
     upload_symbols_to_crashlytics(
         gsp_path: "Friendly Competitions/Firebase/Release/GoogleService-Info.plist",
         binary_path: "fastlane/scripts/upload-symbols"
+    )
+    upload_to_app_store(
+        force: true,
+        submit_for_review: true,
+        precheck_include_in_app_purchases: false,
+        skip_binary_upload: true
     )
 end

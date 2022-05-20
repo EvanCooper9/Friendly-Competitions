@@ -1,5 +1,7 @@
 New features: 
-• You can now sign in with email and password
+• Sign in with email and password
+• Send invite links to competitions
+• Competitions can be edited by their owners
 
 Improvements:
 • Competitions scores are more up to date
