@@ -7,37 +7,50 @@ final class ExploreViewModel: ObservableObject {
     @Published var loading = false
     @Published var searchText = ""
     @Published var searchResults = [Competition]()
-    
     @Published var appOwnedCompetitions = [Competition]()
     @Published var topCommunityCompetitions = [Competition]()
     
+    @Published var deepLinkedCompetition: Competition?
+    
     @Injected private var competitionsManager: AnyCompetitionsManager
     
-    private var cancellables = Set<AnyCancellable>()
-    
     init() {
-        
         competitionsManager.$appOwnedCompetitions.assign(to: &$appOwnedCompetitions)
         competitionsManager.$topCommunityCompetitions.assign(to: &$topCommunityCompetitions)
         
         $searchText
-            .sinkAsync { [weak self] searchText in
-                guard let self = self else { return }
-                guard !searchText.isEmpty else {
-                    self.searchResults = []
-                    self.loading = false
-                    return
-                }
+            .handleEvents(receiveOutput: { [weak self] _ in self?.loading = true })
+            .flatMapLatest { [weak self] searchText -> AnyPublisher<[Competition], Never> in
+                guard let self = self else { return .just([]) }
                 
-                self.loading = true
-                let competitions = try await self.competitionsManager
-                    .search(searchText)
-                    .sorted { lhs, rhs in
-                        lhs.appOwned && !rhs.appOwned
-                    }
-                self.searchResults = competitions
-                self.loading = false
+                let subject = PassthroughSubject<[Competition], Never>()
+                Task {
+                    let competitions = try await self.competitionsManager
+                        .search(searchText)
+                        .sorted { lhs, rhs in
+                            lhs.appOwned && !rhs.appOwned
+                        }
+                    subject.send(competitions)
+                }
+                return subject.eraseToAnyPublisher()
             }
-            .store(in: &cancellables)
+            .receive(on: RunLoop.main)
+            .handleEvents(receiveOutput: { [weak self] _ in self?.loading = false })
+            .assign(to: &$searchResults)
+    }
+    
+    func handle(deepLink: DeepLink?) {
+        switch deepLink {
+        case .competitionInvite(let id):
+            Task {
+                let competition = try await competitionsManager.search(byID: id)
+                DispatchQueue.main.async { [weak self] in
+                    self?.searchText = competition.name
+                    self?.searchResults = [competition]
+                }
+            }
+        default:
+            break
+        }
     }
 }

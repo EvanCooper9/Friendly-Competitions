@@ -7,6 +7,7 @@ struct Explore: View {
     }
 
     @Environment(\.colorScheme) private var colorScheme
+    @EnvironmentObject private var appState: AppState
 
     @StateObject private var viewModel = ExploreViewModel()
     

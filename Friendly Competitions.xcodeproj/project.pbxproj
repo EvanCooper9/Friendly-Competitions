@@ -153,6 +153,7 @@
 		ED927EF827F7ACE0006E78A0 /* FirebaseAnalyticsSwift-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = ED927EF727F7ACE0006E78A0 /* FirebaseAnalyticsSwift-Beta */; };
 		EDA352902836EFB600390585 /* UserViewAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA3528F2836EFB600390585 /* UserViewAction.swift */; };
 		EDA352932836F87600390585 /* CompetitionViewAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA352922836F87600390585 /* CompetitionViewAction.swift */; };
+		EDA3529528370F4C00390585 /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA3529428370F4C00390585 /* HomeViewModel.swift */; };
 		EDBEA170281459D200058A47 /* CompetitionInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBEA16F281459D200058A47 /* CompetitionInfo.swift */; };
 		EDBF8C5F282D4B3500754165 /* SwiftUIX in Frameworks */ = {isa = PBXBuildFile; productRef = EDBF8C5E282D4B3500754165 /* SwiftUIX */; };
 		EDC373D027FB39A500318245 /* EmailSignInForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC373CF27FB39A500318245 /* EmailSignInForm.swift */; };
@@ -325,6 +326,7 @@
 		ED901B75280265DB00FE619E /* SignInViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInViewModel.swift; sourceTree = "<group>"; };
 		EDA3528F2836EFB600390585 /* UserViewAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserViewAction.swift; sourceTree = "<group>"; };
 		EDA352922836F87600390585 /* CompetitionViewAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionViewAction.swift; sourceTree = "<group>"; };
+		EDA3529428370F4C00390585 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
 		EDBEA16F281459D200058A47 /* CompetitionInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionInfo.swift; sourceTree = "<group>"; };
 		EDBF8C60282D4B9E00754165 /* SwiftUIX */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = SwiftUIX; path = ../SwiftUIX; sourceTree = "<group>"; };
 		EDC373CF27FB39A500318245 /* EmailSignInForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailSignInForm.swift; sourceTree = "<group>"; };
@@ -761,6 +763,7 @@
 			isa = PBXGroup;
 			children = (
 				C19B7F2727BD8A5E00BCA4B9 /* Home.swift */,
+				EDA3529428370F4C00390585 /* HomeViewModel.swift */,
 				C19B7F2E27BEA69200BCA4B9 /* Dashboard */,
 				C19B7F2927BD8C5C00BCA4B9 /* Explore */,
 				C1F7DFF226D7F77900B46F91 /* Competitions */,
@@ -1186,6 +1189,7 @@
 				C19EAFE3272B30E0008BCFDD /* PermissionsView.swift in Sources */,
 				EDC5FC4127FA7F3700F2882D /* Color+Extensions.swift in Sources */,
 				ED901B6328024F0400FE619E /* UserDefaults+Extensions.swift in Sources */,
+				EDA3529528370F4C00390585 /* HomeViewModel.swift in Sources */,
 				C10E5543272B3BCF0053BBA6 /* PermissionView.swift in Sources */,
 				ED901B712802618700FE619E /* NewCompetitionViewModel.swift in Sources */,
 				C1185A2526D6717C002E2377 /* ActivitySummary.swift in Sources */,
