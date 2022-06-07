@@ -1,2 +1,3 @@
-brew "swiftgen"
 brew "fastlane"
+brew "sourcery"
+brew "swiftgen"
