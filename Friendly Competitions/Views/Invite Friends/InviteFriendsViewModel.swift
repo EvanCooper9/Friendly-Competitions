@@ -18,7 +18,7 @@ final class InviteFriendsViewModel: ObservableObject {
     @Published var searchText = ""
     @Published var sharedDeepLink: DeepLink?
 
-    @Injected private var competitionsManager: AnyCompetitionsManager
+    @Injected private var competitionsManager: CompetitionsManaging
     @Injected private var friendsManager: AnyFriendsManager
     @Injected private var userManager: AnyUserManager
     

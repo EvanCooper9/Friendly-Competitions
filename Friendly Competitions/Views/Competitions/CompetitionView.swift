@@ -91,7 +91,7 @@ struct CompetitionView_Previews: PreviewProvider {
     private static func setupMocks() {
         let evan = User.evan
         let gabby = User.gabby
-        competitionsManager.standings = [
+        let standings: [Competition.ID: [Competition.Standing]] = [
             competition.id: [
                 .init(rank: 1, userId: "Somebody", points: 100),
                 .init(rank: 2, userId: "Rick", points: 75),
@@ -101,12 +101,15 @@ struct CompetitionView_Previews: PreviewProvider {
                 .init(rank: 6, userId: "Joe", points: 9),
             ]
         ]
-        competitionsManager.participants = [
+        let participants: [Competition.ID: [User]] = [
             competition.id: [evan, gabby]
         ]
-        competitionsManager.pendingParticipants = [
+        let pendingParticipants: [Competition.ID: [User]] = [
             competition.id: [gabby]
         ]
+        competitionsManager.standings = .just(standings)
+        competitionsManager.participants = .just(participants)
+        competitionsManager.pendingParticipants = .just(pendingParticipants)
     }
 
     static var previews: some View {

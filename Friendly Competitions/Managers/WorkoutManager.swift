@@ -8,7 +8,7 @@ class AnyWorkoutManager: ObservableObject {}
 
 final class WorkoutManager: AnyWorkoutManager {
     
-    @Injected private var competitionsManager: AnyCompetitionsManager
+    @Injected private var competitionsManager: CompetitionsManaging
     @Injected private var healthKitManager: AnyHealthKitManager
     @Injected private var userManager: AnyUserManager
     @Injected private var database: Firestore

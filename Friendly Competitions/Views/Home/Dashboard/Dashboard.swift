@@ -133,18 +133,19 @@ struct Dashboard_Previews: PreviewProvider {
         activitySummaryManager.activitySummary = .mock
         
         let competitions: [Competition] = [.mock, .mockInvited, .mockOld, .mockPublic]
-        competitionsManager.competitions = competitions
-        competitionsManager.participants = competitions.reduce(into: [:]) { partialResult, competition in
+        let participants = competitions.reduce(into: [Competition.ID: [User]]()) { partialResult, competition in
             partialResult[competition.id] = [.evan]
         }
-        competitionsManager.standings = competitions.reduce(into: [:]) { partialResult, competition in
+        let standings = competitions.reduce(into: [Competition.ID: [Competition.Standing]]()) { partialResult, competition in
             partialResult[competition.id] = [.mock(for: .evan)]
         }
-        
-        let friend = User.gabby
-        friendsManager.friends = [friend]
-        friendsManager.friendRequests = [friend]
-        friendsManager.friendActivitySummaries = [friend.id: .mock]
+        competitionsManager.competitions = .just(competitions)
+        competitionsManager.participants = .just(participants)
+        competitionsManager.standings = .just(standings)
+
+        friendsManager.friends = [.gabby]
+        friendsManager.friendRequests = [.andrew]
+        friendsManager.friendActivitySummaries = [User.gabby.id: .mock]
         
         permissionsManager.requiresPermission = false
         permissionsManager.permissionStatus = [

@@ -4,7 +4,7 @@ import FirebaseStorage
 import Resolver
 
 private enum FirebaseEmulation {
-    static let enabled = true
+    static let enabled = false
     static let host = "localhost"
 }
 
@@ -15,7 +15,7 @@ extension Resolver: ResolverRegistering {
         register(AnyActivitySummaryManager.self) { ActivitySummaryManager() }.scope(.shared)
         register(AnyAnalyticsManager.self) { AnalyticsManager() }.scope(.shared)
         register(AnyAuthenticationManager.self) { AuthenticationManager() }.scope(.shared)
-        register(AnyCompetitionsManager.self) { CompetitionsManager() }.scope(.shared)
+        register(CompetitionsManaging.self) { CompetitionsManager() }.scope(.shared)
         register(AnyFriendsManager.self) { FriendsManager() }.scope(.shared)
         register(AnyHealthKitManager.self) { HealthKitManager() }.scope(.shared)
         register(NotificationManaging.self) { NotificationManager() }.scope(.shared)

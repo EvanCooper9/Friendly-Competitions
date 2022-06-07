@@ -79,13 +79,12 @@ private struct CommunityCompetitions: View {
 struct ExploreCompetitions_Previews: PreviewProvider {
     
     private static func setupMocks() {
-        competitionsManager.appOwnedCompetitions = [.mockPublic]
-        competitionsManager.topCommunityCompetitions = [.mock, .mock, .mock]
+        competitionsManager.appOwnedCompetitions = .just([.mockPublic])
+        competitionsManager.topCommunityCompetitions = .just([.mock, .mock, .mock])
     }
     
     static var previews: some View {
         Explore()
             .setupMocks(setupMocks)
-//            .preferredColorScheme(.dark)
     }
 }

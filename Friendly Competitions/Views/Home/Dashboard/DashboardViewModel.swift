@@ -20,7 +20,7 @@ final class DashboardViewModel: ObservableObject {
     @Published private(set) var title = Bundle.main.name
     
     @Injected private var activitySummaryManager: AnyActivitySummaryManager
-    @Injected private var competitionsManager: AnyCompetitionsManager
+    @Injected private var competitionsManager: CompetitionsManaging
     @Injected private var friendsManager: AnyFriendsManager
     @Injected private var permissionsManager: AnyPermissionsManager
     @Injected private var userManager: AnyUserManager
@@ -29,8 +29,8 @@ final class DashboardViewModel: ObservableObject {
         
     init() {
         activitySummaryManager.$activitySummary.assign(to: &$activitySummary)
-        competitionsManager.$competitions.assign(to: &$competitions)
-        competitionsManager.$invitedCompetitions.assign(to: &$invitedCompetitions)
+        competitionsManager.competitions.assign(to: &$competitions)
+        competitionsManager.invitedCompetitions.assign(to: &$invitedCompetitions)
         
         let friendRequests = friendsManager.$friendRequests
             .map { friendRequests in

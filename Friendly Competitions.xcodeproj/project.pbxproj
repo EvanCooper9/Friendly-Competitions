@@ -117,6 +117,10 @@
 		C1F7DFF526D8010A00B46F91 /* CollectionReference+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F7DFF426D8010A00B46F91 /* CollectionReference+Extensions.swift */; };
 		C1F9D7CD26FF871A00B25651 /* NotificationManaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F9D7CC26FF871A00B25651 /* NotificationManaging.swift */; };
 		C1F9D7CF26FF874800B25651 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = C1F9D7CE26FF874800B25651 /* FirebaseMessaging */; };
+		ED19724C283803850018FDFF /* WorkoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED19724B283803850018FDFF /* WorkoutTests.swift */; };
+		ED19724E283803F60018FDFF /* WorkoutTypeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED19724D283803F60018FDFF /* WorkoutTypeTests.swift */; };
+		ED277B1D2838002C00DDF29A /* HomeViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED277B1C2838002C00DDF29A /* HomeViewModelTests.swift */; };
+		ED3ED8F7284F951800B5100F /* AutoMockable.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3ED8F6284F951800B5100F /* AutoMockable.generated.swift */; };
 		ED438FF727F7B3B600D72F99 /* View+ConfirmationDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED438FF627F7B3B600D72F99 /* View+ConfirmationDialog.swift */; };
 		ED438FF927F7C2B900D72F99 /* View+Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED438FF827F7C2B900D72F99 /* View+Analytics.swift */; };
 		ED438FFB27F7D18600D72F99 /* AnalyticsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED438FFA27F7D18600D72F99 /* AnalyticsManager.swift */; };
@@ -300,6 +304,10 @@
 		C1EBB16627AD7AF600376E59 /* UserDefaultsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsTests.swift; sourceTree = "<group>"; };
 		C1F7DFF426D8010A00B46F91 /* CollectionReference+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CollectionReference+Extensions.swift"; sourceTree = "<group>"; };
 		C1F9D7CC26FF871A00B25651 /* NotificationManaging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManaging.swift; sourceTree = "<group>"; };
+		ED19724B283803850018FDFF /* WorkoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutTests.swift; sourceTree = "<group>"; };
+		ED19724D283803F60018FDFF /* WorkoutTypeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutTypeTests.swift; sourceTree = "<group>"; };
+		ED277B1C2838002C00DDF29A /* HomeViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModelTests.swift; sourceTree = "<group>"; };
+		ED3ED8F6284F951800B5100F /* AutoMockable.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AutoMockable.generated.swift; sourceTree = "<group>"; };
 		ED438FF627F7B3B600D72F99 /* View+ConfirmationDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+ConfirmationDialog.swift"; sourceTree = "<group>"; };
 		ED438FF827F7C2B900D72F99 /* View+Analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Analytics.swift"; sourceTree = "<group>"; };
 		ED438FFA27F7D18600D72F99 /* AnalyticsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsManager.swift; sourceTree = "<group>"; };
@@ -555,6 +563,7 @@
 				C1930E5527C6FBF500DB45C1 /* ResolverTests.swift */,
 				C155CA6027AB997D005F49F4 /* Extensions */,
 				C155CA6F27AC1245005F49F4 /* Models */,
+				ED277B1B2838001A00DDF29A /* Views */,
 			);
 			path = "Friendly Competitions Tests";
 			sourceTree = "<group>";
@@ -598,6 +607,7 @@
 				C1E35D4727B45FEB00833EB2 /* Competition */,
 				C1E35D4827B45FF000833EB2 /* Permissions */,
 				C132944827DAB10700117548 /* User */,
+				ED19724A2838036A0018FDFF /* Workouts */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -637,6 +647,7 @@
 				C1DA90AA26F63C2500B0E2D3 /* Managers */,
 				C1884E4C26D59E2300C21014 /* Models */,
 				C1ABB20C26D6839900716984 /* Views */,
+				ED3ED8F5284F951800B5100F /* Sourcery */,
 				C10E5546272B46990053BBA6 /* SwiftGen */,
 				C1691DCC26D55FCF006FFA30 /* Preview Content */,
 			);
@@ -867,6 +878,31 @@
 			path = Competitions;
 			sourceTree = "<group>";
 		};
+		ED19724A2838036A0018FDFF /* Workouts */ = {
+			isa = PBXGroup;
+			children = (
+				ED19724B283803850018FDFF /* WorkoutTests.swift */,
+				ED19724D283803F60018FDFF /* WorkoutTypeTests.swift */,
+			);
+			path = Workouts;
+			sourceTree = "<group>";
+		};
+		ED277B1B2838001A00DDF29A /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				ED277B1C2838002C00DDF29A /* HomeViewModelTests.swift */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		ED3ED8F5284F951800B5100F /* Sourcery */ = {
+			isa = PBXGroup;
+			children = (
+				ED3ED8F6284F951800B5100F /* AutoMockable.generated.swift */,
+			);
+			path = Sourcery;
+			sourceTree = "<group>";
+		};
 		ED48782C282747B100AC1E2C /* Invite Friends */ = {
 			isa = PBXGroup;
 			children = (
@@ -983,6 +1019,7 @@
 			buildConfigurationList = C1691DD126D55FCF006FFA30 /* Build configuration list for PBXNativeTarget "Friendly Competitions" */;
 			buildPhases = (
 				C10E5545272B46730053BBA6 /* SwiftGen */,
+				ED3ED8F4284F936C00B5100F /* Sourcery */,
 				C1691DBF26D55FCF006FFA30 /* Sources */,
 				C1691DC026D55FCF006FFA30 /* Frameworks */,
 				C1691DC126D55FCF006FFA30 /* Resources */,
@@ -1081,6 +1118,7 @@
 /* Begin PBXShellScriptBuildPhase section */
 		C10E5545272B46730053BBA6 /* SwiftGen */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
@@ -1099,6 +1137,7 @@
 		};
 		C1DB3B5C27AA0CF40074BED1 /* Firebase */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
@@ -1114,6 +1153,25 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "rsync -t -r \"${PROJECT_DIR}/Friendly Competitions/Firebase/${CONFIGURATION}/GoogleService-Info.plist\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/GoogleService-Info.plist\" \n\nif [ $? -ne 0 ]; then  \n  echo \"Error copying GoogleService-Info.plist into app\"\nelse\n  echo \"GoogleService-Info.plist copied successfully\"\nfi\n\nif [ \"${ENABLE_PREVIEWS}\" = \"YES\" ]; then\n  echo \"Previews enabled, quitting to prevent 'preview paused'.\"\n  exit 0\nfi\n\n\"${BUILD_DIR%Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n\nexit 0\n";
+		};
+		ED3ED8F4284F936C00B5100F /* Sourcery */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = Sourcery;
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "if [ $(arch) == \"arm64\" ]; then\n    /opt/homebrew/bin/sourcery\nelse \n    sourcery\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1133,7 +1191,10 @@
 				C1E35D4A27B4600D00833EB2 /* Competition+StandingTests.swift in Sources */,
 				C1300FDF27C9642F002E2C52 /* XCTestCase+Extensions.swift in Sources */,
 				C155CA6E27AC0C6A005F49F4 /* TimeIntervalTests.swift in Sources */,
+				ED19724C283803850018FDFF /* WorkoutTests.swift in Sources */,
 				C1300FDC27C83E3B002E2C52 /* BundleTests.swift in Sources */,
+				ED277B1D2838002C00DDF29A /* HomeViewModelTests.swift in Sources */,
+				ED19724E283803F60018FDFF /* WorkoutTypeTests.swift in Sources */,
 				C1E35D4C27B4606200833EB2 /* Competition+ScoringModelTests.swift in Sources */,
 				C132336327BEB00B00196D81 /* StringTests.swift in Sources */,
 				C155CA6B27AC0AC6005F49F4 /* DecodableTests.swift in Sources */,
@@ -1170,6 +1231,7 @@
 				ED901B6B2802525700FE619E /* FirestoreImageViewModel.swift in Sources */,
 				EDC373D227FB5B0C00318245 /* VerifyEmail.swift in Sources */,
 				C1ABB21526D6987C00716984 /* NewCompetition.swift in Sources */,
+				ED3ED8F7284F951800B5100F /* AutoMockable.generated.swift in Sources */,
 				EDA35298283713C200390585 /* DeepLink+Share.swift in Sources */,
 				C1930E5427C6EB4000DB45C1 /* MockFriendsManager.swift in Sources */,
 				C13F923327C0099800FC6880 /* MockCompetitionManager.swift in Sources */,

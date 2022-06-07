@@ -39,7 +39,7 @@ final class NewCompetitionViewModel: ObservableObject {
         return nil
     }
     
-    @Injected private var competitionsManager: AnyCompetitionsManager
+    @Injected private var competitionsManager: CompetitionsManaging
     @Injected private var friendsManager: AnyFriendsManager
     @Injected private var userManager: AnyUserManager
         

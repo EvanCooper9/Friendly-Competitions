@@ -2,17 +2,12 @@ import Combine
 import Foundation
 import Resolver
 
-enum HomeTab {
-    case dashboard
-    case explore
-}
-
 final class HomeViewModel: ObservableObject {
     
     @Published var deepLinkedCompetition: Competition?
     @Published var deepLinkedUser: User?
     
-    @Injected private var competitionsManager: AnyCompetitionsManager
+    @Injected private var competitionsManager: CompetitionsManaging
     @Injected private var friendsManager: AnyFriendsManager
     
     func handle(url: URL) {

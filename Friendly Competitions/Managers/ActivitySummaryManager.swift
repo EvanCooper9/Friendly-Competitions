@@ -1,4 +1,5 @@
 import Combine
+import CombineExt
 import Firebase
 import FirebaseFirestore
 import FirebaseFunctions
@@ -15,7 +16,7 @@ final class ActivitySummaryManager: AnyActivitySummaryManager {
 
     // MARK: - Private Properties
 
-    @Injected private var competitionsManager: AnyCompetitionsManager
+    @Injected private var competitionsManager: CompetitionsManaging
     @Injected private var healthKitManager: AnyHealthKitManager
     @Injected private var database: Firestore
     @Injected private var userManager: AnyUserManager
@@ -48,7 +49,10 @@ final class ActivitySummaryManager: AnyActivitySummaryManager {
 
         query
             .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
-            .sinkAsync { [weak self] in try await self?.requestActivitySummaries() }
+            .flatMapLatest(requestActivitySummaries)
+            .sinkAsync(receiveValue: { [weak self] activitySummaries in
+                try await self?.upload(activitySummaries: activitySummaries)
+            })
             .store(in: &cancellables)
 
         healthKitManager.backgroundDeliveryReceived
@@ -71,41 +75,46 @@ final class ActivitySummaryManager: AnyActivitySummaryManager {
     // MARK: - Private Methods
 
     /// Don't call this directly, call `query` instead
-    private func requestActivitySummaries() async throws {
-        let components = Calendar.current.dateComponents([.year, .month, .day], from: .now)
-        let now = Calendar.current.date(from: components) ?? .now
-        let yesterday = now.addingTimeInterval(-1.days)
-        let tomorrow = now.addingTimeInterval(1.days)
-
-        let dateInterval = competitionsManager.competitions
-            .filter { $0.isActive && $0.participants.contains(user.id) }
-            .reduce(DateInterval(start: yesterday, end: tomorrow)) { dateInterval, competition in
-                .init(
-                    start: [dateInterval.start, competition.start, yesterday].min() ?? yesterday,
-                    end: [dateInterval.end, competition.end, tomorrow].max() ?? tomorrow
-                )
-            }
-
-        try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-            let query = HKActivitySummaryQuery(predicate: predicate(for: dateInterval)) { [weak self] query, hkActivitySummaries, error in
-                if let error = error {
-                    continuation.resume(throwing: error)
-                    return
-                }
-
-                let activitySummaries = hkActivitySummaries?.map(\.activitySummary) ?? []
-                self?.upload.send(activitySummaries)
-                if let activitySummary = activitySummaries.last, activitySummary.date.isToday {
-                    DispatchQueue.main.async { [weak self] in
-                        self?.activitySummary = activitySummary
+    private func requestActivitySummaries() -> AnyPublisher<[ActivitySummary], Never> {
+        competitionsManager.competitions
+            .map { [weak self] competitions -> DateInterval in
+                guard let self = self else { return .init() }
+                let components = Calendar.current.dateComponents([.year, .month, .day], from: .now)
+                let now = Calendar.current.date(from: components) ?? .now
+                let yesterday = now.addingTimeInterval(-1.days)
+                let tomorrow = now.addingTimeInterval(1.days)
+                return competitions
+                    .filter { $0.isActive && $0.participants.contains(self.user.id ) }
+                    .reduce(DateInterval(start: yesterday, end: tomorrow)) { dateInterval, competition in
+                        .init(
+                            start: [dateInterval.start, competition.start, yesterday].min() ?? yesterday,
+                            end: [dateInterval.end, competition.end, tomorrow].max() ?? tomorrow
+                        )
                     }
-                }
-
-                continuation.resume()
             }
+            .flatMap { [weak self] dateInterval -> AnyPublisher<[ActivitySummary], Error> in
+                guard let self = self else { return .never() }
+                let subject = PassthroughSubject<[ActivitySummary], Error>()
+                let query = HKActivitySummaryQuery(predicate: self.predicate(for: dateInterval)) { [weak self] query, hkActivitySummaries, error in
+                    if let error = error {
+                        subject.send(completion: .failure(error))
+                        return
+                    }
 
-            healthKitManager.execute(query)
-        }
+                    let activitySummaries = hkActivitySummaries?.map(\.activitySummary) ?? []
+                    self?.upload.send(activitySummaries)
+                    if let activitySummary = activitySummaries.last, activitySummary.date.isToday {
+                        DispatchQueue.main.async { [weak self] in
+                            self?.activitySummary = activitySummary
+                        }
+                    }
+                    subject.send(activitySummaries)
+                }
+                self.healthKitManager.execute(query)
+                return subject.eraseToAnyPublisher()
+            }
+            .ignoreFailure()
+            .eraseToAnyPublisher()
     }
 
     /// Don't call this directly, call `upload` instead

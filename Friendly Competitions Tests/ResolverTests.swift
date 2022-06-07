@@ -10,7 +10,7 @@ final class ResolverTests: XCTestCase {
         XCTAssertTrue(Resolver.resolve(AnyActivitySummaryManager.self) is ActivitySummaryManager)
         XCTAssertTrue(Resolver.resolve(AnyAnalyticsManager.self) is AnalyticsManager)
         XCTAssertTrue(Resolver.resolve(AnyAuthenticationManager.self) is AuthenticationManager)
-        XCTAssertTrue(Resolver.resolve(AnyCompetitionsManager.self) is CompetitionsManager)
+        XCTAssertTrue(Resolver.resolve(CompetitionsManaging.self) is CompetitionsManager)
         XCTAssertTrue(Resolver.resolve(AnyFriendsManager.self) is FriendsManager)
         XCTAssertTrue(Resolver.resolve(AnyHealthKitManager.self) is HealthKitManager)
         XCTAssertTrue(Resolver.resolve(NotificationManaging.self) is NotificationManager)

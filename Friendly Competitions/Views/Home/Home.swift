@@ -27,11 +27,11 @@ struct HomeContainer_Previews: PreviewProvider {
         activitySummaryManager.activitySummary = .mock
 
         let competitions: [Competition] = [.mock, .mockInvited, .mockOld]
-        competitionsManager.appOwnedCompetitions = [.mockPublic, .mockPublic]
-        competitionsManager.topCommunityCompetitions = [.mock]
-        competitionsManager.competitions = competitions
-        competitionsManager.participants = competitions.reduce(into: [:]) { $0[$1.id] = [.evan] }
-        competitionsManager.standings = competitions.reduce(into: [:]) { $0[$1.id] = [.mock(for: .evan)] }
+        competitionsManager.appOwnedCompetitions = .just([.mockPublic, .mockPublic])
+        competitionsManager.topCommunityCompetitions = .just([.mock])
+        competitionsManager.competitions = .just(competitions)
+        competitionsManager.participants = .just(competitions.reduce(into: [:]) { $0[$1.id] = [.evan] })
+        competitionsManager.standings = .just(competitions.reduce(into: [:]) { $0[$1.id] = [.mock(for: .evan)] })
 
         let friend = User.gabby
         friendsManager.friends = [friend]

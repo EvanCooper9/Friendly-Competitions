@@ -27,7 +27,7 @@ final class CompetitionViewModel: ObservableObject {
     
     // MARK: - Private Properties
 
-    @Injected private var competitionsManager: AnyCompetitionsManager
+    @Injected private var competitionsManager: CompetitionsManaging
     @Injected private var userManager: AnyUserManager
     
     private var actionRequiringConfirmation: CompetitionViewAction? {
@@ -69,23 +69,21 @@ final class CompetitionViewModel: ObservableObject {
             .map { [weak self] in $0.owner == self?.userManager.user.id }
             .assign(to: &$canEdit)
         
-        competitionsManager.$competitions
+        competitionsManager.competitions
             .compactMap { $0.first { $0.id == competition.id } }
             .assign(to: &$competition)
         
-        competitionsManager.$standings
-            .map { [weak self] standings -> [CompetitionParticipantView.Config] in
-                guard let self = self, let standings = standings[competition.id] else { return [] }
-                let participants = self.competitionsManager.participants[competition.id] ?? []
-                
+        competitionsManager.standings
+            .combineLatest(competitionsManager.participants)
+            .map { [weak self] standings, participants -> [CompetitionParticipantView.Config] in
+                guard let self = self,
+                      let standings = standings[competition.id],
+                      let participants = participants[competition.id]
+                else { return [] }
+
                 return standings.map { standing in
-                    
-                    let user = participants.first {
-                        $0.id == standing.userId
-                    }
-                    
+                    let user = participants.first { $0.id == standing.userId }
                     let visibility = user?.visibility(by: self.userManager.user) ?? .hidden
-                    
                     return CompetitionParticipantView.Config(
                         id: standing.id,
                         rank: standing.rank.ordinalString ?? "?",
@@ -99,7 +97,7 @@ final class CompetitionViewModel: ObservableObject {
             }
             .assign(to: &$standings)
         
-        competitionsManager.$pendingParticipants
+        competitionsManager.pendingParticipants
             .map { [weak self] pendingParticipants in
                 guard let self = self, let pendingParticipants = pendingParticipants[competition.id] else { return [] }
                 return pendingParticipants.map { user in
@@ -125,8 +123,7 @@ final class CompetitionViewModel: ObservableObject {
     }
     
     func saveTapped() {
-        guard let oldCompetition = competitionsManager.competitions.first(where: { $0.id == competition.id }) else { return }
-        if oldCompetition.start != competition.start || oldCompetition.end != competition.end {
+        if competition.start != competition.start || competition.end != competition.end {
             actionRequiringConfirmation = .edit
         } else {
             confirm()

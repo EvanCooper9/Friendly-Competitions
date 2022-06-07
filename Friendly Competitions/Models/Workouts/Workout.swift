@@ -1,5 +1,4 @@
 import Foundation
-import HealthKit
 
 struct Workout: Codable {
     let type: WorkoutType
