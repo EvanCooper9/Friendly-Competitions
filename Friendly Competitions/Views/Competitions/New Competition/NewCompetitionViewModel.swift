@@ -18,17 +18,6 @@ final class NewCompetitionViewModel: ObservableObject {
     @Published var constrainToWorkout = false
     @Published var friendRows = [InviteFriendsRow]()
     
-    var detailsFooterTexts: [String] {
-        var detailsTexts = [String]()
-        if competition.repeats {
-            detailsTexts.append("This competition will restart the next day after it ends.")
-        }
-        if competition.isPublic {
-            detailsTexts.append("Heads up! Anyone can join public competitions from the explore page.")
-        }
-        return detailsTexts
-    }
-    
     var createDisabled: Bool { disabledReason != nil }
     var disabledReason: String? {
         if competition.name.isEmpty {
@@ -45,24 +34,33 @@ final class NewCompetitionViewModel: ObservableObject {
         
     init() {
         competition = .init(
-            name: "",
+            name: "Name",
             owner: "",
             participants: [],
             pendingParticipants: [],
-            scoringModel: .percentOfGoals,
-            start: .now,
+            scoringModel: nil,// .percentOfGoals,
+            start: DateFormatter.dateDashed.date(from: "2022-06-01")!,
             end: .now.advanced(by: Constants.defaultInterval.days),
             repeats: false,
-            isPublic: false,
+            isPublic: true,
             banner: nil
         )
-        
+
+        constrainToWorkout = true
+        competition.workoutType = .walking
+
         friendsManager.$friends
             .map { $0.map { InviteFriendsRow(id: $0.id, name: $0.name, invited: false) } }
             .assign(to: &$friendRows)
     }
     
     func create() {
+        if constrainToWorkout {
+            competition.scoringModel = nil
+        } else {
+            competition.workoutType = nil
+        }
+
         competition.owner = userManager.user.id
         competition.participants = [userManager.user.id]
         competitionsManager.create(competition)

@@ -5,7 +5,7 @@ import Resolver
 
 private enum FirebaseEmulation {
     static let enabled = false
-    static let host = "localhost"
+    static let host = "192.168.2.92"
 }
 
 extension Resolver: ResolverRegistering {
@@ -21,7 +21,7 @@ extension Resolver: ResolverRegistering {
         register(NotificationManaging.self) { NotificationManager() }.scope(.shared)
         register(AnyPermissionsManager.self) { PermissionsManager() }.scope(.shared)
         register(AnyStorageManager.self) { StorageManager() }.scope(.shared)
-        register(AnyWorkoutManager.self) { WorkoutManager() }.scope(.shared)
+        register(WorkoutManaging.self) { WorkoutManager() }.scope(.shared)
         
         // Global state
         register { AppState() }.scope(.shared)

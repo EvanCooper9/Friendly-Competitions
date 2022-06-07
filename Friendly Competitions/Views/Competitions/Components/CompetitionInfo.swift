@@ -4,15 +4,26 @@ struct CompetitionInfo: View {
     
     @Binding var competition: Competition
     let editing: Bool
+
+    private var detailsFooterTexts: [String] {
+        var detailsTexts = [String]()
+        if competition.repeats {
+            detailsTexts.append("This competition will restart the next day after it ends.")
+        }
+        if competition.isPublic {
+            detailsTexts.append("Heads up! Anyone can join public competitions from the explore page.")
+        }
+        return detailsTexts
+    }
     
     var body: some View {
-        Section("Details") {
+        Section {
             if editing {
                 TextField("Name", text: $competition.name)
                 DatePicker(
                     "Starts",
                     selection: $competition.start,
-                    in: PartialRangeFrom(.now),
+                    in: PartialRangeFrom(DateFormatter.dateDashed.date(from: "2022-06-01")!),
                     displayedComponents: [.date]
                 )
                 DatePicker(
@@ -50,6 +61,14 @@ struct CompetitionInfo: View {
                     )
                 }
             }
+        } header: {
+            Text("Details")
+        } footer: {
+            if editing {
+                VStack(alignment: .leading, spacing: 10) {
+                    ForEach(detailsFooterTexts, id: \.self, content: Text.init)
+                }
+            }
         }
     }
 }
@@ -58,6 +77,7 @@ struct CompetitionInfo_Previews: PreviewProvider {
     static var previews: some View {
         Form {
             CompetitionInfo(competition: .constant(.mock), editing: false)
+            CompetitionInfo(competition: .constant(.mock), editing: true)
         }
     }
 }

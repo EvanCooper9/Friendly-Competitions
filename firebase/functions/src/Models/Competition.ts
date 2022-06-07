@@ -52,10 +52,10 @@ class Competition {
      * Updates the points and standings
      */
     async updateStandings(): Promise<void> {
+        console.log(`updating standings for competition: ${this.id}`);
         const existingStandings = (await admin.firestore().collection(`competitions/${this.id}/standings`).get()).docs.map(doc => new Standing(doc));
         const standingPromises = this.participants.map(async userId => {
             let totalPoints = 0;
-
             const workoutType = this.workoutType;
             const scoringModel = this.scoringModel;
             if (workoutType != undefined) {
@@ -66,16 +66,7 @@ class Competition {
                 workoutsPromise.docs
                     .map(doc => new Workout(doc))
                     .filter(workout => workout.isIncludedInCompetition(this))
-                    .forEach(workout => {
-                        switch (workoutType) {
-                            case WorkoutType.running: {
-                                console.log("running");
-                            }
-                            case WorkoutType.walking: {
-                                console.log("walking");
-                            }
-                        }
-                    });
+                    .forEach(workout => totalPoints += workout.points);
             } else if (scoringModel != undefined) {
                 const activitySummariesPromise = await admin.firestore().collection(`users/${userId}/activitySummaries`).get()
                 activitySummariesPromise.docs
@@ -84,7 +75,6 @@ class Competition {
                     .forEach(activitySummary => {
                         switch (scoringModel) {
                             case ScoringModel.percentOfGoals: {
-                                console.log("percent of goals");
                                 const energy = (activitySummary.activeEnergyBurned / activitySummary.activeEnergyBurnedGoal) * 100;
                                 const exercise = (activitySummary.appleExerciseTime / activitySummary.appleExerciseTimeGoal) * 100;
                                 const stand = (activitySummary.appleStandHours / activitySummary.appleStandHoursGoal) * 100;
@@ -92,7 +82,6 @@ class Competition {
                                 totalPoints += parseInt(`${points}`);
                             }
                             case ScoringModel.rawNumbers: {
-                                console.log("raw numbers");
                                 const energy = activitySummary.activeEnergyBurned;
                                 const exercise = activitySummary.appleExerciseTime;
                                 const stand = activitySummary.appleStandHours;

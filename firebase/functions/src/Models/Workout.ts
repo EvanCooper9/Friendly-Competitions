@@ -16,7 +16,8 @@ import { WorkoutType } from "./WorkoutType";
     constructor(document: FirebaseFirestore.DocumentSnapshot) {
         this.type = document.get("type") as WorkoutType;
         this.points = document.get("points");
-        this.date = document.get("date");
+        const dateString: string = document.get("date");
+        this.date = new Date(dateString);
     }
 
     /**
@@ -24,7 +25,7 @@ import { WorkoutType } from "./WorkoutType";
      * @param {Competition} competition the competition to compare against
      * @return {boolean} true if the workout falls within the competition window
      */
-     isIncludedInCompetition(competition: Competition): boolean {
+    isIncludedInCompetition(competition: Competition): boolean {
         return this.date >= competition.start && this.date <= competition.end;
     }
 }

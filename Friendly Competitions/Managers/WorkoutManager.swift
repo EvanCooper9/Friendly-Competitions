@@ -4,9 +4,11 @@ import FirebaseFirestore
 import HealthKit
 import Resolver
 
-class AnyWorkoutManager: ObservableObject {}
+protocol WorkoutManaging {
+    func update() async throws
+}
 
-final class WorkoutManager: AnyWorkoutManager {
+final class WorkoutManager: WorkoutManaging {
     
     @Injected private var competitionsManager: CompetitionsManaging
     @Injected private var healthKitManager: AnyHealthKitManager
@@ -18,9 +20,7 @@ final class WorkoutManager: AnyWorkoutManager {
     
     private var cancellables = Set<AnyCancellable>()
     
-    override init() {
-        super.init()
-        
+    init() {
         query
             .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
             .sinkAsync { [weak self] in try await self?.requestWorkouts() }
@@ -34,6 +34,14 @@ final class WorkoutManager: AnyWorkoutManager {
         healthKitManager.backgroundDeliveryReceived
             .sink { [weak self] in self?.query.send() }
             .store(in: &cancellables)
+
+        query.send()
+    }
+
+    // MARK: - Public Methods
+
+    func update() async throws {
+        query.send()
     }
     
     // MARK: - Private Methods

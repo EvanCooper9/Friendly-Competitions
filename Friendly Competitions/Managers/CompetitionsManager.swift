@@ -64,6 +64,7 @@ final class CompetitionsManager: CompetitionsManaging {
     @Injected private var database: Firestore
     @Injected private var functions: Functions
     @Injected private var userManager: AnyUserManager
+    @LazyInjected private var workoutManager: WorkoutManaging
 
     private var updateTask: Task<Void, Error>? {
         willSet { updateTask?.cancel() }
@@ -107,6 +108,7 @@ final class CompetitionsManager: CompetitionsManaging {
         Task { [weak self, competition] in
             try await self?.database.document("competitions/\(competition.id)").setDataEncodable(competition)
             try await activitySummaryManager.update()
+            try await workoutManager.update()
         }
         
         analyticsManager.log(event: .createCompetition(name: competition.name))
