@@ -6,15 +6,15 @@ import XCTest
 final class ResolverTests: XCTestCase {
     func testThatMocksAreNotUsed() {
         Resolver.registerAllServices()
-        Resolver.register(AnyUserManager.self) { UserManager(user: .evan) }
-        XCTAssertTrue(Resolver.resolve(AnyActivitySummaryManager.self) is ActivitySummaryManager)
-        XCTAssertTrue(Resolver.resolve(AnyAnalyticsManager.self) is AnalyticsManager)
-        XCTAssertTrue(Resolver.resolve(AnyAuthenticationManager.self) is AuthenticationManager)
+        Resolver.register(UserManaging.self) { UserManager(user: .evan) }
+        XCTAssertTrue(Resolver.resolve(ActivitySummaryManaging.self) is ActivitySummaryManager)
+        XCTAssertTrue(Resolver.resolve(AnalyticsManaging.self) is AnalyticsManager)
+        XCTAssertTrue(Resolver.resolve(AuthenticationManaging.self) is AuthenticationManager)
         XCTAssertTrue(Resolver.resolve(CompetitionsManaging.self) is CompetitionsManager)
-        XCTAssertTrue(Resolver.resolve(AnyFriendsManager.self) is FriendsManager)
-        XCTAssertTrue(Resolver.resolve(AnyHealthKitManager.self) is HealthKitManager)
+        XCTAssertTrue(Resolver.resolve(FriendsManaging.self) is FriendsManager)
+        XCTAssertTrue(Resolver.resolve(HealthKitManaging.self) is HealthKitManager)
         XCTAssertTrue(Resolver.resolve(NotificationManaging.self) is NotificationManager)
-        XCTAssertTrue(Resolver.resolve(AnyPermissionsManager.self) is PermissionsManager)
-        XCTAssertTrue(Resolver.resolve(AnyStorageManager.self) is StorageManager)
+        XCTAssertTrue(Resolver.resolve(PermissionsManaging.self) is PermissionsManager)
+        XCTAssertTrue(Resolver.resolve(StorageManaging.self) is StorageManager)
     }
 }

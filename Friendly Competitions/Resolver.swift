@@ -12,15 +12,15 @@ extension Resolver: ResolverRegistering {
     public static func registerAllServices() {
 
         // Managers
-        register(AnyActivitySummaryManager.self) { ActivitySummaryManager() }.scope(.shared)
-        register(AnyAnalyticsManager.self) { AnalyticsManager() }.scope(.shared)
-        register(AnyAuthenticationManager.self) { AuthenticationManager() }.scope(.shared)
+        register(ActivitySummaryManaging.self) { ActivitySummaryManager() }.scope(.shared)
+        register(AnalyticsManaging.self) { AnalyticsManager() }.scope(.shared)
+        register(AuthenticationManaging.self) { AuthenticationManager() }.scope(.shared)
         register(CompetitionsManaging.self) { CompetitionsManager() }.scope(.shared)
-        register(AnyFriendsManager.self) { FriendsManager() }.scope(.shared)
-        register(AnyHealthKitManager.self) { HealthKitManager() }.scope(.shared)
+        register(FriendsManaging.self) { FriendsManager(database: resolve(), userManager: resolve()) }.scope(.shared)
+        register(HealthKitManaging.self) { HealthKitManager() }.scope(.shared)
         register(NotificationManaging.self) { NotificationManager() }.scope(.shared)
-        register(AnyPermissionsManager.self) { PermissionsManager() }.scope(.shared)
-        register(AnyStorageManager.self) { StorageManager() }.scope(.shared)
+        register(PermissionsManaging.self) { PermissionsManager() }.scope(.shared)
+        register(StorageManaging.self) { StorageManager() }.scope(.shared)
         register(WorkoutManaging.self) { WorkoutManager() }.scope(.shared)
         
         // Global state
@@ -31,6 +31,7 @@ extension Resolver: ResolverRegistering {
             let firestore = Firestore.firestore()
             let settings = firestore.settings
             settings.isPersistenceEnabled = false
+            settings.cacheSizeBytes = 1_048_576 // 1 MB
             if FirebaseEmulation.enabled {
                 settings.host = "\(FirebaseEmulation.host):8080"
                 settings.isSSLEnabled = false

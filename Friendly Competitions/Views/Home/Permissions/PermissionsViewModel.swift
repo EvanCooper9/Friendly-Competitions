@@ -6,10 +6,10 @@ final class PermissionsViewModel: ObservableObject {
         
     @Published private(set) var permissionStatuses = [(Permission, PermissionStatus)]()
     
-    @Injected private var permissionsManager: AnyPermissionsManager
+    @Injected private var permissionsManager: PermissionsManaging
     
     init() {
-        permissionsManager.$permissionStatus
+        permissionsManager.permissionStatus
             .map { statuses in
                 statuses.map { ($0, $1) }
             }

@@ -41,6 +41,12 @@ extension Publisher where Failure == Error {
 }
 
 extension Publisher {
+    func sink() -> AnyCancellable {
+        sink(receiveCompletion: { _ in }, receiveValue: { _ in })
+    }
+}
+
+extension Publisher {
 
     static func empty() -> AnyPublisher<Output, Failure> {
         Empty().eraseToAnyPublisher()
@@ -48,10 +54,6 @@ extension Publisher {
 
     static func error(_ error: Failure) -> AnyPublisher<Output, Failure> {
         Fail(error: error).eraseToAnyPublisher()
-    }
-
-    static func never() -> AnyPublisher<Output, Failure> {
-        Empty(completeImmediately: false).eraseToAnyPublisher()
     }
 
     static func just(_ output: Output, completeImmediately: Bool = true) -> AnyPublisher<Output, Failure> {
@@ -62,5 +64,9 @@ extension Publisher {
         } else {
             return CurrentValueSubject(output).eraseToAnyPublisher()
         }
+    }
+
+    static func never() -> AnyPublisher<Output, Failure> {
+        Empty(completeImmediately: false).eraseToAnyPublisher()
     }
 }

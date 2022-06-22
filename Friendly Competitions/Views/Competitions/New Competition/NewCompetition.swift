@@ -96,7 +96,7 @@ struct NewCompetition: View {
                     }
                 }
                 .contentShape(Rectangle())
-                .onTapGesture { viewModel.tapped(rowConfig) }
+                .onTapGesture(perform: rowConfig.onTap)
             }
         }
     }
@@ -105,7 +105,7 @@ struct NewCompetition: View {
 struct NewCompetitionView_Previews: PreviewProvider {
 
     private static func setupMocks() {
-        friendsManager.friends = [.gabby]
+        friendsManager.friends = .just([.gabby])
     }
 
     static var previews: some View {

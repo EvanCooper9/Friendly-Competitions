@@ -8,25 +8,21 @@ final class HomeViewModel: ObservableObject {
     @Published var deepLinkedUser: User?
     
     @Injected private var competitionsManager: CompetitionsManaging
-    @Injected private var friendsManager: AnyFriendsManager
+    @Injected private var friendsManager: FriendsManaging
     
     func handle(url: URL) {
         guard let deepLink = DeepLink(from: url) else { return }
         switch deepLink {
         case .friendReferral(let id):
-            Task {
-                let user = try await friendsManager.user(withId: id)
-                DispatchQueue.main.async { [weak self] in
-                    self?.deepLinkedUser = user
-                }
-            }
+            friendsManager.user(withId: id)
+                .ignoreFailure()
+                .receive(on: RunLoop.main)
+                .assign(to: &$deepLinkedUser)
         case .competitionInvite(let id):
-            Task {
-                let competition = try await competitionsManager.search(byID: id)
-                DispatchQueue.main.async { [weak self] in
-                    self?.deepLinkedCompetition = competition
-                }
-            }
+            competitionsManager.search(byID: id)
+                .ignoreFailure()
+                .receive(on: RunLoop.main)
+                .assign(to: &$deepLinkedCompetition)
         }
     }
 }

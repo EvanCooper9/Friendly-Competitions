@@ -3,11 +3,12 @@ import FirebaseStorage
 import Foundation
 import Resolver
 
-class AnyStorageManager: ObservableObject {
-    func data(for storagePath: String) async throws -> Data { .init() }
+// sourcery: AutoMockable
+protocol StorageManaging {
+    func data(for storagePath: String) async throws -> Data
 }
 
-final class StorageManager: AnyStorageManager {
+final class StorageManager: StorageManaging {
     
     // MARK: - Lifecycle
     
@@ -26,7 +27,7 @@ final class StorageManager: AnyStorageManager {
 
     // MARK: - Public Methods
 
-    override func data(for storagePath: String) async throws -> Data {
+    func data(for storagePath: String) async throws -> Data {
         let localPath = documentsDirectory.appendingPathComponent(storagePath)
         let localData = try? Data(contentsOf: localPath)
         if let localData = localData, !localData.isEmpty {

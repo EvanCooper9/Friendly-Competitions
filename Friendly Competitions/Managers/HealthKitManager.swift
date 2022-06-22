@@ -3,15 +3,16 @@ import HealthKit
 import Resolver
 import SwiftUI
 
-class AnyHealthKitManager: ObservableObject {
-    let backgroundDeliveryReceived = PassthroughSubject<Void, Never>()
-    var permissionStatus: PermissionStatus { .authorized }
-    func execute(_ query: HKQuery) {}
-    func requestPermissions(_ completion: @escaping (PermissionStatus) -> Void) {}
-    func registerForBackgroundDelivery() {}
+// sourcery: AutoMockable
+protocol HealthKitManaging {
+    var backgroundDeliveryReceived: AnyPublisher<Void, Never> { get }
+    var permissionStatus: AnyPublisher<PermissionStatus, Never> { get }
+    func execute(_ query: HKQuery)
+    func requestPermissions()
+    func registerForBackgroundDelivery()
 }
 
-final class HealthKitManager: AnyHealthKitManager {
+final class HealthKitManager: HealthKitManaging {
 
     private enum Constants {
         static var backgroundDeliveryTypes: [HKSampleType] {
@@ -39,14 +40,16 @@ final class HealthKitManager: AnyHealthKitManager {
 
     // MARK: - Public Properties
 
-    override var permissionStatus: PermissionStatus { storedPermissionStatus ?? .notDetermined }
+    var backgroundDeliveryReceived: AnyPublisher<Void, Never> { _backgroundDeliveryReceived.eraseToAnyPublisher() }
+    var permissionStatus: AnyPublisher<PermissionStatus, Never> { storedPermissionStatus.publisher.eraseToAnyPublisher() }
 
     // MARK: - Private Properties
     
-    @Injected private var analyticsManager: AnyAnalyticsManager
+    @Injected private var analyticsManager: AnalyticsManaging
 
     private let healthStore = HKHealthStore()
     private var hasRegisteredForBackgroundDelivery = false
+    private let _backgroundDeliveryReceived = PassthroughSubject<Void, Never>()
 
     @AppStorage("healthKitStoredPermissionStatus") private var storedPermissionStatus: PermissionStatus?
 
@@ -60,23 +63,17 @@ final class HealthKitManager: AnyHealthKitManager {
 
     // MARK: - Initializers
 
-    override init() {
-        super.init()
+    init() {
         if notDeterminedPermissions.isEmpty { storedPermissionStatus = .done }
     }
 
     // MARK: - Public Methods
 
-    override func execute(_ query: HKQuery) {
+    func execute(_ query: HKQuery) {
         healthStore.execute(query)
     }
 
-    override func requestPermissions(_ completion: @escaping (PermissionStatus) -> Void) {
-        guard storedPermissionStatus == .notDetermined || storedPermissionStatus == nil else {
-            completion(permissionStatus)
-            return
-        }
-
+    func requestPermissions() {
         healthStore.requestAuthorization(
             toShare: nil,
             read: .init(Constants.permissionObjectTypes),
@@ -88,22 +85,22 @@ final class HealthKitManager: AnyHealthKitManager {
                     self.storedPermissionStatus = permissionStatus
                     self.registerForBackgroundDelivery()
                 }
-                completion(permissionStatus)
+                self.storedPermissionStatus = permissionStatus
             }
         )
     }
 
-    override func registerForBackgroundDelivery() {
+    func registerForBackgroundDelivery() {
         guard storedPermissionStatus == .authorized || storedPermissionStatus == .done else { return }
         guard !hasRegisteredForBackgroundDelivery else {
-            backgroundDeliveryReceived.send()
+            _backgroundDeliveryReceived.send()
             return
         }
 
         for sampleType in Constants.backgroundDeliveryTypes {
             let query = HKObserverQuery(sampleType: sampleType, predicate: nil) { [weak self] query, completion, error in
                 guard let self = self else { return }
-                self.backgroundDeliveryReceived.send()
+                self._backgroundDeliveryReceived.send()
                 completion()
             }
             healthStore.execute(query)

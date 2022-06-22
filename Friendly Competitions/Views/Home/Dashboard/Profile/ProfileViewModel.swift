@@ -3,33 +3,47 @@ import CombineExt
 import Resolver
 
 final class ProfileViewModel: ObservableObject {
-    
+
+    @Published var loading = false
     @Published var user: User!
     @Published var sharedDeepLink: DeepLink!
     
-    @Injected private var authenticationManager: AnyAuthenticationManager
-    @Injected private var userManager: AnyUserManager
+    @Injected private var authenticationManager: AuthenticationManaging
+    @Injected private var userManager: UserManaging
+
+    private var _delete = PassthroughRelay<Void>()
     
     private var cancellables = Set<AnyCancellable>()
     
     init() {
-        user = userManager.user
-        sharedDeepLink = .friendReferral(id: userManager.user.id)
+        user = userManager.user.value
+        sharedDeepLink = .friendReferral(id: userManager.user.value.id)
         
         $user
             .removeDuplicates()
             .compactMap { $0 }
-            .assign(to: \.userManager.user, on: self, ownership: .weak)
+            .sink(withUnretained: self, receiveValue: { $0.userManager.update(with: $1) })
             .store(in: &cancellables)
         
-        userManager.$user
+        userManager.user
             .removeDuplicates()
-            .assign(to: \.user, on: self, ownership: .weak)
+            .map { $0 as User? }
+            .assign(to: &$user)
+
+        _delete
+            .handleEvents(withUnretained: self, receiveOutput: { $0.loading = true })
+            .flatMapLatest(withUnretained: self) { owner in
+                owner.userManager
+                    .deleteAccount()
+                    .ignoreFailure()
+            }
+            .handleEvents(withUnretained: self, receiveOutput: { $0.loading = false })
+            .sink()
             .store(in: &cancellables)
     }
     
     func deleteAccount() {
-        userManager.deleteAccount()
+        _delete.accept()
     }
     
     func signOut() {

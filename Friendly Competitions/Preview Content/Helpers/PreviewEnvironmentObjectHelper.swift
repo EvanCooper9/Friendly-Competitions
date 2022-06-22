@@ -3,59 +3,51 @@ import SwiftUI
 
 fileprivate struct Container {
     static let appState = AppState()
-    static let activitySummaryManager = AnyActivitySummaryManager()
-    static let analyticsManager = AnyAnalyticsManager()
-    static let authenticationManager = AnyAuthenticationManager()
+    static let activitySummaryManager = ActivitySummaryManagingMock()
+    static let analyticsManager = AnalyticsManagingMock()
+    static let authenticationManager = AuthenticationManagingMock()
     static let competitionsManager = CompetitionsManagingMock()
-    static let friendsManager = AnyFriendsManager()
-    static let healthKitManager = AnyHealthKitManager()
-    static let permissionsManager = AnyPermissionsManager()
-    static let storageManager = AnyStorageManager()
-    static let userManager = AnyUserManager(user: .evan)
+    static let friendsManager = FriendsManagingMock()
+    static let healthKitManager = HealthKitManagingMock()
+    static let permissionsManager = PermissionsManagingMock()
+    static let storageManager = StorageManagingMock()
+    static let userManager = UserManagingMock()
     
     static func registerDependencies() {
         Resolver.register { Container.appState }.scope(.application)
-        Resolver.register { Container.activitySummaryManager }.scope(.application)
-        Resolver.register { Container.analyticsManager }.scope(.application)
-        Resolver.register { Container.authenticationManager }.scope(.application)
-        Resolver.register { Container.competitionsManager }.scope(.application)
-        Resolver.register { Container.friendsManager }.scope(.application)
-        Resolver.register { Container.healthKitManager }.scope(.application)
-        Resolver.register { Container.permissionsManager }.scope(.application)
-        Resolver.register { Container.storageManager }.scope(.application)
-        Resolver.register { Container.userManager }.scope(.application)
+        Resolver.register(ActivitySummaryManaging.self) { Container.activitySummaryManager }.scope(.application)
+        Resolver.register(AnalyticsManaging.self) { Container.analyticsManager }.scope(.application)
+        Resolver.register(AuthenticationManaging.self) { Container.authenticationManager }.scope(.application)
+        Resolver.register(CompetitionsManaging.self) { Container.competitionsManager }.scope(.application)
+        Resolver.register(FriendsManaging.self) { Container.friendsManager }.scope(.application)
+        Resolver.register(HealthKitManaging.self) { Container.healthKitManager }.scope(.application)
+        Resolver.register(PermissionsManaging.self) { Container.permissionsManager }.scope(.application)
+        Resolver.register(StorageManaging.self) { Container.storageManager }.scope(.application)
+        Resolver.register(UserManaging.self) {
+            let userManager = Container.userManager
+            userManager.user = .init(.evan)
+            return userManager
+        }.scope(.application)
     }
 }
 
 extension PreviewProvider {
     static var appState: AppState { Container.appState }
-    static var activitySummaryManager: AnyActivitySummaryManager { Container.activitySummaryManager }
-    static var analyticsManager: AnyAnalyticsManager { Container.analyticsManager }
-    static var authenticationManager: AnyAuthenticationManager { Container.authenticationManager }
+    static var activitySummaryManager: ActivitySummaryManagingMock { Container.activitySummaryManager }
+    static var analyticsManager: AnalyticsManagingMock { Container.analyticsManager }
+    static var authenticationManager: AuthenticationManagingMock { Container.authenticationManager }
     static var competitionsManager: CompetitionsManagingMock { Container.competitionsManager }
-    static var friendsManager: AnyFriendsManager { Container.friendsManager }
-    static var healthKitManager: AnyHealthKitManager { Container.healthKitManager }
-    static var permissionsManager: AnyPermissionsManager { Container.permissionsManager }
-    static var storageManager: AnyStorageManager { Container.storageManager }
-    static var userManager: AnyUserManager { Container.userManager }
-    
-    static func registerDependencies() {
-        Container.registerDependencies()
-    }
+    static var friendsManager: FriendsManagingMock { Container.friendsManager }
+    static var healthKitManager: HealthKitManagingMock { Container.healthKitManager }
+    static var permissionsManager: PermissionsManagingMock { Container.permissionsManager }
+    static var storageManager: StorageManagingMock { Container.storageManager }
+    static var userManager: UserManagingMock { Container.userManager }
 }
 
 extension View {
     func setupMocks(_ setupMocks: @escaping () -> Void = {}) -> some View {
         Container.registerDependencies()
         return self
-            .environmentObject(Container.appState)
-            .environmentObject(Container.activitySummaryManager)
-            .environmentObject(Container.analyticsManager)
-            .environmentObject(Container.friendsManager)
-            .environmentObject(Container.healthKitManager)
-            .environmentObject(Container.permissionsManager)
-            .environmentObject(Container.storageManager)
-            .environmentObject(Container.userManager)
             .onAppear(perform: setupMocks)
     }
 }

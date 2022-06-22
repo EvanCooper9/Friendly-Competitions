@@ -18,19 +18,9 @@ final class ExploreViewModel: ObservableObject {
         
         $searchText
             .handleEvents(receiveOutput: { [weak self] _ in self?.loading = true })
-            .flatMapLatest { [weak self] searchText -> AnyPublisher<[Competition], Never> in
-                guard let self = self else { return .just([]) }
-                let subject = PassthroughSubject<[Competition], Never>()
-                Task {
-                    let competitions = try await self.competitionsManager
-                        .search(searchText)
-                        .sorted { lhs, rhs in
-                            lhs.appOwned && !rhs.appOwned
-                        }
-                    subject.send(competitions)
-                }
-                return subject.eraseToAnyPublisher()
-            }
+            .setFailureType(to: Error.self)
+            .flatMapLatest(competitionsManager.search)
+            .ignoreFailure()
             .receive(on: RunLoop.main)
             .handleEvents(receiveOutput: { [weak self] _ in self?.loading = false })
             .assign(to: &$searchResults)

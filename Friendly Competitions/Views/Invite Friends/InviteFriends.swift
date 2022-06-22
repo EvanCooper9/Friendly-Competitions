@@ -36,10 +36,6 @@ struct InviteFriends: View {
         .listStyle(.insetGrouped)
         .searchable(text: $viewModel.searchText, placement: .navigationBarDrawer(displayMode: .always))
         .navigationTitle("Invite a friend")
-        .onChange(of: viewModel.sharedDeepLink) { deepLink in
-            deepLink?.share()
-            viewModel.sharedDeepLink = nil
-        }
         .embeddedInNavigationView()
     }
 }

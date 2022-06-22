@@ -26,7 +26,6 @@ internal enum Asset {
     internal static let listSectionBackground = ColorAsset(name: "listSectionBackground")
   }
   internal enum Images {
-    internal static let contacts = ImageAsset(name: "contacts")
     internal static let health = ImageAsset(name: "health")
     internal static let logo = ImageAsset(name: "logo")
     internal static let notifications = ImageAsset(name: "notifications")

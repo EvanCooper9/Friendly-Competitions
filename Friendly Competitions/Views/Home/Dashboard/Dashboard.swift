@@ -4,9 +4,7 @@ import SwiftUI
 struct Dashboard: View {
     
     @StateObject private var viewModel = DashboardViewModel()
-    
-    @EnvironmentObject private var appState: AppState
-        
+            
     @State private var presentAbout = false
     @State private var presentPermissions = false
     @State private var presentNewCompetition = false
@@ -130,7 +128,7 @@ struct Dashboard: View {
 struct Dashboard_Previews: PreviewProvider {
     
     private static func setupMocks() {
-        activitySummaryManager.activitySummary = .mock
+        activitySummaryManager.activitySummary = .just(.mock)
         
         let competitions: [Competition] = [.mock, .mockInvited, .mockOld, .mockPublic]
         let participants = competitions.reduce(into: [Competition.ID: [User]]()) { partialResult, competition in
@@ -143,15 +141,15 @@ struct Dashboard_Previews: PreviewProvider {
         competitionsManager.participants = .just(participants)
         competitionsManager.standings = .just(standings)
 
-        friendsManager.friends = [.gabby]
-        friendsManager.friendRequests = [.andrew]
-        friendsManager.friendActivitySummaries = [User.gabby.id: .mock]
+        friendsManager.friends = .just([.gabby])
+        friendsManager.friendRequests = .just([.andrew])
+        friendsManager.friendActivitySummaries = .just([User.gabby.id: .mock])
         
-        permissionsManager.requiresPermission = false
-        permissionsManager.permissionStatus = [
+        permissionsManager.requiresPermission = .just(false)
+        permissionsManager.permissionStatus = .just([
             .health: .authorized,
             .notifications: .authorized
-        ]
+        ])
     }
     
     static var previews: some View {

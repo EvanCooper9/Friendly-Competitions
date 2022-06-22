@@ -7,3 +7,4 @@ output:
 args:
   autoMockableImports:
     - Combine
+    - HealthKit

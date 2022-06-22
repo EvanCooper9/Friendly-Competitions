@@ -5,18 +5,20 @@ import HealthKit
 import Resolver
 
 protocol WorkoutManaging {
-    func update() async throws
+    func update() -> AnyPublisher<Void, Error>
 }
 
 final class WorkoutManager: WorkoutManaging {
     
     @Injected private var competitionsManager: CompetitionsManaging
-    @Injected private var healthKitManager: AnyHealthKitManager
-    @Injected private var userManager: AnyUserManager
+    @Injected private var healthKitManager: HealthKitManaging
+    @Injected private var userManager: UserManaging
     @Injected private var database: Firestore
     
     private let query = PassthroughSubject<Void, Never>()
     private let _upload = PassthroughSubject<[Workout], Never>()
+
+    private let uploadFinished = PassthroughSubject<Void, Error>()
     
     private var cancellables = Set<AnyCancellable>()
     
@@ -28,7 +30,10 @@ final class WorkoutManager: WorkoutManaging {
         
         _upload
             .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
-            .sinkAsync { [weak self] in try self?.upload($0) }
+            .sinkAsync { [weak self] in
+                guard let self = self else { return }
+                try self.upload($0)
+            }
             .store(in: &cancellables)
         
         healthKitManager.backgroundDeliveryReceived
@@ -40,8 +45,10 @@ final class WorkoutManager: WorkoutManaging {
 
     // MARK: - Public Methods
 
-    func update() async throws {
-        query.send()
+    func update() -> AnyPublisher<Void, Error> {
+        uploadFinished
+            .handleEvents(receiveSubscription: { [weak self] _ in self?.query.send() })
+            .eraseToAnyPublisher()
     }
     
     // MARK: - Private Methods
@@ -49,7 +56,7 @@ final class WorkoutManager: WorkoutManaging {
     private func upload(_ workouts: [Workout]) throws {
         let batch = database.batch()
         try workouts.forEach { workout in
-            let document = database.document("users/\(userManager.user.id)/workouts/\(workout.id)")
+            let document = database.document("users/\(userManager.user.value.id)/workouts/\(workout.id)")
             _ = try batch.setDataEncodable(workout, forDocument: document)
         }
         batch.commit()

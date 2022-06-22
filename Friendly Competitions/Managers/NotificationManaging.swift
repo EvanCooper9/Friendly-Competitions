@@ -1,44 +1,58 @@
+import Combine
 import Resolver
 import UserNotifications
 import UIKit
 
+// sourcery: AutoMockable
 protocol NotificationManaging {
-    func permissionStatus(_ completion: @escaping (PermissionStatus) -> Void)
-    func requestPermissions(_ completion: @escaping (PermissionStatus) -> Void)
+    var permissionStatus: AnyPublisher<PermissionStatus, Never> { get }
+    func requestPermissions()
 }
 
 final class NotificationManager: NSObject, NotificationManaging {
+
+    // MARK: - Public Properties
+
+    var permissionStatus: AnyPublisher<PermissionStatus, Never> { _permissionStatus.eraseToAnyPublisher() }
+
+    // MARK: - Private Properties
     
-    @WeakLazyInjected<AnyAnalyticsManager> private var analyticsManager
+    @LazyInjected private var analyticsManager: AnalyticsManaging
+
+    private let _permissionStatus = PassthroughSubject<PermissionStatus, Never>()
+
+    // MARK: - Lifecycle
 
     override init() {
         super.init()
-        setupNotifications()
-    }
 
-    func permissionStatus(_ completion: @escaping (PermissionStatus) -> Void) {
-        UNUserNotificationCenter.current().getNotificationSettings { settings in
+        setupNotifications()
+
+        UNUserNotificationCenter.current().getNotificationSettings { [weak self] settings in
+            guard let self = self else { return }
             if settings.authorizationStatus == .authorized {
                 DispatchQueue.main.async { [weak self] in
                     self?.setupNotifications()
                 }
             }
-            completion(settings.authorizationStatus.permissionStatus)
+            self._permissionStatus.send(settings.authorizationStatus.permissionStatus)
         }
     }
 
-    func requestPermissions(_ completion: @escaping (PermissionStatus) -> Void) {
+    // MARK: - Public Methods
+
+    func requestPermissions() {
         UNUserNotificationCenter.current().requestAuthorization(
             options: [.alert, .badge, .sound],
             completionHandler: { [weak self] authorized, error in
                 guard let self = self else { return }
-                self.analyticsManager?.log(event: .healthKitPermissions(authorized: authorized))
+                self.analyticsManager.log(event: .healthKitPermissions(authorized: authorized))
                 if authorized {
                     DispatchQueue.main.async {
                         self.setupNotifications()
                     }
                 }
-                self.permissionStatus { completion($0) }
+                self._permissionStatus.send(authorized ? .authorized : .denied)
             }
         )
     }

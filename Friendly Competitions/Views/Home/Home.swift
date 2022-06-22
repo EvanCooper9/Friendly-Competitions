@@ -21,10 +21,10 @@ struct Home: View {
     }
 }
 
-struct HomeContainer_Previews: PreviewProvider {
+struct Home_Previews: PreviewProvider {
 
     private static func setupMocks() {
-        activitySummaryManager.activitySummary = .mock
+        activitySummaryManager.activitySummary = .just(.mock)
 
         let competitions: [Competition] = [.mock, .mockInvited, .mockOld]
         competitionsManager.appOwnedCompetitions = .just([.mockPublic, .mockPublic])
@@ -34,15 +34,15 @@ struct HomeContainer_Previews: PreviewProvider {
         competitionsManager.standings = .just(competitions.reduce(into: [:]) { $0[$1.id] = [.mock(for: .evan)] })
 
         let friend = User.gabby
-        friendsManager.friends = [friend]
-        friendsManager.friendRequests = [friend]
-        friendsManager.friendActivitySummaries = [friend.id: .mock]
+        friendsManager.friends = .just([friend])
+        friendsManager.friendRequests = .just([friend])
+        friendsManager.friendActivitySummaries = .just([friend.id: .mock])
 
-        permissionsManager.requiresPermission = false
-        permissionsManager.permissionStatus = [
+        permissionsManager.requiresPermission = .just(false)
+        permissionsManager.permissionStatus = .just([
             .health: .authorized,
             .notifications: .authorized
-        ]
+        ])
     }
 
     static var previews: some View {

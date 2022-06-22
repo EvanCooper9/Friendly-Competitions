@@ -7,108 +7,118 @@ import FirebaseFirestore
 import Resolver
 import SwiftUI
 
-enum SignInMethod {
-    case apple
-    case email(_ email: String, password: String)
+// sourcery: AutoMockable
+protocol AuthenticationManaging {
+    var emailVerified: AnyPublisher<Bool, Never> { get }
+    var loggedIn: AnyPublisher<Bool, Never> { get }
+
+    func signIn(with signInMethod: SignInMethod) -> AnyPublisher<Void, Error>
+    func signUp(name: String, email: String, password: String, passwordConfirmation: String) -> AnyPublisher<Void, Error>
+    func deleteAccount() -> AnyPublisher<Void, Error>
+    func signOut() throws
+
+    func checkEmailVerification() -> AnyPublisher<Void, Error>
+    func resendEmailVerification() -> AnyPublisher<Void, Error>
+    func sendPasswordReset(to email: String) -> AnyPublisher<Void, Error>
 }
 
-enum SignUpError: LocalizedError {
-    case passwordMatch
-    
-    var errorDescription: String? { localizedDescription }
-    var localizedDescription: String {
-        switch self {
-        case .passwordMatch:
-            return "Passwords do not match"
-        }
-    }
-}
+final class AuthenticationManager: NSObject, AuthenticationManaging {
 
-class AnyAuthenticationManager: NSObject, ObservableObject {
-    @AppStorage("emailVerified") var emailVerified = false
-    @AppStorage("loggedIn") var loggedIn = false
-    
-    func signIn(with signInMethod: SignInMethod) async throws {}
-    func signUp(name: String, email: String, password: String, passwordConfirmation: String) async throws {}
-    func deleteAccount() async throws {}
-    func signOut() throws {}
-    
-    func checkEmailVerification() async throws {}
-    func resendEmailVerification() async throws {}
-    func sendPasswordReset(to email: String) async throws {}
-}
+    // MARK: - Public Properties
 
-final class AuthenticationManager: AnyAuthenticationManager {
+    var emailVerified: AnyPublisher<Bool, Never> { _emailVerified.eraseToAnyPublisher() }
+    var loggedIn: AnyPublisher<Bool, Never> { _loggedIn.eraseToAnyPublisher() }
+
+    // MARK: - Private Properties
 
     @LazyInjected private var database: Firestore
     
     @Published(storedWithKey: .currentUser) private var currentUser: User? = nil
+
+    private let _emailVerified = PassthroughSubject<Bool, Never>()
+    private let _loggedIn = PassthroughSubject<Bool, Never>()
     
     private var currentNonce: String?
     private var userListener: AnyCancellable?
+    private var signInWithAppleSubject: PassthroughSubject<Void, Error>?
+
+    // MARK: - Lifecycle
 
     override init() {
         super.init()
+        
         listenForAuth()
         
         if let firebaseUser = Auth.auth().currentUser, let currentUser = currentUser {
-            emailVerified = firebaseUser.isEmailVerified
-            loggedIn = true
+            _emailVerified.send(firebaseUser.isEmailVerified)
+            _loggedIn.send(true)
             registerUserManager(with: currentUser)
         } else {
-            emailVerified = false
-            loggedIn = false
+            _emailVerified.send(false)
+            _loggedIn.send(false)
         }
-    }
-    
-    override func signIn(with signInMethod: SignInMethod) async throws {
-        switch signInMethod {
-        case .apple:
-            signInWithApple()
-        case .email(let email, let password):
-            try await signIn(email: email, password: password)
-        }
-    }
-    
-    override func signUp(name: String, email: String, password: String, passwordConfirmation: String) async throws {
-        guard password == passwordConfirmation else { throw SignUpError.passwordMatch }
-        let firebaseUser = try await Auth.auth().createUser(withEmail: email, password: password).user
-        let changeRequest = firebaseUser.createProfileChangeRequest()
-        changeRequest.displayName = name
-        try await changeRequest.commitChanges()
-        try await updateFirestoreUserWithAuthUser(firebaseUser)
-        try await firebaseUser.sendEmailVerification()
-    }
-    
-    override func checkEmailVerification() async throws {
-        guard let firebaseUser = Auth.auth().currentUser else { return }
-        try await firebaseUser.reload()
-        DispatchQueue.main.async { [weak self] in
-            self?.emailVerified = firebaseUser.isEmailVerified
-        }
-    }
-    
-    override func resendEmailVerification() async throws {
-        guard let firebaseUser = Auth.auth().currentUser else { return }
-        try await firebaseUser.sendEmailVerification()
-    }
-    
-    override func sendPasswordReset(to email: String) async throws {
-        try await Auth.auth().sendPasswordReset(withEmail: email)
-    }
-    
-    override func deleteAccount() async throws {
-        try await Auth.auth().currentUser?.delete()
     }
 
-    override func signOut() throws {
+    // MARK: - Public Methods
+    
+    func signIn(with signInMethod: SignInMethod) -> AnyPublisher<Void, Error> {
+        switch signInMethod {
+        case .apple:
+            return signInWithApple()
+        case .email(let email, let password):
+            return .fromAsync {
+                try await Auth.auth().signIn(withEmail: email, password: password)
+            }
+        }
+    }
+    
+    func signUp(name: String, email: String, password: String, passwordConfirmation: String) -> AnyPublisher<Void, Error> {
+        guard password == passwordConfirmation else { return .error(SignUpError.passwordMatch) }
+        return .fromAsync { [weak self] in
+            guard let self = self else { return }
+            let firebaseUser = try await Auth.auth().createUser(withEmail: email, password: password).user
+            let changeRequest = firebaseUser.createProfileChangeRequest()
+            changeRequest.displayName = name
+            try await changeRequest.commitChanges()
+            try await self.updateFirestoreUserWithAuthUser(firebaseUser)
+            try await firebaseUser.sendEmailVerification()
+        }
+    }
+    
+    func checkEmailVerification() -> AnyPublisher<Void, Error> {
+        .fromAsync { [weak self] in
+            guard let self = self, let firebaseUser = Auth.auth().currentUser else { return }
+            try await firebaseUser.reload()
+            self._emailVerified.send(firebaseUser.isEmailVerified)
+        }
+    }
+    
+    func resendEmailVerification() -> AnyPublisher<Void, Error> {
+        .fromAsync {
+            try await Auth.auth().currentUser?.sendEmailVerification()
+        }
+    }
+    
+    func sendPasswordReset(to email: String) -> AnyPublisher<Void, Error> {
+        .fromAsync { [email] in
+            try await Auth.auth().sendPasswordReset(withEmail: email)
+        }
+    }
+    
+    func deleteAccount() -> AnyPublisher<Void, Error> {
+        .fromAsync {
+            try await Auth.auth().currentUser?.delete()
+        }
+    }
+
+    func signOut() throws {
         try Auth.auth().signOut()
     }
     
     // MARK: - Private Methods
     
-    private func signInWithApple() {
-        let nonce = randomNonceString()
+    private func signInWithApple() -> AnyPublisher<Void, Error> {
+        let nonce = Nonce.randomNonceString()
         currentNonce = nonce
         let appleIDProvider = ASAuthorizationAppleIDProvider()
         let request = appleIDProvider.createRequest()
@@ -119,6 +129,10 @@ final class AuthenticationManager: AnyAuthenticationManager {
         authorizationController.delegate = self
         authorizationController.presentationContextProvider = self
         authorizationController.performRequests()
+
+        let subject = PassthroughSubject<Void, Error>()
+        signInWithAppleSubject = subject
+        return subject.eraseToAnyPublisher()
     }
     
     private func signIn(email: String, password: String) async throws {
@@ -133,7 +147,7 @@ final class AuthenticationManager: AnyAuthenticationManager {
                 DispatchQueue.main.async {
                     self.currentUser = nil
                     self.userListener = nil
-                    self.loggedIn = false
+                    self._loggedIn.send(false)
                 }
                 return
             }
@@ -144,40 +158,11 @@ final class AuthenticationManager: AnyAuthenticationManager {
                 self.registerUserManager(with: user)
                 DispatchQueue.main.async {
                     self.currentUser = user
-                    self.emailVerified = firebaseUser.isEmailVerified || firebaseUser.email == "review@apple.com"
-                    self.loggedIn = true
+                    self._emailVerified.send(firebaseUser.isEmailVerified || firebaseUser.email == "review@apple.com")
+                    self._loggedIn.send(true)
                 }
             }
         }
-    }
-    
-    // Adapted from https://auth0.com/docs/api-auth/tutorials/nonce#generate-a-cryptographically-random-nonce
-    private func randomNonceString(length: Int = 32) -> String {
-        precondition(length > 0)
-        let charset: Array<Character> =
-        Array("0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._")
-        var result = ""
-        var remainingLength = length
-
-        while remainingLength > 0 {
-            let randoms: [UInt8] = (0 ..< 16).map { _ in
-                var random: UInt8 = 0
-                let errorCode = SecRandomCopyBytes(kSecRandomDefault, 1, &random)
-                if errorCode != errSecSuccess { fatalError("Unable to generate nonce. SecRandomCopyBytes failed with OSStatus \(errorCode)") }
-                return random
-            }
-
-            randoms.forEach { random in
-                if remainingLength == 0 { return }
-
-                if random < charset.count {
-                    result.append(charset[Int(random)])
-                    remainingLength -= 1
-                }
-            }
-        }
-
-        return result
     }
 
     private func sha256(_ input: String) -> String {
@@ -191,14 +176,13 @@ final class AuthenticationManager: AnyAuthenticationManager {
     }
 
     private func registerUserManager(with user: User) {
-        Resolver.register(AnyUserManager.self) { [weak self, user] in
+        Resolver.register(UserManaging.self) { [weak self, user] in
+            guard let self = self else { fatalError("This should not happen") }
             let userManager = UserManager(user: user)
-            self?.userListener = userManager.$user
-                .sink { [weak self] user in
-                    DispatchQueue.main.async {
-                        self?.currentUser = user
-                    }
-                }
+            self.userListener = userManager.user
+                .receive(on: DispatchQueue.main)
+                .map { $0 as User? }
+                .assign(to: \.currentUser, on: self, ownership: .weak)
             return userManager
         }.scope(.shared)
     }
@@ -224,19 +208,11 @@ final class AuthenticationManager: AnyAuthenticationManager {
 
 extension AuthenticationManager: ASAuthorizationControllerDelegate {
     func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
-        guard let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential else {
-            return
-        }
+        guard let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential,
+              let tokenData = appleIDCredential.identityToken, let identityToken = String(data: tokenData, encoding: .utf8)
+        else { return }
 
-        // Create an account in your system.
-        guard let tokenData = appleIDCredential.identityToken, let identityToken = String(data: tokenData, encoding: .utf8) else { return }
-
-        // Initialize a Firebase credential.
-        let credential = OAuthProvider.credential(
-            withProviderID: "apple.com",
-            idToken: identityToken,
-            rawNonce: currentNonce
-        )
+        let credential = OAuthProvider.credential(withProviderID: "apple.com", idToken: identityToken, rawNonce: currentNonce)
 
         // Sign in with Firebase.
         Auth.auth().signIn(with: credential) { [weak self] authResult, error in
@@ -279,7 +255,7 @@ extension AuthenticationManager: ASAuthorizationControllerDelegate {
     }
 
     func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
-        print("Sign in with Apple errored: \(error)")
+        signInWithAppleSubject?.send(completion: .failure(error))
     }
 }
 

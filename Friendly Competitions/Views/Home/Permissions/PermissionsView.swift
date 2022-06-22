@@ -28,10 +28,10 @@ struct PermissionsView: View {
 struct PermissionsView_Previews: PreviewProvider {
 
     private static func setupMocks() {
-        permissionsManager.permissionStatus = [
+        permissionsManager.permissionStatus = .just([
             .health: .done,
             .notifications: .authorized
-        ]
+        ])
     }
     
     static var previews: some View {
