@@ -15,7 +15,7 @@ struct Home: View {
                 .embeddedInNavigationView()
                 .tabItem { Label("Explore", systemImage: .sparkleMagnifyingglass) }
         }
-        .onOpenURL(perform: viewModel.handle(url:))
+        .onOpenURL(perform: viewModel.handle)
         .sheet(item: $viewModel.deepLinkedCompetition) { CompetitionView(competition: $0).embeddedInNavigationView() }
         .sheet(item: $viewModel.deepLinkedUser) { UserView(user: $0).embeddedInNavigationView() }
     }
