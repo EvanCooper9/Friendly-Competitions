@@ -57,10 +57,6 @@ final class HealthKitManager: HealthKitManaging {
         Constants.permissionObjectTypes.filter { healthStore.authorizationStatus(for: $0) == .notDetermined }
     }
 
-    private var updateTask: Task<Void, Error>? {
-        willSet { updateTask?.cancel() }
-    }
-
     // MARK: - Initializers
 
     init() {
