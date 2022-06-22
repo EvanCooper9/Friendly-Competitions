@@ -42,14 +42,10 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
 
     init() {
 
-        query
+        Publishers
+            .Merge(healthKitManager.backgroundDeliveryReceived, query)
             .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
             .flatMapLatest(requestActivitySummaries)
-            .sink(receiveValue: { [weak self] in self?.upload.send($0) })
-            .store(in: &cancellables)
-
-        upload
-            .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
             .removeDuplicates()
             .filter(\.isNotEmpty)
             .combineLatest(userManager.user)
@@ -64,10 +60,6 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
                 try await batch.commit()
                 self.uploadFinished.send()
             }
-            .store(in: &cancellables)
-
-        healthKitManager.backgroundDeliveryReceived
-            .sink { [weak self] in self?.query.send() }
             .store(in: &cancellables)
         
         healthKitManager.registerForBackgroundDelivery()
