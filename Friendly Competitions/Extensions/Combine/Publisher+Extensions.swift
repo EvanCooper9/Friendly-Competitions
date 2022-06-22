@@ -40,7 +40,14 @@ extension Publisher where Failure == Error {
     }
 }
 
+extension Publisher where Output: Collection {
+    func compactMapMany<Result>(_ transform: @escaping (Output.Element) -> Result?) -> Publishers.CompactMap<Self, [Result]> {
+        compactMap { $0.compactMap(transform) }
+    }
+}
+
 extension Publisher {
+
     func sink() -> AnyCancellable {
         sink(receiveCompletion: { _ in }, receiveValue: { _ in })
     }

@@ -16,31 +16,29 @@ final class WorkoutManager: WorkoutManaging {
     @Injected private var database: Firestore
     
     private let query = PassthroughSubject<Void, Never>()
-    private let _upload = PassthroughSubject<[Workout], Never>()
 
     private let uploadFinished = PassthroughSubject<Void, Error>()
     
     private var cancellables = Set<AnyCancellable>()
     
     init() {
-        query
+        Publishers
+            .Merge(healthKitManager.backgroundDeliveryReceived, query)
+            .prepend(())
             .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
-            .sinkAsync { [weak self] in try await self?.requestWorkouts() }
-            .store(in: &cancellables)
-        
-        _upload
-            .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
-            .sinkAsync { [weak self] in
+            .flatMapLatest(requestWorkouts)
+            .filter(\.isNotEmpty)
+            .combineLatest(userManager.user)
+            .sinkAsync { [weak self] workouts, user in
                 guard let self = self else { return }
-                try self.upload($0)
+                let batch = self.database.batch()
+                try workouts.forEach { workout in
+                    let document = self.database.document("users/\(user.id)/workouts/\(workout.id)")
+                    _ = try batch.setDataEncodable(workout, forDocument: document)
+                }
+                try await batch.commit()
             }
             .store(in: &cancellables)
-        
-        healthKitManager.backgroundDeliveryReceived
-            .sink { [weak self] in self?.query.send() }
-            .store(in: &cancellables)
-
-        query.send()
     }
 
     // MARK: - Public Methods
@@ -52,53 +50,42 @@ final class WorkoutManager: WorkoutManaging {
     }
     
     // MARK: - Private Methods
-    
-    private func upload(_ workouts: [Workout]) throws {
-        let batch = database.batch()
-        try workouts.forEach { workout in
-            let document = database.document("users/\(userManager.user.value.id)/workouts/\(workout.id)")
-            _ = try batch.setDataEncodable(workout, forDocument: document)
-        }
-        batch.commit()
-    }
-    
-    private func requestWorkouts() async throws {
-//        let workoutTypes = competitionsManager.competitions
-//            .compactMap(\.workoutType)
-//            .uniqued()
-//            .map(\.hkWorkoutActivityType)
-        let workoutTypes = WorkoutType.allCases
-            .map(\.hkWorkoutActivityType)
-        
-        let totalPoints = try await withThrowingTaskGroup(of: (HKWorkoutActivityType, [HKQuantityType: [Date: Double]]).self) { group -> [HKWorkoutActivityType: [HKQuantityType: [Date: Double]]] in
-            workoutTypes.forEach { workoutType in
-                group.addTask { [weak self] in
-                    guard let self = self else { return (workoutType, [:]) }
-                    let points = try await self.requestWorkouts(ofType: workoutType)
-                    return (workoutType, points)
+
+    private func requestWorkouts() -> AnyPublisher<[Workout], Never> {
+        competitionsManager.competitions
+            .compactMapMany(\.workoutType?.hkWorkoutActivityType)
+            .flatMapAsync { workoutTypes in
+                let totalPoints = try await withThrowingTaskGroup(of: (HKWorkoutActivityType, [HKQuantityType: [Date: Double]]).self) { group -> [HKWorkoutActivityType: [HKQuantityType: [Date: Double]]] in
+                    workoutTypes.forEach { workoutType in
+                        group.addTask { [weak self] in
+                            guard let self = self else { return (workoutType, [:]) }
+                            let points = try await self.requestWorkouts(ofType: workoutType)
+                            return (workoutType, points)
+                        }
+                    }
+
+                    var toReturn = [HKWorkoutActivityType: [HKQuantityType: [Date: Double]]]()
+                    for try await (workoutType, points) in group {
+                        toReturn[workoutType] = points
+                    }
+                    return toReturn
                 }
-            }
-            
-            var toReturn = [HKWorkoutActivityType: [HKQuantityType: [Date: Double]]]()
-            for try await (workoutType, points) in group {
-                toReturn[workoutType] = points
-            }
-            return toReturn
-        }
-        
-        let workouts = totalPoints.flatMap { workoutType, pointsBySampleTypeByDate in
-            pointsBySampleTypeByDate.flatMap { sampleType, pointsByDate in
-                pointsByDate.compactMap { date, points -> Workout? in
-                    guard let workoutType = WorkoutType(hkWorkoutActivityType: workoutType) else { return nil }
-                    return Workout(
-                        type: workoutType,
-                        date: date,
-                        points: Int(points)
-                    )
+
+                let workouts = totalPoints.flatMap { workoutType, pointsBySampleTypeByDate in
+                    pointsBySampleTypeByDate.flatMap { sampleType, pointsByDate in
+                        pointsByDate.compactMap { date, points -> Workout? in
+                            guard let workoutType = WorkoutType(hkWorkoutActivityType: workoutType) else { return nil }
+                            return Workout(
+                                type: workoutType,
+                                date: date,
+                                points: Int(points)
+                            )
+                        }
+                    }
                 }
+                return workouts
             }
-        }
-        _upload.send(workouts)
+            .ignoreFailure()
     }
     
     private func requestWorkouts(ofType workoutType: HKWorkoutActivityType) async throws -> [HKQuantityType: [Date: Double]] {

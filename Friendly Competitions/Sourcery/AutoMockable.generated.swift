@@ -708,19 +708,6 @@ class HealthKitManagingMock: HealthKitManaging {
         requestPermissionsClosure?()
     }
 
-    //MARK: - registerForBackgroundDelivery
-
-    var registerForBackgroundDeliveryCallsCount = 0
-    var registerForBackgroundDeliveryCalled: Bool {
-        return registerForBackgroundDeliveryCallsCount > 0
-    }
-    var registerForBackgroundDeliveryClosure: (() -> Void)?
-
-    func registerForBackgroundDelivery() {
-        registerForBackgroundDeliveryCallsCount += 1
-        registerForBackgroundDeliveryClosure?()
-    }
-
 }
 class NotificationManagingMock: NotificationManaging {
     var permissionStatus: AnyPublisher<PermissionStatus, Never> {

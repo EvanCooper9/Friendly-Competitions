@@ -9,7 +9,6 @@ protocol HealthKitManaging {
     var permissionStatus: AnyPublisher<PermissionStatus, Never> { get }
     func execute(_ query: HKQuery)
     func requestPermissions()
-    func registerForBackgroundDelivery()
 }
 
 final class HealthKitManager: HealthKitManaging {
@@ -27,7 +26,7 @@ final class HealthKitManager: HealthKitManaging {
                 HKQuantityType(.appleStandTime),
                 HKCategoryType(.appleStandHour),
                 .workoutType(),
-                .activitySummaryType(),
+                .activitySummaryType(), // isn't delivered via background
             ]
             
             let workoutSampleTypes = HKWorkoutActivityType.supported
@@ -61,6 +60,7 @@ final class HealthKitManager: HealthKitManaging {
 
     init() {
         if notDeterminedPermissions.isEmpty { storedPermissionStatus = .done }
+        registerForBackgroundDelivery()
     }
 
     // MARK: - Public Methods
@@ -86,7 +86,9 @@ final class HealthKitManager: HealthKitManaging {
         )
     }
 
-    func registerForBackgroundDelivery() {
+    // MARK: - Private Methods
+
+    private func registerForBackgroundDelivery() {
         guard storedPermissionStatus == .authorized || storedPermissionStatus == .done else { return }
         guard !hasRegisteredForBackgroundDelivery else {
             _backgroundDeliveryReceived.send()

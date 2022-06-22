@@ -41,9 +41,9 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
     // MARK: - Lifecycle
 
     init() {
-
         Publishers
             .Merge(healthKitManager.backgroundDeliveryReceived, query)
+            .prepend(())
             .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
             .flatMapLatest(requestActivitySummaries)
             .removeDuplicates()
@@ -61,8 +61,6 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
                 self.uploadFinished.send()
             }
             .store(in: &cancellables)
-        
-        healthKitManager.registerForBackgroundDelivery()
     }
 
     // MARK: - Public Methods
