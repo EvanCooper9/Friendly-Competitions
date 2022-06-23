@@ -1,11 +1,10 @@
 import Combine
 import CombineExt
-import Resolver
 import Foundation
 
 final class DashboardViewModel: ObservableObject {
     
-    struct FriendRow: Identifiable {
+    struct FriendRow: Equatable, Identifiable {
         var id: String { user.id }
         let user: User
         let activitySummary: ActivitySummary?
@@ -19,15 +18,10 @@ final class DashboardViewModel: ObservableObject {
     @Published var requiresPermissions = false
     @Published private(set) var title = Bundle.main.name
     
-    @Injected private var activitySummaryManager: ActivitySummaryManaging
-    @Injected private var competitionsManager: CompetitionsManaging
-    @Injected private var friendsManager: FriendsManaging
-    @Injected private var permissionsManager: PermissionsManaging
-    @Injected private var userManager: UserManaging
-    
     private var cancellables = Set<AnyCancellable>()
         
-    init() {
+    init(activitySummaryManager: ActivitySummaryManaging, competitionsManager: CompetitionsManaging, friendsManager: FriendsManaging, permissionsManager: PermissionsManaging, userManager: UserManaging) {
+
         activitySummaryManager.activitySummary.assign(to: &$activitySummary)
         competitionsManager.competitions.assign(to: &$competitions)
         competitionsManager.invitedCompetitions.assign(to: &$invitedCompetitions)

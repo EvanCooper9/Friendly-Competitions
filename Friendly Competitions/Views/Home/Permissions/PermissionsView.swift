@@ -1,8 +1,9 @@
+import Resolver
 import SwiftUI
 
 struct PermissionsView: View {
 
-    @StateObject private var viewModel = PermissionsViewModel()
+    @StateObject private var viewModel = Resolver.resolve(PermissionsViewModel.self)
 
     var body: some View {
         List {

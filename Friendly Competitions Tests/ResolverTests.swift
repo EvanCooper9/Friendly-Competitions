@@ -4,6 +4,12 @@ import XCTest
 @testable import Friendly_Competitions
 
 final class ResolverTests: XCTestCase {
+
+    override func tearDown() {
+        super.tearDown()
+        Resolver.reset()
+    }
+
     func testThatMocksAreNotUsed() {
         Resolver.registerAllServices()
         Resolver.register(UserManaging.self) { UserManager(user: .evan) }

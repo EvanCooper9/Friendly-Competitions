@@ -1,6 +1,5 @@
 import Combine
 import CombineExt
-import Resolver
 
 final class CompetitionViewModel: ObservableObject {
     
@@ -26,9 +25,6 @@ final class CompetitionViewModel: ObservableObject {
     @Published var showInviteFriend = false
     
     // MARK: - Private Properties
-
-    @Injected private var competitionsManager: CompetitionsManaging
-    @Injected private var userManager: UserManaging
     
     private var actionRequiringConfirmation: CompetitionViewAction? {
         didSet { confirmationRequired = actionRequiringConfirmation != nil }
@@ -40,7 +36,7 @@ final class CompetitionViewModel: ObservableObject {
     
     // MARK: - Lifecycle
     
-    init(competition: Competition) {
+    init(competitionsManager: CompetitionsManaging, userManager: UserManaging, competition: Competition) {
         self.competition = competition
 
         userManager.user
@@ -121,12 +117,12 @@ final class CompetitionViewModel: ObservableObject {
             .flatMapLatest(withUnretained: self) { object -> AnyPublisher<Void, Error> in
                 switch object.actionRequiringConfirmation {
                 case .delete:
-                    return object.competitionsManager.delete(competition)
+                    return competitionsManager.delete(competition)
                 case .edit:
                     object.editing.toggle()
-                    return object.competitionsManager.update(competition)
+                    return competitionsManager.update(competition)
                 case .leave:
-                    return object.competitionsManager.leave(competition)
+                    return competitionsManager.leave(competition)
                 default:
                     return .empty()
                 }
@@ -138,9 +134,9 @@ final class CompetitionViewModel: ObservableObject {
             .flatMapLatest(withUnretained: self) { object, action -> AnyPublisher<Void, Error> in
                 switch action {
                 case .acceptInvite:
-                    return object.competitionsManager.accept(competition)
+                    return competitionsManager.accept(competition)
                 case .declineInvite:
-                    return object.competitionsManager.decline(competition)
+                    return competitionsManager.decline(competition)
                 case .delete, .leave:
                     object.actionRequiringConfirmation = action
                     return .empty()
@@ -151,7 +147,7 @@ final class CompetitionViewModel: ObservableObject {
                     object.showInviteFriend.toggle()
                     return .empty()
                 case .join:
-                    return object.competitionsManager.join(competition)
+                    return competitionsManager.join(competition)
                 }
             }
             .sink()

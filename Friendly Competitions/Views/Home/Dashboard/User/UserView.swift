@@ -1,3 +1,4 @@
+import Resolver
 import SwiftUI
 import SwiftUIX
 
@@ -6,7 +7,8 @@ struct UserView: View {
     @StateObject private var viewModel: UserViewModel
         
     init(user: User) {
-        _viewModel = .init(wrappedValue: .init(user: user))
+        let vm = Resolver.resolve(UserViewModel.self, args: user)
+        _viewModel = .init(wrappedValue: vm)
     }
     
     var body: some View {

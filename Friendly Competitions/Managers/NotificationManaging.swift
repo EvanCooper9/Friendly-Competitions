@@ -13,7 +13,7 @@ final class NotificationManager: NSObject, NotificationManaging {
 
     // MARK: - Public Properties
 
-    var permissionStatus: AnyPublisher<PermissionStatus, Never> { _permissionStatus.eraseToAnyPublisher() }
+    let permissionStatus: AnyPublisher<PermissionStatus, Never>
 
     // MARK: - Private Properties
     
@@ -24,9 +24,12 @@ final class NotificationManager: NSObject, NotificationManaging {
     // MARK: - Lifecycle
 
     override init() {
-        super.init()
 
-        setupNotifications()
+        permissionStatus = _permissionStatus
+            .share(replay: 1)
+            .eraseToAnyPublisher()
+
+        super.init()
 
         UNUserNotificationCenter.current().getNotificationSettings { [weak self] settings in
             guard let self = self else { return }
@@ -57,6 +60,8 @@ final class NotificationManager: NSObject, NotificationManaging {
         )
     }
 
+    // MARK: - Private Methods
+
     private func setupNotifications() {
 //        Messaging.messaging().delegate = self
         UNUserNotificationCenter.current().delegate = self
@@ -70,7 +75,7 @@ extension NotificationManager: UNUserNotificationCenterDelegate {
     }
 }
 
-extension UNAuthorizationStatus {
+private extension UNAuthorizationStatus {
     var permissionStatus: PermissionStatus {
         switch self {
         case .notDetermined:

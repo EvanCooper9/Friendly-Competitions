@@ -15,6 +15,8 @@ extension UserDefaults {
         
         case friends
         case friendActivitySummaries
+
+        case heathKitPermissions
     }
     
     func reset() {

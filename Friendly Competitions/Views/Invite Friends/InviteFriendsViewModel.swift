@@ -1,6 +1,5 @@
 import Combine
 import CombineExt
-import Resolver
 
 final class InviteFriendsViewModel: ObservableObject {
     
@@ -18,16 +17,12 @@ final class InviteFriendsViewModel: ObservableObject {
     @Published var rows = [RowConfig]()
     @Published var searchText = ""
 
-    @Injected private var competitionsManager: CompetitionsManaging
-    @Injected private var friendsManager: FriendsManaging
-    @Injected private var userManager: UserManaging
-
     private var _invite = PassthroughSubject<User, Never>()
     private var _share = PassthroughSubject<Void, Never>()
 
     private var cancellables = Set<AnyCancellable>()
     
-    init(action: InviteFriendsAction) {
+    init(competitionsManager: CompetitionsManaging, friendsManager: FriendsManaging, userManager: UserManaging, action: InviteFriendsAction) {
         let alreadyInvited: AnyPublisher<[User.ID], Never>
 
         switch action {
@@ -73,14 +68,14 @@ final class InviteFriendsViewModel: ObservableObject {
 
         _invite
             .handleEvents(withUnretained: self, receiveOutput: { owner, _ in owner.loading = true })
-            .flatMapLatest(withUnretained: self) { owner, friend in
+            .flatMapLatest { friend -> AnyPublisher<Void, Never> in
                 switch action {
                 case .addFriend:
-                    return owner.friendsManager
+                    return friendsManager
                         .add(friend: friend)
                         .ignoreFailure()
                 case .competitionInvite(let competition):
-                    return owner.competitionsManager
+                    return competitionsManager
                         .invite(friend, to: competition)
                         .ignoreFailure()
                 }
@@ -91,12 +86,11 @@ final class InviteFriendsViewModel: ObservableObject {
 
         _share
             .receive(on: RunLoop.main)
-            .sink { [weak self] in
-                guard let self = self else { return }
+            .sink {
                 let deepLink: DeepLink?
                 switch action {
                 case .addFriend:
-                    deepLink = .friendReferral(id: self.userManager.user.value.id)
+                    deepLink = .friendReferral(id: userManager.user.value.id)
                 case .competitionInvite(let competition):
                     deepLink = .competitionInvite(id: competition.id)
                 }

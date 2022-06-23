@@ -11,6 +11,9 @@ private enum FirebaseEmulation {
 extension Resolver: ResolverRegistering {
     public static func registerAllServices() {
 
+        // Views
+        registerViewModels()
+
         // Managers
         register(ActivitySummaryManaging.self) { ActivitySummaryManager() }.scope(.shared)
         register(AnalyticsManaging.self) { AnalyticsManager() }.scope(.shared)
@@ -19,7 +22,7 @@ extension Resolver: ResolverRegistering {
         register(FriendsManaging.self) { FriendsManager(database: resolve(), userManager: resolve()) }.scope(.shared)
         register(HealthKitManaging.self) { HealthKitManager() }.scope(.shared)
         register(NotificationManaging.self) { NotificationManager() }.scope(.shared)
-        register(PermissionsManaging.self) { PermissionsManager() }.scope(.shared)
+        register(PermissionsManaging.self) { PermissionsManager(healthKitManager: resolve(), notificationManager: resolve()) }.scope(.shared)
         register(StorageManaging.self) { StorageManager() }.scope(.shared)
         register(WorkoutManaging.self) { WorkoutManager() }.scope(.shared)
         

@@ -1,6 +1,5 @@
 import Combine
 import CombineExt
-import Resolver
 
 final class UserViewModel: ObservableObject {
     
@@ -15,16 +14,13 @@ final class UserViewModel: ObservableObject {
         didSet { confirmationRequired = actionRequiringConfirmation != nil }
     }
 
-    @Injected private var friendsManager: FriendsManaging
-    @Injected private var userManager: UserManaging
-
     private var _confirm = PassthroughSubject<Void, Error>()
     private var _perform = PassthroughSubject<UserViewAction, Error>()
     
     private let user: User
     private var cancellables = Set<AnyCancellable>()
     
-    init(user: User) {
+    init(friendsManager: FriendsManaging, userManager: UserManaging, user: User) {
         self.user = user
         title = user.name
         statistics = user.statistics ?? .zero
@@ -49,7 +45,7 @@ final class UserViewModel: ObservableObject {
             .flatMapLatest(withUnretained: self) { object -> AnyPublisher<Void, Error> in
                 switch object.actionRequiringConfirmation {
                 case .deleteFriend:
-                    return object.friendsManager.delete(friend: self.user)
+                    return friendsManager.delete(friend: self.user)
                 default:
                     return .empty()
                 }
@@ -61,11 +57,11 @@ final class UserViewModel: ObservableObject {
             .flatMapLatest(withUnretained: self) { object, action -> AnyPublisher<Void, Error> in
                 switch action {
                 case .acceptFriendRequest:
-                    return object.friendsManager.acceptFriendRequest(from: user)
+                    return friendsManager.acceptFriendRequest(from: user)
                 case .denyFriendRequest:
-                    return object.friendsManager.declineFriendRequest(from: user)
+                    return friendsManager.declineFriendRequest(from: user)
                 case .request:
-                    return object.friendsManager.add(friend: user)
+                    return friendsManager.add(friend: user)
                 case .deleteFriend:
                     object.actionRequiringConfirmation = .deleteFriend
                     return .empty()

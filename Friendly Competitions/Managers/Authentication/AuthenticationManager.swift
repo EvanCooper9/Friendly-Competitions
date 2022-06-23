@@ -180,8 +180,8 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
             guard let self = self else { fatalError("This should not happen") }
             let userManager = UserManager(user: user)
             self.userListener = userManager.user
-                .receive(on: DispatchQueue.main)
-                .map { $0 as User? }
+                .receive(on: RunLoop.main)
+                .map(User?.init)
                 .assign(to: \.currentUser, on: self, ownership: .weak)
             return userManager
         }.scope(.shared)

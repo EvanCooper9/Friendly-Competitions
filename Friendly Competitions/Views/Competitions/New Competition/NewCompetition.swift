@@ -1,3 +1,4 @@
+import Resolver
 import SwiftUI
 import HealthKit
 
@@ -5,7 +6,7 @@ struct NewCompetition: View {
 
     @Environment(\.presentationMode) private var presentationMode
     
-    @StateObject private var viewModel = NewCompetitionViewModel()
+    @StateObject private var viewModel = Resolver.resolve(NewCompetitionViewModel.self)
     
     @State private var presentAddFriends = false
 

@@ -13,35 +13,33 @@ final class PermissionsManager: PermissionsManaging {
 
     // MARK: - Public Properties
 
-    var requiresPermission: AnyPublisher<Bool, Never>
-    var permissionStatus: AnyPublisher<[Permission : PermissionStatus], Never> { _permissionStatus.eraseToAnyPublisher() }
+    let requiresPermission: AnyPublisher<Bool, Never>
+    let permissionStatus: AnyPublisher<[Permission : PermissionStatus], Never>
 
     // MARK: - Private Properties
 
-    @Injected private var healthKitManager: HealthKitManaging
-    @Injected private var notificationManager: NotificationManaging
-
-    private let _permissionStatus = CurrentValueSubject<[Permission: PermissionStatus], Never>([:])
-
-    private var cancellables = Set<AnyCancellable>()
+    private let healthKitManager: HealthKitManaging
+    private let notificationManager: NotificationManaging
 
     // MARK: - Lifecycle
 
-    init() {
-        requiresPermission = _permissionStatus
+    init(healthKitManager: HealthKitManaging, notificationManager: NotificationManaging) {
+        self.healthKitManager = healthKitManager
+        self.notificationManager = notificationManager
+
+        permissionStatus = Publishers
+            .CombineLatest(healthKitManager.permissionStatus, notificationManager.permissionStatus)
+            .map { [.health: $0, .notifications: $1] }
+            .receive(on: RunLoop.main)
+            .eraseToAnyPublisher()
+
+        requiresPermission = permissionStatus
             .map { statuses in
                 statuses.contains { permission, status in
                     status == .notDetermined
                 }
             }
             .eraseToAnyPublisher()
-
-        Publishers
-            .CombineLatest(healthKitManager.permissionStatus, notificationManager.permissionStatus)
-            .map { [.health: $0, .notifications: $1] }
-            .receive(on: RunLoop.main)
-            .sink { [weak self] in self?._permissionStatus.send($0) }
-            .store(in: &cancellables)
     }
 
     // MARK: - Public Methods

@@ -6,6 +6,7 @@ import FirebaseFunctions
 import Foundation
 import HealthKit
 import Resolver
+import UIKit
 
 // sourcery: AutoMockable
 protocol ActivitySummaryManaging {
@@ -44,6 +45,9 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
         Publishers
             .Merge(healthKitManager.backgroundDeliveryReceived, query)
             .prepend(())
+            .flatMapLatest(withUnretained: self) { $0.healthKitManager.permissionStatus }
+            .filter { $0 == .authorized }
+            .mapToValue(())
             .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
             .flatMapLatest(requestActivitySummaries)
             .removeDuplicates()

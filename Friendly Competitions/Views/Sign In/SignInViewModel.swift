@@ -1,6 +1,5 @@
 import Combine
 import CombineExt
-import Resolver
 
 final class SignInViewModel: ObservableObject {
 
@@ -19,22 +18,18 @@ final class SignInViewModel: ObservableObject {
     @Published var passwordConfirmation = ""
 
     // MARK: - Private Properties
-    
-    @Injected private var appState: AppState
-    @Injected private var authenticationManager: AuthenticationManaging
 
     private let _forgot = PassthroughSubject<Void, Never>()
     private let _signIn = PassthroughSubject<SignInMethod, Never>()
     private let _signUp = PassthroughSubject<Void, Never>()
-    private let hud = PassthroughSubject<HUDState, Never>()
+    private let hud = PassthroughSubject<HUDState?, Never>()
     private let isLoading = PassthroughSubject<Bool, Never>()
 
     private var cancellables = Set<AnyCancellable>()
     
-    init() {
+    init(appState: AppState, authenticationManager: AuthenticationManaging) {
         hud
             .receive(on: RunLoop.main)
-            .map { $0 as HUDState? }
             .assign(to: &appState.$hudState)
         
         isLoading
@@ -45,7 +40,7 @@ final class SignInViewModel: ObservableObject {
             .setFailureType(to: Error.self)
             .handleEvents(withUnretained: self, receiveOutput: { $0.loading = true })
             .flatMapLatest(withUnretained: self) { object in
-                object.authenticationManager.sendPasswordReset(to: object.email)
+                authenticationManager.sendPasswordReset(to: object.email)
             }
             .handleEvents(withUnretained: self, receiveOutput: { $0.loading = false })
             .mapToResult()
@@ -62,8 +57,8 @@ final class SignInViewModel: ObservableObject {
         _signIn
             .setFailureType(to: Error.self)
             .handleEvents(withUnretained: self, receiveOutput: { object, _ in object.loading = true })
-            .flatMapLatest(withUnretained: self) { object, signInMethod in
-                object.authenticationManager.signIn(with: signInMethod)
+            .flatMapLatest { signInMethod in
+                authenticationManager.signIn(with: signInMethod)
             }
             .mapToResult()
             .sink(withUnretained: self, receiveValue: { object, result in
@@ -81,7 +76,7 @@ final class SignInViewModel: ObservableObject {
             .setFailureType(to: Error.self)
             .handleEvents(withUnretained: self, receiveOutput: { $0.loading = true })
             .flatMapLatest(withUnretained: self) { object in
-                object.authenticationManager.signUp(
+                authenticationManager.signUp(
                     name: object.name,
                     email: object.email,
                     password: object.password,

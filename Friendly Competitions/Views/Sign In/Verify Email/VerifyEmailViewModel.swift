@@ -1,6 +1,5 @@
 import Combine
 import CombineExt
-import Resolver
 
 final class VerifyEmailViewModel: ObservableObject {
 
@@ -12,25 +11,25 @@ final class VerifyEmailViewModel: ObservableObject {
     
     @Published var user: User!
 
-    @Injected private var appState: AppState
-    @Injected private var authenticationManager: AuthenticationManaging
-    @Injected private var userManager: UserManaging
+    private let hud = PassthroughSubject<HUDState?, Never>()
 
-    private let hud = PassthroughSubject<HUDState, Never>()
-
+    private let _back = PassthroughSubject<Void, Never>()
     private let _resend = PassthroughSubject<Void, Error>()
     private var cancellables = Set<AnyCancellable>()
     
-    init() {
+    init(appState: AppState, authenticationManager: AuthenticationManaging, userManager: UserManaging) {
         self.user = userManager.user.value
 
         hud
             .receive(on: RunLoop.main)
-            .map { $0 as HUDState? }
             .assign(to: &appState.$hudState)
 
+        _back
+            .sinkAsync { try authenticationManager.signOut() }
+            .store(in: &cancellables)
+
         _resend
-            .flatMapLatest(withUnretained: self) { $0.authenticationManager.resendEmailVerification() }
+            .flatMapLatest(authenticationManager.resendEmailVerification)
             .mapToResult()
             .sink(withUnretained: self, receiveValue: { owner, result in
                 switch result {
@@ -47,8 +46,8 @@ final class VerifyEmailViewModel: ObservableObject {
             .autoconnect()
             .mapToValue(())
             .eraseToAnyPublisher()
-            .flatMapLatest(withUnretained: self) { object in
-                object.authenticationManager
+            .flatMapLatest {
+                authenticationManager
                     .checkEmailVerification()
                     .ignoreFailure()
                     .eraseToAnyPublisher()
@@ -58,7 +57,7 @@ final class VerifyEmailViewModel: ObservableObject {
     }
     
     func back() {
-        try? authenticationManager.signOut()
+        _back.send()
     }
     
     func resendVerification() {

@@ -81,7 +81,7 @@ final class CompetitionsManager: CompetitionsManaging {
 
         Publishers
             .CombineLatest3(competitions, appOwnedCompetitions, invitedCompetitions)
-            .map { _ in () }
+            .mapToValue(())
             .prepend(())
             .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
             .eraseToAnyPublisher()

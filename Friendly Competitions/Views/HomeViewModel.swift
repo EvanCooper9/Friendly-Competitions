@@ -1,14 +1,18 @@
 import Combine
 import Foundation
-import Resolver
 
 final class HomeViewModel: ObservableObject {
     
     @Published var deepLinkedCompetition: Competition?
     @Published var deepLinkedUser: User?
     
-    @Injected private var competitionsManager: CompetitionsManaging
-    @Injected private var friendsManager: FriendsManaging
+    private let competitionsManager: CompetitionsManaging
+    private let friendsManager: FriendsManaging
+
+    init(competitionsManager: CompetitionsManaging, friendsManager: FriendsManaging) {
+        self.competitionsManager = competitionsManager
+        self.friendsManager = friendsManager
+    }
     
     func handle(url: URL) {
         guard let deepLink = DeepLink(from: url) else { return }

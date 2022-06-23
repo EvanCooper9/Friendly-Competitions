@@ -1,6 +1,5 @@
 import Combine
 import CombineExt
-import Resolver
 
 final class ExploreViewModel: ObservableObject {
     
@@ -9,10 +8,8 @@ final class ExploreViewModel: ObservableObject {
     @Published var searchResults = [Competition]()
     @Published var appOwnedCompetitions = [Competition]()
     @Published var topCommunityCompetitions = [Competition]()
-        
-    @Injected private var competitionsManager: CompetitionsManaging
     
-    init() {
+    init(competitionsManager: CompetitionsManaging) {
         competitionsManager.appOwnedCompetitions.assign(to: &$appOwnedCompetitions)
         competitionsManager.topCommunityCompetitions.assign(to: &$topCommunityCompetitions)
         

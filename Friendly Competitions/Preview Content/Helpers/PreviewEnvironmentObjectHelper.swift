@@ -14,6 +14,7 @@ fileprivate struct Container {
     static let userManager = UserManagingMock()
     
     static func registerDependencies() {
+        Resolver.registerViewModels()
         Resolver.register { Container.appState }.scope(.application)
         Resolver.register(ActivitySummaryManaging.self) { Container.activitySummaryManager }.scope(.application)
         Resolver.register(AnalyticsManaging.self) { Container.analyticsManager }.scope(.application)

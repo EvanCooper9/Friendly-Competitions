@@ -1,3 +1,4 @@
+import Resolver
 import SwiftUI
 import SwiftUIX
 
@@ -6,7 +7,8 @@ struct CompetitionView: View {
     @StateObject private var viewModel: CompetitionViewModel
     
     init(competition: Competition) {
-        _viewModel = .init(wrappedValue: CompetitionViewModel(competition: competition))
+        let vm = Resolver.resolve(CompetitionViewModel.self, args: competition)
+        _viewModel = .init(wrappedValue: vm)
     }
 
     var body: some View {

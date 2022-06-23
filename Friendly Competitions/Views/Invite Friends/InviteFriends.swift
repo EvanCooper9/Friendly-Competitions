@@ -1,3 +1,4 @@
+import Resolver
 import SwiftUI
 
 struct InviteFriends: View {
@@ -5,7 +6,8 @@ struct InviteFriends: View {
     @StateObject private var viewModel: InviteFriendsViewModel
     
     init(action: InviteFriendsAction) {
-        _viewModel = .init(wrappedValue: InviteFriendsViewModel(action: action))
+        let vm = Resolver.resolve(InviteFriendsViewModel.self, args: action)
+        _viewModel = .init(wrappedValue: vm)
     }
     
     var body: some View {

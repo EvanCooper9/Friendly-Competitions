@@ -1,3 +1,4 @@
+import Resolver
 import SwiftUI
 
 struct Explore: View {
@@ -8,7 +9,7 @@ struct Explore: View {
 
     @Environment(\.colorScheme) private var colorScheme
 
-    @StateObject private var viewModel = ExploreViewModel()
+    @StateObject private var viewModel = Resolver.resolve(ExploreViewModel.self)
     
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {

@@ -2,9 +2,9 @@ import Resolver
 import SwiftUI
 
 struct Home: View {
-    
-    @StateObject private var viewModel = HomeViewModel()
-    
+
+    @StateObject private var viewModel = Resolver.resolve(HomeViewModel.self)
+
     var body: some View {
         TabView {
             Dashboard()

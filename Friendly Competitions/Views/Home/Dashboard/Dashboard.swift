@@ -3,7 +3,7 @@ import SwiftUI
 
 struct Dashboard: View {
     
-    @StateObject private var viewModel = DashboardViewModel()
+    @StateObject private var viewModel = Resolver.resolve(DashboardViewModel.self)
             
     @State private var presentAbout = false
     @State private var presentPermissions = false

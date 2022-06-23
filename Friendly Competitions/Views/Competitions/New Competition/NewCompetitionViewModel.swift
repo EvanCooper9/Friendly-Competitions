@@ -1,6 +1,5 @@
 import Combine
 import CombineExt
-import Resolver
 
 final class NewCompetitionViewModel: ObservableObject {
 
@@ -32,17 +31,13 @@ final class NewCompetitionViewModel: ObservableObject {
     }
 
     // MARK: - Private Properties
-    
-    @Injected private var competitionsManager: CompetitionsManaging
-    @Injected private var friendsManager: FriendsManaging
-    @Injected private var userManager: UserManaging
 
     private let _create = PassthroughSubject<Void, Never>()
     private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Lifecycle
         
-    init() {
+    init(competitionsManager: CompetitionsManaging, friendsManager: FriendsManaging, userManager: UserManaging) {
         competition = .init(
             name: "",
             owner: "",
@@ -85,7 +80,7 @@ final class NewCompetitionViewModel: ObservableObject {
                 competition.owner = user.id
                 competition.participants = [user.id]
                 object.competition = competition
-                return object.competitionsManager.create(competition)
+                return competitionsManager.create(competition)
             }
             .sink()
             .store(in: &cancellables)
