@@ -1,3 +1,4 @@
+import Resolver
 import SwiftUI
 
 struct Explore: View {
@@ -8,7 +9,7 @@ struct Explore: View {
 
     @Environment(\.colorScheme) private var colorScheme
 
-    @StateObject private var viewModel = ExploreViewModel()
+    @StateObject private var viewModel = Resolver.resolve(ExploreViewModel.self)
     
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
@@ -79,13 +80,12 @@ private struct CommunityCompetitions: View {
 struct ExploreCompetitions_Previews: PreviewProvider {
     
     private static func setupMocks() {
-        competitionsManager.appOwnedCompetitions = [.mockPublic]
-        competitionsManager.topCommunityCompetitions = [.mock, .mock, .mock]
+        competitionsManager.appOwnedCompetitions = .just([.mockPublic])
+        competitionsManager.topCommunityCompetitions = .just([.mock, .mock, .mock])
     }
     
     static var previews: some View {
         Explore()
             .setupMocks(setupMocks)
-//            .preferredColorScheme(.dark)
     }
 }

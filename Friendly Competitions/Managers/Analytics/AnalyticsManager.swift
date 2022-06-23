@@ -3,33 +3,15 @@ import FirebaseCrashlytics
 import Foundation
 import Resolver
 
-let analytics = Resolver.resolve(AnyAnalyticsManager.self)
+let analytics = Resolver.resolve(AnalyticsManaging.self)
 
-enum AnalyticsEvent: Codable {
-    
-    // competitions
-    case acceptCompetition(id: String)
-    case createCompetition(name: String)
-    case declineCompetition(id: String)
-    case deleteCompetition(id: String)
-    case inviteFriendToCompetition(id: String, friendId: String)
-    case joinCompetition(id: String)
-    case leaveCompetition(id: String)
-    
-    // permissions
-    case notificationPermissions(authorized: Bool)
-    case healthKitPermissions(authorized: Bool)
-    
-    // errors
-    case decodingError(error: String)
+// sourcery: AutoMockable
+protocol AnalyticsManaging {
+    func set(userId: String)
+    func log(event: AnalyticsEvent)
 }
 
-class AnyAnalyticsManager: ObservableObject {
-    func set(userId: String) {}
-    func log(event: AnalyticsEvent) {}
-}
-
-final class AnalyticsManager: AnyAnalyticsManager {
+final class AnalyticsManager: AnalyticsManaging {
     
     private let encoder: JSONEncoder = {
         let encoder = JSONEncoder()
@@ -43,12 +25,12 @@ final class AnalyticsManager: AnyAnalyticsManager {
         return decoder
     }()
     
-    override func set(userId: String) {
+    func set(userId: String) {
         Analytics.setUserID(userId)
         Crashlytics.crashlytics().setUserID(userId)
     }
     
-    override func log(event: AnalyticsEvent) {
+    func log(event: AnalyticsEvent) {
         guard let data = try? event.encoded(using: encoder),
               let json = try? JSON.decoded(from: data, using: decoder),
               case .object(let dictionary) = json,

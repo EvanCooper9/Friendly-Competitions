@@ -25,4 +25,8 @@ extension Array where Element: Equatable {
         a.remove(element)
         return a
     }
+
+    mutating func toggle(_ element: Element) {
+        contains(element) ? remove(element) : append(element)
+    }
 }

@@ -40,6 +40,19 @@ extension Publisher where Failure == Error {
     }
 }
 
+extension Publisher where Output: Collection {
+    func compactMapMany<Result>(_ transform: @escaping (Output.Element) -> Result?) -> Publishers.CompactMap<Self, [Result]> {
+        compactMap { $0.compactMap(transform) }
+    }
+}
+
+extension Publisher {
+
+    func sink() -> AnyCancellable {
+        sink(receiveCompletion: { _ in }, receiveValue: { _ in })
+    }
+}
+
 extension Publisher {
 
     static func empty() -> AnyPublisher<Output, Failure> {
@@ -50,10 +63,6 @@ extension Publisher {
         Fail(error: error).eraseToAnyPublisher()
     }
 
-    static func never() -> AnyPublisher<Output, Failure> {
-        Empty(completeImmediately: false).eraseToAnyPublisher()
-    }
-
     static func just(_ output: Output, completeImmediately: Bool = true) -> AnyPublisher<Output, Failure> {
         if completeImmediately {
             return Just(output)
@@ -62,5 +71,9 @@ extension Publisher {
         } else {
             return CurrentValueSubject(output).eraseToAnyPublisher()
         }
+    }
+
+    static func never() -> AnyPublisher<Output, Failure> {
+        Empty(completeImmediately: false).eraseToAnyPublisher()
     }
 }

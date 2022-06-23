@@ -1,10 +1,12 @@
+import Resolver
 import SwiftUI
+import HealthKit
 
 struct NewCompetition: View {
 
     @Environment(\.presentationMode) private var presentationMode
     
-    @StateObject private var viewModel = NewCompetitionViewModel()
+    @StateObject private var viewModel = Resolver.resolve(NewCompetitionViewModel.self)
     
     @State private var presentAddFriends = false
 
@@ -29,35 +31,49 @@ struct NewCompetition: View {
         .sheet(isPresented: $presentAddFriends) { InviteFriends(action: .addFriend) }
         .registerScreenView(name: "New Competition")
     }
-
+    
     private var scoring: some View {
         Section {
-            Picker("Scoring model", selection: $viewModel.competition.scoringModel) {
-                ForEach(Competition.ScoringModel.allCases) { scoringModel in
-                    Text(scoringModel.displayName)
-                        .tag(scoringModel)
+            Toggle("Constrain to workout", isOn: $viewModel.constrainToWorkout)
+            if viewModel.constrainToWorkout {
+                Picker("Workout", selection: $viewModel.competition.workoutType) {
+                    ForEach(WorkoutType.allCases) { workoutType in
+                        Text(workoutType.rawValue.localizedCapitalized)
+                            .tag(workoutType as WorkoutType?)
+                    }
+                }
+            } else {
+                Picker("Scoring model", selection: $viewModel.competition.scoringModel) {
+                    ForEach(Competition.ScoringModel.allCases) { scoringModel in
+                        Text(scoringModel.displayName)
+                            .tag(scoringModel as Competition.ScoringModel?)
+                    }
                 }
             }
         } header: {
             Text("Scoring")
         } footer: {
-            NavigationLink("What's this?") {
-                List {
-                    Section {
-                        ForEach(Competition.ScoringModel.allCases) { scoringModel in
-                            VStack(alignment: .leading, spacing: 5) {
-                                Text(scoringModel.displayName)
-                                    .font(.title3)
-                                Text(scoringModel.description)
-                                    .foregroundColor(.gray)
+            if viewModel.constrainToWorkout {
+                Text("You can constrain a competition to a specific workout. Points can only be earned by completing the specified workout.")
+            } else {
+                NavigationLink("What's this?") {
+                    List {
+                        Section {
+                            ForEach(Competition.ScoringModel.allCases) { scoringModel in
+                                VStack(alignment: .leading, spacing: 5) {
+                                    Text(scoringModel.displayName)
+                                        .font(.title3)
+                                    Text(scoringModel.description)
+                                        .foregroundColor(.gray)
+                                }
+                                .padding(.vertical, 8)
                             }
-                            .padding(.vertical, 8)
+                        } footer: {
+                            Text("Scoring models will affect how scores are calculated")
                         }
-                    } footer: {
-                        Text("Scoring models will affect how scores are calculated")
                     }
+                    .navigationTitle("Scoring models")
                 }
-                .navigationTitle("Scoring models")
             }
         }
     }
@@ -81,7 +97,7 @@ struct NewCompetition: View {
                     }
                 }
                 .contentShape(Rectangle())
-                .onTapGesture { viewModel.tapped(rowConfig) }
+                .onTapGesture(perform: rowConfig.onTap)
             }
         }
     }
@@ -90,7 +106,7 @@ struct NewCompetition: View {
 struct NewCompetitionView_Previews: PreviewProvider {
 
     private static func setupMocks() {
-        friendsManager.friends = [.gabby]
+        friendsManager.friends = .just([.gabby])
     }
 
     static var previews: some View {

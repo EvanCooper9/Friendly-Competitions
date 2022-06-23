@@ -1,4 +1,5 @@
 import Foundation
+import HealthKit
 
 struct Competition: Codable, Equatable, Identifiable {
     var id = UUID().uuidString
@@ -6,12 +7,13 @@ struct Competition: Codable, Equatable, Identifiable {
     var owner: String
     var participants: [String]
     var pendingParticipants: [String]
-    var scoringModel: ScoringModel
+    var scoringModel: ScoringModel?
+    var workoutType: WorkoutType?
     var start: Date
     var end: Date
     var repeats: Bool
     var isPublic: Bool
-    var banner: String?
+    let banner: String?
 }
 
 extension Competition {
