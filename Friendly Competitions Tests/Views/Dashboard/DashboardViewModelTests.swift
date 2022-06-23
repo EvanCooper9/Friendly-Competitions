@@ -162,20 +162,3 @@ final class DashboardViewModelTests: XCTestCase {
         .init(activitySummaryManager: activitySummaryManager, competitionsManager: competitionsManager, friendsManager: friendsManager, permissionsManager: permissionsManager, userManager: userManager)
     }
 }
-
-extension Publisher where Output: Equatable {
-    func expect(_ expectedValues: Output..., expectation: XCTestExpectation) -> AnyCancellable {
-        collect(expectedValues.count)
-            .sink(receiveCompletion: { completion in
-                switch completion {
-                case .failure(let error):
-                    XCTFail(error.localizedDescription)
-                case .finished:
-                    break
-                }
-            }, receiveValue:  { values in
-                XCTAssertEqual(values, expectedValues)
-                expectation.fulfill()
-            })
-    }
-}

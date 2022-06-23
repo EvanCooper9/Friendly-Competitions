@@ -1,3 +1,4 @@
+import Combine
 import XCTest
 
 @testable import Friendly_Competitions
@@ -7,9 +8,12 @@ final class HomeViewModelTests: XCTestCase {
     private var competitionsManager: CompetitionsManagingMock!
     private var friendsManager: FriendsManagingMock!
 
+    private var cancellables: Set<AnyCancellable>!
+
     override func setUp() {
         competitionsManager = .init()
         friendsManager = .init()
+        cancellables = .init()
         super.setUp()
     }
 
@@ -17,20 +21,37 @@ final class HomeViewModelTests: XCTestCase {
         super.tearDown()
         competitionsManager = nil
         friendsManager = nil
+        cancellables = nil
     }
 
     func testThatCompetitionInviteURLIsHandled() {
-        competitionsManager.searchByIDReturnValue = .just(.mock)
+        let expectation = expectation(description: #function)
+
+        let competition = Competition.mock
+        competitionsManager.searchByIDReturnValue = .just(competition)
+
         let viewModel = makeViewModel()
-        viewModel.handle(url: DeepLink.competitionInvite(id: #function).url)
-        XCTAssertEqual(viewModel.deepLinkedCompetition, nil)
+        viewModel.$deepLinkedCompetition
+            .expect(nil, competition, expectation: expectation)
+            .store(in: &cancellables)
+
+        viewModel.handle(url: DeepLink.competitionInvite(id: competition.id).url)
+        waitForExpectations(timeout: 1)
     }
     
     func testThatFriendInviteURLIsHandled() {
-        friendsManager.userWithIdReturnValue = .just(.evan)
+        let expectation = expectation(description: #function)
+
+        let user = User.evan
+        friendsManager.userWithIdReturnValue = .just(user)
+
         let viewModel = makeViewModel()
-        viewModel.handle(url: DeepLink.friendReferral(id: #function).url)
-        XCTAssertEqual(viewModel.deepLinkedUser, nil)
+        viewModel.$deepLinkedUser
+            .expect(nil, user, expectation: expectation)
+            .store(in: &cancellables)
+
+        viewModel.handle(url: DeepLink.friendReferral(id: user.id).url)
+        waitForExpectations(timeout: 1)
     }
 
     // MARK: - Private Methods
