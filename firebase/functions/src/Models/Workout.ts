@@ -1,12 +1,17 @@
 import { Competition } from "./Competition";
+import { WorkoutMetric } from "./WorkoutMetric";
 import { WorkoutType } from "./WorkoutType";
+
+type EnumDictionary<T extends string | symbol | number, U> = {
+    [K in T]: U;
+};
 
 /**
  * Workout
  */
  class Workout {
     type: WorkoutType;
-    points: number;
+    points: EnumDictionary<WorkoutMetric, number>;
     date: Date;
 
     /**

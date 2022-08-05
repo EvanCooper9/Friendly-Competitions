@@ -77,7 +77,11 @@ class Competition {
                         workoutsPromise.docs
                             .map(doc => new Workout(doc))
                             .filter(workout => workout.type == workoutType && workout.isIncludedInCompetition(this))
-                            .forEach(workout => totalPoints += workout.points);
+                            .forEach(workout => {
+                                workoutMetrics.forEach(metric => {
+                                    totalPoints += workout.points[metric];
+                                });
+                            });
                     }
                 }
             }
