@@ -3,7 +3,7 @@ import Foundation
 struct Workout: Codable {
     let type: WorkoutType
     let date: Date
-    let points: Int
+    let points: [WorkoutMetric: Int]
 }
 
 extension Workout: Identifiable {

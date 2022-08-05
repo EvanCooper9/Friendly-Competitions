@@ -29,8 +29,10 @@ final class PermissionsManager: PermissionsManaging {
 
         permissionStatus = Publishers
             .CombineLatest(healthKitManager.permissionStatus, notificationManager.permissionStatus)
+            .print("permissions/all")
             .map { [.health: $0, .notifications: $1] }
             .receive(on: RunLoop.main)
+            .share(replay: 1)
             .eraseToAnyPublisher()
 
         requiresPermission = permissionStatus

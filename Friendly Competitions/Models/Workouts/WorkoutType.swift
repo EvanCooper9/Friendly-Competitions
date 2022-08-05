@@ -1,10 +1,38 @@
 import HealthKit
 
-enum WorkoutType: String, CaseIterable, Codable {
+enum WorkoutType: String, CaseIterable, Codable, CustomStringConvertible {
     case cycling
     case running
     case swimming
     case walking
+
+    var description: String {
+        switch self {
+        case .cycling:
+            return "Cycling"
+        case .running:
+            return "Running"
+        case .swimming:
+            return "Swimming"
+        case .walking:
+            return "Walking"
+        }
+    }
+}
+
+extension WorkoutType {
+    var metrics: [WorkoutMetric] {
+        switch self {
+        case .cycling:
+            return [.distance, .heartRate]
+        case .running:
+            return [.distance, .heartRate, .steps]
+        case .swimming:
+            return [.distance, .heartRate]
+        case .walking:
+            return [.distance, .heartRate, .steps]
+        }
+    }
 }
 
 extension WorkoutType {

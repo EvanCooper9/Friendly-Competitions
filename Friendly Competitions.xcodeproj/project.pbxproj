@@ -120,6 +120,9 @@
 		ED1CFA982864A64700192E49 /* ViewModels+Registration.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1CFA972864A64700192E49 /* ViewModels+Registration.swift */; };
 		ED1CFA9B2864AF1D00192E49 /* DashboardViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1CFA9A2864AF1D00192E49 /* DashboardViewModelTests.swift */; };
 		ED1CFA9D2864B92A00192E49 /* Publisher+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1CFA9C2864B92A00192E49 /* Publisher+Extensions.swift */; };
+		ED1CFA9F2864E58300192E49 /* PostDecoded.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1CFA9E2864E58300192E49 /* PostDecoded.swift */; };
+		ED1CFAA22864FF0000192E49 /* WorkoutMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1CFAA12864FF0000192E49 /* WorkoutMetric.swift */; };
+		ED26F7662871E246003EEE17 /* Cancellables.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED26F7652871E246003EEE17 /* Cancellables.swift */; };
 		ED277B1D2838002C00DDF29A /* HomeViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED277B1C2838002C00DDF29A /* HomeViewModelTests.swift */; };
 		ED3ED8F7284F951800B5100F /* AutoMockable.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3ED8F6284F951800B5100F /* AutoMockable.generated.swift */; };
 		ED438FF727F7B3B600D72F99 /* View+ConfirmationDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED438FF627F7B3B600D72F99 /* View+ConfirmationDialog.swift */; };
@@ -164,10 +167,11 @@
 		EDA352902836EFB600390585 /* UserViewAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA3528F2836EFB600390585 /* UserViewAction.swift */; };
 		EDA352932836F87600390585 /* CompetitionViewAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA352922836F87600390585 /* CompetitionViewAction.swift */; };
 		EDA3529528370F4C00390585 /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA3529428370F4C00390585 /* HomeViewModel.swift */; };
-		EDA35298283713C200390585 /* DeepLink+Share.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA35297283713C200390585 /* DeepLink+Share.swift */; };
+		EDA35298283713C200390585 /* Sharable.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA35297283713C200390585 /* Sharable.swift */; };
 		EDAF6C432852682C002BC0DD /* Publisher+WithUnretained.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDAF6C422852682C002BC0DD /* Publisher+WithUnretained.swift */; };
 		EDAF6C452852765E002BC0DD /* Publisher+FromAsync.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDAF6C442852765E002BC0DD /* Publisher+FromAsync.swift */; };
 		EDAF6C47285277FF002BC0DD /* Nonce.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDAF6C46285277FF002BC0DD /* Nonce.swift */; };
+		EDB749B72875BC3F00021014 /* StringKeyEncoded.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDB749B62875BC3F00021014 /* StringKeyEncoded.swift */; };
 		EDBEA170281459D200058A47 /* CompetitionInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBEA16F281459D200058A47 /* CompetitionInfo.swift */; };
 		EDBF8C5F282D4B3500754165 /* SwiftUIX in Frameworks */ = {isa = PBXBuildFile; productRef = EDBF8C5E282D4B3500754165 /* SwiftUIX */; };
 		EDC373D027FB39A500318245 /* EmailSignInForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC373CF27FB39A500318245 /* EmailSignInForm.swift */; };
@@ -315,6 +319,9 @@
 		ED1CFA972864A64700192E49 /* ViewModels+Registration.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewModels+Registration.swift"; sourceTree = "<group>"; };
 		ED1CFA9A2864AF1D00192E49 /* DashboardViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewModelTests.swift; sourceTree = "<group>"; };
 		ED1CFA9C2864B92A00192E49 /* Publisher+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Publisher+Extensions.swift"; sourceTree = "<group>"; };
+		ED1CFA9E2864E58300192E49 /* PostDecoded.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostDecoded.swift; sourceTree = "<group>"; };
+		ED1CFAA12864FF0000192E49 /* WorkoutMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutMetric.swift; sourceTree = "<group>"; };
+		ED26F7652871E246003EEE17 /* Cancellables.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Cancellables.swift; sourceTree = "<group>"; };
 		ED277B1C2838002C00DDF29A /* HomeViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModelTests.swift; sourceTree = "<group>"; };
 		ED3ED8F6284F951800B5100F /* AutoMockable.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AutoMockable.generated.swift; sourceTree = "<group>"; };
 		ED438FF627F7B3B600D72F99 /* View+ConfirmationDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+ConfirmationDialog.swift"; sourceTree = "<group>"; };
@@ -354,10 +361,11 @@
 		EDA3528F2836EFB600390585 /* UserViewAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserViewAction.swift; sourceTree = "<group>"; };
 		EDA352922836F87600390585 /* CompetitionViewAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionViewAction.swift; sourceTree = "<group>"; };
 		EDA3529428370F4C00390585 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
-		EDA35297283713C200390585 /* DeepLink+Share.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DeepLink+Share.swift"; sourceTree = "<group>"; };
+		EDA35297283713C200390585 /* Sharable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sharable.swift; sourceTree = "<group>"; };
 		EDAF6C422852682C002BC0DD /* Publisher+WithUnretained.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Publisher+WithUnretained.swift"; sourceTree = "<group>"; };
 		EDAF6C442852765E002BC0DD /* Publisher+FromAsync.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Publisher+FromAsync.swift"; sourceTree = "<group>"; };
 		EDAF6C46285277FF002BC0DD /* Nonce.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Nonce.swift; sourceTree = "<group>"; };
+		EDB749B62875BC3F00021014 /* StringKeyEncoded.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringKeyEncoded.swift; sourceTree = "<group>"; };
 		EDBEA16F281459D200058A47 /* CompetitionInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionInfo.swift; sourceTree = "<group>"; };
 		EDC373CF27FB39A500318245 /* EmailSignInForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailSignInForm.swift; sourceTree = "<group>"; };
 		EDC373D127FB5B0C00318245 /* VerifyEmail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyEmail.swift; sourceTree = "<group>"; };
@@ -712,7 +720,7 @@
 		C1884E4C26D59E2300C21014 /* Models */ = {
 			isa = PBXGroup;
 			children = (
-				C1185A2426D6717C002E2377 /* ActivitySummary.swift */,
+				ED26F7642871CAA2003EEE17 /* Activity Summary */,
 				EDA35296283713B200390585 /* Deep Link */,
 				C12D640527A5EDDF00259237 /* Competition */,
 				C12D63FE27A5E93600259237 /* Permission */,
@@ -834,6 +842,7 @@
 		C1E1A9D627A7076B00E8E360 /* Combine */ = {
 			isa = PBXGroup;
 			children = (
+				ED26F7652871E246003EEE17 /* Cancellables.swift */,
 				C1E1A9D427A7037D00E8E360 /* Published+Extensions.swift */,
 				C132945727DF703C00117548 /* Publisher+Extensions.swift */,
 				EDAF6C442852765E002BC0DD /* Publisher+FromAsync.swift */,
@@ -904,6 +913,14 @@
 			path = Dashboard;
 			sourceTree = "<group>";
 		};
+		ED26F7642871CAA2003EEE17 /* Activity Summary */ = {
+			isa = PBXGroup;
+			children = (
+				C1185A2426D6717C002E2377 /* ActivitySummary.swift */,
+			);
+			path = "Activity Summary";
+			sourceTree = "<group>";
+		};
 		ED277B1B2838001A00DDF29A /* Views */ = {
 			isa = PBXGroup;
 			children = (
@@ -934,6 +951,9 @@
 		ED7881A52850380700C7F6CB /* Utility */ = {
 			isa = PBXGroup;
 			children = (
+				ED1CFA9E2864E58300192E49 /* PostDecoded.swift */,
+				EDA35297283713C200390585 /* Sharable.swift */,
+				EDB749B62875BC3F00021014 /* StringKeyEncoded.swift */,
 				ED7881A62850381500C7F6CB /* UserDefault.swift */,
 			);
 			path = Utility;
@@ -1016,7 +1036,6 @@
 			isa = PBXGroup;
 			children = (
 				C114314127B9B6ED00915757 /* DeepLink.swift */,
-				EDA35297283713C200390585 /* DeepLink+Share.swift */,
 			);
 			path = "Deep Link";
 			sourceTree = "<group>";
@@ -1034,6 +1053,7 @@
 			isa = PBXGroup;
 			children = (
 				EDC7849A280358E9001FE005 /* Workout.swift */,
+				ED1CFAA12864FF0000192E49 /* WorkoutMetric.swift */,
 				ED65D3BC280CF36C00B38486 /* WorkoutType.swift */,
 			);
 			path = Workouts;
@@ -1217,7 +1237,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ $(arch) == \"arm64\" ]; then\n    /opt/homebrew/bin/sourcery\nelse \n    sourcery\nfi\n";
+			shellScript = "if [ \"${ENABLE_PREVIEWS}\" = \"YES\" ]; then\n  echo \"Previews enabled, quitting to prevent 'preview paused'.\"\n  exit 0\nfi\n\nif [ $(arch) == \"arm64\" ]; then\n    /opt/homebrew/bin/sourcery\nelse \n    sourcery\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1281,7 +1301,7 @@
 				EDC373D227FB5B0C00318245 /* VerifyEmail.swift in Sources */,
 				C1ABB21526D6987C00716984 /* NewCompetition.swift in Sources */,
 				ED3ED8F7284F951800B5100F /* AutoMockable.generated.swift in Sources */,
-				EDA35298283713C200390585 /* DeepLink+Share.swift in Sources */,
+				EDA35298283713C200390585 /* Sharable.swift in Sources */,
 				C155CA7627AC1A63005F49F4 /* Competition+Standing.swift in Sources */,
 				C123C9CD27A863F100375F73 /* UserHashIDPill.swift in Sources */,
 				ED901B6D2802558400FE619E /* UserViewModel.swift in Sources */,
@@ -1331,8 +1351,10 @@
 				C19B7F2D27BDED8B00BCA4B9 /* ExploreCarousel.swift in Sources */,
 				C123C9CF27A86E1200375F73 /* Stack.swift in Sources */,
 				C1EA986926D6E8C900219E84 /* CompetitionView.swift in Sources */,
+				ED1CFA9F2864E58300192E49 /* PostDecoded.swift in Sources */,
 				C123C9DE27A8AF5100375F73 /* About.swift in Sources */,
 				C19EAFE3272B30E0008BCFDD /* PermissionsView.swift in Sources */,
+				EDB749B72875BC3F00021014 /* StringKeyEncoded.swift in Sources */,
 				EDC5FC4127FA7F3700F2882D /* Color+Extensions.swift in Sources */,
 				ED901B6328024F0400FE619E /* UserDefaults+Extensions.swift in Sources */,
 				EDA3529528370F4C00390585 /* HomeViewModel.swift in Sources */,
@@ -1358,6 +1380,7 @@
 				C1930E5027C6755200DB45C1 /* ColorAsset+Extensions.swift in Sources */,
 				C1C8B24226F3FB47008D6B1B /* HealthKitManager.swift in Sources */,
 				C15522A826E7973A00FE0DA7 /* DocumentReference+Extensions.swift in Sources */,
+				ED1CFAA22864FF0000192E49 /* WorkoutMetric.swift in Sources */,
 				ED901B6428024F0400FE619E /* TimeInterval+Extensions.swift in Sources */,
 				C1C1542326D5DFFD00C6FA9F /* HKActivitySummary+Extensions.swift in Sources */,
 				C114314227B9B6ED00915757 /* DeepLink.swift in Sources */,
@@ -1376,6 +1399,7 @@
 				C123C9C727A74C4100375F73 /* Button+Extensions.swift in Sources */,
 				C15522A426E7943A00FE0DA7 /* DocumentSnapshot+Extensions.swift in Sources */,
 				C1A4696A26DA823C00254105 /* Resolver.swift in Sources */,
+				ED26F7662871E246003EEE17 /* Cancellables.swift in Sources */,
 				EDC5FC3F27FA7C1B00F2882D /* View+HUD.swift in Sources */,
 				ED48783228295A2100AC1E2C /* InviteFriendsAction.swift in Sources */,
 				C1C8B24326F3FB47008D6B1B /* ActivitySummaryManager.swift in Sources */,
@@ -1561,7 +1585,7 @@
 				CODE_SIGN_ENTITLEMENTS = "Friendly Competitions/FriendlyCompetitions.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 13;
+				CURRENT_PROJECT_VERSION = 1;
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "Friendly\\ Competitions/Preview\\ Content";
 				DEVELOPMENT_TEAM = HP22MNWU5C;
@@ -1601,13 +1625,13 @@
 				CODE_SIGN_ENTITLEMENTS = "Friendly Competitions/FriendlyCompetitions.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
-				CURRENT_PROJECT_VERSION = 13;
+				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "Friendly\\ Competitions/Preview\\ Content";
 				DEVELOPMENT_TEAM = HP22MNWU5C;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Friendly Competitions/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = Competitions;
+				INFOPLIST_KEY_CFBundleDisplayName = "FC (DBG)";
 				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "We need access to HealthKit so you can compete against your friends!";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "We need access to HealthKit so you can compete against your friends!";
 				INFOPLIST_KEY_NSHealthUpdateUsageDescription = "We need access to HealthKit so you can compete against your friends!";

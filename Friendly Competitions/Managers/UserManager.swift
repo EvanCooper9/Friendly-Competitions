@@ -23,7 +23,7 @@ final class UserManager: UserManaging {
     @Injected private var authenticationManager: AuthenticationManaging
     @Injected private var database: Firestore
 
-    private var cancellables = Set<AnyCancellable>()
+    private var cancellables = Cancellables()
     private var listenerBag = ListenerBag()
 
     init(user: User) {

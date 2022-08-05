@@ -1,6 +1,5 @@
 import Resolver
 
-
 extension Resolver {
     static func registerViewModels() {
         register { (_, args) in CompetitionViewModel(competitionsManager: resolve(), userManager: resolve(), competition: args()) }

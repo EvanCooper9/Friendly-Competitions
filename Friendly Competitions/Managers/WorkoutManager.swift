@@ -3,6 +3,7 @@ import Firebase
 import FirebaseFirestore
 import HealthKit
 import Resolver
+import UIKit
 
 protocol WorkoutManaging {
     func update() -> AnyPublisher<Void, Error>
@@ -19,13 +20,24 @@ final class WorkoutManager: WorkoutManaging {
 
     private let uploadFinished = PassthroughSubject<Void, Error>()
     
-    private var cancellables = Set<AnyCancellable>()
+    private var cancellables = Cancellables()
     
     init() {
         Publishers
-            .Merge(healthKitManager.backgroundDeliveryReceived, query)
-            .prepend(())
+            .Merge3(
+                healthKitManager.backgroundDeliveryReceived,
+                query,
+                NotificationCenter.default
+                    .publisher(for: UIApplication.willEnterForegroundNotification)
+                    .mapToValue(())
+            )
             .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
+            .flatMapLatest(withUnretained: self) {
+                $0.healthKitManager.permissionStatus
+                    .filter { $0 == .authorized }
+                    .mapToValue(())
+                    .eraseToAnyPublisher()
+            }
             .flatMapLatest(requestWorkouts)
             .filter(\.isNotEmpty)
             .combineLatest(userManager.user)
@@ -53,18 +65,33 @@ final class WorkoutManager: WorkoutManaging {
 
     private func requestWorkouts() -> AnyPublisher<[Workout], Never> {
         competitionsManager.competitions
-            .compactMapMany(\.workoutType?.hkWorkoutActivityType)
-            .flatMapAsync { workoutTypes in
-                let totalPoints = try await withThrowingTaskGroup(of: (HKWorkoutActivityType, [HKQuantityType: [Date: Double]]).self) { group -> [HKWorkoutActivityType: [HKQuantityType: [Date: Double]]] in
-                    workoutTypes.forEach { workoutType in
+            .map { competitions -> ([WorkoutType: [WorkoutMetric]], DateInterval) in
+                let workoutTypes = competitions
+                    .reduce(into: [WorkoutType: [WorkoutMetric]]()) { partialResult, competition in
+                        guard case let .workout(workoutType, metrics) = competition.scoringModel else { return }
+                        let metricsForWorkoutType = (partialResult[workoutType] ?? [])
+                            .appending(contentsOf: metrics)
+                            .uniqued()
+                        partialResult[workoutType] = Array(metricsForWorkoutType)
+                    }
+
+                let dateInterval = competitions
+                    .filter(\.isActive)
+                    .dateInterval
+
+                return (workoutTypes, dateInterval)
+            }
+            .flatMapAsync { workoutTypes, dateInterval in
+                let totalPoints = try await withThrowingTaskGroup(of: (WorkoutType, [Date: [HKQuantityType: Double]]).self) { group -> [WorkoutType: [Date: [HKQuantityType: Double]]] in
+                    workoutTypes.forEach { workoutType, workoutMetrics in
                         group.addTask { [weak self] in
                             guard let self = self else { return (workoutType, [:]) }
-                            let points = try await self.requestWorkouts(ofType: workoutType)
+                            let points = try await self.requestWorkouts(ofType: workoutType, metrics: workoutMetrics, between: dateInterval)
                             return (workoutType, points)
                         }
                     }
 
-                    var toReturn = [HKWorkoutActivityType: [HKQuantityType: [Date: Double]]]()
+                    var toReturn = [WorkoutType: [Date: [HKQuantityType: Double]]]()
                     for try await (workoutType, points) in group {
                         toReturn[workoutType] = points
                     }
@@ -72,25 +99,29 @@ final class WorkoutManager: WorkoutManaging {
                 }
 
                 let workouts = totalPoints.flatMap { workoutType, pointsBySampleTypeByDate in
-                    pointsBySampleTypeByDate.flatMap { sampleType, pointsByDate in
-                        pointsByDate.compactMap { date, points -> Workout? in
-                            guard let workoutType = WorkoutType(hkWorkoutActivityType: workoutType) else { return nil }
-                            return Workout(
-                                type: workoutType,
-                                date: date,
-                                points: Int(points)
-                            )
+                    pointsBySampleTypeByDate.compactMap { date, pointsBySampleType -> Workout? in
+
+                        let points = pointsBySampleType.compactMap { sampleType, points -> (WorkoutMetric, Int)? in
+                            guard let metric = WorkoutMetric(from: sampleType.identifier) else { return nil }
+                            return (metric, Int(points))
                         }
+
+                        return Workout(
+                            type: workoutType,
+                            date: date,
+                            points: Dictionary(uniqueKeysWithValues: points)
+                        )
                     }
                 }
+
                 return workouts
             }
             .ignoreFailure()
     }
     
-    private func requestWorkouts(ofType workoutType: HKWorkoutActivityType) async throws -> [HKQuantityType: [Date: Double]] {
+    private func requestWorkouts(ofType workoutType: WorkoutType, metrics: [WorkoutMetric], between dateInterval: DateInterval) async throws -> [Date: [HKQuantityType: Double]] {
         let sampleType = HKSampleType.workoutType()
-        let predicate = HKQuery.predicateForWorkouts(with: workoutType)
+        let predicate = HKQuery.predicateForWorkouts(with: workoutType.hkWorkoutActivityType)
         let startDateSort = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
         
         let workouts = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<[HKWorkout], Error>) in
@@ -102,31 +133,45 @@ final class WorkoutManager: WorkoutManaging {
 
                 let workouts = workouts?
                     .compactMap { $0 as? HKWorkout }
-                    .filter { $0.endDate.compare(.now.advanced(by: -5.days)) == .orderedDescending }
-                
+                    .filter { dateInterval.contains($0.startDate) && dateInterval.contains($0.endDate) }
+
                 continuation.resume(returning: workouts ?? [])
             }
             healthKitManager.execute(query)
         }
         
-        return try await withThrowingTaskGroup(of: [HKQuantityType: [Date: Double]].self) { group -> [HKQuantityType: [Date: Double]] in
+        return try await withThrowingTaskGroup(of: [Date: [HKQuantityType: Double]].self) { group -> [Date: [HKQuantityType: Double]] in
             workouts.forEach { workout in
                 group.addTask { [weak self] in
                     guard let self = self else { return [:] }
-                    return try await self.pointsByDateBySample(for: workout)
+                    return try await self.pointsByDateBySample(for: workout, metrics: metrics)
                 }
             }
             
-            var toReturn = [HKQuantityType: [Date: Double]]()
+            var toReturn = [Date: [HKQuantityType: Double]]()
             for try await pointsByDateBySample in group {
-                pointsByDateBySample.forEach { sampleType, pointsByDate in
-                    if let existing = toReturn[sampleType] {
-                        toReturn[sampleType] = pointsByDate.reduce(into: existing) { partialResult, next in
-                            partialResult[next.key] = (partialResult[next.key] ?? 0) + next.value
-                        }
-                    } else {
-                        toReturn[sampleType] = pointsByDate
+
+                for (date, pointsBySampleType) in pointsByDateBySample {
+                    guard let existing = toReturn[date] else {
+                        toReturn[date] = pointsBySampleType
+                        continue
                     }
+
+                    toReturn[date] = pointsBySampleType
+                        .enumerated()
+                        .reduce(into: existing) { partialResult, next in
+                            let (offset, (sampleType, points)) = next
+                            switch WorkoutMetric(from: sampleType.identifier) {
+                            case .heartRate:
+                                let oldAverage = partialResult[sampleType] ?? 0
+                                let oldTotal = oldAverage * Double(offset)
+                                let newTotal = oldTotal + points
+                                let newAverage = newTotal / Double(offset + 1)
+                                partialResult[sampleType] = newAverage
+                            case .distance, .steps, .none:
+                                partialResult[sampleType] = (partialResult[sampleType] ?? 0) + points
+                            }
+                        }
                 }
             }
             return toReturn
@@ -137,28 +182,66 @@ final class WorkoutManager: WorkoutManaging {
     /// - Parameter workout: The workout to fetch the points for
     /// - Throws: Any errors from  HealthKit
     /// - Returns: Points by date by sample type
-    private func pointsByDateBySample(for workout: HKWorkout) async throws -> [HKQuantityType: [Date: Double]] {
-        try await withThrowingTaskGroup(of: (HKQuantityType, [Date: Double]).self) { group -> [HKQuantityType: [Date: Double]] in
-            workout.workoutActivityType.samples.forEach { sample, unit in
-                group.addTask { [weak self] in
-                    guard let self = self else { return (sample, [:]) }
-                    let pointsByDate = try await self.pointsByDate(sampleType: sample, workout: workout, unit: unit)
-                    return (sample, pointsByDate)
+    private func pointsByDateBySample(for workout: HKWorkout, metrics: [WorkoutMetric]) async throws -> [Date: [HKQuantityType: Double]] {
+        try await withThrowingTaskGroup(of: (HKQuantityType, [Date: Double]).self) { [weak self] group -> [Date: [HKQuantityType: Double]] in
+            guard let self = self, let workoutType = WorkoutType(hkWorkoutActivityType: workout.workoutActivityType) else { return [:] }
+
+            metrics
+                .compactMap { metric -> (HKQuantityType, WorkoutMetric)? in
+                    guard let sample = metric.sample(for: workoutType) else { return nil }
+                    return (sample, metric)
                 }
+                .forEach { sample, metric in
+                    group.addTask { [weak self] in
+                        guard let self = self else { return (sample, [:]) }
+
+                        let pointsByDate: [Date: Double]
+                        switch metric {
+                        case .steps:
+                            // Steps are not actually recorded in workouts. A separate type of query is required
+                            pointsByDate = await self.steps(for: workout)
+                        default:
+                            pointsByDate = try await self.pointsByDate(sampleType: sample, workout: workout, unit: metric.unit)
+                        }
+                        return (sample, pointsByDate)
+                    }
             }
-            
-            var toReturn = [HKQuantityType: [Date: Double]]()
+
+            var toReturn = [String: [HKQuantityType: Double]]()
             for try await (sampleType, pointsByDate) in group {
-                guard let existing = toReturn[sampleType] else {
-                    toReturn[sampleType] = pointsByDate
-                    continue
-                }
-                
-                toReturn[sampleType] = pointsByDate.reduce(into: existing) { partialResult, next in
-                    partialResult[next.key] = (partialResult[next.key] ?? 0) + next.value
+                for (date, points) in pointsByDate {
+                    let dateString = DateFormatter.dateDashed.string(from: date)
+                    let result = [sampleType: points]
+                    guard var pointsBySampleType = toReturn[dateString] else {
+                        toReturn[dateString] = result
+                        continue
+                    }
+                    pointsBySampleType[sampleType] = (pointsBySampleType[sampleType] ?? 0) + points
+                    toReturn[dateString] = pointsBySampleType
                 }
             }
-            return toReturn
+
+            return toReturn.compactMapKeys(DateFormatter.dateDashed.date(from:))
+        }
+    }
+
+    private func steps(for workout: HKWorkout) async -> [Date: Double] {
+        let dateInterval = DateInterval(start: workout.startDate, end: workout.endDate)
+
+        let predicate = HKQuery.predicateForSamples(
+            withStart: dateInterval.start,
+            end: dateInterval.end
+        )
+
+        return await withCheckedContinuation { continuation in
+            let query = HKStatisticsQuery(
+                quantityType: HKQuantityType(.stepCount),
+                quantitySamplePredicate: predicate) { query, stats, error in
+                    let steps = stats?.sumQuantity()?.doubleValue(for: .count()) ?? 0
+                    continuation.resume(returning: [workout.startDate: steps])
+                }
+
+            healthKitManager.execute(query)
         }
     }
     
@@ -174,7 +257,7 @@ final class WorkoutManager: WorkoutManaging {
         let predicate = HKQuery.predicateForObjects(from: workout)
         
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<[Date: Double], Error>)  in
-            let query = HKSampleQuery(sampleType: sampleType, predicate: predicate,limit: 0, sortDescriptors: nil) { _, samples, error in
+            let query = HKSampleQuery(sampleType: sampleType, predicate: predicate, limit: 0, sortDescriptors: nil) { _, samples, error in
                 if let error = error {
                     continuation.resume(throwing: error)
                     return
@@ -183,14 +266,42 @@ final class WorkoutManager: WorkoutManaging {
                 guard let samples = samples else { return }
                 let total = samples
                     .compactMap { $0 as? HKQuantitySample }
-                    .reduce(into: [Date: Double]()) { partialResult, sample in
+                    .enumerated()
+                    .reduce(into: [Date: Double]()) { partialResult, next in
+                        let (offset, sample) = next
                         let dateNoTime = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: sample.endDate)!
-                        partialResult[dateNoTime] = (partialResult[dateNoTime] ?? 0) + sample.quantity.doubleValue(for: unit)
+                        let metric = WorkoutMetric(from: sampleType.identifier)
+                        switch metric {
+                        case .heartRate:
+                            let points = sample.quantity.doubleValue(for: unit)
+                            let oldAverage = partialResult[dateNoTime] ?? 0
+                            let oldTotal = oldAverage * Double(offset)
+                            let newTotal = oldTotal + points
+                            let newAverage = newTotal / Double(offset + 1)
+                            partialResult[dateNoTime] = newAverage
+                        case .distance, .steps, .none:
+                            partialResult[dateNoTime] = (partialResult[dateNoTime] ?? 0) + sample.quantity.doubleValue(for: unit)
+                        }
                     }
                 
                 continuation.resume(returning: total)
             }
             healthKitManager.execute(query)
         }
+    }
+}
+
+extension Dictionary {
+    func compactMapKeys<T: Hashable>(_ transform: (Key) -> T?) -> Dictionary<T, Value> {
+        let mapped = compactMap { key, value -> (T, Value)? in
+            guard let newKey = transform(key) else { return nil }
+            return (newKey, value)
+        }
+        return Dictionary<T, Value>(uniqueKeysWithValues: mapped)
+    }
+
+    func mapKeys<T: Hashable>(_ transform: (Key) -> T) -> Dictionary<T, Value> {
+        let mapped = map { (transform($0), $1) }
+        return Dictionary<T, Value>(uniqueKeysWithValues: mapped)
     }
 }

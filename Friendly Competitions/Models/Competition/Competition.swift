@@ -7,25 +7,32 @@ struct Competition: Codable, Equatable, Identifiable {
     var owner: String
     var participants: [String]
     var pendingParticipants: [String]
-    var scoringModel: ScoringModel?
-    var workoutType: WorkoutType?
+    var scoringModel: ScoringModel
     var start: Date
-    var end: Date
+    @PostDecoded<DateToMidnight, Date> var end: Date
     var repeats: Bool
     var isPublic: Bool
     let banner: String?
 }
 
 extension Competition {
-
-    /// Since dates are formatted like yyyy-MM-dd, end would be at 0:00.
-    /// We need to set end time to 23:59
-    var trueEnd: Date { end.advanced(by: 23.hours + 59.minutes) }
-
     var started: Bool { Date.now.compare(start) != .orderedAscending }
-    var ended: Bool { Date.now.compare(trueEnd) == .orderedDescending }
-
+    var ended: Bool { Date.now.compare(end) == .orderedDescending }
     var isActive: Bool { started && !ended }
-
     var appOwned: Bool { owner == Bundle.main.id }
+}
+
+extension Array where Element == Competition {
+    var dateInterval: DateInterval {
+        let components = Calendar.current.dateComponents([.year, .month, .day], from: .now)
+        let now = Calendar.current.date(from: components) ?? .now
+        let yesterday = now.addingTimeInterval(-1.days)
+        let tomorrow = now.addingTimeInterval(1.days)
+        return reduce(DateInterval(start: yesterday, end: tomorrow)) { dateInterval, competition in
+            .init(
+                start: [dateInterval.start, competition.start, yesterday].min() ?? yesterday,
+                end: [dateInterval.end, competition.end, tomorrow].max() ?? tomorrow
+            )
+        }
+    }
 }

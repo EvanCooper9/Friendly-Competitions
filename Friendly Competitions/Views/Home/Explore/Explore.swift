@@ -14,20 +14,12 @@ struct Explore: View {
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
             if viewModel.searchText.isEmpty {
-                ExploreSection(title: "From us") {
-                    ExploreCarousel(padding: Constants.horizontalPadding) {
-                        ForEach(viewModel.appOwnedCompetitions) { competition in
-                            FeaturedCompetition(competition: competition)
-                                .frame(width: UIScreen.width - (Constants.horizontalPadding * 2))
-                        }
+                LazyVStack {
+                    ForEach(viewModel.appOwnedCompetitions) { competition in
+                        FeaturedCompetition(competition: competition)
                     }
                 }
-                .padding(.bottom)
-
-                ExploreSection(title: "Top from the community") {
-                    CommunityCompetitions(competitions: viewModel.topCommunityCompetitions)
-                        .padding(.horizontal, Constants.horizontalPadding)
-                }
+                .padding(.horizontal, Constants.horizontalPadding)
             } else {
                 ExploreSection(title: "Search results") {
                     if viewModel.searchResults.isEmpty {
@@ -80,7 +72,7 @@ private struct CommunityCompetitions: View {
 struct ExploreCompetitions_Previews: PreviewProvider {
     
     private static func setupMocks() {
-        competitionsManager.appOwnedCompetitions = .just([.mockPublic])
+        competitionsManager.appOwnedCompetitions = .just([.mockPublic, .mockPublic, .mockPublic, .mockPublic])
         competitionsManager.topCommunityCompetitions = .just([.mock, .mock, .mock])
     }
     

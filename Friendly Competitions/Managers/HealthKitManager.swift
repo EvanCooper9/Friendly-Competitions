@@ -1,7 +1,6 @@
 import Combine
 import HealthKit
 import Resolver
-import SwiftUI
 
 // sourcery: AutoMockable
 protocol HealthKitManaging {
@@ -29,8 +28,8 @@ final class HealthKitManager: HealthKitManaging {
                 .activitySummaryType(), // isn't delivered via background
             ]
             
-            let workoutSampleTypes = HKWorkoutActivityType.supported
-                .map(\.samples)
+            let workoutSampleTypes = WorkoutType.allCases
+                .map(\.hkWorkoutActivityType.samples)
                 .flatMap { $0 }
             
             return basicTypes.appending(contentsOf: workoutSampleTypes.map(\.0))
@@ -61,6 +60,7 @@ final class HealthKitManager: HealthKitManaging {
             .prepend(UserDefaults.standard.decode(PermissionStatus.self, forKey: .heathKitPermissions) ?? .notDetermined)
             .handleEvents(receiveOutput: { UserDefaults.standard.encode($0, forKey: .heathKitPermissions) })
             .share(replay: 1)
+            .print("permissions/health")
             .eraseToAnyPublisher()
 
         registerForBackgroundDelivery()
@@ -79,7 +79,7 @@ final class HealthKitManager: HealthKitManaging {
             completion: { [weak self] authorized, error in
                 guard let self = self else { return }
                 let permissionStatus: PermissionStatus = authorized ? .authorized : .denied
-                self.analyticsManager.log(event: .notificationPermissions(authorized: authorized))
+                self.analyticsManager.log(event: .healthKitPermissions(authorized: authorized))
                 self._permissionStatus.send(permissionStatus)
                 self.registerForBackgroundDelivery()
             }
@@ -90,7 +90,7 @@ final class HealthKitManager: HealthKitManaging {
 
     private func registerForBackgroundDelivery() {
         for sampleType in Constants.backgroundDeliveryTypes {
-            let query = HKObserverQuery(sampleType: sampleType, predicate: nil) { [weak self] query, completion, error in
+            let query = HKObserverQuery(sampleType: sampleType, predicate: nil) { [weak self] query, completion, _ in
                 guard let self = self else { return }
                 self._backgroundDeliveryReceived.send()
                 completion()

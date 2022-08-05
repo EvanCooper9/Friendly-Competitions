@@ -18,7 +18,7 @@ final class UserViewModel: ObservableObject {
     private var _perform = PassthroughSubject<UserViewAction, Error>()
     
     private let user: User
-    private var cancellables = Set<AnyCancellable>()
+    private var cancellables = Cancellables()
     
     init(friendsManager: FriendsManaging, userManager: UserManaging, user: User) {
         self.user = user

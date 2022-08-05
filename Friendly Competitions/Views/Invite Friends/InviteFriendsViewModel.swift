@@ -20,7 +20,7 @@ final class InviteFriendsViewModel: ObservableObject {
     private var _invite = PassthroughSubject<User, Never>()
     private var _share = PassthroughSubject<Void, Never>()
 
-    private var cancellables = Set<AnyCancellable>()
+    private var cancellables = Cancellables()
     
     init(competitionsManager: CompetitionsManaging, friendsManager: FriendsManaging, userManager: UserManaging, action: InviteFriendsAction) {
         let alreadyInvited: AnyPublisher<[User.ID], Never>

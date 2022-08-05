@@ -27,6 +27,7 @@ final class NotificationManager: NSObject, NotificationManaging {
 
         permissionStatus = _permissionStatus
             .share(replay: 1)
+            .print("permissions/notifs")
             .eraseToAnyPublisher()
 
         super.init()
@@ -49,7 +50,7 @@ final class NotificationManager: NSObject, NotificationManaging {
             options: [.alert, .badge, .sound],
             completionHandler: { [weak self] authorized, error in
                 guard let self = self else { return }
-                self.analyticsManager.log(event: .healthKitPermissions(authorized: authorized))
+                self.analyticsManager.log(event: .notificationPermissions(authorized: authorized))
                 if authorized {
                     DispatchQueue.main.async {
                         self.setupNotifications()

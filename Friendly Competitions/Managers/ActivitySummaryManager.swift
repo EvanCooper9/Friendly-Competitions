@@ -21,6 +21,7 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
     var activitySummary: AnyPublisher<ActivitySummary?, Never> {
         _activitySummary
             .receive(on: RunLoop.main)
+            .share(replay: 1)
             .eraseToAnyPublisher()
     }
 
@@ -30,6 +31,7 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
     @Injected private var healthKitManager: HealthKitManaging
     @Injected private var database: Firestore
     @Injected private var userManager: UserManaging
+    @Injected private var workoutManager: WorkoutManaging
 
     private var _activitySummary = PassthroughSubject<ActivitySummary?, Never>()
 
@@ -37,22 +39,31 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
     private let uploadFinished = PassthroughSubject<Void, Error>()
     private let query = PassthroughSubject<Void, Never>()
 
-    private var cancellables = Set<AnyCancellable>()
+    private var cancellables = Cancellables()
 
     // MARK: - Lifecycle
 
     init() {
         Publishers
-            .Merge(healthKitManager.backgroundDeliveryReceived, query)
-            .prepend(())
-            .flatMapLatest(withUnretained: self) { $0.healthKitManager.permissionStatus }
-            .filter { $0 == .authorized }
-            .mapToValue(())
+            .Merge3(
+                healthKitManager.backgroundDeliveryReceived,
+                query,
+                NotificationCenter.default
+                    .publisher(for: UIApplication.willEnterForegroundNotification)
+                    .mapToValue(())
+            )
             .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
+            .flatMapLatest(withUnretained: self) {
+                $0.healthKitManager.permissionStatus
+                    .filter { $0 == .authorized }
+                    .mapToValue(())
+                    .eraseToAnyPublisher()
+            }
             .flatMapLatest(requestActivitySummaries)
             .removeDuplicates()
             .filter(\.isNotEmpty)
             .combineLatest(userManager.user)
+//            .dropFirst(999)
             .sinkAsync { [weak self] activitySummaries, user in
                 guard let self = self else { return }
                 let batch = self.database.batch()
@@ -80,20 +91,7 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
     /// Don't call this directly, call `query` instead
     private func requestActivitySummaries() -> AnyPublisher<[ActivitySummary], Never> {
         competitionsManager.competitions
-            .map { competitions -> DateInterval in
-                let components = Calendar.current.dateComponents([.year, .month, .day], from: .now)
-                let now = Calendar.current.date(from: components) ?? .now
-                let yesterday = now.addingTimeInterval(-1.days)
-                let tomorrow = now.addingTimeInterval(1.days)
-                return competitions
-                    .filter(\.isActive)
-                    .reduce(DateInterval(start: yesterday, end: tomorrow)) { dateInterval, competition in
-                        .init(
-                            start: [dateInterval.start, competition.start, yesterday].min() ?? yesterday,
-                            end: [dateInterval.end, competition.end, tomorrow].max() ?? tomorrow
-                        )
-                    }
-            }
+            .map { $0.filter(\.isActive).dateInterval }
             .flatMap { [weak self] dateInterval -> AnyPublisher<[ActivitySummary], Error> in
                 guard let self = self else { return .never() }
                 let subject = PassthroughSubject<[ActivitySummary], Error>()

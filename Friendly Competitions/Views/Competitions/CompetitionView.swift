@@ -5,6 +5,8 @@ import SwiftUIX
 struct CompetitionView: View {
     
     @StateObject private var viewModel: CompetitionViewModel
+
+    @State private var canSaveEdits = true
     
     init(competition: Competition) {
         let vm = Resolver.resolve(CompetitionViewModel.self, args: competition)
@@ -17,7 +19,9 @@ struct CompetitionView: View {
             if !viewModel.pendingParticipants.isEmpty {
                 pendingInvites
             }
-            CompetitionInfo(competition: $viewModel.competition, editing: viewModel.editing)
+            CompetitionInfo(competition: $viewModel.competition, editing: viewModel.editing) {
+                canSaveEdits = $0
+            }
             actions
         }
         .navigationTitle(viewModel.competition.name)
@@ -26,6 +30,7 @@ struct CompetitionView: View {
                 HStack {
                     if viewModel.editing {
                         Button("Save", action: viewModel.saveTapped)
+                            .disabled(!canSaveEdits)
                     }
                     Button(viewModel.editButtonTitle, action: viewModel.editTapped)
                         .font(viewModel.editing ? .body.bold() : .body)

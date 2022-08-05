@@ -11,7 +11,7 @@ final class DashboardViewModelTests: XCTestCase {
     private var permissionsManager: PermissionsManagingMock!
     private var userManager: UserManagingMock!
 
-    private var cancellables: Set<AnyCancellable>!
+    private var cancellables: Cancellables!
 
     override func setUp() {
         activitySummaryManager = .init()

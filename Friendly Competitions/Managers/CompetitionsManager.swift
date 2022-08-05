@@ -41,13 +41,13 @@ final class CompetitionsManager: CompetitionsManaging {
     
     // MARK: - Public Properties
     
-    var competitions: AnyPublisher<[Competition], Never> { $_competitions.eraseToAnyPublisher() }
-    var invitedCompetitions: AnyPublisher<[Competition], Never> { $_invitedCompetitions.eraseToAnyPublisher() }
-    var standings: AnyPublisher<[Competition.ID : [Competition.Standing]], Never> { $_standings.eraseToAnyPublisher() }
-    var participants: AnyPublisher<[Competition.ID : [User]], Never> { $_participants.eraseToAnyPublisher() }
-    var pendingParticipants: AnyPublisher<[Competition.ID : [User]], Never> { $_pendingParticipants.eraseToAnyPublisher() }
-    var appOwnedCompetitions: AnyPublisher<[Competition], Never> { $_appOwnedCompetitions.eraseToAnyPublisher() }
-    var topCommunityCompetitions: AnyPublisher<[Competition], Never> { $_topCommunityCompetitions.eraseToAnyPublisher() }
+    var competitions: AnyPublisher<[Competition], Never> { $_competitions.share(replay: 1).eraseToAnyPublisher() }
+    var invitedCompetitions: AnyPublisher<[Competition], Never> { $_invitedCompetitions.share(replay: 1).eraseToAnyPublisher() }
+    var standings: AnyPublisher<[Competition.ID : [Competition.Standing]], Never> { $_standings.share(replay: 1).eraseToAnyPublisher() }
+    var participants: AnyPublisher<[Competition.ID : [User]], Never> { $_participants.share(replay: 1).eraseToAnyPublisher() }
+    var pendingParticipants: AnyPublisher<[Competition.ID : [User]], Never> { $_pendingParticipants.share(replay: 1).eraseToAnyPublisher() }
+    var appOwnedCompetitions: AnyPublisher<[Competition], Never> { $_appOwnedCompetitions.share(replay: 1).eraseToAnyPublisher() }
+    var topCommunityCompetitions: AnyPublisher<[Competition], Never> { $_topCommunityCompetitions.share(replay: 1).eraseToAnyPublisher() }
 
     // MARK: - Private Properties
 
@@ -70,7 +70,7 @@ final class CompetitionsManager: CompetitionsManaging {
         willSet { updateTask?.cancel() }
     }
 
-    private var cancellables = Set<AnyCancellable>()
+    private var cancellables = Cancellables()
     private var listenerBag = ListenerBag()
 
     // MARK: - Lifecycle
@@ -87,6 +87,7 @@ final class CompetitionsManager: CompetitionsManaging {
             .eraseToAnyPublisher()
             .setFailureType(to: Error.self)
             .flatMapLatest(withUnretained: self) { $0.updateStandings() }
+            .handleEvents(withUnretained: self, receiveOutput: { owner in owner.fetchCompetitionData() })
             .sink()
             .store(in: &cancellables)
     }

@@ -15,7 +15,7 @@ final class VerifyEmailViewModel: ObservableObject {
 
     private let _back = PassthroughSubject<Void, Never>()
     private let _resend = PassthroughSubject<Void, Error>()
-    private var cancellables = Set<AnyCancellable>()
+    private var cancellables = Cancellables()
     
     init(appState: AppState, authenticationManager: AuthenticationManaging, userManager: UserManaging) {
         self.user = userManager.user.value

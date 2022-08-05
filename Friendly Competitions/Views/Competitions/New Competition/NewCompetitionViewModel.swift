@@ -17,7 +17,6 @@ final class NewCompetitionViewModel: ObservableObject {
     // MARK: - Public Properties
     
     @Published var competition: Competition
-    @Published var constrainToWorkout = false
     @Published var friendRows = [InviteFriendsRow]()
     
     var createDisabled: Bool { disabledReason != nil }
@@ -33,21 +32,21 @@ final class NewCompetitionViewModel: ObservableObject {
     // MARK: - Private Properties
 
     private let _create = PassthroughSubject<Void, Never>()
-    private var cancellables = Set<AnyCancellable>()
+    private var cancellables = Cancellables()
 
     // MARK: - Lifecycle
         
     init(competitionsManager: CompetitionsManaging, friendsManager: FriendsManaging, userManager: UserManaging) {
         competition = .init(
-            name: "",
+            name: "Test",
             owner: "",
             participants: [],
             pendingParticipants: [],
-            scoringModel: .percentOfGoals,
-            start: .now.advanced(by: 1.days),
+            scoringModel: .workout(.walking, [.distance, .heartRate, .steps]),
+            start: .now.advanced(by: -10.days),
             end: .now.advanced(by: Constants.defaultInterval.days + 1.days),
             repeats: false,
-            isPublic: false,
+            isPublic: true,
             banner: nil
         )
 
@@ -72,11 +71,6 @@ final class NewCompetitionViewModel: ObservableObject {
             .setFailureType(to: Error.self)
             .flatMapLatest(withUnretained: self) { object, user -> AnyPublisher<Void, Error> in
                 var competition = object.competition
-                if object.constrainToWorkout {
-                    competition.scoringModel = nil
-                } else {
-                    competition.workoutType = nil
-                }
                 competition.owner = user.id
                 competition.participants = [user.id]
                 object.competition = competition
@@ -90,5 +84,9 @@ final class NewCompetitionViewModel: ObservableObject {
     
     func create() {
         _create.send()
+    }
+
+    func canSaveEdits(_ canSave: Bool) {
+            
     }
 }

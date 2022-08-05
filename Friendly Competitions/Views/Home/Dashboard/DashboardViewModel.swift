@@ -18,7 +18,7 @@ final class DashboardViewModel: ObservableObject {
     @Published var requiresPermissions = false
     @Published private(set) var title = Bundle.main.name
     
-    private var cancellables = Set<AnyCancellable>()
+    private var cancellables = Cancellables()
         
     init(activitySummaryManager: ActivitySummaryManaging, competitionsManager: CompetitionsManaging, friendsManager: FriendsManaging, permissionsManager: PermissionsManaging, userManager: UserManaging) {
 

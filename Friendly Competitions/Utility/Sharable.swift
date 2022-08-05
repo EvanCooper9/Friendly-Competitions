@@ -1,6 +1,10 @@
 import UIKit
 
-extension DeepLink {
+protocol Sharable {
+    var itemsForSharing: [Any] { get }
+}
+
+extension Sharable {
     func share() {
         let activityVC = UIActivityViewController(
             activityItems: itemsForSharing,

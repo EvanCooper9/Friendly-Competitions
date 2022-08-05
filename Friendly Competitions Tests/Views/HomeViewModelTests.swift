@@ -8,7 +8,7 @@ final class HomeViewModelTests: XCTestCase {
     private var competitionsManager: CompetitionsManagingMock!
     private var friendsManager: FriendsManagingMock!
 
-    private var cancellables: Set<AnyCancellable>!
+    private var cancellables: Cancellables!
 
     override func setUp() {
         competitionsManager = .init()

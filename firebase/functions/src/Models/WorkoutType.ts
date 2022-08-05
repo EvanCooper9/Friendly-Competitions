@@ -7,4 +7,4 @@ enum WorkoutType {
 
 export {
     WorkoutType
-}
+};

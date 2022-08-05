@@ -25,6 +25,8 @@ final class CompetitionViewModel: ObservableObject {
     @Published var showInviteFriend = false
     
     // MARK: - Private Properties
+
+    private var competitionPreEdit: Competition
     
     private var actionRequiringConfirmation: CompetitionViewAction? {
         didSet { confirmationRequired = actionRequiringConfirmation != nil }
@@ -32,12 +34,14 @@ final class CompetitionViewModel: ObservableObject {
 
     private let _confirm = PassthroughSubject<Void, Error>()
     private let _perform = PassthroughSubject<CompetitionViewAction, Error>()
-    private var cancellables = Set<AnyCancellable>()
+    private let _saveEdits = PassthroughSubject<Void, Error>()
+    private var cancellables = Cancellables()
     
     // MARK: - Lifecycle
     
     init(competitionsManager: CompetitionsManaging, userManager: UserManaging, competition: Competition) {
         self.competition = competition
+        self.competitionPreEdit = competition
 
         userManager.user
             .map { $0.id == competition.owner }
@@ -119,13 +123,22 @@ final class CompetitionViewModel: ObservableObject {
                 case .delete:
                     return competitionsManager.delete(competition)
                 case .edit:
-                    object.editing.toggle()
-                    return competitionsManager.update(competition)
+                    object._saveEdits.send()
+                    return .just(())
                 case .leave:
                     return competitionsManager.leave(competition)
                 default:
                     return .empty()
                 }
+            }
+            .sink()
+            .store(in: &cancellables)
+
+        _saveEdits
+            .flatMapLatest(withUnretained: self) { strongSelf -> AnyPublisher<Void, Error> in
+                strongSelf.editing.toggle()
+                strongSelf.competitionPreEdit = strongSelf.competition
+                return competitionsManager.update(strongSelf.competition)
             }
             .sink()
             .store(in: &cancellables)
@@ -157,14 +170,17 @@ final class CompetitionViewModel: ObservableObject {
     // MARK: - Public Methods
     
     func editTapped() {
+        if editing { // cancelling edit
+            competition = competitionPreEdit
+        }
         editing.toggle()
     }
     
     func saveTapped() {
-        if competition.start != competition.start || competition.end != competition.end {
+        if competition.start != competitionPreEdit.start || competition.end != competitionPreEdit.end {
             actionRequiringConfirmation = .edit
         } else {
-            _confirm.send()
+            _saveEdits.send()
         }
     }
     

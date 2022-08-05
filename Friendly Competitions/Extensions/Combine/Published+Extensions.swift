@@ -1,7 +1,7 @@
 import Combine
 import Foundation
 
-private var cancellables: Set<AnyCancellable> = []
+private var cancellables: Cancellables = []
 
 extension Published where Value: Codable {
     init(wrappedValue defaultValue: Value, storedWithKey key: UserDefaults.Key, store: UserDefaults = .standard) {

@@ -35,7 +35,7 @@ final class FriendsManager: FriendsManaging {
     private let database: Firestore
     private let userManager: UserManaging
 
-    private var cancellables = Set<AnyCancellable>()
+    private var cancellables = Cancellables()
 
     // MARK: - Lifecycle
 
@@ -50,6 +50,7 @@ final class FriendsManager: FriendsManaging {
                     .decoded(asArrayOf: User.self)
                     .sorted(by: \.name)
             }
+            .share(replay: 1)
             .ignoreFailure()
 
         friendRequests = userManager.user
@@ -58,6 +59,7 @@ final class FriendsManager: FriendsManaging {
                     .whereFieldWithChunking("id", in: user.incomingFriendRequests)
                     .decoded(asArrayOf: User.self)
             }
+            .share(replay: 1)
             .ignoreFailure()
 
         friendActivitySummaries = userManager.user
@@ -82,6 +84,7 @@ final class FriendsManager: FriendsManaging {
                 }
             }
             .prepend([:])
+            .share(replay: 1)
             .ignoreFailure()
     }
 

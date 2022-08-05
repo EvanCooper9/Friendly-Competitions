@@ -10,7 +10,7 @@ final class ProfileViewModel: ObservableObject {
     private var _delete = PassthroughRelay<Void>()
     private var _signOut = PassthroughRelay<Void>()
     
-    private var cancellables = Set<AnyCancellable>()
+    private var cancellables = Cancellables()
 
     init(authenticationManager: AuthenticationManaging, userManager: UserManaging) {
         user = userManager.user.value

@@ -25,7 +25,7 @@ final class SignInViewModel: ObservableObject {
     private let hud = PassthroughSubject<HUDState?, Never>()
     private let isLoading = PassthroughSubject<Bool, Never>()
 
-    private var cancellables = Set<AnyCancellable>()
+    private var cancellables = Cancellables()
     
     init(appState: AppState, authenticationManager: AuthenticationManaging) {
         hud
