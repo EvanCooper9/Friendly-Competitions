@@ -1,3 +1,4 @@
+import ECKit
 import Foundation
 import HealthKit
 

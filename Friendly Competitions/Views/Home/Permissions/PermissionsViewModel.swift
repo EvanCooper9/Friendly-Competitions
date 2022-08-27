@@ -12,7 +12,9 @@ final class PermissionsViewModel: ObservableObject {
 
         permissionsManager.permissionStatus
             .map { statuses in
-                statuses.map { ($0, $1) }
+                statuses
+                    .map { ($0, $1) }
+                    .sorted(by: \.0.rawValue)
             }
             .assign(to: &$permissionStatuses)
     }

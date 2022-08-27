@@ -32,7 +32,13 @@ class Competition {
         this.participants = document.get("participants");
         this.pendingParticipants = document.get("pendingParticipants");
         this.repeats = document.get("repeats");
-        this.scoringModel = document.get("scoringModel") as ScoringModel;
+
+        const legacyScoringModel: number = document.get("scoringModel");
+        if (legacyScoringModel == 0 || legacyScoringModel == 1) {
+            this.scoringModel = { type: legacyScoringModel };
+        } else {
+            this.scoringModel = document.get("scoringModel") as ScoringModel;
+        }
 
         const startDateString: string = document.get("start");
         const endDateString: string = document.get("end");
@@ -44,7 +50,6 @@ class Competition {
      * Updates the points and standings
      */
     async updateStandings(): Promise<void> {
-        console.log(`updating standings for competition: ${this.id}`);
         const standingPromises = this.participants.map(async userId => {
             let totalPoints = 0;
 

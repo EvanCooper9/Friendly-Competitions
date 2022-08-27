@@ -1,6 +1,13 @@
 import Combine
 import CombineExt
+import ECKit
 import Foundation
+
+enum ActivitySummaryState {
+    case found(ActivitySummary)
+    case missing
+    case permissionsDenied
+}
 
 final class DashboardViewModel: ObservableObject {
     
@@ -17,9 +24,7 @@ final class DashboardViewModel: ObservableObject {
     @Published private(set) var invitedCompetitions = [Competition]()
     @Published var requiresPermissions = false
     @Published private(set) var title = Bundle.main.name
-    
-    private var cancellables = Cancellables()
-        
+
     init(activitySummaryManager: ActivitySummaryManaging, competitionsManager: CompetitionsManaging, friendsManager: FriendsManaging, permissionsManager: PermissionsManaging, userManager: UserManaging) {
 
         activitySummaryManager.activitySummary.assign(to: &$activitySummary)
@@ -53,7 +58,9 @@ final class DashboardViewModel: ObservableObject {
             .map { $0 + $1 }
             .assign(to: &$friends)
 
-        permissionsManager.requiresPermission.assign(to: &$requiresPermissions)
+        permissionsManager
+            .requiresPermission
+            .assign(to: &$requiresPermissions)
         
         userManager.user
             .map { $0.name.ifEmpty(Bundle.main.name) }

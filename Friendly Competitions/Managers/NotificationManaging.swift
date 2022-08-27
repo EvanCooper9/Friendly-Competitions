@@ -19,14 +19,15 @@ final class NotificationManager: NSObject, NotificationManaging {
     
     @LazyInjected private var analyticsManager: AnalyticsManaging
 
-    private let _permissionStatus = PassthroughSubject<PermissionStatus, Never>()
+    private let _permissionStatus: CurrentValueSubject<PermissionStatus, Never>
 
     // MARK: - Lifecycle
 
     override init() {
 
+        print(#function)
+        _permissionStatus = .init(.done)
         permissionStatus = _permissionStatus
-            .share(replay: 1)
             .print("permissions/notifs")
             .eraseToAnyPublisher()
 

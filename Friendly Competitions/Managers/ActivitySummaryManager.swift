@@ -1,5 +1,7 @@
 import Combine
 import CombineExt
+import ECKit
+import ECKit_Firebase
 import Firebase
 import FirebaseFirestore
 import FirebaseFunctions
@@ -18,12 +20,7 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
 
     // MARK: - Public Properties
 
-    var activitySummary: AnyPublisher<ActivitySummary?, Never> {
-        _activitySummary
-            .receive(on: RunLoop.main)
-            .share(replay: 1)
-            .eraseToAnyPublisher()
-    }
+    let activitySummary: AnyPublisher<ActivitySummary?, Never>
 
     // MARK: - Private Properties
 
@@ -33,7 +30,7 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
     @Injected private var userManager: UserManaging
     @Injected private var workoutManager: WorkoutManaging
 
-    private var _activitySummary = PassthroughSubject<ActivitySummary?, Never>()
+    private var _activitySummary: CurrentValueSubject<ActivitySummary?, Never>
 
     private let upload = PassthroughSubject<[ActivitySummary], Never>()
     private let uploadFinished = PassthroughSubject<Void, Error>()
@@ -44,6 +41,15 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
     // MARK: - Lifecycle
 
     init() {
+        let storedActivitySummary = UserDefaults.standard.decode(ActivitySummary.self, forKey: "activity_summary")
+        _activitySummary = .init(storedActivitySummary)
+
+        activitySummary = _activitySummary
+            .handleEvents(receiveOutput: { UserDefaults.standard.encode($0, forKey: "activity_summary") })
+            .receive(on: RunLoop.main)
+            .share(replay: 1)
+            .eraseToAnyPublisher()
+
         Publishers
             .Merge3(
                 healthKitManager.backgroundDeliveryReceived,
@@ -63,7 +69,6 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
             .removeDuplicates()
             .filter(\.isNotEmpty)
             .combineLatest(userManager.user)
-//            .dropFirst(999)
             .sinkAsync { [weak self] activitySummaries, user in
                 guard let self = self else { return }
                 let batch = self.database.batch()

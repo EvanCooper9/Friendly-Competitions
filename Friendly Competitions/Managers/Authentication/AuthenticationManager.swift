@@ -1,6 +1,7 @@
 import AuthenticationServices
 import Combine
 import CryptoKit
+import ECKit
 import Firebase
 import FirebaseAuth
 import FirebaseFirestore
@@ -32,11 +33,11 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
     // MARK: - Private Properties
 
     @LazyInjected private var database: Firestore
-    
-    @Published(storedWithKey: .currentUser) private var currentUser: User? = nil
 
-    private let _emailVerified = PassthroughSubject<Bool, Never>()
-    private let _loggedIn = PassthroughSubject<Bool, Never>()
+    @UserDefault("current_user") private var currentUser: User? = nil
+
+    private let _emailVerified: CurrentValueSubject<Bool, Never>
+    private let _loggedIn: CurrentValueSubject<Bool, Never>
     
     private var currentNonce: String?
     private var userListener: AnyCancellable?
@@ -45,18 +46,21 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
     // MARK: - Lifecycle
 
     override init() {
+        if let firebaseUser = Auth.auth().currentUser {
+            _emailVerified = .init(firebaseUser.isEmailVerified)
+            _loggedIn = .init(true)
+        } else {
+            _emailVerified = .init(false)
+            _loggedIn = .init(false)
+        }
+
         super.init()
+
+        if let currentUser = currentUser {
+            registerUserManager(with: currentUser)
+        }
         
         listenForAuth()
-        
-        if let firebaseUser = Auth.auth().currentUser, let currentUser = currentUser {
-            _emailVerified.send(firebaseUser.isEmailVerified)
-            _loggedIn.send(true)
-            registerUserManager(with: currentUser)
-        } else {
-            _emailVerified.send(false)
-            _loggedIn.send(false)
-        }
     }
 
     // MARK: - Public Methods

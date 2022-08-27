@@ -1,5 +1,6 @@
 import Firebase
 import FirebaseFirestore
+import FirebaseFunctions
 import FirebaseStorage
 import Resolver
 

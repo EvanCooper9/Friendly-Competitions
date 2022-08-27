@@ -1,4 +1,6 @@
 import Combine
+import ECKit
+import ECKit_Firebase
 import Firebase
 import FirebaseFirestore
 import Resolver
@@ -93,6 +95,7 @@ final class FriendsManager: FriendsManaging {
     func add(friend: User) -> AnyPublisher<Void, Error> {
         userManager.user
             .first()
+            .setFailureType(to: Error.self)
             .flatMapAsync { [weak self] user in
                 guard let self = self else { return }
                 let batch = self.database.batch()
@@ -115,6 +118,7 @@ final class FriendsManager: FriendsManaging {
     func acceptFriendRequest(from friendRequest: User) -> AnyPublisher<Void, Error> {
         userManager.user
             .first()
+            .setFailureType(to: Error.self)
             .flatMapAsync { [weak self] user in
                 guard let self = self else { return }
                 let batch = self.database.batch()
@@ -149,6 +153,7 @@ final class FriendsManager: FriendsManaging {
     func declineFriendRequest(from friendRequest: User) -> AnyPublisher<Void, Error> {
         userManager.user
             .first()
+            .setFailureType(to: Error.self)
             .flatMapAsync { [weak self] user in
                 guard let self = self else { return }
                 let batch = self.database.batch()
@@ -163,6 +168,7 @@ final class FriendsManager: FriendsManaging {
     func delete(friend: User) -> AnyPublisher<Void, Error> {
         userManager.user
             .first()
+            .setFailureType(to: Error.self)
             .flatMapAsync { [weak self] user in
                 guard let self = self else { return }
                 let batch = self.database.batch()

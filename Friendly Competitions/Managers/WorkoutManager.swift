@@ -1,4 +1,7 @@
+import Algorithms
 import Combine
+import ECKit
+import ECKit_Firebase
 import Firebase
 import FirebaseFirestore
 import HealthKit

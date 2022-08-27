@@ -1,6 +1,9 @@
 import Combine
+import ECKit
+import ECKit_Firebase
 import Firebase
 import FirebaseFirestore
+import FirebaseFunctions
 import Resolver
 import SwiftUI
 
@@ -207,7 +210,7 @@ final class CompetitionsManager: CompetitionsManaging {
     func updateStandings() -> AnyPublisher<Void, Error> {
         .fromAsync { [weak self] in
             guard let self = self else { return }
-            try await self.functions
+            _ = try await self.functions
                 .httpsCallable(Constants.updateStandingsFirebaseFunctionName)
                 .call(["userId": self.userManager.user.value.id])
         }
@@ -241,7 +244,7 @@ final class CompetitionsManager: CompetitionsManaging {
     }
     
     private func updateStandings(of competition: Competition) async throws {
-        try await functions
+        _ = try await functions
             .httpsCallable(Constants.updateStandingsFirebaseFunctionName)
             .call(["competitionId": competition.id])
         fetchCompetitionData()

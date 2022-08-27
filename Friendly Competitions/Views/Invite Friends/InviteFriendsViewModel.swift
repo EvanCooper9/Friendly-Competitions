@@ -1,5 +1,6 @@
 import Combine
 import CombineExt
+import ECKit
 
 final class InviteFriendsViewModel: ObservableObject {
     
