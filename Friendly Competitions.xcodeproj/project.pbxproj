@@ -289,7 +289,6 @@
 		ED48782F282747CE00AC1E2C /* InviteFriendsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteFriendsViewModel.swift; sourceTree = "<group>"; };
 		ED48783128295A2100AC1E2C /* InviteFriendsAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteFriendsAction.swift; sourceTree = "<group>"; };
 		ED493E9627FDE47300A94F4A /* AuthenticationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AuthenticationServices.framework; path = System/Library/Frameworks/AuthenticationServices.framework; sourceTree = SDKROOT; };
-		ED61323928A7EFF30059D327 /* ECKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = ECKit; path = ../ECKit; sourceTree = "<group>"; };
 		ED65D3BC280CF36C00B38486 /* WorkoutType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutType.swift; sourceTree = "<group>"; };
 		ED6CB45628B9566700436BBD /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		ED7881AA2850F6C400C7F6CB /* SignInMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInMethod.swift; sourceTree = "<group>"; };
@@ -569,7 +568,6 @@
 		C1691DBA26D55FCF006FFA30 = {
 			isa = PBXGroup;
 			children = (
-				ED61323928A7EFF30059D327 /* ECKit */,
 				C1691DC526D55FCF006FFA30 /* Friendly Competitions */,
 				C155CA5827AB989D005F49F4 /* Friendly Competitions Tests */,
 				C1691DC426D55FCF006FFA30 /* Products */,

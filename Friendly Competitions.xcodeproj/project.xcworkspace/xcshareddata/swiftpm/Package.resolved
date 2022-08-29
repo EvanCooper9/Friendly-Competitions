@@ -28,6 +28,15 @@
       }
     },
     {
+      "identity" : "eckit",
+      "kind" : "remoteSourceControl",
+      "location" : "git@github.com:EvanCooper9/ECKit",
+      "state" : {
+        "branch" : "main",
+        "revision" : "7a9d8774f8ef2d996ee613c4cfd4d9a143013a7d"
+      }
+    },
+    {
       "identity" : "firebase-ios-sdk",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/firebase/firebase-ios-sdk",
