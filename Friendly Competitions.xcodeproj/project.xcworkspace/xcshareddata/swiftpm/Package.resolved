@@ -19,6 +19,15 @@
       }
     },
     {
+      "identity" : "codablefirebase",
+      "kind" : "remoteSourceControl",
+      "location" : "git@github.com:alickbass/CodableFirebase.git",
+      "state" : {
+        "revision" : "a4cda89948db93ec21249a35ecdacab8c489a116",
+        "version" : "0.2.2"
+      }
+    },
+    {
       "identity" : "combineext",
       "kind" : "remoteSourceControl",
       "location" : "git@github.com:CombineCommunity/CombineExt.git",
@@ -33,7 +42,7 @@
       "location" : "https://github.com/EvanCooper9/ECKit.git",
       "state" : {
         "branch" : "main",
-        "revision" : "7a9d8774f8ef2d996ee613c4cfd4d9a143013a7d"
+        "revision" : "5c0523b952fdef4c573b4fa22cf9fce0ad929005"
       }
     },
     {
