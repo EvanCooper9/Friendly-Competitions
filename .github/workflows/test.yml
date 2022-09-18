@@ -14,10 +14,9 @@ jobs:
     runs-on: macos-12
 
     steps:
-      - name: Install SSH Key
-        uses: shimataro/ssh-key-action@v2
+      - uses: webfactory/ssh-agent@v0.5.4
         with:
-          key: ${{ secrets.SSH_KEY }} 
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
 
       - name: Checkout
         uses: actions/checkout@v2
