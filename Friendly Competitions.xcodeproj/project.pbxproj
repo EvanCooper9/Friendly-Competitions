@@ -1538,7 +1538,7 @@
 /* Begin XCRemoteSwiftPackageReference section */
 		ED005F8D28D50C6A00481E04 /* XCRemoteSwiftPackageReference "ECKit" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/EvanCooper9/ECKit.git";
+			repositoryURL = "git@github.com:EvanCooper9/ECKit.git";
 			requirement = {
 				branch = main;
 				kind = branch;

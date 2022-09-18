@@ -39,7 +39,7 @@
     {
       "identity" : "eckit",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/EvanCooper9/ECKit.git",
+      "location" : "git@github.com:EvanCooper9/ECKit.git",
       "state" : {
         "branch" : "main",
         "revision" : "5c0523b952fdef4c573b4fa22cf9fce0ad929005"
