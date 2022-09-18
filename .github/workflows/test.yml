@@ -22,28 +22,18 @@ jobs:
     - uses: webfactory/ssh-agent@v0.5.4
       with:
         ssh-private-key: ${{ secrets.SSH_KEY }}
-
-    - name: Cache Ruby Gems
-      uses: actions/cache@v3
-      with:
-        path: vendor/bundle
-        key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}-
-        restore-keys: |
-          ${{ runner.os }}-gems-
-      
+    
     - name: Cache Swift Packages
       uses: actions/cache@v3
       with:
-        path: SourcePackages
-        key: ${{ runner.os }}-spm-${{ hashFiles('**/Friendly Competitions.xcworkspace/xcshareddata/swiftpm/Package.resolved') }}
+        path: .build
+        key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
         restore-keys: |
           ${{ runner.os }}-spm-
-
-    - name: Bundle Install
-      run: |
-        bundle config --global jobs 4
-        bundle config path vendor/bundle
-        bundle install
+    
+    - uses: ruby/setup-ruby@v1
+      with:
+        bundler-cache: true
 
     - name: Setup GoogleService-Info.plist
       run: |
