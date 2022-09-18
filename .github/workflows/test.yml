@@ -11,15 +11,16 @@ concurrency:
 jobs:
   build:
     name: Test
-    runs-on: macos-12
+    runs-on: macos-latest
 
     steps:
     - name: Checkout
       uses: actions/checkout@v3
       with:
-        fetch-depth: 0 # Number of commits to fetch. 0 indicates all history for all branches and tags.
+        fetch-depth: 0
     
-    - uses: webfactory/ssh-agent@v0.5.4
+    - name: Setup SSH
+      uses: webfactory/ssh-agent@v0.5.4
       with:
         ssh-private-key: ${{ secrets.SSH_KEY }}
     
@@ -31,7 +32,8 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-spm-
     
-    - uses: ruby/setup-ruby@v1
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
       with:
         bundler-cache: true
 
