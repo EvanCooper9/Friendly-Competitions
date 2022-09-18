@@ -27,9 +27,9 @@ jobs:
       uses: actions/cache@v3
       with:
         path: vendor/bundle
-        key: ${{ runner.os }}-gems-${{ hashFiles('.ruby-version') }}-${{ hashFiles('**/Gemfile.lock') }}
+        key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}-
         restore-keys: |
-          ${{ runner.os }}-gems-${{ hashFiles('.ruby-version') }}-
+          ${{ runner.os }}-gems-
       
     - name: Cache Swift Packages
       uses: actions/cache@v3
@@ -41,7 +41,6 @@ jobs:
 
     - name: Bundle Install
       run: |
-        eval "$(rbenv init -)"
         bundle config --global jobs 4
         bundle config path vendor/bundle
         bundle install
