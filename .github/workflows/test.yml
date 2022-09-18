@@ -14,11 +14,10 @@ jobs:
     runs-on: macos-12
 
     steps:
-      steps:
-        - name: Install SSH Key
-          uses: shimataro/ssh-key-action@v2
-          with:
-            key: ${{ secrets.SSH_KEY }} 
+      - name: Install SSH Key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_KEY }} 
 
       - name: Checkout
         uses: actions/checkout@v2
