@@ -18,6 +18,10 @@ jobs:
       uses: actions/checkout@v3
       with:
         fetch-depth: 0 # Number of commits to fetch. 0 indicates all history for all branches and tags.
+    
+    - uses: webfactory/ssh-agent@v0.5.4
+      with:
+        ssh-private-key: ${{ secrets.SSH_KEY }}
 
     - name: Cache Ruby Gems
       uses: actions/cache@v3
