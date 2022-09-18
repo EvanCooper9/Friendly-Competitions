@@ -30,6 +30,14 @@ jobs:
         key: ${{ runner.os }}-gems-${{ hashFiles('.ruby-version') }}-${{ hashFiles('**/Gemfile.lock') }}
         restore-keys: |
           ${{ runner.os }}-gems-${{ hashFiles('.ruby-version') }}-
+      
+    - name: Cache Swift Packages
+      uses: actions/cache@v3
+      with:
+        path: SourcePackages
+        key: ${{ runner.os }}-spm-${{ hashFiles('**/Friendly Competitions.xcworkspace/xcshareddata/swiftpm/Package.resolved') }}
+        restore-keys: |
+          ${{ runner.os }}-spm-
 
     - name: Bundle Install
       run: |
@@ -51,3 +59,5 @@ jobs:
     - name: Fastlane
       run: |
         bundle exec fastlane test
+      env:
+        FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: 120
