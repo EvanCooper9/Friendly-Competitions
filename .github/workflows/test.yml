@@ -14,25 +14,36 @@ jobs:
     runs-on: macos-12
 
     steps:
-      - uses: webfactory/ssh-agent@v0.5.4
-        with:
-          ssh-private-key: ${{ secrets.SSH_KEY }}
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0 # Number of commits to fetch. 0 indicates all history for all branches and tags.
 
-      - name: Checkout
-        uses: actions/checkout@v2
+    - name: Cache Ruby Gems
+      uses: actions/cache@v3
+      with:
+        path: vendor/bundle
+        key: ${{ runner.os }}-gems-${{ hashFiles('.ruby-version') }}-${{ hashFiles('**/Gemfile.lock') }}
+        restore-keys: |
+          ${{ runner.os }}-gems-${{ hashFiles('.ruby-version') }}-
 
-      - name: Restore build cache
-        uses: mikehardy/buildcache-action@v1
+    - name: Bundle Install
+      run: |
+        eval "$(rbenv init -)"
+        bundle config --global jobs 4
+        bundle config path vendor/bundle
+        bundle install
 
-      - name: Setup GoogleService-Info.plist
-        run: |
-          mkdir -p "Friendly Competitions/Firebase/Debug"
-          echo $GOOGLE_SERVICE_INFO_DEBUG > "Friendly Competitions/Firebase/Debug/GoogleService-Info.plist"
-        env:
-          GOOGLE_SERVICE_INFO_DEBUG: ${{ secrets.GOOGLE_SERVICE_INFO_DEBUG }}
+    - name: Setup GoogleService-Info.plist
+      run: |
+        mkdir -p "Friendly Competitions/Firebase/Debug"
+        echo $GOOGLE_SERVICE_INFO_DEBUG > "Friendly Competitions/Firebase/Debug/GoogleService-Info.plist"
+      env:
+        GOOGLE_SERVICE_INFO_DEBUG: ${{ secrets.GOOGLE_SERVICE_INFO_DEBUG }}
 
-      - name: Homebrew
-        run: brew bundle
+    - name: Homebrew
+      run: brew bundle
 
-      - name: Test
-        run: fastlane test
+    - name: Fastlane
+      run: |
+        bundle exec fastlane test
