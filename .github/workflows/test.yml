@@ -11,7 +11,7 @@ concurrency:
 jobs:
   build:
     name: Test
-    runs-on: macos-latest
+    runs-on: macos-12
 
     steps:
     - name: Checkout
@@ -44,11 +44,15 @@ jobs:
       env:
         GOOGLE_SERVICE_INFO_DEBUG: ${{ secrets.GOOGLE_SERVICE_INFO_DEBUG }}
 
-    # - name: Homebrew
-    #   run: brew bundle
-
-    - name: Fastlane
+    - name: Homebrew
+      run: brew bundle
+    
+    - name: Test
       run: |
-        bundle exec fastlane test
-      env:
-        FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: 120
+        xcodebuild test -scheme "Friendly Competitions" -destination "name=iPhone 13 Pro Max"
+
+    # - name: Fastlane
+    #   run: |
+    #     bundle exec fastlane test
+    #   env:
+    #     FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: 120
