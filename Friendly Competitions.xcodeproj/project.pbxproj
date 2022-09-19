@@ -142,6 +142,7 @@
 		EDA3529528370F4C00390585 /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA3529428370F4C00390585 /* HomeViewModel.swift */; };
 		EDA35298283713C200390585 /* Sharable.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA35297283713C200390585 /* Sharable.swift */; };
 		EDAF6C47285277FF002BC0DD /* Nonce.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDAF6C46285277FF002BC0DD /* Nonce.swift */; };
+		EDAFD1D128D801D0002580FB /* DocumentSnapshot+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDAFD1D028D801D0002580FB /* DocumentSnapshot+Extensions.swift */; };
 		EDB749B72875BC3F00021014 /* StringKeyEncoded.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDB749B62875BC3F00021014 /* StringKeyEncoded.swift */; };
 		EDBEA170281459D200058A47 /* CompetitionInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBEA16F281459D200058A47 /* CompetitionInfo.swift */; };
 		EDC373D027FB39A500318245 /* EmailSignInForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC373CF27FB39A500318245 /* EmailSignInForm.swift */; };
@@ -307,6 +308,7 @@
 		EDA3529428370F4C00390585 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
 		EDA35297283713C200390585 /* Sharable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sharable.swift; sourceTree = "<group>"; };
 		EDAF6C46285277FF002BC0DD /* Nonce.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Nonce.swift; sourceTree = "<group>"; };
+		EDAFD1D028D801D0002580FB /* DocumentSnapshot+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DocumentSnapshot+Extensions.swift"; sourceTree = "<group>"; };
 		EDB749B62875BC3F00021014 /* StringKeyEncoded.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringKeyEncoded.swift; sourceTree = "<group>"; };
 		EDBEA16F281459D200058A47 /* CompetitionInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionInfo.swift; sourceTree = "<group>"; };
 		EDC373CF27FB39A500318245 /* EmailSignInForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailSignInForm.swift; sourceTree = "<group>"; };
@@ -372,6 +374,7 @@
 		C11193AD26E7C5C6003B7EB3 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				EDAFD1CF28D801AC002580FB /* Firebase */,
 				C1C1542126D5DFEA00C6FA9F /* HealthKit */,
 				C12D63EE27A4D5A700259237 /* SwiftUI */,
 				C1AAE942275AEE5E00921E41 /* UIKit */,
@@ -919,6 +922,14 @@
 			path = "Deep Link";
 			sourceTree = "<group>";
 		};
+		EDAFD1CF28D801AC002580FB /* Firebase */ = {
+			isa = PBXGroup;
+			children = (
+				EDAFD1D028D801D0002580FB /* DocumentSnapshot+Extensions.swift */,
+			);
+			path = Firebase;
+			sourceTree = "<group>";
+		};
 		EDBEA16E281459C000058A47 /* Components */ = {
 			isa = PBXGroup;
 			children = (
@@ -1156,6 +1167,7 @@
 				C13F922C27BFFF9900FC6880 /* StorageManager.swift in Sources */,
 				ED901B682802504A00FE619E /* ExploreViewModel.swift in Sources */,
 				ED487830282747CE00AC1E2C /* InviteFriendsViewModel.swift in Sources */,
+				EDAFD1D128D801D0002580FB /* DocumentSnapshot+Extensions.swift in Sources */,
 				ED4878252826F43800AC1E2C /* CompetitionParticipantView.swift in Sources */,
 				ED901B742802649200FE619E /* VerifyEmailViewModel.swift in Sources */,
 				C132336B27BF0AF700196D81 /* Sticker.swift in Sources */,

@@ -26,7 +26,7 @@ class Competition_ScoringModelTests: XCTestCase {
         )
         XCTAssertEqual(
             Competition.ScoringModel.workout(.walking, []).description,
-            "Only walking workouts will count towards points."
+            "Only Walking workouts will count towards points."
         )
     }
 }

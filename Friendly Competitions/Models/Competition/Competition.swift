@@ -9,7 +9,7 @@ struct Competition: Codable, Equatable, Identifiable {
     var participants: [String]
     var pendingParticipants: [String]
     var scoringModel: ScoringModel
-    var start: Date
+    @PostDecoded<DateToMidnight, Date> var start: Date
     @PostDecoded<DateToMidnight, Date> var end: Date
     var repeats: Bool
     var isPublic: Bool

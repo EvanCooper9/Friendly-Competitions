@@ -28,7 +28,7 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
     // MARK: - Public Properties
 
     var emailVerified: AnyPublisher<Bool, Never> { _emailVerified.eraseToAnyPublisher() }
-    var loggedIn: AnyPublisher<Bool, Never> { _loggedIn.eraseToAnyPublisher() }
+    let loggedIn: AnyPublisher<Bool, Never>
 
     // MARK: - Private Properties
 
@@ -37,29 +37,39 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
     @UserDefault("current_user") private var currentUser: User? = nil
 
     private let _emailVerified: CurrentValueSubject<Bool, Never>
-    private let _loggedIn: CurrentValueSubject<Bool, Never>
-    
+
     private var currentNonce: String?
     private var userListener: AnyCancellable?
     private var signInWithAppleSubject: PassthroughSubject<Void, Error>?
+
+    private var cancellables = Cancellables()
 
     // MARK: - Lifecycle
 
     override init() {
         if let firebaseUser = Auth.auth().currentUser {
             _emailVerified = .init(firebaseUser.isEmailVerified)
-            _loggedIn = .init(true)
         } else {
             _emailVerified = .init(false)
-            _loggedIn = .init(false)
         }
+
+        let loggedInPublisher = PassthroughSubject<Bool, Never>()
+        loggedIn = loggedInPublisher
+            .share(replay: 1)
+            .receive(on: RunLoop.main)
+            .eraseToAnyPublisher()
 
         super.init()
 
-        if let currentUser = currentUser {
-            registerUserManager(with: currentUser)
-        }
-        
+        $currentUser
+            .sink(withUnretained: self) { strongSelf, currentUser in
+                if let currentUser = currentUser {
+                    strongSelf.registerUserManager(with: currentUser)
+                }
+                loggedInPublisher.send(currentUser != nil)
+            }
+            .store(in: &cancellables)
+
         listenForAuth()
     }
 
@@ -151,7 +161,6 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
                 DispatchQueue.main.async {
                     self.currentUser = nil
                     self.userListener = nil
-                    self._loggedIn.send(false)
                 }
                 return
             }
@@ -159,11 +168,9 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
             Task {
                 try await self.updateFirestoreUserWithAuthUser(firebaseUser)
                 let user = try await self.database.document("users/\(firebaseUser.uid)").getDocument().decoded(as: User.self)
-                self.registerUserManager(with: user)
                 DispatchQueue.main.async {
                     self.currentUser = user
                     self._emailVerified.send(firebaseUser.isEmailVerified || firebaseUser.email == "review@apple.com")
-                    self._loggedIn.send(true)
                 }
             }
         }

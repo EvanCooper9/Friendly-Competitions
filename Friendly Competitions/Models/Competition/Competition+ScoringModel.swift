@@ -24,7 +24,7 @@ extension Competition {
             case .rawNumbers:
                 return "Every calorie, minute and hour gains 1 point. No daily max."
             case .workout(let workoutType, _):
-                return "Only \(workoutType) workouts will cont towards points."
+                return "Only \(workoutType) workouts will count towards points."
             }
         }
     }
