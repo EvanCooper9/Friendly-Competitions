@@ -145,6 +145,7 @@
 		EDAFD1D128D801D0002580FB /* DocumentSnapshot+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDAFD1D028D801D0002580FB /* DocumentSnapshot+Extensions.swift */; };
 		EDB749B72875BC3F00021014 /* StringKeyEncoded.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDB749B62875BC3F00021014 /* StringKeyEncoded.swift */; };
 		EDBEA170281459D200058A47 /* CompetitionInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBEA16F281459D200058A47 /* CompetitionInfo.swift */; };
+		EDBFF1DA28D8B3F0009BC086 /* Inject in Frameworks */ = {isa = PBXBuildFile; productRef = EDBFF1D928D8B3F0009BC086 /* Inject */; };
 		EDC373D027FB39A500318245 /* EmailSignInForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC373CF27FB39A500318245 /* EmailSignInForm.swift */; };
 		EDC373D227FB5B0C00318245 /* VerifyEmail.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC373D127FB5B0C00318245 /* VerifyEmail.swift */; };
 		EDC5FC3F27FA7C1B00F2882D /* View+HUD.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC5FC3E27FA7C1B00F2882D /* View+HUD.swift */; };
@@ -336,6 +337,7 @@
 				C1C8B24726F3FB9C008D6B1B /* HealthKit.framework in Frameworks */,
 				ED005F9A28D50D5B00481E04 /* FirebaseAuth in Frameworks */,
 				ED005F9E28D50E3800481E04 /* FirebaseAnalytics in Frameworks */,
+				EDBFF1DA28D8B3F0009BC086 /* Inject in Frameworks */,
 				C1C8B24926F3FBA3008D6B1B /* HealthKitUI.framework in Frameworks */,
 				ED836057280336500038FACE /* Algorithms in Frameworks */,
 				ED005F9828D50D4300481E04 /* FirebaseFunctions in Frameworks */,
@@ -998,6 +1000,7 @@
 				ED005F9B28D50D8E00481E04 /* FirebaseMessaging */,
 				ED005F9D28D50E3800481E04 /* FirebaseAnalytics */,
 				ED005F9F28D50E5200481E04 /* FirebaseAnalyticsSwift */,
+				EDBFF1D928D8B3F0009BC086 /* Inject */,
 			);
 			productName = CompyBoi;
 			productReference = C1691DC326D55FCF006FFA30 /* Friendly Competitions.app */;
@@ -1035,6 +1038,7 @@
 				ED836055280336500038FACE /* XCRemoteSwiftPackageReference "swift-algorithms" */,
 				ED005F8D28D50C6A00481E04 /* XCRemoteSwiftPackageReference "ECKit" */,
 				ED005F9228D50D0100481E04 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				EDBFF1D828D8B3F0009BC086 /* XCRemoteSwiftPackageReference "Inject" */,
 			);
 			productRefGroup = C1691DC426D55FCF006FFA30 /* Products */;
 			projectDirPath = "";
@@ -1123,7 +1127,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ \"${ENABLE_PREVIEWS}\" = \"YES\" ]; then\n  echo \"Previews enabled, quitting to prevent 'preview paused'.\"\n  exit 0\nfi\n\nbundle exec sourcery\n";
+			shellScript = "if [ \"${ENABLE_PREVIEWS}\" = \"YES\" ]; then\n  echo \"Previews enabled, quitting to prevent 'preview paused'.\"\n  exit 0\nfi\n\nif [ $(arch) == \"arm64\" ]; then\n    arch -x86_64 /opt/homebrew/bin/swiftgen\nelse \n    sourcery\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1467,6 +1471,10 @@
 					"@executable_path/Frameworks",
 				);
 				MARKETING_VERSION = 1.6.0;
+				OTHER_LDFLAGS = (
+					"-Xlinker",
+					"-interposable",
+				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.evancooper.FriendlyCompetitions.debug;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "match Development com.evancooper.FriendlyCompetitions.debug";
@@ -1572,6 +1580,14 @@
 				minimumVersion = 1.0.0;
 			};
 		};
+		EDBFF1D828D8B3F0009BC086 /* XCRemoteSwiftPackageReference "Inject" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "git@github.com:krzysztofzablocki/Inject.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1624,6 +1640,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = ED836055280336500038FACE /* XCRemoteSwiftPackageReference "swift-algorithms" */;
 			productName = Algorithms;
+		};
+		EDBFF1D928D8B3F0009BC086 /* Inject */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EDBFF1D828D8B3F0009BC086 /* XCRemoteSwiftPackageReference "Inject" */;
+			productName = Inject;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
