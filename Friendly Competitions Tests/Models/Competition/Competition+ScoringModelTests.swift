@@ -4,13 +4,15 @@ import XCTest
 
 class Competition_ScoringModelTests: XCTestCase {
     func testThatIdIsCorrect() {
-        XCTAssertEqual(Competition.ScoringModel.percentOfGoals.id, 0)
-        XCTAssertEqual(Competition.ScoringModel.rawNumbers.id, 1)
+        [Competition.ScoringModel.percentOfGoals, .rawNumbers, .workout(.walking, [])].forEach { scoringModel in
+            XCTAssertEqual(scoringModel.id, scoringModel.displayName)
+        }
     }
 
     func testThatDisplayNameIsCorrect() {
         XCTAssertEqual(Competition.ScoringModel.percentOfGoals.displayName, "Percent of Goals")
         XCTAssertEqual(Competition.ScoringModel.rawNumbers.displayName, "Raw numbers")
+        XCTAssertEqual(Competition.ScoringModel.workout(.walking, []).displayName, "Walking workout")
     }
 
     func testThatDescriptionIsCorrect() {
@@ -21,6 +23,10 @@ class Competition_ScoringModelTests: XCTestCase {
         XCTAssertEqual(
             Competition.ScoringModel.rawNumbers.description,
             "Every calorie, minute and hour gains 1 point. No daily max."
+        )
+        XCTAssertEqual(
+            Competition.ScoringModel.workout(.walking, []).description,
+            "Only walking workouts will count towards points."
         )
     }
 }
