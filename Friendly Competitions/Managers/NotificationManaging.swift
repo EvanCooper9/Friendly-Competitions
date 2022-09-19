@@ -24,12 +24,8 @@ final class NotificationManager: NSObject, NotificationManaging {
     // MARK: - Lifecycle
 
     override init() {
-
-        print(#function)
         _permissionStatus = .init(.done)
-        permissionStatus = _permissionStatus
-            .print("permissions/notifs")
-            .eraseToAnyPublisher()
+        permissionStatus = _permissionStatus.eraseToAnyPublisher()
 
         super.init()
 

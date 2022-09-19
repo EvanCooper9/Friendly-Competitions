@@ -35,10 +35,8 @@ final class HealthKitManager: HealthKitManaging {
                 let hasUndetermined = HealthKitPermissionType.allCases
                     .contains { permissionType in
                         guard let permissionStatus = permissionStatuses[permissionType] else {
-                            print("HKManager", permissionType)
                             return true
                         }
-                        print("HKManager", permissionType, permissionStatus)
                         return permissionStatus == .notDetermined
                     }
 
@@ -47,7 +45,6 @@ final class HealthKitManager: HealthKitManaging {
                 let authorized = HealthKitPermissionType.allCases.allSatisfy { permissionStatuses[$0] == .authorized }
                 return authorized ? .authorized : .denied
             }
-            .print("permissions/health")
             .eraseToAnyPublisher()
 
         registerForBackgroundDelivery()

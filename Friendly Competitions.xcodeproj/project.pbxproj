@@ -120,7 +120,6 @@
 		ED48783228295A2100AC1E2C /* InviteFriendsAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED48783128295A2100AC1E2C /* InviteFriendsAction.swift */; };
 		ED493E9727FDE47300A94F4A /* AuthenticationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED493E9627FDE47300A94F4A /* AuthenticationServices.framework */; };
 		ED65D3BD280CF36C00B38486 /* WorkoutType.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED65D3BC280CF36C00B38486 /* WorkoutType.swift */; };
-		ED6CB45728B9566700436BBD /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = ED6CB45628B9566700436BBD /* GoogleService-Info.plist */; };
 		ED7881AB2850F6C400C7F6CB /* SignInMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED7881AA2850F6C400C7F6CB /* SignInMethod.swift */; };
 		ED7881AD2850F6DF00C7F6CB /* SignUpError.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED7881AC2850F6DF00C7F6CB /* SignUpError.swift */; };
 		ED7881B02850F71E00C7F6CB /* AnalyticsEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED7881AF2850F71E00C7F6CB /* AnalyticsEvent.swift */; };
@@ -145,7 +144,6 @@
 		EDAFD1D128D801D0002580FB /* DocumentSnapshot+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDAFD1D028D801D0002580FB /* DocumentSnapshot+Extensions.swift */; };
 		EDB749B72875BC3F00021014 /* StringKeyEncoded.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDB749B62875BC3F00021014 /* StringKeyEncoded.swift */; };
 		EDBEA170281459D200058A47 /* CompetitionInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBEA16F281459D200058A47 /* CompetitionInfo.swift */; };
-		EDBFF1DA28D8B3F0009BC086 /* Inject in Frameworks */ = {isa = PBXBuildFile; productRef = EDBFF1D928D8B3F0009BC086 /* Inject */; };
 		EDC373D027FB39A500318245 /* EmailSignInForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC373CF27FB39A500318245 /* EmailSignInForm.swift */; };
 		EDC373D227FB5B0C00318245 /* VerifyEmail.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC373D127FB5B0C00318245 /* VerifyEmail.swift */; };
 		EDC5FC3F27FA7C1B00F2882D /* View+HUD.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC5FC3E27FA7C1B00F2882D /* View+HUD.swift */; };
@@ -288,7 +286,6 @@
 		ED48783128295A2100AC1E2C /* InviteFriendsAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteFriendsAction.swift; sourceTree = "<group>"; };
 		ED493E9627FDE47300A94F4A /* AuthenticationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AuthenticationServices.framework; path = System/Library/Frameworks/AuthenticationServices.framework; sourceTree = SDKROOT; };
 		ED65D3BC280CF36C00B38486 /* WorkoutType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutType.swift; sourceTree = "<group>"; };
-		ED6CB45628B9566700436BBD /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "../../../../Downloads/GoogleService-Info.plist"; sourceTree = "<group>"; };
 		ED7881AA2850F6C400C7F6CB /* SignInMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInMethod.swift; sourceTree = "<group>"; };
 		ED7881AC2850F6DF00C7F6CB /* SignUpError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpError.swift; sourceTree = "<group>"; };
 		ED7881AF2850F71E00C7F6CB /* AnalyticsEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsEvent.swift; sourceTree = "<group>"; };
@@ -337,7 +334,6 @@
 				C1C8B24726F3FB9C008D6B1B /* HealthKit.framework in Frameworks */,
 				ED005F9A28D50D5B00481E04 /* FirebaseAuth in Frameworks */,
 				ED005F9E28D50E3800481E04 /* FirebaseAnalytics in Frameworks */,
-				EDBFF1DA28D8B3F0009BC086 /* Inject in Frameworks */,
 				C1C8B24926F3FBA3008D6B1B /* HealthKitUI.framework in Frameworks */,
 				ED836057280336500038FACE /* Algorithms in Frameworks */,
 				ED005F9828D50D4300481E04 /* FirebaseFunctions in Frameworks */,
@@ -590,7 +586,6 @@
 				C1691DCA26D55FCF006FFA30 /* Images.xcassets */,
 				C1930E4C27C6730A00DB45C1 /* Colors.xcassets */,
 				C163E30026F2344D00C9EC30 /* Info.plist */,
-				ED6CB45628B9566700436BBD /* GoogleService-Info.plist */,
 				C1E6406226F4395200E3E70A /* FriendlyCompetitions.entitlements */,
 				C1691DC626D55FCF006FFA30 /* FriendlyCompetitions.swift */,
 				C1B2F4E3272B505C0028449F /* AppDelegate.swift */,
@@ -1000,7 +995,6 @@
 				ED005F9B28D50D8E00481E04 /* FirebaseMessaging */,
 				ED005F9D28D50E3800481E04 /* FirebaseAnalytics */,
 				ED005F9F28D50E5200481E04 /* FirebaseAnalyticsSwift */,
-				EDBFF1D928D8B3F0009BC086 /* Inject */,
 			);
 			productName = CompyBoi;
 			productReference = C1691DC326D55FCF006FFA30 /* Friendly Competitions.app */;
@@ -1038,7 +1032,6 @@
 				ED836055280336500038FACE /* XCRemoteSwiftPackageReference "swift-algorithms" */,
 				ED005F8D28D50C6A00481E04 /* XCRemoteSwiftPackageReference "ECKit" */,
 				ED005F9228D50D0100481E04 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
-				EDBFF1D828D8B3F0009BC086 /* XCRemoteSwiftPackageReference "Inject" */,
 			);
 			productRefGroup = C1691DC426D55FCF006FFA30 /* Products */;
 			projectDirPath = "";
@@ -1063,7 +1056,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				C1930E4D27C6730A00DB45C1 /* Colors.xcassets in Resources */,
-				ED6CB45728B9566700436BBD /* GoogleService-Info.plist in Resources */,
 				C1691DCE26D55FCF006FFA30 /* Preview Assets.xcassets in Resources */,
 				C1691DCB26D55FCF006FFA30 /* Images.xcassets in Resources */,
 			);
@@ -1580,14 +1572,6 @@
 				minimumVersion = 1.0.0;
 			};
 		};
-		EDBFF1D828D8B3F0009BC086 /* XCRemoteSwiftPackageReference "Inject" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "git@github.com:krzysztofzablocki/Inject.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1640,11 +1624,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = ED836055280336500038FACE /* XCRemoteSwiftPackageReference "swift-algorithms" */;
 			productName = Algorithms;
-		};
-		EDBFF1D928D8B3F0009BC086 /* Inject */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = EDBFF1D828D8B3F0009BC086 /* XCRemoteSwiftPackageReference "Inject" */;
-			productName = Inject;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

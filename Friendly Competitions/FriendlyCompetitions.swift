@@ -2,10 +2,6 @@ import Firebase
 import Resolver
 import SwiftUI
 
-#if DEBUG
-let isPreview = ProcessInfo.processInfo.environment["XCODE_RUNNING_FOR_PREVIEWS"] == "1"
-#endif
-
 @main
 struct FriendlyCompetitions: App {
 

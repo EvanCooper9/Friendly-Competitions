@@ -100,15 +100,6 @@
       }
     },
     {
-      "identity" : "inject",
-      "kind" : "remoteSourceControl",
-      "location" : "git@github.com:krzysztofzablocki/Inject.git",
-      "state" : {
-        "revision" : "a45509eac083b42afd4b6fd00a93a2b53f99f3eb",
-        "version" : "1.2.1"
-      }
-    },
-    {
       "identity" : "keychainaccess",
       "kind" : "remoteSourceControl",
       "location" : "git@github.com:kishikawakatsumi/KeychainAccess.git",
