@@ -11,7 +11,7 @@ concurrency:
 jobs:
   build:
     name: Test
-    runs-on: macos-12
+    runs-on: macos-latest
 
     steps:
     - name: Checkout
@@ -44,8 +44,8 @@ jobs:
       env:
         GOOGLE_SERVICE_INFO_DEBUG: ${{ secrets.GOOGLE_SERVICE_INFO_DEBUG }}
 
-    - name: Homebrew
-      run: brew bundle
+    # - name: Homebrew
+    #   run: brew bundle
 
     - name: Fastlane
       run: |
