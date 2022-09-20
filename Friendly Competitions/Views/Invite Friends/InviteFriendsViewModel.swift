@@ -1,6 +1,6 @@
 import Combine
 import CombineExt
-import Resolver
+import ECKit
 
 final class InviteFriendsViewModel: ObservableObject {
     
@@ -12,80 +12,95 @@ final class InviteFriendsViewModel: ObservableObject {
         var buttonDisabled: Bool
         let buttonAction: () -> Void
     }
-    
+
+    @Published var loading = false
     @Published var footerText: String?
     @Published var rows = [RowConfig]()
     @Published var searchText = ""
-    @Published var sharedDeepLink: DeepLink?
 
-    @Injected private var competitionsManager: AnyCompetitionsManager
-    @Injected private var friendsManager: AnyFriendsManager
-    @Injected private var userManager: AnyUserManager
+    private var _invite = PassthroughSubject<User, Never>()
+    private var _share = PassthroughSubject<Void, Never>()
+
+    private var cancellables = Cancellables()
     
-    private var action: InviteFriendsAction
-    
-    init(action: InviteFriendsAction) {
-        self.action = action
-        
-        let alreadyInvited: [String]
-        let hidden: [String]
-        
+    init(competitionsManager: CompetitionsManaging, friendsManager: FriendsManaging, userManager: UserManaging, action: InviteFriendsAction) {
+        let alreadyInvited: AnyPublisher<[User.ID], Never>
+
         switch action {
         case .addFriend:
-            alreadyInvited = friendsManager.friends.map(\.id)
-            hidden = friendsManager.friends.map(\.id).appending(userManager.user.id)
+            alreadyInvited = friendsManager.friends
+                .mapMany(\.id)
+                .eraseToAnyPublisher()
         case .competitionInvite(let competition):
-            alreadyInvited = competition.participants + competition.pendingParticipants
-            hidden = [userManager.user.id]
-            footerText = "People who join in-progress competitions will have their scores from missed days retroactively uploaded."
+            alreadyInvited = Publishers
+                .CombineLatest(competitionsManager.participants, competitionsManager.pendingParticipants)
+                .map { participants, pendingParticipants in
+                    let participants = participants[competition.id] ?? []
+                    let pendingParticipants = pendingParticipants[competition.id] ?? []
+                    return (participants + pendingParticipants).map(\.id)
+                }
+                .eraseToAnyPublisher()
         }
         
         $searchText
-            .flatMapAsync { [weak self] searchText in
-                guard let self = self else { return [] }
-                guard !searchText.isEmpty else { return self.friendsManager.friends }
-                return try await self.friendsManager.search(with: searchText)
-            }
-            .prepend(friendsManager.friends)
-            .map { users -> [RowConfig] in
-                users
-                    .filter { !hidden.contains($0.id) }
-                    .map { friend in
-                        RowConfig(
-                            id: friend.id,
-                            name: friend.name,
-                            pillId: friend.hashId,
-                            buttonTitle: alreadyInvited.contains(friend.id) ? "Invited" : "Invite",
-                            buttonDisabled: alreadyInvited.contains(friend.id),
-                            buttonAction: { [friend] in
-                                guard let index = self.rows.firstIndex(where: { $0.id == friend.id }) else { return }
-                                self.rows[index].buttonDisabled.toggle()
-                                self.rows[index].buttonTitle = self.rows[index].buttonDisabled ? "Invited" : "Invite"
-                                self.invite(friend: friend)
-                            }
-                        )
-                    }
-            }
+            .setFailureType(to: Error.self)
+            .flatMapLatest(friendsManager.search(with:))
             .ignoreFailure()
+            .prepend(friendsManager.friends)
+            .combineLatest(alreadyInvited)
+            .map { users, alreadyInvited -> [RowConfig] in
+                users.map { friend in
+                    RowConfig(
+                        id: friend.id,
+                        name: friend.name,
+                        pillId: friend.hashId,
+                        buttonTitle: alreadyInvited.contains(friend.id) ? "Invited" : "Invite",
+                        buttonDisabled: alreadyInvited.contains(friend.id),
+                        buttonAction: { [weak self, friend] in
+                            guard let self = self, let index = self.rows.firstIndex(where: { $0.id == friend.id }) else { return }
+                            self.rows[index].buttonDisabled.toggle()
+                            self.rows[index].buttonTitle = self.rows[index].buttonDisabled ? "Invited" : "Invite"
+                            self._invite.send(friend)
+                        }
+                    )
+                }
+            }
             .assign(to: &$rows)
+
+        _invite
+            .handleEvents(withUnretained: self, receiveOutput: { owner, _ in owner.loading = true })
+            .flatMapLatest { friend -> AnyPublisher<Void, Never> in
+                switch action {
+                case .addFriend:
+                    return friendsManager
+                        .add(friend: friend)
+                        .ignoreFailure()
+                case .competitionInvite(let competition):
+                    return competitionsManager
+                        .invite(friend, to: competition)
+                        .ignoreFailure()
+                }
+            }
+            .handleEvents(withUnretained: self, receiveOutput: { $0.loading = false })
+            .sink()
+            .store(in: &cancellables)
+
+        _share
+            .receive(on: RunLoop.main)
+            .sink {
+                let deepLink: DeepLink?
+                switch action {
+                case .addFriend:
+                    deepLink = .friendReferral(id: userManager.user.value.id)
+                case .competitionInvite(let competition):
+                    deepLink = .competitionInvite(id: competition.id)
+                }
+                deepLink?.share()
+            }
+            .store(in: &cancellables)
     }
     
     func sendInviteLink() {
-        sharedDeepLink = nil
-        switch action {
-        case .addFriend:
-            sharedDeepLink = .friendReferral(id: userManager.user.id)
-        case .competitionInvite(let competition):
-            sharedDeepLink = .competitionInvite(id: competition.id)
-        }
-    }
-    
-    private func invite(friend: User) {
-        switch action {
-        case .addFriend:
-            friendsManager.add(friend: friend)
-        case .competitionInvite(let competition):
-            competitionsManager.invite(friend, to: competition)
-        }
+        _share.send()
     }
 }

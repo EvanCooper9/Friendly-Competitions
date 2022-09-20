@@ -72,7 +72,6 @@ exports.updateCompetitionStandings = functions.https
             const competition = new Competition(data);
             await competition.updateStandings();
         } else if (userId !== undefined) {
-            console.log(`updating competition standings for user: ${userId}`);
             const competitionsRef = await firestore.collection("competitions")
                 .where("participants", "array-contains", userId)
                 .get();

@@ -1,8 +1,9 @@
+import Resolver
 import SwiftUI
 
 struct PermissionsView: View {
 
-    @StateObject private var viewModel = PermissionsViewModel()
+    @StateObject private var viewModel = Resolver.resolve(PermissionsViewModel.self)
 
     var body: some View {
         List {
@@ -28,10 +29,10 @@ struct PermissionsView: View {
 struct PermissionsView_Previews: PreviewProvider {
 
     private static func setupMocks() {
-        permissionsManager.permissionStatus = [
+        permissionsManager.permissionStatus = .just([
             .health: .done,
             .notifications: .authorized
-        ]
+        ])
     }
     
     static var previews: some View {

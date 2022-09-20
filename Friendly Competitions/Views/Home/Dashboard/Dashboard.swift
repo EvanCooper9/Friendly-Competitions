@@ -3,10 +3,8 @@ import SwiftUI
 
 struct Dashboard: View {
     
-    @StateObject private var viewModel = DashboardViewModel()
-    
-    @EnvironmentObject private var appState: AppState
-        
+    @StateObject private var viewModel = Resolver.resolve(DashboardViewModel.self)
+            
     @State private var presentAbout = false
     @State private var presentPermissions = false
     @State private var presentNewCompetition = false
@@ -130,27 +128,28 @@ struct Dashboard: View {
 struct Dashboard_Previews: PreviewProvider {
     
     private static func setupMocks() {
-        activitySummaryManager.activitySummary = .mock
+        activitySummaryManager.activitySummary = .just(.mock)
         
         let competitions: [Competition] = [.mock, .mockInvited, .mockOld, .mockPublic]
-        competitionsManager.competitions = competitions
-        competitionsManager.participants = competitions.reduce(into: [:]) { partialResult, competition in
+        let participants = competitions.reduce(into: [Competition.ID: [User]]()) { partialResult, competition in
             partialResult[competition.id] = [.evan]
         }
-        competitionsManager.standings = competitions.reduce(into: [:]) { partialResult, competition in
+        let standings = competitions.reduce(into: [Competition.ID: [Competition.Standing]]()) { partialResult, competition in
             partialResult[competition.id] = [.mock(for: .evan)]
         }
+        competitionsManager.competitions = .just(competitions)
+        competitionsManager.participants = .just(participants)
+        competitionsManager.standings = .just(standings)
+
+        friendsManager.friends = .just([.gabby])
+        friendsManager.friendRequests = .just([.andrew])
+        friendsManager.friendActivitySummaries = .just([User.gabby.id: .mock])
         
-        let friend = User.gabby
-        friendsManager.friends = [friend]
-        friendsManager.friendRequests = [friend]
-        friendsManager.friendActivitySummaries = [friend.id: .mock]
-        
-        permissionsManager.requiresPermission = false
-        permissionsManager.permissionStatus = [
+        permissionsManager.requiresPermission = .just(false)
+        permissionsManager.permissionStatus = .just([
             .health: .authorized,
             .notifications: .authorized
-        ]
+        ])
     }
     
     static var previews: some View {

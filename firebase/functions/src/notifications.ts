@@ -27,7 +27,7 @@ async function sendNotificationsToUser(user: User, title: string, body: string) 
 }
 
 /**
- * Send a single notificaiton for a given token
+ * Send a single notification for a given token
  * @param {string} fcmToken The token to send the notification for
  * @param {string} title The title of the notification
  * @param {string} body The body of the notification

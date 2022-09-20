@@ -29,6 +29,5 @@ struct ExploreCarousel_Previews: PreviewProvider {
             .aspectRatio(3/2, contentMode: .fit)
         }
         .background(Asset.Colors.listBackground.swiftUIColor)
-//        .preferredColorScheme(.dark)
     }
 }

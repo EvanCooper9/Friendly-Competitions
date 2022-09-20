@@ -28,7 +28,7 @@ struct CompetitionDetails: View {
                 VStack(alignment: .leading) {
                     Text(competition.name)
                     
-                    let referenceDate = competition.started ? competition.trueEnd : competition.start
+                    let referenceDate = competition.started ? competition.end : competition.start
                     let endString = competition.ended ? "ended" : "ends"
                     let startString = "starts"
                     Text("\(competition.started ? endString : startString) \(RelativeDateTimeFormatter().localizedString(for: referenceDate, relativeTo: .now))")

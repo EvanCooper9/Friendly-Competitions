@@ -1,38 +1,55 @@
 import Combine
 import CombineExt
-import Resolver
+import ECKit
 
 final class ProfileViewModel: ObservableObject {
-    
+
+    @Published var loading = false
     @Published var user: User!
     @Published var sharedDeepLink: DeepLink!
+
+    private var _delete = PassthroughRelay<Void>()
+    private var _signOut = PassthroughRelay<Void>()
     
-    @Injected private var authenticationManager: AnyAuthenticationManager
-    @Injected private var userManager: AnyUserManager
-    
-    private var cancellables = Set<AnyCancellable>()
-    
-    init() {
-        user = userManager.user
-        sharedDeepLink = .friendReferral(id: userManager.user.id)
+    private var cancellables = Cancellables()
+
+    init(authenticationManager: AuthenticationManaging, userManager: UserManaging) {
+        user = userManager.user.value
+        sharedDeepLink = .friendReferral(id: userManager.user.value.id)
         
         $user
             .removeDuplicates()
             .compactMap { $0 }
-            .assign(to: \.userManager.user, on: self, ownership: .weak)
+            .sink(receiveValue: { userManager.update(with: $0) })
             .store(in: &cancellables)
         
-        userManager.$user
+        userManager.user
             .removeDuplicates()
-            .assign(to: \.user, on: self, ownership: .weak)
+            .map(User?.init)
+            .assign(to: &$user)
+
+        _delete
+            .handleEvents(withUnretained: self, receiveOutput: { $0.loading = true })
+            .flatMapLatest {
+                userManager
+                    .deleteAccount()
+                    .ignoreFailure()
+            }
+            .handleEvents(withUnretained: self, receiveOutput: { $0.loading = false })
+            .sink()
+            .store(in: &cancellables)
+
+        _signOut
+            .flatMapAsync { try authenticationManager.signOut() }
+            .sink()
             .store(in: &cancellables)
     }
     
     func deleteAccount() {
-        userManager.deleteAccount()
+        _delete.accept()
     }
     
     func signOut() {
-        try? authenticationManager.signOut()
+        _signOut.accept()
     }
 }

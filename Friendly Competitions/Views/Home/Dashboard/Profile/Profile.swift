@@ -3,7 +3,7 @@ import SwiftUI
 
 struct Profile: View {
     
-    @StateObject private var viewModel = ProfileViewModel()
+    @StateObject private var viewModel = Resolver.resolve(ProfileViewModel.self)
     
     @State private var presentDeleteAccountAlert = false
     

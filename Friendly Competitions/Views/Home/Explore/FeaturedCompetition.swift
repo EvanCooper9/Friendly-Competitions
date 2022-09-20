@@ -48,7 +48,6 @@ struct FeaturedCompetitionView_Previews: PreviewProvider {
             FeaturedCompetition(competition: .mockPublic)
                 .padding()
         }
-//        .preferredColorScheme(.dark)
         .background(Asset.Colors.listBackground.swiftUIColor)
         .setupMocks()
     }

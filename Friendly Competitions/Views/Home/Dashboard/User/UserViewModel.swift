@@ -1,6 +1,6 @@
 import Combine
 import CombineExt
-import Resolver
+import ECKit
 
 final class UserViewModel: ObservableObject {
     
@@ -15,21 +15,22 @@ final class UserViewModel: ObservableObject {
         didSet { confirmationRequired = actionRequiringConfirmation != nil }
     }
 
-    @Injected private var friendsManager: AnyFriendsManager
-    @Injected private var userManager: AnyUserManager
+    private var _confirm = PassthroughSubject<Void, Error>()
+    private var _perform = PassthroughSubject<UserViewAction, Error>()
     
     private let user: User
+    private var cancellables = Cancellables()
     
-    init(user: User) {
+    init(friendsManager: FriendsManaging, userManager: UserManaging, user: User) {
         self.user = user
         title = user.name
         statistics = user.statistics ?? .zero
         
-        friendsManager.$friendActivitySummaries
+        friendsManager.friendActivitySummaries
             .compactMap { $0[user.id] }
             .assign(to: &$activitySummary)
         
-        userManager.$user
+        userManager.user
             .map { loggedInUser in
                 if loggedInUser.friends.contains(user.id) {
                     return [.deleteFriend]
@@ -40,27 +41,42 @@ final class UserViewModel: ObservableObject {
                 }
             }
             .assign(to: &$actions)
+
+        _confirm
+            .flatMapLatest(withUnretained: self) { object -> AnyPublisher<Void, Error> in
+                switch object.actionRequiringConfirmation {
+                case .deleteFriend:
+                    return friendsManager.delete(friend: self.user)
+                default:
+                    return .empty()
+                }
+            }
+            .sink()
+            .store(in: &cancellables)
+
+        _perform
+            .flatMapLatest(withUnretained: self) { object, action -> AnyPublisher<Void, Error> in
+                switch action {
+                case .acceptFriendRequest:
+                    return friendsManager.acceptFriendRequest(from: user)
+                case .denyFriendRequest:
+                    return friendsManager.declineFriendRequest(from: user)
+                case .request:
+                    return friendsManager.add(friend: user)
+                case .deleteFriend:
+                    object.actionRequiringConfirmation = .deleteFriend
+                    return .empty()
+                }
+            }
+            .sink()
+            .store(in: &cancellables)
     }
     
     func confirm() {
-        switch actionRequiringConfirmation {
-        case .deleteFriend:
-            friendsManager.delete(friend: user)
-        default:
-            break
-        }
+        _confirm.send()
     }
     
     func perform(_ action: UserViewAction) {
-        switch action {
-        case .acceptFriendRequest:
-            friendsManager.acceptFriendRequest(from: user)
-        case .denyFriendRequest:
-            friendsManager.declineFriendRequest(from: user)
-        case .request:
-            friendsManager.add(friend: user)
-        case .deleteFriend:
-            actionRequiringConfirmation = .deleteFriend
-        }
+        _perform.send(action)
     }
 }

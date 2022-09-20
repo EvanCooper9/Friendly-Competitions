@@ -29,7 +29,10 @@ enum DeepLink: Equatable {
             return Constants.baseURL.appendingPathComponent(Constants.competition.appending(id))
         }
     }
-    
+}
+
+
+extension DeepLink: Sharable {
     var itemsForSharing: [Any] {
         let text: String
         switch self {

@@ -1,17 +1,20 @@
 import Combine
 import CombineExt
-import Resolver
 
 final class PermissionsViewModel: ObservableObject {
         
     @Published private(set) var permissionStatuses = [(Permission, PermissionStatus)]()
-    
-    @Injected private var permissionsManager: AnyPermissionsManager
-    
-    init() {
-        permissionsManager.$permissionStatus
+
+    private let permissionsManager: PermissionsManaging
+
+    init(permissionsManager: PermissionsManaging) {
+        self.permissionsManager = permissionsManager
+
+        permissionsManager.permissionStatus
             .map { statuses in
-                statuses.map { ($0, $1) }
+                statuses
+                    .map { ($0, $1) }
+                    .sorted(by: \.0.rawValue)
             }
             .assign(to: &$permissionStatuses)
     }

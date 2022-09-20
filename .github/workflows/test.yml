@@ -11,24 +11,51 @@ concurrency:
 jobs:
   build:
     name: Test
-    runs-on: macos-latest
+    runs-on: macos-12
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v2
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    
+    - name: Setup SSH
+      uses: webfactory/ssh-agent@v0.5.4
+      with:
+        ssh-private-key: ${{ secrets.SSH_KEY }}
+  
+    - name: Build Cache
+      uses: mikehardy/buildcache-action@v1
+    
+    - name: Cache Swift Packages
+      uses: actions/cache@v3
+      with:
+        path: .build
+        key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+        restore-keys: |
+          ${{ runner.os }}-spm-
+    
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        bundler-cache: true
 
-      - name: Restore build cache
-        uses: mikehardy/buildcache-action@v1
+    - name: Setup GoogleService-Info.plist
+      run: |
+        mkdir -p "Friendly Competitions/Firebase/Debug"
+        echo $GOOGLE_SERVICE_INFO_DEBUG > "Friendly Competitions/Firebase/Debug/GoogleService-Info.plist"
+      env:
+        GOOGLE_SERVICE_INFO_DEBUG: ${{ secrets.GOOGLE_SERVICE_INFO_DEBUG }}
 
-      - name: Setup GoogleService-Info.plist
-        run: |
-          mkdir -p "Friendly Competitions/Firebase/Debug"
-          echo $GOOGLE_SERVICE_INFO_DEBUG > "Friendly Competitions/Firebase/Debug/GoogleService-Info.plist"
-        env:
-          GOOGLE_SERVICE_INFO_DEBUG: ${{ secrets.GOOGLE_SERVICE_INFO_DEBUG }}
+    - name: Homebrew
+      run: brew bundle
+    
+    # - name: Test
+    #   run: |
+    #     xcodebuild test -scheme "Friendly Competitions" -destination "name=iPhone 13 Pro Max"
 
-      - name: Homebrew
-        run: brew bundle
-
-      - name: Test
-        run: fastlane test
+    - name: Fastlane
+      run: |
+        bundle exec fastlane test
+      env:
+        FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: 120

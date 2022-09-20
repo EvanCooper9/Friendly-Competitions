@@ -1,32 +1,24 @@
 import Combine
 import CombineExt
-import Resolver
+import ECKit
 
 final class NewCompetitionViewModel: ObservableObject {
+
+    private enum Constants {
+        static let defaultInterval: TimeInterval = 7
+    }
     
     struct InviteFriendsRow: Identifiable {
         let id: String
         let name: String
         var invited: Bool
+        let onTap: () -> Void
     }
-    
-    private enum Constants {
-        static let defaultInterval: TimeInterval = 7
-    }
+
+    // MARK: - Public Properties
     
     @Published var competition: Competition
     @Published var friendRows = [InviteFriendsRow]()
-    
-    var detailsFooterTexts: [String] {
-        var detailsTexts = [String]()
-        if competition.repeats {
-            detailsTexts.append("This competition will restart the next day after it ends.")
-        }
-        if competition.isPublic {
-            detailsTexts.append("Heads up! Anyone can join public competitions from the explore page.")
-        }
-        return detailsTexts
-    }
     
     var createDisabled: Bool { disabledReason != nil }
     var disabledReason: String? {
@@ -37,44 +29,65 @@ final class NewCompetitionViewModel: ObservableObject {
         }
         return nil
     }
-    
-    @Injected private var competitionsManager: AnyCompetitionsManager
-    @Injected private var friendsManager: AnyFriendsManager
-    @Injected private var userManager: AnyUserManager
+
+    // MARK: - Private Properties
+
+    private let _create = PassthroughSubject<Void, Never>()
+    private var cancellables = Cancellables()
+
+    // MARK: - Lifecycle
         
-    init() {
+    init(competitionsManager: CompetitionsManaging, friendsManager: FriendsManaging, userManager: UserManaging) {
         competition = .init(
-            name: "",
+            name: "Test",
             owner: "",
             participants: [],
             pendingParticipants: [],
-            scoringModel: .percentOfGoals,
-            start: .now,
-            end: .now.advanced(by: Constants.defaultInterval.days),
+            scoringModel: .workout(.walking, [.distance, .heartRate, .steps]),
+            start: .now.advanced(by: -10.days),
+            end: .now.advanced(by: Constants.defaultInterval.days + 1.days),
             repeats: false,
-            isPublic: false,
+            isPublic: true,
             banner: nil
         )
-        
-        friendsManager.$friends
-            .map { $0.map { InviteFriendsRow(id: $0.id, name: $0.name, invited: false) } }
+
+        Publishers
+            .CombineLatest(friendsManager.friends, $competition)
+            .map { friends, competition in
+                friends.map { friend in
+                    InviteFriendsRow(
+                        id: friend.id,
+                        name: friend.name,
+                        invited: competition.pendingParticipants.contains(friend.id),
+                        onTap: {
+                            self.competition.pendingParticipants.toggle(friend.id)
+                        }
+                    )
+                }
+            }
             .assign(to: &$friendRows)
+
+        _create
+            .withLatestFrom(userManager.user)
+            .setFailureType(to: Error.self)
+            .flatMapLatest(withUnretained: self) { object, user -> AnyPublisher<Void, Error> in
+                var competition = object.competition
+                competition.owner = user.id
+                competition.participants = [user.id]
+                object.competition = competition
+                return competitionsManager.create(competition)
+            }
+            .sink()
+            .store(in: &cancellables)
     }
+
+    // MARK: - Public Properties
     
     func create() {
-        competition.owner = userManager.user.id
-        competition.participants = [userManager.user.id]
-        competitionsManager.create(competition)
+        _create.send()
     }
-    
-    func tapped(_ rowConfig: InviteFriendsRow) {
-        if competition.pendingParticipants.contains(rowConfig.id) {
-            competition.pendingParticipants.remove(rowConfig.id)
-        } else {
-            competition.pendingParticipants.append(rowConfig.id)
-        }
-        
-        guard let index = friendRows.firstIndex(where: { $0.id == rowConfig.id }) else { return }
-        friendRows[index].invited = competition.pendingParticipants.contains(rowConfig.id)
+
+    func canSaveEdits(_ canSave: Bool) {
+            
     }
 }

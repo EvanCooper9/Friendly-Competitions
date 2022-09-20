@@ -1,11 +1,17 @@
 import Combine
 import CombineExt
-import Resolver
+import ECKit
 import Foundation
+
+enum ActivitySummaryState {
+    case found(ActivitySummary)
+    case missing
+    case permissionsDenied
+}
 
 final class DashboardViewModel: ObservableObject {
     
-    struct FriendRow: Identifiable {
+    struct FriendRow: Equatable, Identifiable {
         var id: String { user.id }
         let user: User
         let activitySummary: ActivitySummary?
@@ -18,19 +24,14 @@ final class DashboardViewModel: ObservableObject {
     @Published private(set) var invitedCompetitions = [Competition]()
     @Published var requiresPermissions = false
     @Published private(set) var title = Bundle.main.name
-    
-    @Injected private var activitySummaryManager: AnyActivitySummaryManager
-    @Injected private var competitionsManager: AnyCompetitionsManager
-    @Injected private var friendsManager: AnyFriendsManager
-    @Injected private var permissionsManager: AnyPermissionsManager
-    @Injected private var userManager: AnyUserManager
+
+    init(activitySummaryManager: ActivitySummaryManaging, competitionsManager: CompetitionsManaging, friendsManager: FriendsManaging, permissionsManager: PermissionsManaging, userManager: UserManaging) {
+
+        activitySummaryManager.activitySummary.assign(to: &$activitySummary)
+        competitionsManager.competitions.assign(to: &$competitions)
+        competitionsManager.invitedCompetitions.assign(to: &$invitedCompetitions)
         
-    init() {
-        activitySummaryManager.$activitySummary.assign(to: &$activitySummary)
-        competitionsManager.$competitions.assign(to: &$competitions)
-        competitionsManager.$invitedCompetitions.assign(to: &$invitedCompetitions)
-        
-        let friendRequests = friendsManager.$friendRequests
+        let friendRequests = friendsManager.friendRequests
             .map { friendRequests in
                 friendRequests.map { friendRequest in
                     FriendRow(
@@ -40,9 +41,9 @@ final class DashboardViewModel: ObservableObject {
                     )
                 }
             }
-        
-        let friends = friendsManager.$friends
-            .combineLatest(friendsManager.$friendActivitySummaries)
+
+        let friends = friendsManager.friends
+            .combineLatest(friendsManager.friendActivitySummaries)
             .map { friends, activitySummaries in
                 friends.map { friend in
                     FriendRow(
@@ -56,19 +57,13 @@ final class DashboardViewModel: ObservableObject {
         Publishers.CombineLatest(friends, friendRequests)
             .map { $0 + $1 }
             .assign(to: &$friends)
+
+        permissionsManager
+            .requiresPermission
+            .assign(to: &$requiresPermissions)
         
-        permissionsManager.$requiresPermission.assign(to: &$requiresPermissions)
-        
-        userManager.$user
+        userManager.user
             .map { $0.name.ifEmpty(Bundle.main.name) }
             .assign(to: &$title)
-    }
-    
-    func acceptFriendRequest(from user: User) {
-        friendsManager.acceptFriendRequest(from: user)
-    }
-    
-    func declineFriendRequest(from user: User) {
-        friendsManager.declineFriendRequest(from: user)
     }
 }

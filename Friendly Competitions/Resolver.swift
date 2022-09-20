@@ -1,26 +1,31 @@
 import Firebase
 import FirebaseFirestore
+import FirebaseFunctions
 import FirebaseStorage
 import Resolver
 
 private enum FirebaseEmulation {
     static let enabled = false
-    static let host = "localhost"
+    static let host = "192.168.2.92"
 }
 
 extension Resolver: ResolverRegistering {
     public static func registerAllServices() {
 
+        // Views
+        registerViewModels()
+
         // Managers
-        register(AnyActivitySummaryManager.self) { ActivitySummaryManager() }.scope(.shared)
-        register(AnyAnalyticsManager.self) { AnalyticsManager() }.scope(.shared)
-        register(AnyAuthenticationManager.self) { AuthenticationManager() }.scope(.shared)
-        register(AnyCompetitionsManager.self) { CompetitionsManager() }.scope(.shared)
-        register(AnyFriendsManager.self) { FriendsManager() }.scope(.shared)
-        register(AnyHealthKitManager.self) { HealthKitManager() }.scope(.shared)
+        register(ActivitySummaryManaging.self) { ActivitySummaryManager() }.scope(.shared)
+        register(AnalyticsManaging.self) { AnalyticsManager() }.scope(.shared)
+        register(AuthenticationManaging.self) { AuthenticationManager() }.scope(.shared)
+        register(CompetitionsManaging.self) { CompetitionsManager() }.scope(.shared)
+        register(FriendsManaging.self) { FriendsManager(database: resolve(), userManager: resolve()) }.scope(.shared)
+        register(HealthKitManaging.self) { HealthKitManager() }.scope(.shared)
         register(NotificationManaging.self) { NotificationManager() }.scope(.shared)
-        register(AnyPermissionsManager.self) { PermissionsManager() }.scope(.shared)
-        register(AnyStorageManager.self) { StorageManager() }.scope(.shared)
+        register(PermissionsManaging.self) { PermissionsManager(healthKitManager: resolve(), notificationManager: resolve()) }.scope(.shared)
+        register(StorageManaging.self) { StorageManager() }.scope(.shared)
+        register(WorkoutManaging.self) { WorkoutManager() }.scope(.shared)
         
         // Global state
         register { AppState() }.scope(.shared)
@@ -30,6 +35,7 @@ extension Resolver: ResolverRegistering {
             let firestore = Firestore.firestore()
             let settings = firestore.settings
             settings.isPersistenceEnabled = false
+            settings.cacheSizeBytes = 1_048_576 // 1 MB
             if FirebaseEmulation.enabled {
                 settings.host = "\(FirebaseEmulation.host):8080"
                 settings.isSSLEnabled = false
@@ -50,9 +56,9 @@ extension Resolver: ResolverRegistering {
         
         register(StorageReference.self) {
             let storage = Storage.storage()
-            if FirebaseEmulation.enabled {
-                storage.useEmulator(withHost: FirebaseEmulation.host, port: 9199)
-            }
+//            if FirebaseEmulation.enabled {
+//                storage.useEmulator(withHost: FirebaseEmulation.host, port: 9199)
+//            }
             return storage.reference()
         }
         .scope(.application)

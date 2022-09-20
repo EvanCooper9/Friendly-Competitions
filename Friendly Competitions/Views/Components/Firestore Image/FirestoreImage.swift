@@ -4,26 +4,32 @@ struct FirestoreImage: View {
 
     @StateObject private var viewModel: FirestoreImageViewModel
     
+    var contentMode = ContentMode.fit
+    
     init(path: String) {
         _viewModel = .init(wrappedValue: .init(path: path))
     }
 
     var body: some View {
+        image.onAppear(perform: viewModel.downloadImage)
+    }
+    
+    @ViewBuilder
+    private var image: some View {
         if let imageData = viewModel.imageData {
             if let image = UIImage(data: imageData) {
                 Image(uiImage: image)
                     .resizable()
+                    .aspectRatio(contentMode: contentMode)
             } else {
                 failedImage
             }
         } else if viewModel.failed {
             failedImage
-                .onAppear(perform: viewModel.downloadImage)
         } else {
             ProgressView()
                 .progressViewStyle(.circular)
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .onAppear(perform: viewModel.downloadImage)
         }
     }
 
