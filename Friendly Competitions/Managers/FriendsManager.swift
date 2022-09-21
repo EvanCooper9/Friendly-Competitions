@@ -50,36 +50,42 @@ final class FriendsManager: FriendsManaging {
         self.functions = functions
         self.userManager = userManager
 
-        friends = userManager.user
+        let allFriends = userManager.user
             .flatMapAsync { user in
                 try await database.collection("users")
-                    .whereFieldWithChunking("id", in: user.friends)
+                    .whereFieldWithChunking("id", in: user.friends + user.incomingFriendRequests)
                     .decoded(asArrayOf: User.self)
                     .sorted(by: \.name)
             }
-            .share(replay: 1)
             .ignoreFailure()
 
-        friendRequests = userManager.user
-            .flatMapAsync { user in
-                try await database.collection("users")
-                    .whereFieldWithChunking("id", in: user.incomingFriendRequests)
-                    .decoded(asArrayOf: User.self)
+        friends = Publishers
+            .CombineLatest(userManager.user, allFriends)
+            .map { user, allFriends in
+                allFriends.filter { user.friends.contains($0.id) }
             }
             .share(replay: 1)
-            .ignoreFailure()
+            .eraseToAnyPublisher()
 
-        friendActivitySummaries = userManager.user
-            .flatMapAsync { user in
+        friendRequests = Publishers
+            .CombineLatest(userManager.user, allFriends)
+            .map { user, allFriends in
+                allFriends.filter { user.incomingFriendRequests.contains($0.id) }
+            }
+            .share(replay: 1)
+            .eraseToAnyPublisher()
+
+        friendActivitySummaries = allFriends
+            .flatMapAsync { friends in
                 try await withThrowingTaskGroup(of: (User.ID, ActivitySummary?).self) { group -> [User.ID: ActivitySummary] in
                     let today = DateFormatter.dateDashed.string(from: .now)
-                    user.friends.forEach { friendID in
+                    friends.forEach { friend in
                         group.addTask {
                             let activitySummary = try? await database
-                                .document("users/\(friendID)/activitySummaries/\(today)")
+                                .document("users/\(friend.id)/activitySummaries/\(today)")
                                 .getDocument()
                                 .decoded(as: ActivitySummary.self)
-                            return (friendID, activitySummary)
+                            return (friend.id, activitySummary)
                         }
                     }
 

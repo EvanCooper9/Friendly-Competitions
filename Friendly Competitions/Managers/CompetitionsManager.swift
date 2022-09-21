@@ -5,7 +5,7 @@ import Firebase
 import FirebaseFirestore
 import FirebaseFunctions
 import Resolver
-import SwiftUI
+import UIKit
 
 // sourcery: AutoMockable
 protocol CompetitionsManaging {
@@ -75,8 +75,10 @@ final class CompetitionsManager: CompetitionsManaging {
     // MARK: - Lifecycle
 
     init() {
-        listen()
-        fetchCompetitionData()
+        if UIApplication.shared.applicationState == .active {
+            listen()
+            fetchCompetitionData()
+        }
 
         Publishers
             .CombineLatest3(competitions, appOwnedCompetitions, invitedCompetitions)
@@ -203,11 +205,10 @@ final class CompetitionsManager: CompetitionsManaging {
     }
 
     func updateStandings() -> AnyPublisher<Void, Error> {
-//        functions.httpsCallable("updateCompetitionStandings")
-//            .call()
-//            .mapToVoid()
-//            .eraseToAnyPublisher()
-        .never()
+        functions.httpsCallable("updateCompetitionStandings")
+            .call()
+            .mapToVoid()
+            .eraseToAnyPublisher()
     }
     
     func update(_ competition: Competition) -> AnyPublisher<Void, Error> {
