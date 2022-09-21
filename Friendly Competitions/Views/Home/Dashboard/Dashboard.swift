@@ -24,11 +24,11 @@ struct Dashboard: View {
         .navigationBarTitle(viewModel.title)
         .toolbar {
             HStack {
-//                #if DEBUG
-                Button(toggling: $presentDeveloper) {
-                    Image(systemName: .hammer)
+                if viewModel.showDeveloper {
+                    Button(toggling: $presentDeveloper) {
+                        Image(systemName: .hammer)
+                    }
                 }
-//                #endif
                 Button(toggling: $presentAbout) {
                     Image(systemName: .questionmarkCircle)
                 }
@@ -90,7 +90,7 @@ struct Dashboard: View {
                 }
             }
         } footer: {
-            if viewModel.competitions.isEmpty {
+            if viewModel.competitions.isEmpty && viewModel.invitedCompetitions.isEmpty {
                 Text("Start a competition against your friends!")
             }
         }

@@ -5,8 +5,8 @@ struct User: Codable, Equatable, Identifiable {
     let email: String
     let name: String
     var friends = [String]()
-    var incomingFriendRequests = [String]()
-    var outgoingFriendRequests = [String]()
+    var incomingFriendRequests = [User.ID]()
+    var outgoingFriendRequests = [User.ID]()
     var notificationTokens: [String]? = []
     var statistics: Statistics? = .zero
 

@@ -49,8 +49,9 @@ final class UserManager: UserManaging {
     }
 
     func update(with user: User) -> AnyPublisher<Void, Error> {
-        .fromAsync { [weak self] in
-            try await database.document("users/\(user.id)").updateDataEncodable(user)
+        guard user != self.user.value else { return .just(()) }
+        return .fromAsync { [weak self] in
+            try await self?.database.document("users/\(user.id)").updateDataEncodable(user)
         }
     }
 

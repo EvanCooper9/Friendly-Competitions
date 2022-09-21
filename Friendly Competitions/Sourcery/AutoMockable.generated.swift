@@ -271,11 +271,6 @@ class CompetitionsManagingMock: CompetitionsManaging {
         set(value) { underlyingAppOwnedCompetitions = value }
     }
     var underlyingAppOwnedCompetitions: AnyPublisher<[Competition], Never>!
-    var topCommunityCompetitions: AnyPublisher<[Competition], Never> {
-        get { return underlyingTopCommunityCompetitions }
-        set(value) { underlyingTopCommunityCompetitions = value }
-    }
-    var underlyingTopCommunityCompetitions: AnyPublisher<[Competition], Never>!
 
     //MARK: - accept
 
@@ -822,13 +817,18 @@ class UserManagingMock: UserManaging {
     }
     var updateWithReceivedUser: User?
     var updateWithReceivedInvocations: [User] = []
-    var updateWithClosure: ((User) -> Void)?
+    var updateWithReturnValue: AnyPublisher<Void, Error>!
+    var updateWithClosure: ((User) -> AnyPublisher<Void, Error>)?
 
-    func update(with user: User) {
+    func update(with user: User) -> AnyPublisher<Void, Error> {
         updateWithCallsCount += 1
         updateWithReceivedUser = user
         updateWithReceivedInvocations.append(user)
-        updateWithClosure?(user)
+        if let updateWithClosure = updateWithClosure {
+            return updateWithClosure(user)
+        } else {
+            return updateWithReturnValue
+        }
     }
 
 }
