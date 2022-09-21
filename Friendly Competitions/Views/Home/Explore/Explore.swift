@@ -73,7 +73,6 @@ struct ExploreCompetitions_Previews: PreviewProvider {
     
     private static func setupMocks() {
         competitionsManager.appOwnedCompetitions = .just([.mockPublic, .mockPublic, .mockPublic, .mockPublic])
-        competitionsManager.topCommunityCompetitions = .just([.mock, .mock, .mock])
     }
     
     static var previews: some View {

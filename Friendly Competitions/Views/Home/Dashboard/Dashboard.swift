@@ -6,6 +6,7 @@ struct Dashboard: View {
     @StateObject private var viewModel = Resolver.resolve(DashboardViewModel.self)
             
     @State private var presentAbout = false
+    @State private var presentDeveloper = false
     @State private var presentPermissions = false
     @State private var presentNewCompetition = false
     @State private var presentSearchFriendsSheet = false
@@ -23,6 +24,11 @@ struct Dashboard: View {
         .navigationBarTitle(viewModel.title)
         .toolbar {
             HStack {
+//                #if DEBUG
+                Button(toggling: $presentDeveloper) {
+                    Image(systemName: .hammer)
+                }
+//                #endif
                 Button(toggling: $presentAbout) {
                     Image(systemName: .questionmarkCircle)
                 }
@@ -37,6 +43,7 @@ struct Dashboard: View {
         .sheet(isPresented: $presentSearchFriendsSheet) { InviteFriends(action: .addFriend) }
         .sheet(isPresented: $presentNewCompetition) { NewCompetition() }
         .sheet(isPresented: $viewModel.requiresPermissions) { PermissionsView() }
+        .sheet(isPresented: $presentDeveloper) { DeveloperView() }
         .registerScreenView(name: "Home")
     }
     

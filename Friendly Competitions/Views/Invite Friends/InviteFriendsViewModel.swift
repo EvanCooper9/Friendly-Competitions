@@ -41,14 +41,14 @@ final class InviteFriendsViewModel: ObservableObject {
                 }
                 .eraseToAnyPublisher()
         }
-        
+
         $searchText
-            .setFailureType(to: Error.self)
-            .flatMapLatest(friendsManager.search(with:))
-            .ignoreFailure()
-            .prepend(friendsManager.friends)
+            .flatMapLatest { searchText -> AnyPublisher<[User], Never> in
+                guard !searchText.isEmpty else { return .just([]) }
+                return friendsManager.search(with: searchText).ignoreFailure()
+            }
             .combineLatest(alreadyInvited)
-            .map { users, alreadyInvited -> [RowConfig] in
+            .map { [weak self] users, alreadyInvited -> [RowConfig] in
                 users.map { friend in
                     RowConfig(
                         id: friend.id,
@@ -68,20 +68,20 @@ final class InviteFriendsViewModel: ObservableObject {
             .assign(to: &$rows)
 
         _invite
-            .handleEvents(withUnretained: self, receiveOutput: { owner, _ in owner.loading = true })
-            .flatMapLatest { friend -> AnyPublisher<Void, Never> in
+            .flatMapLatest { [weak self] friend -> AnyPublisher<Void, Never> in
                 switch action {
                 case .addFriend:
                     return friendsManager
-                        .add(friend: friend)
+                        .add(user: friend)
+                        .isLoading { [weak self] in self?.loading = $0 }
                         .ignoreFailure()
                 case .competitionInvite(let competition):
                     return competitionsManager
                         .invite(friend, to: competition)
+                        .isLoading { [weak self] in self?.loading = $0 }
                         .ignoreFailure()
                 }
             }
-            .handleEvents(withUnretained: self, receiveOutput: { $0.loading = false })
             .sink()
             .store(in: &cancellables)
 
@@ -99,6 +99,8 @@ final class InviteFriendsViewModel: ObservableObject {
             }
             .store(in: &cancellables)
     }
+
+    // MARK: - Publie Methods
     
     func sendInviteLink() {
         _share.send()

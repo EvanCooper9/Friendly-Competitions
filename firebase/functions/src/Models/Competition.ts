@@ -54,43 +54,53 @@ class Competition {
             let totalPoints = 0;
 
             switch (this.scoringModel.type) {
-                case RawScoringModel.percentOfGoals: {
-                    const activitySummaries = await this.activitySummaries(userId);
-                    activitySummaries.forEach(activitySummary => {
-                        const energy = (activitySummary.activeEnergyBurned / activitySummary.activeEnergyBurnedGoal) * 100;
-                        const exercise = (activitySummary.appleExerciseTime / activitySummary.appleExerciseTimeGoal) * 100;
-                        const stand = (activitySummary.appleStandHours / activitySummary.appleStandHoursGoal) * 100;
-                        const points = energy + exercise + stand;
-                        totalPoints += parseInt(`${points}`);
-                    });
-                }
-                case RawScoringModel.rawNumbers: {
-                    const activitySummaries = await this.activitySummaries(userId);
-                    activitySummaries.forEach(activitySummary => {
-                        const energy = activitySummary.activeEnergyBurned;
-                        const exercise = activitySummary.appleExerciseTime;
-                        const stand = activitySummary.appleStandHours;
-                        const points = energy + exercise + stand;
-                        totalPoints += parseInt(`${points}`);
-                    });
-                }
-                case RawScoringModel.workout: {
-                    const workoutType = this.scoringModel.workoutType;
-                    const workoutMetrics = this.scoringModel.workoutMetrics;
-                    if (workoutType != undefined && workoutMetrics != undefined) {
-                        const workoutsPromise = await admin.firestore().collection(`users/${userId}/workouts`).get();
-                        workoutsPromise.docs
-                            .map(doc => new Workout(doc))
-                            .filter(workout => workout.type == workoutType && workout.isIncludedInCompetition(this))
-                            .forEach(workout => {
-                                workoutMetrics.forEach(metric => {
-                                    totalPoints += workout.points[metric];
-                                });
+            case RawScoringModel.percentOfGoals: {
+                const activitySummaries = await this.activitySummaries(userId);
+                activitySummaries.forEach(activitySummary => {
+                    const energy = (activitySummary.activeEnergyBurned / activitySummary.activeEnergyBurnedGoal) * 100;
+                    const exercise = (activitySummary.appleExerciseTime / activitySummary.appleExerciseTimeGoal) * 100;
+                    const stand = (activitySummary.appleStandHours / activitySummary.appleStandHoursGoal) * 100;
+                    const points = energy + exercise + stand;
+                    totalPoints += parseInt(`${points}`);
+                });
+                break;
+            }
+            case RawScoringModel.rawNumbers: {
+                const activitySummaries = await this.activitySummaries(userId);
+                activitySummaries.forEach(activitySummary => {
+                    const energy = activitySummary.activeEnergyBurned;
+                    const exercise = activitySummary.appleExerciseTime;
+                    const stand = activitySummary.appleStandHours;
+                    const points = energy + exercise + stand;
+                    totalPoints += parseInt(`${points}`);
+                });
+                break;
+            }
+            case RawScoringModel.workout: {
+                const workoutType = this.scoringModel.workoutType;
+                const workoutMetrics = this.scoringModel.workoutMetrics;
+                if (workoutType != undefined && workoutMetrics != undefined) {
+                    const workoutsPromise = await admin.firestore().collection(`users/${userId}/workouts`).get();
+                    workoutsPromise.docs
+                        .map(doc => new Workout(doc))
+                        .filter(workout => workout.type == workoutType && workout.isIncludedInCompetition(this))
+                        .forEach(workout => {
+                            workoutMetrics.forEach(metric => {
+                                totalPoints += workout.points[metric];
                             });
-                    }
+                        });
                 }
+                break;
+            }
             }
 
+            if (isNaN(totalPoints)) {
+                totalPoints = 0;
+                console.error(`Encountered NaN when setting total points
+                    competition: ${this.id}
+                    user: ${userId}
+                `);
+            }
             return Promise.resolve(Standing.new(totalPoints, userId));
         });
 
@@ -111,6 +121,11 @@ class Competition {
             .then();
     }
 
+    /**
+     * Fetch activity summaries for a user that fall within the bounds of this competition's start & end
+     * @param {string} userId The ID of the user to fetch activity summaries for
+     * @return {Promise<ActivitySummary[]>} A promise of activity summaries
+     */
     async activitySummaries(userId: string): Promise<ActivitySummary[]> {
         const activitySummariesPromise = await admin.firestore().collection(`users/${userId}/activitySummaries`).get();
         return activitySummariesPromise.docs

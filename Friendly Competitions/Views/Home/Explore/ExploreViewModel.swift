@@ -7,11 +7,9 @@ final class ExploreViewModel: ObservableObject {
     @Published var searchText = ""
     @Published var searchResults = [Competition]()
     @Published var appOwnedCompetitions = [Competition]()
-    @Published var topCommunityCompetitions = [Competition]()
-    
+
     init(competitionsManager: CompetitionsManaging) {
         competitionsManager.appOwnedCompetitions.assign(to: &$appOwnedCompetitions)
-        competitionsManager.topCommunityCompetitions.assign(to: &$topCommunityCompetitions)
         
         $searchText
             .handleEvents(receiveOutput: { [weak self] _ in self?.loading = true })

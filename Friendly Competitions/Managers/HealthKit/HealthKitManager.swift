@@ -89,7 +89,7 @@ final class HealthKitManager: HealthKitManaging {
                 completion()
             }
             healthStore.execute(query)
-            healthStore.enableBackgroundDelivery(for: sampleType, frequency: .immediate) { _, _ in }
+            healthStore.enableBackgroundDelivery(for: sampleType, frequency: .hourly) { _, _ in }
         }
     }
 }

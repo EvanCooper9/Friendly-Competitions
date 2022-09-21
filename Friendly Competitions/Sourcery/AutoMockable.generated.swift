@@ -535,67 +535,67 @@ class FriendsManagingMock: FriendsManaging {
 
     //MARK: - add
 
-    var addFriendCallsCount = 0
-    var addFriendCalled: Bool {
-        return addFriendCallsCount > 0
+    var addUserCallsCount = 0
+    var addUserCalled: Bool {
+        return addUserCallsCount > 0
     }
-    var addFriendReceivedFriend: User?
-    var addFriendReceivedInvocations: [User] = []
-    var addFriendReturnValue: AnyPublisher<Void, Error>!
-    var addFriendClosure: ((User) -> AnyPublisher<Void, Error>)?
+    var addUserReceivedUser: User?
+    var addUserReceivedInvocations: [User] = []
+    var addUserReturnValue: AnyPublisher<Void, Error>!
+    var addUserClosure: ((User) -> AnyPublisher<Void, Error>)?
 
-    func add(friend: User) -> AnyPublisher<Void, Error> {
-        addFriendCallsCount += 1
-        addFriendReceivedFriend = friend
-        addFriendReceivedInvocations.append(friend)
-        if let addFriendClosure = addFriendClosure {
-            return addFriendClosure(friend)
+    func add(user: User) -> AnyPublisher<Void, Error> {
+        addUserCallsCount += 1
+        addUserReceivedUser = user
+        addUserReceivedInvocations.append(user)
+        if let addUserClosure = addUserClosure {
+            return addUserClosure(user)
         } else {
-            return addFriendReturnValue
+            return addUserReturnValue
         }
     }
 
-    //MARK: - acceptFriendRequest
+    //MARK: - accept
 
-    var acceptFriendRequestFromCallsCount = 0
-    var acceptFriendRequestFromCalled: Bool {
-        return acceptFriendRequestFromCallsCount > 0
+    var acceptFriendRequestCallsCount = 0
+    var acceptFriendRequestCalled: Bool {
+        return acceptFriendRequestCallsCount > 0
     }
-    var acceptFriendRequestFromReceivedFrom: User?
-    var acceptFriendRequestFromReceivedInvocations: [User] = []
-    var acceptFriendRequestFromReturnValue: AnyPublisher<Void, Error>!
-    var acceptFriendRequestFromClosure: ((User) -> AnyPublisher<Void, Error>)?
+    var acceptFriendRequestReceivedFriendRequest: User?
+    var acceptFriendRequestReceivedInvocations: [User] = []
+    var acceptFriendRequestReturnValue: AnyPublisher<Void, Error>!
+    var acceptFriendRequestClosure: ((User) -> AnyPublisher<Void, Error>)?
 
-    func acceptFriendRequest(from: User) -> AnyPublisher<Void, Error> {
-        acceptFriendRequestFromCallsCount += 1
-        acceptFriendRequestFromReceivedFrom = from
-        acceptFriendRequestFromReceivedInvocations.append(from)
-        if let acceptFriendRequestFromClosure = acceptFriendRequestFromClosure {
-            return acceptFriendRequestFromClosure(from)
+    func accept(friendRequest: User) -> AnyPublisher<Void, Error> {
+        acceptFriendRequestCallsCount += 1
+        acceptFriendRequestReceivedFriendRequest = friendRequest
+        acceptFriendRequestReceivedInvocations.append(friendRequest)
+        if let acceptFriendRequestClosure = acceptFriendRequestClosure {
+            return acceptFriendRequestClosure(friendRequest)
         } else {
-            return acceptFriendRequestFromReturnValue
+            return acceptFriendRequestReturnValue
         }
     }
 
-    //MARK: - declineFriendRequest
+    //MARK: - decline
 
-    var declineFriendRequestFromCallsCount = 0
-    var declineFriendRequestFromCalled: Bool {
-        return declineFriendRequestFromCallsCount > 0
+    var declineFriendRequestCallsCount = 0
+    var declineFriendRequestCalled: Bool {
+        return declineFriendRequestCallsCount > 0
     }
-    var declineFriendRequestFromReceivedFrom: User?
-    var declineFriendRequestFromReceivedInvocations: [User] = []
-    var declineFriendRequestFromReturnValue: AnyPublisher<Void, Error>!
-    var declineFriendRequestFromClosure: ((User) -> AnyPublisher<Void, Error>)?
+    var declineFriendRequestReceivedFriendRequest: User?
+    var declineFriendRequestReceivedInvocations: [User] = []
+    var declineFriendRequestReturnValue: AnyPublisher<Void, Error>!
+    var declineFriendRequestClosure: ((User) -> AnyPublisher<Void, Error>)?
 
-    func declineFriendRequest(from: User) -> AnyPublisher<Void, Error> {
-        declineFriendRequestFromCallsCount += 1
-        declineFriendRequestFromReceivedFrom = from
-        declineFriendRequestFromReceivedInvocations.append(from)
-        if let declineFriendRequestFromClosure = declineFriendRequestFromClosure {
-            return declineFriendRequestFromClosure(from)
+    func decline(friendRequest: User) -> AnyPublisher<Void, Error> {
+        declineFriendRequestCallsCount += 1
+        declineFriendRequestReceivedFriendRequest = friendRequest
+        declineFriendRequestReceivedInvocations.append(friendRequest)
+        if let declineFriendRequestClosure = declineFriendRequestClosure {
+            return declineFriendRequestClosure(friendRequest)
         } else {
-            return declineFriendRequestFromReturnValue
+            return declineFriendRequestReturnValue
         }
     }
 

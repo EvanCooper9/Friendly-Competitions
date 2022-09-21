@@ -119,7 +119,10 @@
 		ED487830282747CE00AC1E2C /* InviteFriendsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED48782F282747CE00AC1E2C /* InviteFriendsViewModel.swift */; };
 		ED48783228295A2100AC1E2C /* InviteFriendsAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED48783128295A2100AC1E2C /* InviteFriendsAction.swift */; };
 		ED493E9727FDE47300A94F4A /* AuthenticationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED493E9627FDE47300A94F4A /* AuthenticationServices.framework */; };
+		ED604B2A28DA2C660097B76F /* DeveloperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED604B2828DA2C660097B76F /* DeveloperView.swift */; };
+		ED604B2B28DA2C660097B76F /* DeveloperViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED604B2928DA2C660097B76F /* DeveloperViewModel.swift */; };
 		ED65D3BD280CF36C00B38486 /* WorkoutType.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED65D3BC280CF36C00B38486 /* WorkoutType.swift */; };
+		ED6B41E328DA1228004890F6 /* FirebaseFunctionsCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = ED6B41E228DA1228004890F6 /* FirebaseFunctionsCombine-Community */; };
 		ED7881AB2850F6C400C7F6CB /* SignInMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED7881AA2850F6C400C7F6CB /* SignInMethod.swift */; };
 		ED7881AD2850F6DF00C7F6CB /* SignUpError.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED7881AC2850F6DF00C7F6CB /* SignUpError.swift */; };
 		ED7881B02850F71E00C7F6CB /* AnalyticsEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED7881AF2850F71E00C7F6CB /* AnalyticsEvent.swift */; };
@@ -285,6 +288,8 @@
 		ED48782F282747CE00AC1E2C /* InviteFriendsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteFriendsViewModel.swift; sourceTree = "<group>"; };
 		ED48783128295A2100AC1E2C /* InviteFriendsAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteFriendsAction.swift; sourceTree = "<group>"; };
 		ED493E9627FDE47300A94F4A /* AuthenticationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AuthenticationServices.framework; path = System/Library/Frameworks/AuthenticationServices.framework; sourceTree = SDKROOT; };
+		ED604B2828DA2C660097B76F /* DeveloperView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperView.swift; sourceTree = "<group>"; };
+		ED604B2928DA2C660097B76F /* DeveloperViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperViewModel.swift; sourceTree = "<group>"; };
 		ED65D3BC280CF36C00B38486 /* WorkoutType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutType.swift; sourceTree = "<group>"; };
 		ED7881AA2850F6C400C7F6CB /* SignInMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInMethod.swift; sourceTree = "<group>"; };
 		ED7881AC2850F6DF00C7F6CB /* SignUpError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpError.swift; sourceTree = "<group>"; };
@@ -338,6 +343,7 @@
 				ED836057280336500038FACE /* Algorithms in Frameworks */,
 				ED005F9828D50D4300481E04 /* FirebaseFunctions in Frameworks */,
 				ED005F8F28D50C6A00481E04 /* ECKit in Frameworks */,
+				ED6B41E328DA1228004890F6 /* FirebaseFunctionsCombine-Community in Frameworks */,
 				ED005F9428D50D0100481E04 /* FirebaseStorage in Frameworks */,
 				ED005F9628D50D2600481E04 /* FirebaseCrashlytics in Frameworks */,
 				ED005FA028D50E5200481E04 /* FirebaseAnalyticsSwift in Frameworks */,
@@ -691,6 +697,7 @@
 				C1884E4726D5894000C21014 /* Dashboard.swift */,
 				ED901B442802426800FE619E /* DashboardViewModel.swift */,
 				C123C9DC27A8AF4700375F73 /* About */,
+				ED604B2728DA2C560097B76F /* Developer */,
 				C12D63F927A5B5CE00259237 /* Profile */,
 				EDA352912836F5EA00390585 /* User */,
 			);
@@ -833,6 +840,15 @@
 				ED48782F282747CE00AC1E2C /* InviteFriendsViewModel.swift */,
 			);
 			path = "Invite Friends";
+			sourceTree = "<group>";
+		};
+		ED604B2728DA2C560097B76F /* Developer */ = {
+			isa = PBXGroup;
+			children = (
+				ED604B2828DA2C660097B76F /* DeveloperView.swift */,
+				ED604B2928DA2C660097B76F /* DeveloperViewModel.swift */,
+			);
+			path = Developer;
 			sourceTree = "<group>";
 		};
 		ED6CB45A28BA829000436BBD /* HealthKit */ = {
@@ -995,6 +1011,7 @@
 				ED005F9B28D50D8E00481E04 /* FirebaseMessaging */,
 				ED005F9D28D50E3800481E04 /* FirebaseAnalytics */,
 				ED005F9F28D50E5200481E04 /* FirebaseAnalyticsSwift */,
+				ED6B41E228DA1228004890F6 /* FirebaseFunctionsCombine-Community */,
 			);
 			productName = CompyBoi;
 			productReference = C1691DC326D55FCF006FFA30 /* Friendly Competitions.app */;
@@ -1219,6 +1236,7 @@
 				C123C9CF27A86E1200375F73 /* Stack.swift in Sources */,
 				C1EA986926D6E8C900219E84 /* CompetitionView.swift in Sources */,
 				ED1CFA9F2864E58300192E49 /* PostDecoded.swift in Sources */,
+				ED604B2B28DA2C660097B76F /* DeveloperViewModel.swift in Sources */,
 				C123C9DE27A8AF5100375F73 /* About.swift in Sources */,
 				C19EAFE3272B30E0008BCFDD /* PermissionsView.swift in Sources */,
 				EDB749B72875BC3F00021014 /* StringKeyEncoded.swift in Sources */,
@@ -1254,6 +1272,7 @@
 				C1B2F4E4272B505C0028449F /* AppDelegate.swift in Sources */,
 				EDC7849B280358E9001FE005 /* Workout.swift in Sources */,
 				C16ADDD226D9123600E34E04 /* Competition+ScoringModel.swift in Sources */,
+				ED604B2A28DA2C660097B76F /* DeveloperView.swift in Sources */,
 				C123C9C727A74C4100375F73 /* Button+Extensions.swift in Sources */,
 				C1A4696A26DA823C00254105 /* Resolver.swift in Sources */,
 				EDC5FC3F27FA7C1B00F2882D /* View+HUD.swift in Sources */,
@@ -1619,6 +1638,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = ED005F9228D50D0100481E04 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseAnalyticsSwift;
+		};
+		ED6B41E228DA1228004890F6 /* FirebaseFunctionsCombine-Community */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ED005F9228D50D0100481E04 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = "FirebaseFunctionsCombine-Community";
 		};
 		ED836056280336500038FACE /* Algorithms */ = {
 			isa = XCSwiftPackageProductDependency;

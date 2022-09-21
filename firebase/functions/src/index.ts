@@ -1,40 +1,64 @@
 import * as admin from "firebase-admin";
 import * as functions from "firebase-functions";
 import * as moment from "moment";
+import { deleteAccount } from "./Handlers/account/deleteAccount";
+import { deleteCompetition } from "./Handlers/competitions/deleteCompetition";
+import { updateCompetitionStandings } from "./Handlers/competitions/updateCompetitionStandings";
+import { deleteFriend } from "./Handlers/friends/deleteFriend";
+import { FriendRequestAction, handleFriendRequest } from "./Handlers/friends/handleFriendRequest";
 import { ActivitySummary } from "./Models/ActivitySummary";
 import { Competition } from "./Models/Competition";
 import { Standing } from "./Models/Standing";
 import { User } from "./Models/User";
 import * as notifications from "./notifications";
+import { getFirestore } from "./Utilities/firstore";
 
 admin.initializeApp();
-const firestore = admin.firestore();
+const firestore = getFirestore();
 
-exports.sendIncomingFriendRequestNotification = functions.firestore
-    .document("users/{userId}")
-    .onUpdate(async change => {
-        const oldUser = new User(change.before);
-        const newUser = new User(change.after);
-        const newFriendRequests: string[] = newUser.incomingFriendRequests;
-        const oldFriendRequests: string[] = oldUser.incomingFriendRequests;
-        if (newFriendRequests == oldFriendRequests) return;
+exports.deleteAccount = functions.https.onCall(async (_data, context) => {
+    const userID = context.auth?.uid;
+    if (userID == null) return;
+    await deleteAccount(userID);
+});
 
-        newFriendRequests
-            .filter(x => !oldFriendRequests.includes(x))
-            .forEach(async newFriendId => {
-                const authUser = await admin.auth().getUser(newFriendId);
-                await notifications.sendNotificationsToUser(
-                    newUser,
-                    "Friendly Competitions",
-                    `${authUser.displayName} added you as a friend`
-                );
-            });
-    });
+exports.sendFriendRequest = functions.https.onCall((data, context) => {
+    const requesterID = context.auth?.uid;
+    const requesteeID = data.userID;
+    if (requesterID == null) return Promise.resolve();
+    return handleFriendRequest(requesterID, requesteeID, FriendRequestAction.create);
+});
+
+exports.respondToFriendRequest = functions.https.onCall((data, context) => {
+    const requesterID = context.auth?.uid;
+    const requesteeID = data.userID;
+    const accept = data.accept;
+    if (requesterID == null) return Promise.resolve();
+    return handleFriendRequest(requesterID, requesteeID, accept ? FriendRequestAction.accept : FriendRequestAction.decline);
+});
+
+exports.deleteFriend = functions.https.onCall((data, context) => {
+    const userID = context.auth?.uid;
+    const friendID = data.userID;
+    if (userID == null) return Promise.resolve();
+    return deleteFriend(userID, friendID);
+});
+
+exports.deleteCompetition = functions.https.onCall(data => {
+    const competitionID = data.competitionID;
+    return deleteCompetition(competitionID);
+});
+
+exports.updateCompetitionStandings = functions.https.onCall((_data, context) => {
+    const userID = context.auth?.uid;
+    if (userID == null) return Promise.resolve();
+    return updateCompetitionStandings(userID);
+});
 
 exports.sendNewCompetitionNotification = functions.firestore
     .document("competitions/{competitionId}")
     .onWrite(async change => {
-        if (!change.after.exists) return; // dseleted
+        if (!change.after.exists) return; // deleted
 
         const oldCompetition = new Competition(change.before);
         const newCompetition = new Competition(change.after);
@@ -59,27 +83,6 @@ exports.sendNewCompetitionNotification = functions.firestore
                     `${owner.name} invited you to ${newCompetition.name}`; // invited by owner to new competition
                 await notifications.sendNotificationsToUser(user, "Competition invite", message);
             });
-    });
-
-exports.updateCompetitionStandings = functions.https
-    .onCall(async data => {
-        const competitionId = data.competitionId;
-        const userId = data.userId;
-
-        if (competitionId !== undefined) {
-            const data = await firestore.doc(`competitions/${competitionId}`).get();
-            if (data === undefined) return;
-            const competition = new Competition(data);
-            await competition.updateStandings();
-        } else if (userId !== undefined) {
-            const competitionsRef = await firestore.collection("competitions")
-                .where("participants", "array-contains", userId)
-                .get();
-            
-            competitionsRef.docs
-                .map(doc => new Competition(doc))
-                .forEach(async competition => await competition.updateStandings());
-        }
     });
 
 exports.cleanStaleActivitySummaries = functions.pubsub.schedule("every day 02:00")

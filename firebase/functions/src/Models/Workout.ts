@@ -9,7 +9,7 @@ type EnumDictionary<T extends string | symbol | number, U> = {
 /**
  * Workout
  */
- class Workout {
+class Workout {
     type: WorkoutType;
     points: EnumDictionary<WorkoutMetric, number>;
     date: Date;

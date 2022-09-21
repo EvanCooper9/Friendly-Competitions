@@ -5,6 +5,7 @@ extension Resolver {
     static func registerViewModels() {
         autoregister(CompetitionViewModel.self, argument: Competition.self, initializer: CompetitionViewModel.init)
         autoregister(DashboardViewModel.self, initializer: DashboardViewModel.init)
+        autoregister(DeveloperViewModel.self, initializer: DeveloperViewModel.init)
         autoregister(ExploreViewModel.self, initializer: ExploreViewModel.init)
         autoregister(HomeViewModel.self, initializer: HomeViewModel.init)
         autoregister(InviteFriendsViewModel.self, argument: InviteFriendsAction.self, initializer: InviteFriendsViewModel.init)

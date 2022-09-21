@@ -58,11 +58,11 @@ final class UserViewModel: ObservableObject {
             .flatMapLatest(withUnretained: self) { object, action -> AnyPublisher<Void, Error> in
                 switch action {
                 case .acceptFriendRequest:
-                    return friendsManager.acceptFriendRequest(from: user)
+                    return friendsManager.accept(friendRequest: user)
                 case .denyFriendRequest:
-                    return friendsManager.declineFriendRequest(from: user)
+                    return friendsManager.decline(friendRequest: user)
                 case .request:
-                    return friendsManager.add(friend: user)
+                    return friendsManager.add(user: user)
                 case .deleteFriend:
                     object.actionRequiringConfirmation = .deleteFriend
                     return .empty()

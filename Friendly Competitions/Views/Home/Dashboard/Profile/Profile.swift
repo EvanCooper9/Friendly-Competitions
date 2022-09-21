@@ -18,7 +18,6 @@ struct Profile: View {
             
             Section {
                 Toggle("Searchable", isOn: $viewModel.user.searchable ?? true)
-
             } header: {
                 Text("Privacy")
             } footer: {
