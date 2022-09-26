@@ -45,9 +45,11 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
         _activitySummary = .init(storedActivitySummary)
 
         activitySummary = _activitySummary
+            .removeDuplicates()
             .handleEvents(receiveOutput: { UserDefaults.standard.encode($0, forKey: "activity_summary") })
             .receive(on: RunLoop.main)
             .share(replay: 1)
+            .print("activity summary")
             .eraseToAnyPublisher()
 
         Publishers
@@ -70,15 +72,20 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
             .filter(\.isNotEmpty)
             .combineLatest(userManager.user)
             .sinkAsync { [weak self] activitySummaries, user in
-                guard let self = self else { return }
-                let batch = self.database.batch()
+                guard let strongSelf = self else { return }
+
+                if let activitySummary = activitySummaries.last, activitySummary.date.isToday {
+                    strongSelf._activitySummary.send(activitySummary)
+                }
+
+                let batch = strongSelf.database.batch()
                 try activitySummaries.forEach { activitySummary in
                     let documentId = DateFormatter.dateDashed.string(from: activitySummary.date)
-                    let document = self.database.document("users/\(user.id)/activitySummaries/\(documentId)")
+                    let document = strongSelf.database.document("users/\(user.id)/activitySummaries/\(documentId)")
                     let _ = try batch.setDataEncodable(activitySummary, forDocument: document)
                 }
                 try await batch.commit()
-                self.uploadFinished.send()
+                strongSelf.uploadFinished.send()
             }
             .store(in: &cancellables)
     }
@@ -101,18 +108,11 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
                 guard let self = self else { return .never() }
                 let subject = PassthroughSubject<[ActivitySummary], Error>()
                 let query = HKActivitySummaryQuery(predicate: dateInterval.activitySummaryPredicate) { query, hkActivitySummaries, error in
-                    if let error = error {
+                    if let error {
                         subject.send(completion: .failure(error))
                         return
                     }
-
-                    let activitySummaries = hkActivitySummaries?.map(\.activitySummary) ?? []
-
-                    if let activitySummary = activitySummaries.last, activitySummary.date.isToday {
-                        self._activitySummary.send(activitySummary)
-                    }
-
-                    subject.send(activitySummaries)
+                    subject.send(hkActivitySummaries?.map(\.activitySummary) ?? [])
                 }
                 self.healthKitManager.execute(query)
                 return subject.eraseToAnyPublisher()

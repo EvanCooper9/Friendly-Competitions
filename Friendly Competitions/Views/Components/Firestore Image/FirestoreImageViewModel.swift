@@ -9,7 +9,7 @@ final class FirestoreImageViewModel: ObservableObject {
     
     private let path: String
     
-    @Injected private var storageManager: StorageManaging
+    @LazyInjected private var storageManager: StorageManaging
     
     init(path: String) {
         self.path = path

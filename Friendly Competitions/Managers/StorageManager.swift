@@ -1,4 +1,5 @@
 import Combine
+import Files
 import FirebaseStorage
 import Foundation
 import Resolver
@@ -9,12 +10,6 @@ protocol StorageManaging {
 }
 
 final class StorageManager: StorageManaging {
-    
-    // MARK: - Lifecycle
-    
-    deinit {
-        // remove storage
-    }
 
     // MARK: - Private Properties
 
@@ -24,19 +19,25 @@ final class StorageManager: StorageManaging {
     private var documentsDirectory: URL {
         fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
     }
+    
+    // MARK: - Lifecycle
+
+    init() {
+        try? cleanup()
+    }
 
     // MARK: - Public Methods
 
     func data(for storagePath: String) async throws -> Data {
         let localPath = documentsDirectory.appendingPathComponent(storagePath)
         let localData = try? Data(contentsOf: localPath)
-        if let localData = localData, !localData.isEmpty {
+        if let localData, !localData.isEmpty {
             return localData
         }
 
         return try await withCheckedThrowingContinuation { continuation in
             storageRef.child(storagePath).write(toFile: localPath) { url, error in
-                if let error = error {
+                if let error {
                     continuation.resume(throwing: error)
                     return
                 }
@@ -47,6 +48,18 @@ final class StorageManager: StorageManaging {
                     continuation.resume(throwing: error)
                 }
             }
+        }
+    }
+
+    // MARK: - Private Methods
+
+    private func cleanup() throws {
+        let folder = try Folder(path: documentsDirectory.absoluteString)
+        try folder.files.forEach { file in
+            try file.delete()
+        }
+        try folder.subfolders.forEach { folder in
+            try folder.delete()
         }
     }
 }

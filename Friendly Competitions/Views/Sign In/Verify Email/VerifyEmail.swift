@@ -13,7 +13,7 @@ struct VerifyEmail: View {
             
             Spacer()
             
-            Image(systemName: "envelope.badge")
+            Image(systemName: .envelopeBadge)
                 .font(.system(size: 100))
                 .padding(50)
                 .background(Color(uiColor: .systemGray6))
@@ -26,7 +26,7 @@ struct VerifyEmail: View {
                 Text("Follow the instructions sent to \(viewModel.user.email) to complete your account")
                     .fixedSize(horizontal: false, vertical: true)
                     .foregroundColor(.gray)
-                Button("Send again", systemImage: "paperplane.fill", action: viewModel.resendVerification)
+                Button("Send again", systemImage: .paperplaneFill, action: viewModel.resendVerification)
             }
             
             Spacer()

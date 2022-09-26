@@ -58,19 +58,17 @@
 		C16ADDD226D9123600E34E04 /* Competition+ScoringModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C16ADDD126D9123600E34E04 /* Competition+ScoringModel.swift */; };
 		C16CC40627A7332800C26208 /* UserView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C16CC40527A7332800C26208 /* UserView.swift */; };
 		C16CC40927A73E6E00C26208 /* User+Statistics.swift in Sources */ = {isa = PBXBuildFile; fileRef = C16CC40827A73E6E00C26208 /* User+Statistics.swift */; };
-		C171465027E53E8E00F56BB9 /* PreviewEnvironmentObjectHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C171464F27E53E8E00F56BB9 /* PreviewEnvironmentObjectHelper.swift */; };
+		C171465027E53E8E00F56BB9 /* PreviewHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = C171464F27E53E8E00F56BB9 /* PreviewHelper.swift */; };
 		C1884E4826D5894000C21014 /* Dashboard.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1884E4726D5894000C21014 /* Dashboard.swift */; };
 		C1884E4E26D59E3100C21014 /* User.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1884E4D26D59E3000C21014 /* User.swift */; };
 		C1884E5426D5A40E00C21014 /* Competition.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1884E5326D5A40E00C21014 /* Competition.swift */; };
 		C1930E4527C55EF500DB45C1 /* AppState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1930E4427C55EF500DB45C1 /* AppState.swift */; };
-		C1930E4927C5A6F900DB45C1 /* ExploreSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1930E4827C5A6F900DB45C1 /* ExploreSection.swift */; };
 		C1930E4D27C6730A00DB45C1 /* Colors.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C1930E4C27C6730A00DB45C1 /* Colors.xcassets */; };
 		C1930E5227C68E5F00DB45C1 /* CompetitionDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1930E5127C68E5F00DB45C1 /* CompetitionDetails.swift */; };
 		C1930E5627C6FBF500DB45C1 /* ResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1930E5527C6FBF500DB45C1 /* ResolverTests.swift */; };
 		C19B7F2627BD843000BCA4B9 /* Explore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C19B7F2527BD843000BCA4B9 /* Explore.swift */; };
 		C19B7F2827BD8A5E00BCA4B9 /* Home.swift in Sources */ = {isa = PBXBuildFile; fileRef = C19B7F2727BD8A5E00BCA4B9 /* Home.swift */; };
 		C19B7F2B27BD8C7100BCA4B9 /* FeaturedCompetition.swift in Sources */ = {isa = PBXBuildFile; fileRef = C19B7F2A27BD8C7100BCA4B9 /* FeaturedCompetition.swift */; };
-		C19B7F2D27BDED8B00BCA4B9 /* ExploreCarousel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C19B7F2C27BDED8B00BCA4B9 /* ExploreCarousel.swift */; };
 		C19EAFE3272B30E0008BCFDD /* PermissionsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C19EAFE2272B30E0008BCFDD /* PermissionsView.swift */; };
 		C1A4696A26DA823C00254105 /* Resolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1A4696926DA823C00254105 /* Resolver.swift */; };
 		C1AAE944275AEE6F00921E41 /* UIViewController+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1AAE943275AEE6F00921E41 /* UIViewController+Extensions.swift */; };
@@ -109,6 +107,7 @@
 		ED1CFA9D2864B92A00192E49 /* Publisher+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1CFA9C2864B92A00192E49 /* Publisher+Extensions.swift */; };
 		ED1CFA9F2864E58300192E49 /* PostDecoded.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1CFA9E2864E58300192E49 /* PostDecoded.swift */; };
 		ED1CFAA22864FF0000192E49 /* WorkoutMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1CFAA12864FF0000192E49 /* WorkoutMetric.swift */; };
+		ED1E08D728DF4C6600497E20 /* View+RemovingMargin.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1E08D628DF4C6600497E20 /* View+RemovingMargin.swift */; };
 		ED277B1D2838002C00DDF29A /* HomeViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED277B1C2838002C00DDF29A /* HomeViewModelTests.swift */; };
 		ED3ED8F7284F951800B5100F /* AutoMockable.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3ED8F6284F951800B5100F /* AutoMockable.generated.swift */; };
 		ED438FF727F7B3B600D72F99 /* View+ConfirmationDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED438FF627F7B3B600D72F99 /* View+ConfirmationDialog.swift */; };
@@ -155,6 +154,7 @@
 		EDC7849B280358E9001FE005 /* Workout.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC7849A280358E9001FE005 /* Workout.swift */; };
 		EDC7849D28035A67001FE005 /* HKWorkoutActivityType+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC7849C28035A67001FE005 /* HKWorkoutActivityType+Extensions.swift */; };
 		EDDF77D828BA82E000BB8B97 /* HealthKitPermissionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDDF77D728BA82E000BB8B97 /* HealthKitPermissionType.swift */; };
+		EDE7429928DF439D00FAAA7F /* Files in Frameworks */ = {isa = PBXBuildFile; productRef = EDE7429828DF439D00FAAA7F /* Files */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -237,19 +237,17 @@
 		C16ADDD126D9123600E34E04 /* Competition+ScoringModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Competition+ScoringModel.swift"; sourceTree = "<group>"; };
 		C16CC40527A7332800C26208 /* UserView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserView.swift; sourceTree = "<group>"; };
 		C16CC40827A73E6E00C26208 /* User+Statistics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "User+Statistics.swift"; sourceTree = "<group>"; };
-		C171464F27E53E8E00F56BB9 /* PreviewEnvironmentObjectHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewEnvironmentObjectHelper.swift; sourceTree = "<group>"; };
+		C171464F27E53E8E00F56BB9 /* PreviewHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewHelper.swift; sourceTree = "<group>"; };
 		C1884E4726D5894000C21014 /* Dashboard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Dashboard.swift; sourceTree = "<group>"; };
 		C1884E4D26D59E3000C21014 /* User.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = User.swift; sourceTree = "<group>"; };
 		C1884E5326D5A40E00C21014 /* Competition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Competition.swift; sourceTree = "<group>"; };
 		C1930E4427C55EF500DB45C1 /* AppState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppState.swift; sourceTree = "<group>"; };
-		C1930E4827C5A6F900DB45C1 /* ExploreSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreSection.swift; sourceTree = "<group>"; };
 		C1930E4C27C6730A00DB45C1 /* Colors.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Colors.xcassets; sourceTree = "<group>"; };
 		C1930E5127C68E5F00DB45C1 /* CompetitionDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionDetails.swift; sourceTree = "<group>"; };
 		C1930E5527C6FBF500DB45C1 /* ResolverTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ResolverTests.swift; sourceTree = "<group>"; };
 		C19B7F2527BD843000BCA4B9 /* Explore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Explore.swift; sourceTree = "<group>"; };
 		C19B7F2727BD8A5E00BCA4B9 /* Home.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Home.swift; path = Home/Home.swift; sourceTree = "<group>"; };
 		C19B7F2A27BD8C7100BCA4B9 /* FeaturedCompetition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeaturedCompetition.swift; sourceTree = "<group>"; };
-		C19B7F2C27BDED8B00BCA4B9 /* ExploreCarousel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreCarousel.swift; sourceTree = "<group>"; };
 		C19EAFE2272B30E0008BCFDD /* PermissionsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionsView.swift; sourceTree = "<group>"; };
 		C1A4696926DA823C00254105 /* Resolver.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Resolver.swift; sourceTree = "<group>"; };
 		C1AAE943275AEE6F00921E41 /* UIViewController+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Extensions.swift"; sourceTree = "<group>"; };
@@ -278,6 +276,7 @@
 		ED1CFA9C2864B92A00192E49 /* Publisher+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Publisher+Extensions.swift"; sourceTree = "<group>"; };
 		ED1CFA9E2864E58300192E49 /* PostDecoded.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostDecoded.swift; sourceTree = "<group>"; };
 		ED1CFAA12864FF0000192E49 /* WorkoutMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutMetric.swift; sourceTree = "<group>"; };
+		ED1E08D628DF4C6600497E20 /* View+RemovingMargin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+RemovingMargin.swift"; sourceTree = "<group>"; };
 		ED277B1C2838002C00DDF29A /* HomeViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModelTests.swift; sourceTree = "<group>"; };
 		ED3ED8F6284F951800B5100F /* AutoMockable.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AutoMockable.generated.swift; sourceTree = "<group>"; };
 		ED438FF627F7B3B600D72F99 /* View+ConfirmationDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+ConfirmationDialog.swift"; sourceTree = "<group>"; };
@@ -290,6 +289,7 @@
 		ED493E9627FDE47300A94F4A /* AuthenticationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AuthenticationServices.framework; path = System/Library/Frameworks/AuthenticationServices.framework; sourceTree = SDKROOT; };
 		ED604B2828DA2C660097B76F /* DeveloperView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperView.swift; sourceTree = "<group>"; };
 		ED604B2928DA2C660097B76F /* DeveloperViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperViewModel.swift; sourceTree = "<group>"; };
+		ED62CE3C28DC8EA30029912E /* ECKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = ECKit; path = ../ECKit; sourceTree = "<group>"; };
 		ED65D3BC280CF36C00B38486 /* WorkoutType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutType.swift; sourceTree = "<group>"; };
 		ED7881AA2850F6C400C7F6CB /* SignInMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInMethod.swift; sourceTree = "<group>"; };
 		ED7881AC2850F6DF00C7F6CB /* SignUpError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpError.swift; sourceTree = "<group>"; };
@@ -348,6 +348,7 @@
 				ED005F9628D50D2600481E04 /* FirebaseCrashlytics in Frameworks */,
 				ED005FA028D50E5200481E04 /* FirebaseAnalyticsSwift in Frameworks */,
 				ED005F9128D50C6A00481E04 /* ECKit+Firebase in Frameworks */,
+				EDE7429928DF439D00FAAA7F /* Files in Frameworks */,
 				ED005F9C28D50D8E00481E04 /* FirebaseMessaging in Frameworks */,
 				ED493E9727FDE47300A94F4A /* AuthenticationServices.framework in Frameworks */,
 			);
@@ -432,6 +433,7 @@
 				ED438FF627F7B3B600D72F99 /* View+ConfirmationDialog.swift */,
 				C132336C27BF0C0F00196D81 /* View+CornerRadius.swift */,
 				EDC5FC3E27FA7C1B00F2882D /* View+HUD.swift */,
+				ED1E08D628DF4C6600497E20 /* View+RemovingMargin.swift */,
 			);
 			path = SwiftUI;
 			sourceTree = "<group>";
@@ -570,6 +572,7 @@
 		C1691DBA26D55FCF006FFA30 = {
 			isa = PBXGroup;
 			children = (
+				ED62CE3C28DC8EA30029912E /* ECKit */,
 				C1691DC526D55FCF006FFA30 /* Friendly Competitions */,
 				C155CA5827AB989D005F49F4 /* Friendly Competitions Tests */,
 				C1691DC426D55FCF006FFA30 /* Products */,
@@ -589,8 +592,8 @@
 		C1691DC526D55FCF006FFA30 /* Friendly Competitions */ = {
 			isa = PBXGroup;
 			children = (
-				C1691DCA26D55FCF006FFA30 /* Images.xcassets */,
 				C1930E4C27C6730A00DB45C1 /* Colors.xcassets */,
+				C1691DCA26D55FCF006FFA30 /* Images.xcassets */,
 				C163E30026F2344D00C9EC30 /* Info.plist */,
 				C1E6406226F4395200E3E70A /* FriendlyCompetitions.entitlements */,
 				C1691DC626D55FCF006FFA30 /* FriendlyCompetitions.swift */,
@@ -642,7 +645,7 @@
 		C171465127E5407500F56BB9 /* Helpers */ = {
 			isa = PBXGroup;
 			children = (
-				C171464F27E53E8E00F56BB9 /* PreviewEnvironmentObjectHelper.swift */,
+				C171464F27E53E8E00F56BB9 /* PreviewHelper.swift */,
 			);
 			path = Helpers;
 			sourceTree = "<group>";
@@ -683,8 +686,6 @@
 			children = (
 				C19B7F2527BD843000BCA4B9 /* Explore.swift */,
 				ED901B672802504A00FE619E /* ExploreViewModel.swift */,
-				C19B7F2C27BDED8B00BCA4B9 /* ExploreCarousel.swift */,
-				C1930E4827C5A6F900DB45C1 /* ExploreSection.swift */,
 				C19B7F2A27BD8C7100BCA4B9 /* FeaturedCompetition.swift */,
 			);
 			name = Explore;
@@ -1012,6 +1013,7 @@
 				ED005F9D28D50E3800481E04 /* FirebaseAnalytics */,
 				ED005F9F28D50E5200481E04 /* FirebaseAnalyticsSwift */,
 				ED6B41E228DA1228004890F6 /* FirebaseFunctionsCombine-Community */,
+				EDE7429828DF439D00FAAA7F /* Files */,
 			);
 			productName = CompyBoi;
 			productReference = C1691DC326D55FCF006FFA30 /* Friendly Competitions.app */;
@@ -1049,6 +1051,7 @@
 				ED836055280336500038FACE /* XCRemoteSwiftPackageReference "swift-algorithms" */,
 				ED005F8D28D50C6A00481E04 /* XCRemoteSwiftPackageReference "ECKit" */,
 				ED005F9228D50D0100481E04 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				EDE7429728DF439D00FAAA7F /* XCRemoteSwiftPackageReference "Files" */,
 			);
 			productRefGroup = C1691DC426D55FCF006FFA30 /* Products */;
 			projectDirPath = "";
@@ -1098,7 +1101,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ \"${ENABLE_PREVIEWS}\" = \"YES\" ]; then\n  echo \"Previews enabled, quitting to prevent 'preview paused'.\"\n  exit 0\nfi\n\nif [ $(arch) == \"arm64\" ]; then\n    arch -x86_64 /opt/homebrew/bin/swiftgen\nelse \n    swiftgen\nfi\n";
+			shellScript = "if [ \"${ENABLE_PREVIEWS}\" = \"YES\" ]; then\n  echo \"Previews enabled, quitting to prevent 'preview paused'.\"\n  exit 0\nfi\n\nif [ $(arch) = \"arm64\" ]; then\n    /opt/homebrew/bin/swiftgen\nelse\n    swiftgen\nfi\n";
 		};
 		C1DB3B5C27AA0CF40074BED1 /* Firebase */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1136,7 +1139,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ \"${ENABLE_PREVIEWS}\" = \"YES\" ]; then\n  echo \"Previews enabled, quitting to prevent 'preview paused'.\"\n  exit 0\nfi\n\nif [ $(arch) == \"arm64\" ]; then\n    arch -x86_64 /opt/homebrew/bin/swiftgen\nelse \n    sourcery\nfi\n";
+			shellScript = "if [ \"${ENABLE_PREVIEWS}\" = \"YES\" ]; then\n  echo \"Previews enabled, quitting to prevent 'preview paused'.\"\n  exit 0\nfi\n\nif [ $(arch) = \"arm64\" ]; then\n    /opt/homebrew/bin/sourcery\nelse\n    sourcery\nfi\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
@@ -1175,6 +1178,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ED1E08D728DF4C6600497E20 /* View+RemovingMargin.swift in Sources */,
 				EDA352902836EFB600390585 /* UserViewAction.swift in Sources */,
 				C1691DDB26D560C5006FFA30 /* SignInWithAppleButton.swift in Sources */,
 				C13F922C27BFFF9900FC6880 /* StorageManager.swift in Sources */,
@@ -1215,7 +1219,6 @@
 				C10A267927E9528700FD1C2C /* ColorScheme+Extensions.swift in Sources */,
 				C132336727BEBB1600196D81 /* UIScreen+Extensions.swift in Sources */,
 				C19B7F2627BD843000BCA4B9 /* Explore.swift in Sources */,
-				C1930E4927C5A6F900DB45C1 /* ExploreSection.swift in Sources */,
 				C16CC40927A73E6E00C26208 /* User+Statistics.swift in Sources */,
 				ED65D3BD280CF36C00B38486 /* WorkoutType.swift in Sources */,
 				ED7881B02850F71E00C7F6CB /* AnalyticsEvent.swift in Sources */,
@@ -1232,7 +1235,6 @@
 				EDDF77D828BA82E000BB8B97 /* HealthKitPermissionType.swift in Sources */,
 				EDC7849828034CCD001FE005 /* WorkoutManager.swift in Sources */,
 				C10E5541272B3BB70053BBA6 /* Permission.swift in Sources */,
-				C19B7F2D27BDED8B00BCA4B9 /* ExploreCarousel.swift in Sources */,
 				C123C9CF27A86E1200375F73 /* Stack.swift in Sources */,
 				C1EA986926D6E8C900219E84 /* CompetitionView.swift in Sources */,
 				ED1CFA9F2864E58300192E49 /* PostDecoded.swift in Sources */,
@@ -1245,7 +1247,7 @@
 				C10E5543272B3BCF0053BBA6 /* PermissionView.swift in Sources */,
 				ED901B712802618700FE619E /* NewCompetitionViewModel.swift in Sources */,
 				C1185A2526D6717C002E2377 /* ActivitySummary.swift in Sources */,
-				C171465027E53E8E00F56BB9 /* PreviewEnvironmentObjectHelper.swift in Sources */,
+				C171465027E53E8E00F56BB9 /* PreviewHelper.swift in Sources */,
 				C13F922E27C0017400FC6880 /* FirestoreImage.swift in Sources */,
 				ED7881AB2850F6C400C7F6CB /* SignInMethod.swift in Sources */,
 				C1930E4527C55EF500DB45C1 /* AppState.swift in Sources */,
@@ -1591,6 +1593,14 @@
 				minimumVersion = 1.0.0;
 			};
 		};
+		EDE7429728DF439D00FAAA7F /* XCRemoteSwiftPackageReference "Files" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "git@github.com:JohnSundell/Files.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1648,6 +1658,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = ED836055280336500038FACE /* XCRemoteSwiftPackageReference "swift-algorithms" */;
 			productName = Algorithms;
+		};
+		EDE7429828DF439D00FAAA7F /* Files */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EDE7429728DF439D00FAAA7F /* XCRemoteSwiftPackageReference "Files" */;
+			productName = Files;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

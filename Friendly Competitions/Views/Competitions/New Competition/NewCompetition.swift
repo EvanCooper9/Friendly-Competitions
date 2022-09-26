@@ -1,6 +1,7 @@
 import ECKit
 import Resolver
 import SwiftUI
+import SwiftUIX
 import HealthKit
 
 struct NewCompetition: View {
@@ -50,7 +51,7 @@ struct NewCompetition: View {
                     Text(rowConfig.name)
                     Spacer()
                     if rowConfig.invited {
-                        Image(systemName: "checkmark.circle.fill")
+                        Image(systemName: .checkmarkCircleFill)
                     }
                 }
                 .contentShape(Rectangle())

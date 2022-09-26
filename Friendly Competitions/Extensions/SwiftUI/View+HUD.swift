@@ -83,13 +83,13 @@ struct HUDContainer<MainContent: View>: View {
     var body: some View {
         ZStack(alignment: .top) {
             mainContent
-            if let state = hudState {
-                HUD(state: state)
+            if let hudState {
+                HUD(state: hudState)
                     .transition(
                         .move(edge: .top)
                         .combined(with: .opacity)
                     )
-                    .onChange(of: state) { _ in
+                    .onChange(of: hudState) { _ in
                         dismissAfterDelay()
                     }
                     .onAppear(perform: dismissAfterDelay)

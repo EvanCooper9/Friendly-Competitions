@@ -9,7 +9,7 @@ struct ActivitySummaryInfoView: View {
             VStack(alignment: .leading, spacing: 10) {
                 VStack(alignment: .leading) {
                     Text("Move")
-                    if let activitySummary = activitySummary {
+                    if let activitySummary {
                         Text("\(activitySummary.activeEnergyBurned.formatted())/\(activitySummary.activeEnergyBurnedGoal.formatted(.number))")
                             .foregroundColor(.red)
                             .font(.title3)
@@ -19,7 +19,7 @@ struct ActivitySummaryInfoView: View {
                 }
                 VStack(alignment: .leading) {
                     Text("Exercise")
-                    if let activitySummary = activitySummary {
+                    if let activitySummary {
                         Text("\(activitySummary.appleExerciseTime.formatted())/\(activitySummary.appleExerciseTimeGoal.formatted())")
                             .foregroundColor(.green)
                             .font(.title3)
@@ -29,7 +29,7 @@ struct ActivitySummaryInfoView: View {
                 }
                 VStack(alignment: .leading) {
                     Text("Stand")
-                    if let activitySummary = activitySummary {
+                    if let activitySummary {
                         Text("\(activitySummary.appleStandHours.formatted())/\(activitySummary.appleStandHoursGoal.formatted())")
                             .foregroundColor(.blue)
                             .font(.title3)
@@ -48,6 +48,8 @@ struct ActivitySummaryInfoView: View {
 
 struct ActivitySummaryInfoView_Previews: PreviewProvider {
     static var previews: some View {
-        ActivitySummaryInfoView(activitySummary: .mock)
+        List {
+            ActivitySummaryInfoView(activitySummary: .mock)
+        }
     }
 }

@@ -114,14 +114,16 @@ struct CompetitionView_Previews: PreviewProvider {
         let pendingParticipants: [Competition.ID: [User]] = [
             competition.id: [gabby]
         ]
+        competitionsManager.competitions = .just([competition])
         competitionsManager.standings = .just(standings)
         competitionsManager.participants = .just(participants)
         competitionsManager.pendingParticipants = .just(pendingParticipants)
     }
 
     static var previews: some View {
-        CompetitionView(competition: competition)
-            .setupMocks(setupMocks)
+        registerDependencies()
+        setupMocks()
+        return CompetitionView(competition: competition)
             .embeddedInNavigationView()
     }
 }

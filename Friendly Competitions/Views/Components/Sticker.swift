@@ -10,7 +10,7 @@ struct Sticker: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            Image(systemName: "calendar")
+            Image(systemName: .calendar)
                 .font(.largeTitle)
                 .padding(3)
                 .background(.regularMaterial)

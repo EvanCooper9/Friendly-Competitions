@@ -1,5 +1,6 @@
 import Resolver
 import SwiftUI
+import SwiftUIX
 
 struct Dashboard: View {
     
@@ -85,7 +86,7 @@ struct Dashboard: View {
                 .disabled(viewModel.competitions.isEmpty)
                 
                 Button(toggling: $presentNewCompetition) {
-                    Image(systemName: "plus.circle")
+                    Image(systemName: .plusCircle)
                         .font(.title2)
                 }
             }
@@ -120,7 +121,7 @@ struct Dashboard: View {
                     .font(.title3)
                 Spacer()
                 Button(toggling: $presentSearchFriendsSheet) {
-                    Image(systemName: "person.crop.circle.badge.plus")
+                    Image(systemName: .personCropCircleBadgePlus)
                         .font(.title2)
                 }
             }

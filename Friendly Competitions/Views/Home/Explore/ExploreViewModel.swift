@@ -1,5 +1,6 @@
 import Combine
 import CombineExt
+import Resolver
 
 final class ExploreViewModel: ObservableObject {
     
@@ -9,15 +10,17 @@ final class ExploreViewModel: ObservableObject {
     @Published var appOwnedCompetitions = [Competition]()
 
     init(competitionsManager: CompetitionsManaging) {
+
         competitionsManager.appOwnedCompetitions.assign(to: &$appOwnedCompetitions)
         
         $searchText
-            .handleEvents(receiveOutput: { [weak self] _ in self?.loading = true })
-            .setFailureType(to: Error.self)
-            .flatMapLatest(competitionsManager.search)
-            .ignoreFailure()
-            .receive(on: RunLoop.main)
-            .handleEvents(receiveOutput: { [weak self] _ in self?.loading = false })
+            .flatMapLatest { searchText -> AnyPublisher<[Competition], Never> in
+                guard !searchText.isEmpty else { return .just([]) }
+                return competitionsManager.search(searchText)
+                    .receive(on: RunLoop.main)
+                    .isLoading { [weak self] in self?.loading = $0 }
+                    .ignoreFailure()
+            }
             .assign(to: &$searchResults)
     }
 }

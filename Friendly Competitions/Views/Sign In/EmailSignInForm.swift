@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftUIX
 
 struct EmailSignInForm: View {
     
@@ -45,7 +46,7 @@ struct EmailSignInForm: View {
             VStack(spacing: 5) {
                 if signUp {
                     inputField {
-                        Image(systemName: "person.fill")
+                        Image(systemName: .personFill)
                             .frame(width: 20, alignment: .center)
                             .foregroundColor(.gray)
                         TextField("Name", text: $name)
@@ -55,7 +56,7 @@ struct EmailSignInForm: View {
                     }
                 }
                 inputField {
-                    Image(systemName: "envelope.fill")
+                    Image(systemName: .envelopeFill)
                         .frame(width: 20, alignment: .center)
                         .foregroundColor(.gray)
                     TextField("Email", text: $email)
@@ -74,7 +75,7 @@ struct EmailSignInForm: View {
                         .focused($focus, equals: .password)
                         .onSubmit { focus = signUp ? .passwordConfirmation : nil }
                     if !signUp {
-                        Button("", systemImage: "questionmark.circle", action: onForgot)
+                        Button("", systemImage: .questionmarkCircle, action: onForgot)
                             .font(.callout)
                             .disabled(loading)
                     }
@@ -103,7 +104,7 @@ struct EmailSignInForm: View {
                 .frame(maxWidth: .infinity, minHeight: 20) // hmmm...minHeight required to avoid weird layout
                 
                 Button(action: onSubmit) {
-                    Label(signUp ? "Sign up" : "Sign in", systemImage: "envelope.fill")
+                    Label(signUp ? "Sign up" : "Sign in", systemImage: .envelopeFill)
                         .font(.title2.weight(.semibold))
                         .frame(maxWidth: .infinity)
                 }

@@ -90,7 +90,7 @@ final class InviteFriendsViewModel: ObservableObject {
             .assign(to: &$rows)
 
         _accept
-            .flatMapLatest { [weak self] user in
+            .flatMapLatest { [weak self] user -> AnyPublisher<Void, Never> in
                 switch action {
                 case .addFriend:
                     return friendsManager

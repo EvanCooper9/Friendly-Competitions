@@ -15,20 +15,37 @@ fileprivate struct Container {
     
     static func registerDependencies() {
         Resolver.registerViewModels()
-        Resolver.register { Container.appState }.scope(.application)
-        Resolver.register(ActivitySummaryManaging.self) { Container.activitySummaryManager }.scope(.application)
-        Resolver.register(AnalyticsManaging.self) { Container.analyticsManager }.scope(.application)
-        Resolver.register(AuthenticationManaging.self) { Container.authenticationManager }.scope(.application)
-        Resolver.register(CompetitionsManaging.self) { Container.competitionsManager }.scope(.application)
-        Resolver.register(FriendsManaging.self) { Container.friendsManager }.scope(.application)
-        Resolver.register(HealthKitManaging.self) { Container.healthKitManager }.scope(.application)
-        Resolver.register(PermissionsManaging.self) { Container.permissionsManager }.scope(.application)
-        Resolver.register(StorageManaging.self) { Container.storageManager }.scope(.application)
+        Resolver.register { Container.appState }
+        Resolver.register(ActivitySummaryManaging.self) { Container.activitySummaryManager }
+        Resolver.register(AnalyticsManaging.self) { Container.analyticsManager }
+        Resolver.register(AuthenticationManaging.self) { Container.authenticationManager }
+        Resolver.register(CompetitionsManaging.self) { Container.competitionsManager }
+        Resolver.register(FriendsManaging.self) { Container.friendsManager }
+        Resolver.register(HealthKitManaging.self) { Container.healthKitManager }
+        Resolver.register(PermissionsManaging.self) { Container.permissionsManager }
+        Resolver.register(StorageManaging.self) { Container.storageManager }
         Resolver.register(UserManaging.self) {
             let userManager = Container.userManager
             userManager.user = .init(.evan)
             return userManager
-        }.scope(.application)
+        }
+    }
+
+    static func baseSetupMocks() {
+        activitySummaryManager.activitySummary = .just(nil)
+        activitySummaryManager.updateReturnValue = .just(())
+
+        authenticationManager.emailVerified = .just(true)
+        authenticationManager.loggedIn = .just(true)
+
+        competitionsManager.competitions = .just([.mock])
+        competitionsManager.standings = .just([:])
+        competitionsManager.participants = .just([:])
+        competitionsManager.pendingParticipants = .just([:])
+        competitionsManager.appOwnedCompetitions = .just([.mockPublic])
+        competitionsManager.searchReturnValue = .just([.mockPublic, .mock])
+
+        storageManager.dataForReturnValue = .init()
     }
 }
 
@@ -43,12 +60,17 @@ extension PreviewProvider {
     static var permissionsManager: PermissionsManagingMock { Container.permissionsManager }
     static var storageManager: StorageManagingMock { Container.storageManager }
     static var userManager: UserManagingMock { Container.userManager }
+
+    static func registerDependencies() {
+        Container.registerDependencies()
+    }
 }
 
 extension View {
     func setupMocks(_ setupMocks: @escaping () -> Void = {}) -> some View {
         Container.registerDependencies()
+        Container.baseSetupMocks()
+        setupMocks()
         return self
-            .onAppear(perform: setupMocks)
     }
 }

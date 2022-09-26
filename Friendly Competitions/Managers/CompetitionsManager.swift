@@ -292,7 +292,7 @@ final class CompetitionsManager: CompetitionsManaging {
                             .first?
                             .decoded(as: Competition.Standing.self)
 
-                        if let standing = standing { standings.append(standing) }
+                        if let standing { standings.append(standing) }
                     }
 
                     return (competition.id, standings)
