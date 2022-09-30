@@ -118,6 +118,7 @@
 		ED487830282747CE00AC1E2C /* InviteFriendsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED48782F282747CE00AC1E2C /* InviteFriendsViewModel.swift */; };
 		ED48783228295A2100AC1E2C /* InviteFriendsAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED48783128295A2100AC1E2C /* InviteFriendsAction.swift */; };
 		ED493E9727FDE47300A94F4A /* AuthenticationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED493E9627FDE47300A94F4A /* AuthenticationServices.framework */; };
+		ED49AC1628E7234400E962F3 /* Files in Frameworks */ = {isa = PBXBuildFile; productRef = ED49AC1528E7234400E962F3 /* Files */; };
 		ED604B2A28DA2C660097B76F /* DeveloperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED604B2828DA2C660097B76F /* DeveloperView.swift */; };
 		ED604B2B28DA2C660097B76F /* DeveloperViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED604B2928DA2C660097B76F /* DeveloperViewModel.swift */; };
 		ED65D3BD280CF36C00B38486 /* WorkoutType.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED65D3BC280CF36C00B38486 /* WorkoutType.swift */; };
@@ -154,7 +155,6 @@
 		EDC7849B280358E9001FE005 /* Workout.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC7849A280358E9001FE005 /* Workout.swift */; };
 		EDC7849D28035A67001FE005 /* HKWorkoutActivityType+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC7849C28035A67001FE005 /* HKWorkoutActivityType+Extensions.swift */; };
 		EDDF77D828BA82E000BB8B97 /* HealthKitPermissionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDDF77D728BA82E000BB8B97 /* HealthKitPermissionType.swift */; };
-		EDE7429928DF439D00FAAA7F /* Files in Frameworks */ = {isa = PBXBuildFile; productRef = EDE7429828DF439D00FAAA7F /* Files */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -348,7 +348,7 @@
 				ED005F9628D50D2600481E04 /* FirebaseCrashlytics in Frameworks */,
 				ED005FA028D50E5200481E04 /* FirebaseAnalyticsSwift in Frameworks */,
 				ED005F9128D50C6A00481E04 /* ECKit+Firebase in Frameworks */,
-				EDE7429928DF439D00FAAA7F /* Files in Frameworks */,
+				ED49AC1628E7234400E962F3 /* Files in Frameworks */,
 				ED005F9C28D50D8E00481E04 /* FirebaseMessaging in Frameworks */,
 				ED493E9727FDE47300A94F4A /* AuthenticationServices.framework in Frameworks */,
 			);
@@ -1013,7 +1013,7 @@
 				ED005F9D28D50E3800481E04 /* FirebaseAnalytics */,
 				ED005F9F28D50E5200481E04 /* FirebaseAnalyticsSwift */,
 				ED6B41E228DA1228004890F6 /* FirebaseFunctionsCombine-Community */,
-				EDE7429828DF439D00FAAA7F /* Files */,
+				ED49AC1528E7234400E962F3 /* Files */,
 			);
 			productName = CompyBoi;
 			productReference = C1691DC326D55FCF006FFA30 /* Friendly Competitions.app */;
@@ -1051,7 +1051,7 @@
 				ED836055280336500038FACE /* XCRemoteSwiftPackageReference "swift-algorithms" */,
 				ED005F8D28D50C6A00481E04 /* XCRemoteSwiftPackageReference "ECKit" */,
 				ED005F9228D50D0100481E04 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
-				EDE7429728DF439D00FAAA7F /* XCRemoteSwiftPackageReference "Files" */,
+				ED49AC1428E7234400E962F3 /* XCRemoteSwiftPackageReference "Files" */,
 			);
 			productRefGroup = C1691DC426D55FCF006FFA30 /* Products */;
 			projectDirPath = "";
@@ -1585,20 +1585,20 @@
 				minimumVersion = 9.0.0;
 			};
 		};
+		ED49AC1428E7234400E962F3 /* XCRemoteSwiftPackageReference "Files" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "git@github.com:JohnSundell/Files.git";
+			requirement = {
+				branch = master;
+				kind = branch;
+			};
+		};
 		ED836055280336500038FACE /* XCRemoteSwiftPackageReference "swift-algorithms" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "git@github.com:apple/swift-algorithms.git";
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 1.0.0;
-			};
-		};
-		EDE7429728DF439D00FAAA7F /* XCRemoteSwiftPackageReference "Files" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "git@github.com:JohnSundell/Files.git";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 4.0.0;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
@@ -1649,6 +1649,11 @@
 			package = ED005F9228D50D0100481E04 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseAnalyticsSwift;
 		};
+		ED49AC1528E7234400E962F3 /* Files */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ED49AC1428E7234400E962F3 /* XCRemoteSwiftPackageReference "Files" */;
+			productName = Files;
+		};
 		ED6B41E228DA1228004890F6 /* FirebaseFunctionsCombine-Community */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = ED005F9228D50D0100481E04 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
@@ -1658,11 +1663,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = ED836055280336500038FACE /* XCRemoteSwiftPackageReference "swift-algorithms" */;
 			productName = Algorithms;
-		};
-		EDE7429828DF439D00FAAA7F /* Files */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = EDE7429728DF439D00FAAA7F /* XCRemoteSwiftPackageReference "Files" */;
-			productName = Files;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -41,9 +41,9 @@
         "package": "Files",
         "repositoryURL": "git@github.com:JohnSundell/Files.git",
         "state": {
-          "branch": null,
+          "branch": "master",
           "revision": "d273b5b7025d386feef79ef6bad7de762e106eaf",
-          "version": "4.2.0"
+          "version": null
         }
       },
       {

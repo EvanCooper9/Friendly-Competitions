@@ -22,6 +22,7 @@ struct FirestoreImage: View {
                 Image(uiImage: image)
                     .resizable()
                     .aspectRatio(contentMode: contentMode)
+                    .scaledToFill()
             } else {
                 failedImage
             }
