@@ -53,10 +53,6 @@ jobs:
 
     - name: Homebrew
       run: brew bundle
-    
-    # - name: Test
-    #   run: |
-    #     xcodebuild test -scheme "Friendly Competitions" -destination "name=iPhone 13 Pro Max"
 
     - name: Fastlane
       run: |

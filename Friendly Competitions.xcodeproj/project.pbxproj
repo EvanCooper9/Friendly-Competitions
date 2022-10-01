@@ -515,8 +515,8 @@
 		C155CA5827AB989D005F49F4 /* Friendly Competitions Tests */ = {
 			isa = PBXGroup;
 			children = (
-				C1300FDD27C96422002E2C52 /* Test Helpers */,
 				C1930E5527C6FBF500DB45C1 /* ResolverTests.swift */,
+				C1300FDD27C96422002E2C52 /* Test Helpers */,
 				C155CA6027AB997D005F49F4 /* Extensions */,
 				C155CA6F27AC1245005F49F4 /* Models */,
 				ED277B1B2838001A00DDF29A /* Views */,

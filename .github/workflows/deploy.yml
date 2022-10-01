@@ -14,25 +14,24 @@ jobs:
     runs-on: macos-12
 
     steps:
+    - uses: maxim-lobanov/setup-xcode@v1
+      with:
+        xcode-version: '14.0'
+
     - name: Checkout
       uses: actions/checkout@v3
       with:
-        fetch-depth: 0 # Number of commits to fetch. 0 indicates all history for all branches and tags.
+        fetch-depth: 0
 
-    - name: Cache Ruby Gems
-      uses: actions/cache@v3
+    - name: Setup SSH
+      uses: webfactory/ssh-agent@v0.5.4
       with:
-        path: vendor/bundle
-        key: ${{ runner.os }}-gems-${{ hashFiles('.ruby-version') }}-${{ hashFiles('**/Gemfile.lock') }}
-        restore-keys: |
-          ${{ runner.os }}-gems-${{ hashFiles('.ruby-version') }}-
+        ssh-private-key: ${{ secrets.SSH_KEY }}
 
-    - name: Bundle Install
-      run: |
-        eval "$(rbenv init -)"
-        bundle config --global jobs 4
-        bundle config path vendor/bundle
-        bundle install
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        bundler-cache: true
 
     - name: Setup GoogleService-Info.plist
       run: |
