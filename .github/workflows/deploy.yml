@@ -52,6 +52,7 @@ jobs:
         APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
         MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
         MATCH_GIT_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
+        FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: 120
 
     - uses: actions/upload-artifact@v3
       with:
