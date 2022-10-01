@@ -20,7 +20,8 @@ final class ProfileViewModel: ObservableObject {
         $user
             .removeDuplicates()
             .compactMap { $0 }
-            .sink(receiveValue: { userManager.update(with: $0) })
+            .flatMapLatest { userManager.update(with: $0).ignoreFailure() }
+            .sink()
             .store(in: &cancellables)
         
         userManager.user

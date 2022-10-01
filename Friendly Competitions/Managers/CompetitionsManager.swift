@@ -5,7 +5,7 @@ import Firebase
 import FirebaseFirestore
 import FirebaseFunctions
 import Resolver
-import SwiftUI
+import UIKit
 
 // sourcery: AutoMockable
 protocol CompetitionsManaging {
@@ -15,8 +15,7 @@ protocol CompetitionsManaging {
     var participants: AnyPublisher<[Competition.ID: [User]], Never> { get }
     var pendingParticipants: AnyPublisher<[Competition.ID: [User]], Never> { get }
     var appOwnedCompetitions: AnyPublisher<[Competition], Never> { get }
-    var topCommunityCompetitions: AnyPublisher<[Competition], Never> { get }
-    
+
     func accept(_ competition: Competition) -> AnyPublisher<Void, Error>
     func create(_ competition: Competition) -> AnyPublisher<Void, Error>
     func decline(_ competition: Competition) -> AnyPublisher<Void, Error>
@@ -39,7 +38,6 @@ final class CompetitionsManager: CompetitionsManaging {
     
     private enum Constants {
         static let maxParticipantsToFetch = 10
-        static let updateStandingsFirebaseFunctionName = "updateCompetitionStandings"
     }
     
     // MARK: - Public Properties
@@ -50,7 +48,6 @@ final class CompetitionsManager: CompetitionsManaging {
     var participants: AnyPublisher<[Competition.ID : [User]], Never> { $_participants.share(replay: 1).eraseToAnyPublisher() }
     var pendingParticipants: AnyPublisher<[Competition.ID : [User]], Never> { $_pendingParticipants.share(replay: 1).eraseToAnyPublisher() }
     var appOwnedCompetitions: AnyPublisher<[Competition], Never> { $_appOwnedCompetitions.share(replay: 1).eraseToAnyPublisher() }
-    var topCommunityCompetitions: AnyPublisher<[Competition], Never> { $_topCommunityCompetitions.share(replay: 1).eraseToAnyPublisher() }
 
     // MARK: - Private Properties
 
@@ -60,7 +57,6 @@ final class CompetitionsManager: CompetitionsManaging {
     @Published private var _participants = [Competition.ID : [User]]()
     @Published private var _pendingParticipants = [Competition.ID : [User]]()
     @Published private var _appOwnedCompetitions = [Competition]()
-    @Published private var _topCommunityCompetitions = [Competition]()
 
     @LazyInjected private var activitySummaryManager: ActivitySummaryManaging
     @Injected private var analyticsManager: AnalyticsManaging
@@ -79,8 +75,10 @@ final class CompetitionsManager: CompetitionsManaging {
     // MARK: - Lifecycle
 
     init() {
-        listen()
-        fetchCompetitionData()
+        if UIApplication.shared.applicationState == .active {
+            listen()
+            fetchCompetitionData()
+        }
 
         Publishers
             .CombineLatest3(competitions, appOwnedCompetitions, invitedCompetitions)
@@ -131,7 +129,6 @@ final class CompetitionsManager: CompetitionsManaging {
 
     func delete(_ competition: Competition) -> AnyPublisher<Void, Error> {
         _competitions.remove(competition)
-        _topCommunityCompetitions.remove(competition)
         _standings[competition.id] = nil
         analyticsManager.log(event: .deleteCompetition(id: competition.id))
         return .fromAsync { [weak self] in
@@ -208,12 +205,10 @@ final class CompetitionsManager: CompetitionsManaging {
     }
 
     func updateStandings() -> AnyPublisher<Void, Error> {
-        .fromAsync { [weak self] in
-            guard let self = self else { return }
-            _ = try await self.functions
-                .httpsCallable(Constants.updateStandingsFirebaseFunctionName)
-                .call(["userId": self.userManager.user.value.id])
-        }
+        functions.httpsCallable("updateCompetitionStandings")
+            .call()
+            .mapToVoid()
+            .eraseToAnyPublisher()
     }
     
     func update(_ competition: Competition) -> AnyPublisher<Void, Error> {
@@ -221,14 +216,12 @@ final class CompetitionsManager: CompetitionsManaging {
             _competitions[index] = competition
         } else if let index = _appOwnedCompetitions.firstIndex(where: { $0.id == competition.id }) {
             _appOwnedCompetitions[index] = competition
-        } else if let index = _topCommunityCompetitions.firstIndex(where: { $0.id == competition.id }) {
-            _topCommunityCompetitions[index] = competition
         }
         return .fromAsync { [weak self] in
             guard let self = self else { return }
             try await self.database.document("competitions/\(competition.id)").updateDataEncodable(competition)
-            try await self.updateStandings(of: competition)
         }
+        .flatMapLatest(withUnretained: self) { $0.updateStandings() }
     }
 
     // MARK: - Private Methods
@@ -236,18 +229,11 @@ final class CompetitionsManager: CompetitionsManaging {
     private func fetchCompetitionData() {
         updateTask = Task(priority: .medium) { [weak self] in
             guard let self = self else { return }
-            let allCompetitions = self._competitions + self._appOwnedCompetitions + self._topCommunityCompetitions + self._invitedCompetitions
+            let allCompetitions = self._competitions + self._appOwnedCompetitions + self._invitedCompetitions
             try await self.fetchStandings(for: allCompetitions)
             try await self.fetchParticipants(for: allCompetitions)
             try await self.fetchPendingParticipants(for: allCompetitions)
         }
-    }
-    
-    private func updateStandings(of competition: Competition) async throws {
-        _ = try await functions
-            .httpsCallable(Constants.updateStandingsFirebaseFunctionName)
-            .call(["competitionId": competition.id])
-        fetchCompetitionData()
     }
 
     private func listen() {
@@ -278,21 +264,6 @@ final class CompetitionsManager: CompetitionsManaging {
                 self._appOwnedCompetitions = competitions
             }
             .store(in: listenerBag)
-
-        database.collection("competitions")
-            .whereField("isPublic", isEqualTo: true)
-            .whereField("owner", isNotEqualTo: Bundle.main.id)
-            .addSnapshotListener { [weak self] snapshot, error in
-                guard let self = self, let snapshot = snapshot else { return }
-                let competitions = snapshot.documents
-                    .decoded(asArrayOf: Competition.self)
-                    .filter { !$0.ended && !$0.participants.isEmpty }
-                    .randomSample(count: 10)
-                    .sorted(by: \.participants.count)
-                    .reversed()
-                self._topCommunityCompetitions = Array(competitions)
-            }
-            .store(in: listenerBag)
     }
 
     private func fetchStandings(for competitions: [Competition]) async throws {
@@ -321,7 +292,7 @@ final class CompetitionsManager: CompetitionsManaging {
                             .first?
                             .decoded(as: Competition.Standing.self)
 
-                        if let standing = standing { standings.append(standing) }
+                        if let standing { standings.append(standing) }
                     }
 
                     return (competition.id, standings)

@@ -1,4 +1,13 @@
 {
-  "indexes": [],
+  "indexes": [
+    { 
+      "collectionGroup": "competitions",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "isPublic", "order": "ASCENDING" },
+        { "fieldPath": "owner", "order": "ASCENDING" }
+      ]
+    }
+  ],
   "fieldOverrides": []
 }

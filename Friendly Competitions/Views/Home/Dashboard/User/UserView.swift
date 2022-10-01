@@ -1,3 +1,4 @@
+import ECKit
 import Resolver
 import SwiftUI
 import SwiftUIX
@@ -39,6 +40,7 @@ struct UserView: View {
             Button("Yes", role: .destructive, action: viewModel.confirm)
             Button("Cancel", role: .cancel) {}
         }
+        .withLoadingOverlay(isLoading: viewModel.loading)
         .registerScreenView(name: "User")
     }
 }

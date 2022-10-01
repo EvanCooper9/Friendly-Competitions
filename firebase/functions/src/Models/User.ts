@@ -12,7 +12,9 @@ interface Statistics {
 class User {
     id: string;
     name: string;
+    friends: string[];
     incomingFriendRequests: string[];
+    outgoingFriendRequests: string[];
     notificationTokens: string[];
     statistics: Statistics;
 
@@ -23,7 +25,9 @@ class User {
     constructor(document: FirebaseFirestore.DocumentSnapshot) {
         this.id = document.id;
         this.name = document.get("name");
+        this.friends = document.get("friends");
         this.incomingFriendRequests = document.get("incomingFriendRequests");
+        this.outgoingFriendRequests = document.get("outgoingFriendRequests");
         this.notificationTokens = document.get("notificationTokens");
         this.statistics = document.get("statistics");
     }

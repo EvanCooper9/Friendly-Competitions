@@ -4,13 +4,16 @@ import ECKit_Firebase
 import Firebase
 import FirebaseCrashlytics
 import FirebaseFirestore
+import FirebaseFunctions
+import FirebaseFunctionsCombineSwift
 import Resolver
+import UIKit
 
 // sourcery: AutoMockable
 protocol UserManaging {
     var user: CurrentValueSubject<User, Never> { get }
     func deleteAccount() -> AnyPublisher<Void, Error>
-    func update(with user: User)
+    func update(with user: User) -> AnyPublisher<Void, Error>
 }
 
 final class UserManager: UserManaging {
@@ -23,6 +26,7 @@ final class UserManager: UserManaging {
 
     @Injected private var analyticsManager: AnalyticsManaging
     @Injected private var authenticationManager: AuthenticationManaging
+    @Injected private var functions: Functions
     @Injected private var database: Firestore
 
     private var cancellables = Cancellables()
@@ -30,31 +34,25 @@ final class UserManager: UserManaging {
 
     init(user: User) {
         self.user = .init(user)
-
-        listenForUser()
-
-        self.user
-            .dropFirst(2) // init, local listener
-            .removeDuplicates()
-            .sinkAsync {  [weak self] user in
-                guard let self = self else { return }
-                try await self.database.document("users/\(user.id)").updateDataEncodable(user)
-            }
-            .store(in: &cancellables)
+        if UIApplication.shared.applicationState == .active {
+            listenForUser()
+        }
     }
 
     func deleteAccount() -> AnyPublisher<Void, Error> {
-        .fromAsync { [weak self] in
-            guard let self = self else { return }
-            try await self.database.document("users/\(self.user.value.id)").delete()
-        }
-        .flatMapLatest(withUnretained: self) { $0.authenticationManager.deleteAccount() }
-        .handleEvents(withUnretained: self, receiveOutput: { try? $0.authenticationManager.signOut() })
-        .eraseToAnyPublisher()
+        functions.httpsCallable("deleteAccount")
+            .call()
+            .mapToVoid()
+            .flatMapLatest(withUnretained: self) { $0.authenticationManager.deleteAccount() }
+            .handleEvents(withUnretained: self, receiveOutput: { try? $0.authenticationManager.signOut() })
+            .eraseToAnyPublisher()
     }
 
-    func update(with user: User) {
-        self.user.send(user)
+    func update(with user: User) -> AnyPublisher<Void, Error> {
+        guard user != self.user.value else { return .just(()) }
+        return .fromAsync { [weak self] in
+            try await self?.database.document("users/\(user.id)").updateDataEncodable(user)
+        }
     }
 
     // MARK: - Private Methods

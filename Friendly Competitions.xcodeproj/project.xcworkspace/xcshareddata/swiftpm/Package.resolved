@@ -42,7 +42,16 @@
       "location" : "git@github.com:EvanCooper9/ECKit.git",
       "state" : {
         "branch" : "main",
-        "revision" : "c7cb5d92a16792cb46db2958bb5ed7eccbb43356"
+        "revision" : "0711a59de16e7b6592d2fce22011f6c6bd39d49e"
+      }
+    },
+    {
+      "identity" : "files",
+      "kind" : "remoteSourceControl",
+      "location" : "git@github.com:JohnSundell/Files.git",
+      "state" : {
+        "branch" : "master",
+        "revision" : "d273b5b7025d386feef79ef6bad7de762e106eaf"
       }
     },
     {

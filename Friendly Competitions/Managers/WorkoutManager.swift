@@ -129,7 +129,7 @@ final class WorkoutManager: WorkoutManaging {
         
         let workouts = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<[HKWorkout], Error>) in
             let query = HKSampleQuery(sampleType: sampleType, predicate: predicate, limit: 0, sortDescriptors: [startDateSort]) { _, workouts, error in
-                if let error = error {
+                if let error {
                     continuation.resume(throwing: error)
                     return
                 }
@@ -261,7 +261,7 @@ final class WorkoutManager: WorkoutManaging {
         
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<[Date: Double], Error>)  in
             let query = HKSampleQuery(sampleType: sampleType, predicate: predicate, limit: 0, sortDescriptors: nil) { _, samples, error in
-                if let error = error {
+                if let error {
                     continuation.resume(throwing: error)
                     return
                 }

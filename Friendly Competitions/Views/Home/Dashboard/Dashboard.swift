@@ -1,11 +1,13 @@
 import Resolver
 import SwiftUI
+import SwiftUIX
 
 struct Dashboard: View {
     
     @StateObject private var viewModel = Resolver.resolve(DashboardViewModel.self)
             
     @State private var presentAbout = false
+    @State private var presentDeveloper = false
     @State private var presentPermissions = false
     @State private var presentNewCompetition = false
     @State private var presentSearchFriendsSheet = false
@@ -23,6 +25,11 @@ struct Dashboard: View {
         .navigationBarTitle(viewModel.title)
         .toolbar {
             HStack {
+                if viewModel.showDeveloper {
+                    Button(toggling: $presentDeveloper) {
+                        Image(systemName: .hammer)
+                    }
+                }
                 Button(toggling: $presentAbout) {
                     Image(systemName: .questionmarkCircle)
                 }
@@ -37,6 +44,7 @@ struct Dashboard: View {
         .sheet(isPresented: $presentSearchFriendsSheet) { InviteFriends(action: .addFriend) }
         .sheet(isPresented: $presentNewCompetition) { NewCompetition() }
         .sheet(isPresented: $viewModel.requiresPermissions) { PermissionsView() }
+        .sheet(isPresented: $presentDeveloper) { DeveloperView() }
         .registerScreenView(name: "Home")
     }
     
@@ -78,12 +86,12 @@ struct Dashboard: View {
                 .disabled(viewModel.competitions.isEmpty)
                 
                 Button(toggling: $presentNewCompetition) {
-                    Image(systemName: "plus.circle")
+                    Image(systemName: .plusCircle)
                         .font(.title2)
                 }
             }
         } footer: {
-            if viewModel.competitions.isEmpty {
+            if viewModel.competitions.isEmpty && viewModel.invitedCompetitions.isEmpty {
                 Text("Start a competition against your friends!")
             }
         }
@@ -113,7 +121,7 @@ struct Dashboard: View {
                     .font(.title3)
                 Spacer()
                 Button(toggling: $presentSearchFriendsSheet) {
-                    Image(systemName: "person.crop.circle.badge.plus")
+                    Image(systemName: .personCropCircleBadgePlus)
                         .font(.title2)
                 }
             }

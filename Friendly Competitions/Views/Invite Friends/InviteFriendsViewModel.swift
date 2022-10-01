@@ -18,18 +18,28 @@ final class InviteFriendsViewModel: ObservableObject {
     @Published var rows = [RowConfig]()
     @Published var searchText = ""
 
-    private var _invite = PassthroughSubject<User, Never>()
-    private var _share = PassthroughSubject<Void, Never>()
+    private let _accept = PassthroughSubject<User, Never>()
+    private let _invite = PassthroughSubject<User, Never>()
+    private let _share = PassthroughSubject<Void, Never>()
 
     private var cancellables = Cancellables()
     
     init(competitionsManager: CompetitionsManaging, friendsManager: FriendsManaging, userManager: UserManaging, action: InviteFriendsAction) {
         let alreadyInvited: AnyPublisher<[User.ID], Never>
+        let incomingRequests: AnyPublisher<[User.ID], Never>
 
         switch action {
         case .addFriend:
-            alreadyInvited = friendsManager.friends
-                .mapMany(\.id)
+            alreadyInvited = Publishers
+                .CombineLatest(
+                    friendsManager.friends.mapMany(\.id),
+                    userManager.user.map(\.outgoingFriendRequests)
+                )
+                .map { $0 + $1 }
+                .eraseToAnyPublisher()
+
+            incomingRequests = userManager.user
+                .map(\.incomingFriendRequests)
                 .eraseToAnyPublisher()
         case .competitionInvite(let competition):
             alreadyInvited = Publishers
@@ -40,48 +50,76 @@ final class InviteFriendsViewModel: ObservableObject {
                     return (participants + pendingParticipants).map(\.id)
                 }
                 .eraseToAnyPublisher()
+
+            incomingRequests = .just([])
         }
-        
+
         $searchText
-            .setFailureType(to: Error.self)
-            .flatMapLatest(friendsManager.search(with:))
-            .ignoreFailure()
-            .prepend(friendsManager.friends)
-            .combineLatest(alreadyInvited)
-            .map { users, alreadyInvited -> [RowConfig] in
+            .flatMapLatest { searchText -> AnyPublisher<[User], Never> in
+                guard !searchText.isEmpty else { return .just([]) }
+                return friendsManager.search(with: searchText).ignoreFailure()
+            }
+            .combineLatest(alreadyInvited, incomingRequests)
+            .map { [weak self] users, alreadyInvited, incomingRequests -> [RowConfig] in
                 users.map { friend in
-                    RowConfig(
+                    let hasIncomingInvite = incomingRequests.contains(friend.id)
+                    return RowConfig(
                         id: friend.id,
                         name: friend.name,
                         pillId: friend.hashId,
-                        buttonTitle: alreadyInvited.contains(friend.id) ? "Invited" : "Invite",
+                        buttonTitle: hasIncomingInvite ? "Accept" : (alreadyInvited.contains(friend.id) ? "Invited" : "Invite"),
                         buttonDisabled: alreadyInvited.contains(friend.id),
                         buttonAction: { [weak self, friend] in
                             guard let self = self, let index = self.rows.firstIndex(where: { $0.id == friend.id }) else { return }
                             self.rows[index].buttonDisabled.toggle()
                             self.rows[index].buttonTitle = self.rows[index].buttonDisabled ? "Invited" : "Invite"
-                            self._invite.send(friend)
+                            switch action {
+                            case .addFriend:
+                                if hasIncomingInvite {
+                                    self._accept.send(friend)
+                                } else {
+                                    self._invite.send(friend)
+                                }
+                            case .competitionInvite:
+                                self._invite.send(friend)
+                            }
                         }
                     )
                 }
             }
             .assign(to: &$rows)
 
-        _invite
-            .handleEvents(withUnretained: self, receiveOutput: { owner, _ in owner.loading = true })
-            .flatMapLatest { friend -> AnyPublisher<Void, Never> in
+        _accept
+            .flatMapLatest { [weak self] user -> AnyPublisher<Void, Never> in
                 switch action {
                 case .addFriend:
                     return friendsManager
-                        .add(friend: friend)
+                        .accept(friendRequest: user)
+                        .receive(on: RunLoop.main)
+                        .isLoading { [weak self] in self?.loading = $0 }
+                        .ignoreFailure()
+                case .competitionInvite:
+                    return .never()
+                }
+            }
+            .sink()
+            .store(in: &cancellables)
+
+        _invite
+            .flatMapLatest { [weak self] friend -> AnyPublisher<Void, Never> in
+                switch action {
+                case .addFriend:
+                    return friendsManager
+                        .add(user: friend)
+                        .isLoading { [weak self] in self?.loading = $0 }
                         .ignoreFailure()
                 case .competitionInvite(let competition):
                     return competitionsManager
                         .invite(friend, to: competition)
+                        .isLoading { [weak self] in self?.loading = $0 }
                         .ignoreFailure()
                 }
             }
-            .handleEvents(withUnretained: self, receiveOutput: { $0.loading = false })
             .sink()
             .store(in: &cancellables)
 
@@ -99,6 +137,8 @@ final class InviteFriendsViewModel: ObservableObject {
             }
             .store(in: &cancellables)
     }
+
+    // MARK: - Publie Methods
     
     func sendInviteLink() {
         _share.send()

@@ -18,7 +18,6 @@ struct Profile: View {
             
             Section {
                 Toggle("Searchable", isOn: $viewModel.user.searchable ?? true)
-
             } header: {
                 Text("Privacy")
             } footer: {
@@ -32,11 +31,11 @@ struct Profile: View {
             }
             
             Section("Session") {
-                Button("Sign out", systemImage: "person.crop.circle.badge.minus") {
+                Button("Sign out", systemImage: .personCropCircleBadgeMinus) {
                     viewModel.signOut()
                 }
                 Button(toggling: $presentDeleteAccountAlert) {
-                    Label("Delete account", systemImage: "trash")
+                    Label("Delete account", systemImage: .trash)
                 }
                 .foregroundColor(.red)
             }

@@ -2,10 +2,17 @@ import ECKit
 import Firebase
 import FirebaseFirestore
 
+enum DocumentSnapshotDecodingError: Error {
+    case missingData
+}
+
 public extension DocumentSnapshot {
     func decoded<T: Decodable>(as type: T.Type) throws -> T {
+        guard exists, let documentData = data() else {
+            throw DocumentSnapshotDecodingError.missingData
+        }
         do {
-            let data = try JSONSerialization.data(withJSONObject: data() ?? [:], options: [])
+            let data = try JSONSerialization.data(withJSONObject: documentData, options: [])
             return try JSONDecoder.shared.decode(T.self, from: data)
         } catch {
             print(error)

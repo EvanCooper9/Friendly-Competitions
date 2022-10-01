@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftUIX
 
 struct FirestoreImage: View {
 
@@ -21,6 +22,7 @@ struct FirestoreImage: View {
                 Image(uiImage: image)
                     .resizable()
                     .aspectRatio(contentMode: contentMode)
+                    .scaledToFill()
             } else {
                 failedImage
             }
@@ -34,7 +36,7 @@ struct FirestoreImage: View {
     }
 
     private var failedImage: some View {
-        Image(systemName: "bolt.horizontal.circle")
+        Image(systemName: .boltHorizontalCircle)
             .font(.largeTitle)
     }
 }

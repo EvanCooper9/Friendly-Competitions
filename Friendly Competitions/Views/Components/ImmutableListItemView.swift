@@ -1,4 +1,5 @@
 import SwiftUI
+import SwiftUIX
 
 struct ImmutableListItemView: View {
 
@@ -6,16 +7,16 @@ struct ImmutableListItemView: View {
         case name
         case email
         case date(description: String)
-        case other(systemImage: String, description: String)
+        case other(systemImage: SFSymbolName, description: String)
 
-        var systemImageName: String {
+        var systemImageName: SFSymbolName {
             switch self {
             case .name:
-                return "person.fill"
+                return .personFill
             case .email:
-                return "envelope.fill"
+                return .envelopeFill
             case .date:
-                return "calendar"
+                return .calendar
             case let .other(systemImage, _):
                 return systemImage
             }

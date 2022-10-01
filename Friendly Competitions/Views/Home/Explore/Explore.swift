@@ -12,16 +12,16 @@ struct Explore: View {
     @StateObject private var viewModel = Resolver.resolve(ExploreViewModel.self)
     
     var body: some View {
-        ScrollView(.vertical, showsIndicators: false) {
+        List {
             if viewModel.searchText.isEmpty {
-                LazyVStack {
+                Section {
                     ForEach(viewModel.appOwnedCompetitions) { competition in
                         FeaturedCompetition(competition: competition)
                     }
                 }
-                .padding(.horizontal, Constants.horizontalPadding)
+                .removingMargin()
             } else {
-                ExploreSection(title: "Search results") {
+                Section {
                     if viewModel.searchResults.isEmpty {
                         Text("Nothing here")
                             .padding()
@@ -30,54 +30,32 @@ struct Explore: View {
                             .foregroundColor(.gray)
                             .frame(maxWidth: .infinity, alignment: .center)
                     } else {
-                        VStack {
-                            ForEach(viewModel.searchResults.filter(\.appOwned)) { competition in
-                                FeaturedCompetition(competition: competition)
-                            }
-                            CommunityCompetitions(competitions: viewModel.searchResults.filter(\.appOwned.not))
+                        ForEach(viewModel.searchResults.filter(\.appOwned)) { competition in
+                            FeaturedCompetition(competition: competition)
                         }
-                        .padding(.horizontal, Constants.horizontalPadding)
+                        ForEach(viewModel.searchResults.filter(\.appOwned.not)) { competition in
+                            CompetitionDetails(competition: competition, showParticipantCount: true, isFeatured: false)
+                                .padding()
+                                .background(.white)
+                                .cornerRadius(10)
+                        }
                     }
                 }
+                .removingMargin()
             }
         }
-        .background(Asset.Colors.listBackground.swiftUIColor)
         .searchable(text: $viewModel.searchText, placement: .navigationBarDrawer(displayMode: .always))
         .navigationTitle("Explore")
         .registerScreenView(name: "Explore")
     }
 }
 
-private struct CommunityCompetitions: View {
-    
-    let competitions: [Competition]
-    
-    var body: some View {
-        VStack {
-            ForEach(competitions) { competition in
-                CompetitionDetails(competition: competition, showParticipantCount: true, isFeatured: false)
-                    .padding(.horizontal)
-                if competition.id != competitions.last?.id {
-                    Divider().padding(.leading)
-                }
-            }
-        }
-        .padding(.vertical, 8)
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .background(Asset.Colors.listSectionBackground.swiftUIColor)
-        .cornerRadius(10)
-    }
-}
-
+#if DEBUG
 struct ExploreCompetitions_Previews: PreviewProvider {
-    
-    private static func setupMocks() {
-        competitionsManager.appOwnedCompetitions = .just([.mockPublic, .mockPublic, .mockPublic, .mockPublic])
-        competitionsManager.topCommunityCompetitions = .just([.mock, .mock, .mock])
-    }
-    
     static var previews: some View {
         Explore()
-            .setupMocks(setupMocks)
+            .embeddedInNavigationView()
+            .setupMocks()
     }
 }
+#endif

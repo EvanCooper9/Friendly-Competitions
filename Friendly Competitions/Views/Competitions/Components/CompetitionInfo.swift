@@ -1,51 +1,16 @@
+import ECKit
 import SwiftUI
 import SwiftUIX
 
-struct MultiPicker<Selection: CustomStringConvertible & Hashable & Identifiable>: View {
-
-    let title: String
-    @Binding var selection: [Selection]
-    let options: [Selection]
-
-    var body: some View {
-        NavigationLink {
-            List {
-                ForEach(options) { option in
-                    HStack {
-                        Text(option.description)
-                            .frame(maxWidth: .infinity, alignment: .leading)
-                            .contentShape(Rectangle())
-                            .tag(option)
-                            .onTapGesture { selection.toggle(option) }
-                        if selection.contains(option) {
-                            Image(systemName: .checkmark)
-                                .font(.body.bold())
-                                .foregroundColor(.blue)
-                        }
-                    }
-                }
-            }
-            .listStyle(.grouped)
-        } label: {
-            HStack {
-                Text(title)
-                Spacer()
-                if selection.isNotEmpty {
-                    Text(selection.map(\.description).joined(separator: ", "))
-                        .lineLimit(1)
-                        .foregroundColor(.gray)
-                }
-            }
-        }
-    }
-}
-
 struct CompetitionInfo: View {
 
-    private enum UnderlyingScoringModel: String, CaseIterable {
+    private enum UnderlyingScoringModel: String, CaseIterable, CustomStringConvertible, Identifiable {
         case percentOfGoals = "Percent of Goals"
-        case rawNumbers = "Raw numbers"
+        case rawNumbers = "Raw Numbers"
         case workout = "Workout"
+
+        var id: RawValue { description }
+        var description: String { rawValue }
     }
     
     @Binding var competition: Competition
@@ -64,7 +29,7 @@ struct CompetitionInfo: View {
         case .rawNumbers:
             return .rawNumbers
         case .workout:
-            if let underlyingWorkoutType = underlyingWorkoutType, !underlyingWorkoutMetrics.isEmpty {
+            if let underlyingWorkoutType, !underlyingWorkoutMetrics.isEmpty {
                 return .workout(underlyingWorkoutType, Array(underlyingWorkoutMetrics))
             }
             return nil
@@ -105,22 +70,12 @@ struct CompetitionInfo: View {
                     displayedComponents: [.date]
                 )
 
-                Picker("Scoring Model", selection: $underlyingScoringModel) {
-                    Text("Select...").tag(UnderlyingScoringModel?.none)
-                    ForEach(UnderlyingScoringModel.allCases, id: \.rawValue) { scoringModel in
-                        Text(scoringModel.rawValue).tag(scoringModel as UnderlyingScoringModel?)
-                    }
-                }
+                EnumPicker("ScoringModel", selection: $underlyingScoringModel, allowsNoSelection: true)
 
                 if underlyingScoringModel == .workout {
-                    Picker("Workout type", selection: $underlyingWorkoutType) {
-                        Text("Select...").tag(WorkoutType?.none)
-                        ForEach(WorkoutType.allCases) { workoutType in
-                            Text(workoutType.description).tag(workoutType as WorkoutType?)
-                        }
-                    }
+                    EnumPicker("Workout type", selection: $underlyingWorkoutType, allowsNoSelection: true)
 
-                    if let underlyingWorkoutType = underlyingWorkoutType {
+                    if let underlyingWorkoutType {
                         MultiPicker(
                             title: "Workout metrics",
                             selection: $underlyingWorkoutMetrics,
@@ -142,12 +97,12 @@ struct CompetitionInfo: View {
                 )
                 ImmutableListItemView(
                     value: competition.scoringModel.displayName,
-                    valueType: .other(systemImage: "plusminus.circle", description: "Scoring model")
+                    valueType: .other(systemImage: .plusminusCircle, description: "Scoring model")
                 )
                 if competition.repeats {
                     ImmutableListItemView(
                         value: "Yes",
-                        valueType: .other(systemImage: "repeat.circle", description: "Restarts")
+                        valueType: .other(systemImage: .repeatCircle, description: "Restarts")
                     )
                 }
             }

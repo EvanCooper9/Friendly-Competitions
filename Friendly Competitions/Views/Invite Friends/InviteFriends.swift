@@ -1,3 +1,4 @@
+import ECKit
 import Resolver
 import SwiftUI
 
@@ -39,6 +40,7 @@ struct InviteFriends: View {
         .searchable(text: $viewModel.searchText, placement: .navigationBarDrawer(displayMode: .always))
         .navigationTitle("Invite a friend")
         .embeddedInNavigationView()
+        .withLoadingOverlay(isLoading: viewModel.loading)
     }
 }
 

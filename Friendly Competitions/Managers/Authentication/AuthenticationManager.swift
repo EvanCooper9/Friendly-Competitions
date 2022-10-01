@@ -2,6 +2,7 @@ import AuthenticationServices
 import Combine
 import CryptoKit
 import ECKit
+import ECKit_Firebase
 import Firebase
 import FirebaseAuth
 import FirebaseFirestore
@@ -28,7 +29,7 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
     // MARK: - Public Properties
 
     var emailVerified: AnyPublisher<Bool, Never> { _emailVerified.eraseToAnyPublisher() }
-    let loggedIn: AnyPublisher<Bool, Never>
+    var loggedIn: AnyPublisher<Bool, Never> { _loggedIn.eraseToAnyPublisher() }
 
     // MARK: - Private Properties
 
@@ -36,7 +37,8 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
 
     @UserDefault("current_user") private var currentUser: User? = nil
 
-    private let _emailVerified: CurrentValueSubject<Bool, Never>
+    private var _emailVerified: CurrentValueSubject<Bool, Never>!
+    private var _loggedIn: CurrentValueSubject<Bool, Never>!
 
     private var currentNonce: String?
     private var userListener: AnyCancellable?
@@ -47,26 +49,22 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
     // MARK: - Lifecycle
 
     override init() {
-        if let firebaseUser = Auth.auth().currentUser {
-            _emailVerified = .init(firebaseUser.isEmailVerified)
-        } else {
-            _emailVerified = .init(false)
-        }
-
-        let loggedInPublisher = PassthroughSubject<Bool, Never>()
-        loggedIn = loggedInPublisher
-            .share(replay: 1)
-            .receive(on: RunLoop.main)
-            .eraseToAnyPublisher()
-
         super.init()
 
+        _emailVerified = .init(Auth.auth().currentUser?.isEmailVerified ?? false)
+        _loggedIn = .init(currentUser != nil)
+
+        if let currentUser {
+            registerUserManager(with: currentUser)
+        }
+
         $currentUser
+            .receive(on: RunLoop.main)
             .sink(withUnretained: self) { strongSelf, currentUser in
-                if let currentUser = currentUser {
+                if let currentUser {
                     strongSelf.registerUserManager(with: currentUser)
                 }
-                loggedInPublisher.send(currentUser != nil)
+                strongSelf._loggedIn.send(currentUser != nil)
             }
             .store(in: &cancellables)
 
@@ -227,7 +225,7 @@ extension AuthenticationManager: ASAuthorizationControllerDelegate {
 
         // Sign in with Firebase.
         Auth.auth().signIn(with: credential) { [weak self] authResult, error in
-            if let error = error {
+            if let error {
                 // Error. If error.code == .MissingOrInvalidNonce, make sure
                 // you're sending the SHA256-hashed nonce as a hex string with
                 // your request to Apple.
@@ -260,7 +258,7 @@ extension AuthenticationManager: ASAuthorizationControllerDelegate {
                     nsError.domain == "FIRFirestoreErrorDomain",
                     nsError.code == 5 else { return }
                 let user = User(id: firebaseUser.uid, email: email, name: displayName)
-                try? self?.database.document("users/\(user.id)").setDataEncodable(user, completion: nil)
+                try? self?.database.document("users/\(user.id)").setDataEncodable(user)
             }
         }
     }

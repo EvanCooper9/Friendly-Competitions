@@ -24,8 +24,17 @@ final class DashboardViewModel: ObservableObject {
     @Published private(set) var invitedCompetitions = [Competition]()
     @Published var requiresPermissions = false
     @Published private(set) var title = Bundle.main.name
+    @Published private(set) var showDeveloper = false
 
     init(activitySummaryManager: ActivitySummaryManaging, competitionsManager: CompetitionsManaging, friendsManager: FriendsManaging, permissionsManager: PermissionsManaging, userManager: UserManaging) {
+
+        #if DEBUG
+        showDeveloper = true
+        #else
+        userManager.user
+            .map { $0.id == "0IQfVBJIgGdfC9CHgYefpZUQ13l1" || $0.id == "o2E4T1HS9tUqCYfrm7qPd3TuryE2" }
+            .assign(to: &$showDeveloper)
+        #endif
 
         activitySummaryManager.activitySummary.assign(to: &$activitySummary)
         competitionsManager.competitions.assign(to: &$competitions)
