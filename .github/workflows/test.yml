@@ -55,7 +55,6 @@ jobs:
       run: brew bundle
 
     - name: Fastlane
-      run: |
-        bundle exec fastlane test
+      run: bundle exec fastlane test
       env:
         FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: 120

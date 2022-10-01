@@ -45,7 +45,7 @@ jobs:
 
     # https://docs.fastlane.tools/getting-started/ios/authentication/
     - name: Deploy
-      run: fastlane deploy
+      run: bundle exec fastlane deploy
       env:
         APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
         APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
