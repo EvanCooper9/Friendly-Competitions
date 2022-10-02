@@ -21,7 +21,7 @@
     {
       "identity" : "codablefirebase",
       "kind" : "remoteSourceControl",
-      "location" : "git@github.com:alickbass/CodableFirebase.git",
+      "location" : "git@github.com:alickbass/CodableFirebase",
       "state" : {
         "revision" : "a4cda89948db93ec21249a35ecdacab8c489a116",
         "version" : "0.2.2"
@@ -30,7 +30,7 @@
     {
       "identity" : "combineext",
       "kind" : "remoteSourceControl",
-      "location" : "git@github.com:CombineCommunity/CombineExt.git",
+      "location" : "git@github.com:CombineCommunity/CombineExt",
       "state" : {
         "revision" : "aaf1a0981c05360000af972473034cb952be4ca0",
         "version" : "1.8.0"
@@ -57,10 +57,10 @@
     {
       "identity" : "firebase-ios-sdk",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/firebase/firebase-ios-sdk",
+      "location" : "git@github.com:firebase/firebase-ios-sdk.git",
       "state" : {
-        "revision" : "cbaa7ce7063d5ab22414962ec63366ccbba26034",
-        "version" : "9.4.1"
+        "revision" : "7e80c25b51c2ffa238879b07fbfc5baa54bb3050",
+        "version" : "9.6.0"
       }
     },
     {
@@ -68,8 +68,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/GoogleAppMeasurement.git",
       "state" : {
-        "revision" : "f54f60d0164d887e1174fa51ab2efe48a8e9d178",
-        "version" : "9.3.0"
+        "revision" : "c1cfde8067668027b23a42c29d11c246152fe046",
+        "version" : "9.6.0"
       }
     },
     {
@@ -86,8 +86,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/GoogleUtilities.git",
       "state" : {
-        "revision" : "f4abe56ce62a779e64b525eb133c8fc2a84bbc1f",
-        "version" : "7.7.1"
+        "revision" : "68ea347bdb1a69e2d2ae2e25cd085b6ef92f64cb",
+        "version" : "7.9.0"
       }
     },
     {
@@ -104,14 +104,14 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/gtm-session-fetcher.git",
       "state" : {
-        "revision" : "19605024d59eaefdb1f6a2cb11ebe75df4421126",
-        "version" : "2.0.0"
+        "revision" : "d4289da23e978f37c344ea6a386e5546e2466294",
+        "version" : "2.1.0"
       }
     },
     {
       "identity" : "keychainaccess",
       "kind" : "remoteSourceControl",
-      "location" : "git@github.com:kishikawakatsumi/KeychainAccess.git",
+      "location" : "git@github.com:kishikawakatsumi/KeychainAccess",
       "state" : {
         "revision" : "84e546727d66f1adc5439debad16270d0fdd04e7",
         "version" : "4.2.2"
@@ -140,14 +140,14 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/promises.git",
       "state" : {
-        "revision" : "46c1e6b5ac09d8f82c991061c659f67e573d425d",
-        "version" : "2.1.0"
+        "revision" : "3e4e743631e86c8c70dbc6efdc7beaa6e90fd3bb",
+        "version" : "2.1.1"
       }
     },
     {
       "identity" : "resolver",
       "kind" : "remoteSourceControl",
-      "location" : "git@github.com:hmlongco/Resolver.git",
+      "location" : "git@github.com:hmlongco/Resolver",
       "state" : {
         "revision" : "97de0b0320036607564af4a60025b48f8d041221",
         "version" : "1.5.0"
@@ -156,7 +156,7 @@
     {
       "identity" : "resolverautoregistration",
       "kind" : "remoteSourceControl",
-      "location" : "git@github.com:hatchcredit/ResolverAutoregistration.git",
+      "location" : "git@github.com:hatchcredit/ResolverAutoregistration",
       "state" : {
         "revision" : "4281e11709e36527ce5e2227f79e1789deb9e3e9",
         "version" : "1.1.0"
@@ -165,7 +165,7 @@
     {
       "identity" : "swift-algorithms",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-algorithms.git",
+      "location" : "git@github.com:apple/swift-algorithms.git",
       "state" : {
         "revision" : "b14b7f4c528c942f121c8b860b9410b2bf57825e",
         "version" : "1.0.0"
@@ -185,8 +185,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-protobuf.git",
       "state" : {
-        "revision" : "e1499bc69b9040b29184f7f2996f7bab467c1639",
-        "version" : "1.19.0"
+        "revision" : "88c7d15e1242fdb6ecbafbc7926426a19be1e98a",
+        "version" : "1.20.2"
       }
     },
     {
@@ -195,7 +195,7 @@
       "location" : "git@github.com:SwiftUIX/SwiftUIX",
       "state" : {
         "branch" : "master",
-        "revision" : "b67a468a22661e8a5cf6d18f1319ee11f37dc491"
+        "revision" : "a37392e4f4d37b38fdb091d4b854939c778f2569"
       }
     }
   ],

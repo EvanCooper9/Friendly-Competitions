@@ -21,18 +21,10 @@ lane :deploy do
         build_number: new_build
     )
 
-    build_app(
-        include_bitcode: true
-    )
+    build_app
 
     upload_to_testflight(
         notify_external_testers: false
-    )
-
-    download_dsyms(
-        version: "latest",
-        wait_for_dsym_processing: true,
-        wait_timeout: 900 # 15 min
     )
 
     upload_symbols_to_crashlytics(

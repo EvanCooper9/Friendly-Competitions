@@ -6,21 +6,15 @@ struct FeaturedCompetition: View {
 
     @Environment(\.colorScheme) private var colorScheme
 
-    private var start: String { competition.start.formatted(date: .abbreviated, time: .omitted) }
-    private var end: String { competition.end.formatted(date: .abbreviated, time: .omitted) }
-
     var body: some View {
         color
             .aspectRatio(3/2, contentMode: .fit)
             .overlay {
-                if let banner = competition.banner {
-                    FirestoreImage(path: banner)
-                } else {
-                    Asset.Colors.listSectionBackground.swiftUIColor
-                }
-            }
-            .clipped()
-                .overlay {
+                ZStack {
+                    if let banner = competition.banner {
+                        FirestoreImage(path: banner)
+                    }
+
                     // has navigation link already
                     CompetitionDetails(competition: competition, showParticipantCount: true, isFeatured: true)
                         .padding(.vertical, 8)
@@ -28,11 +22,12 @@ struct FeaturedCompetition: View {
                         .background(.ultraThinMaterial)
                         .frame(maxHeight: .infinity, alignment: .bottom)
                 }
+            }
             .cornerRadius(10)
     }
 
     private var color: some View {
-        colorScheme == .light ? Color(uiColor: .systemGray4) : Color(uiColor: .secondarySystemBackground)
+        colorScheme == .light ? Color(uiColor: .systemGray4) : Color.secondarySystemBackground
     }
 }
 
@@ -53,12 +48,11 @@ struct FeaturedCompetitionView_Previews: PreviewProvider {
             Section {
                 FeaturedCompetition(competition: competition)
             }
-            .listRowBackground(Color.clear)
-            .listRowInsets(.init(top: 0, leading: 0, bottom: 10, trailing: 0))
-            .listRowSeparator(.hidden)
+            .removingMargin()
         }
         .navigationTitle("Previews")
         .embeddedInNavigationView()
         .setupMocks(setupMocks)
+//        .preferredColorScheme(.dark)
     }
 }
