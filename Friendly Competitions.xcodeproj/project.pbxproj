@@ -1463,6 +1463,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_ASSET_PATHS = "Friendly\\ Competitions/Preview\\ Content";
 				DEVELOPMENT_TEAM = HP22MNWU5C;
+				ENABLE_BITCODE = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Friendly Competitions/Info.plist";
@@ -1506,6 +1507,7 @@
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "Friendly\\ Competitions/Preview\\ Content";
 				DEVELOPMENT_TEAM = HP22MNWU5C;
+				ENABLE_BITCODE = YES;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Friendly Competitions/Info.plist";
