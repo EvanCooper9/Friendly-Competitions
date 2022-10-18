@@ -1,6 +1,7 @@
 import Combine
 import CombineExt
 import ECKit
+import Factory
 
 final class NewCompetitionViewModel: ObservableObject {
 
@@ -31,13 +32,17 @@ final class NewCompetitionViewModel: ObservableObject {
     }
 
     // MARK: - Private Properties
+    
+    @Injected(Container.competitionsManager) private var competitionsManager
+    @Injected(Container.friendsManager) private var friendsManager
+    @Injected(Container.userManager) private var userManager
 
     private let _create = PassthroughSubject<Void, Never>()
     private var cancellables = Cancellables()
 
     // MARK: - Lifecycle
         
-    init(competitionsManager: CompetitionsManaging, friendsManager: FriendsManaging, userManager: UserManaging) {
+    init() {
         competition = .init(
             name: "Test",
             owner: "",
@@ -70,12 +75,12 @@ final class NewCompetitionViewModel: ObservableObject {
         _create
             .withLatestFrom(userManager.user)
             .setFailureType(to: Error.self)
-            .flatMapLatest(withUnretained: self) { object, user -> AnyPublisher<Void, Error> in
-                var competition = object.competition
+            .flatMapLatest(withUnretained: self) { strongSelf, user -> AnyPublisher<Void, Error> in
+                var competition = strongSelf.competition
                 competition.owner = user.id
                 competition.participants = [user.id]
-                object.competition = competition
-                return competitionsManager.create(competition)
+                strongSelf.competition = competition
+                return strongSelf.competitionsManager.create(competition)
             }
             .sink()
             .store(in: &cancellables)

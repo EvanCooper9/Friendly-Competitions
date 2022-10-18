@@ -122,7 +122,7 @@ struct EmailSignInForm: View {
         .padding(.horizontal)
         .padding(.vertical, 10)
         .overlay(
-            Capsule()
+            RoundedRectangle(cornerRadius: 10)
                 .stroke(lineWidth: 0.15)
         )
     }

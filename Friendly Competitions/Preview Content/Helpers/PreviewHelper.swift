@@ -1,4 +1,4 @@
-import Resolver
+import Factory
 import SwiftUI
 
 fileprivate struct Container {
@@ -14,21 +14,21 @@ fileprivate struct Container {
     static let userManager = UserManagingMock()
     
     static func registerDependencies() {
-        Resolver.registerViewModels()
-        Resolver.register { Container.appState }
-        Resolver.register(ActivitySummaryManaging.self) { Container.activitySummaryManager }
-        Resolver.register(AnalyticsManaging.self) { Container.analyticsManager }
-        Resolver.register(AuthenticationManaging.self) { Container.authenticationManager }
-        Resolver.register(CompetitionsManaging.self) { Container.competitionsManager }
-        Resolver.register(FriendsManaging.self) { Container.friendsManager }
-        Resolver.register(HealthKitManaging.self) { Container.healthKitManager }
-        Resolver.register(PermissionsManaging.self) { Container.permissionsManager }
-        Resolver.register(StorageManaging.self) { Container.storageManager }
-        Resolver.register(UserManaging.self) {
-            let userManager = Container.userManager
-            userManager.user = .init(.evan)
-            return userManager
-        }
+//        Resolver.registerViewModels()
+//        Resolver.register { Container.appState }
+//        Resolver.register(ActivitySummaryManaging.self) { Container.activitySummaryManager }
+//        Resolver.register(AnalyticsManaging.self) { Container.analyticsManager }
+//        Resolver.register(AuthenticationManaging.self) { Container.authenticationManager }
+//        Resolver.register(CompetitionsManaging.self) { Container.competitionsManager }
+//        Resolver.register(FriendsManaging.self) { Container.friendsManager }
+//        Resolver.register(HealthKitManaging.self) { Container.healthKitManager }
+//        Resolver.register(PermissionsManaging.self) { Container.permissionsManager }
+//        Resolver.register(StorageManaging.self) { Container.storageManager }
+//        Resolver.register(UserManaging.self) {
+//            let userManager = Container.userManager
+//            userManager.user = .init(.evan)
+//            return userManager
+//        }
     }
 
     static func baseSetupMocks() {

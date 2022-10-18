@@ -1,4 +1,4 @@
-import Resolver
+import Factory
 import SwiftUI
 
 struct Explore: View {
@@ -9,7 +9,7 @@ struct Explore: View {
 
     @Environment(\.colorScheme) private var colorScheme
 
-    @StateObject private var viewModel = Resolver.resolve(ExploreViewModel.self)
+    @StateObject private var viewModel = ExploreViewModel()
     
     var body: some View {
         List {

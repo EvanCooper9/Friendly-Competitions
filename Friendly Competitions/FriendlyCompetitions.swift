@@ -1,5 +1,5 @@
+import Factory
 import Firebase
-import Resolver
 import SwiftUI
 
 @main
@@ -33,13 +33,19 @@ struct FriendlyCompetitions: App {
 }
 
 final class FriendlyCompetitionsAppModel: ObservableObject {
+    
+    // MARK: - Public Properties
 
     @Published var loggedIn = false
     @Published var emailVerified = false
     @Published var hud: HUDState?
+    
+    // MARK: - Private Properties
 
-    @Injected private var appState: AppState
-    @Injected private var authenticationManager: AuthenticationManaging
+    @Injected(Container.appState) private var appState
+    @Injected(Container.authenticationManager) private var authenticationManager
+    
+    // MARK: - Lifecycle
 
     init() {
         authenticationManager.loggedIn.assign(to: &$loggedIn)

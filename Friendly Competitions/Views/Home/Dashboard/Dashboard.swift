@@ -1,10 +1,9 @@
-import Resolver
 import SwiftUI
 import SwiftUIX
 
 struct Dashboard: View {
     
-    @StateObject private var viewModel = Resolver.resolve(DashboardViewModel.self)
+    @StateObject private var viewModel = DashboardViewModel()
             
     @State private var presentAbout = false
     @State private var presentDeveloper = false

@@ -1,6 +1,7 @@
 import Combine
 import CombineExt
 import ECKit
+import Factory
 
 final class VerifyEmailViewModel: ObservableObject {
 
@@ -11,22 +12,25 @@ final class VerifyEmailViewModel: ObservableObject {
     // MARK: - Private Properties
     
     @Published var user: User!
+    
+    @Injected(Container.appState) private var appState
+    @Injected(Container.authenticationManager) private var authenticationManager
+    @Injected(Container.userManager) private var userManager
 
     private let hud = PassthroughSubject<HUDState?, Never>()
-
     private let _back = PassthroughSubject<Void, Never>()
     private let _resend = PassthroughSubject<Void, Error>()
     private var cancellables = Cancellables()
     
-    init(appState: AppState, authenticationManager: AuthenticationManaging, userManager: UserManaging) {
-        self.user = userManager.user.value
+    init() {
+        user = userManager.user.value
 
         hud
             .receive(on: RunLoop.main)
             .assign(to: &appState.$hudState)
 
         _back
-            .sinkAsync { try authenticationManager.signOut() }
+            .sinkAsync { [weak self] in try self?.authenticationManager.signOut() }
             .store(in: &cancellables)
 
         _resend
@@ -47,8 +51,8 @@ final class VerifyEmailViewModel: ObservableObject {
             .autoconnect()
             .mapToValue(())
             .eraseToAnyPublisher()
-            .flatMapLatest {
-                authenticationManager
+            .flatMapLatest(withUnretained: self) { strongSelf in
+                strongSelf.authenticationManager
                     .checkEmailVerification()
                     .ignoreFailure()
                     .eraseToAnyPublisher()

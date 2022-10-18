@@ -1,9 +1,9 @@
-import Resolver
+import Factory
 import SwiftUI
 
 struct Profile: View {
     
-    @StateObject private var viewModel = Resolver.resolve(ProfileViewModel.self)
+    @StateObject private var viewModel = ProfileViewModel()
     
     @State private var presentDeleteAccountAlert = false
     

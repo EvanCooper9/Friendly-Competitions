@@ -241,36 +241,12 @@ class AuthenticationManagingMock: AuthenticationManaging {
 
 }
 class CompetitionsManagingMock: CompetitionsManaging {
-    var competitions: AnyPublisher<[Competition], Never> {
-        get { return underlyingCompetitions }
-        set(value) { underlyingCompetitions = value }
-    }
-    var underlyingCompetitions: AnyPublisher<[Competition], Never>!
-    var invitedCompetitions: AnyPublisher<[Competition], Never> {
-        get { return underlyingInvitedCompetitions }
-        set(value) { underlyingInvitedCompetitions = value }
-    }
-    var underlyingInvitedCompetitions: AnyPublisher<[Competition], Never>!
-    var standings: AnyPublisher<[Competition.ID : [Competition.Standing]], Never> {
-        get { return underlyingStandings }
-        set(value) { underlyingStandings = value }
-    }
-    var underlyingStandings: AnyPublisher<[Competition.ID : [Competition.Standing]], Never>!
-    var participants: AnyPublisher<[Competition.ID: [User]], Never> {
-        get { return underlyingParticipants }
-        set(value) { underlyingParticipants = value }
-    }
-    var underlyingParticipants: AnyPublisher<[Competition.ID: [User]], Never>!
-    var pendingParticipants: AnyPublisher<[Competition.ID: [User]], Never> {
-        get { return underlyingPendingParticipants }
-        set(value) { underlyingPendingParticipants = value }
-    }
-    var underlyingPendingParticipants: AnyPublisher<[Competition.ID: [User]], Never>!
-    var appOwnedCompetitions: AnyPublisher<[Competition], Never> {
-        get { return underlyingAppOwnedCompetitions }
-        set(value) { underlyingAppOwnedCompetitions = value }
-    }
-    var underlyingAppOwnedCompetitions: AnyPublisher<[Competition], Never>!
+    var competitions: AnyPublisher<[Competition], Never>!
+    var invitedCompetitions: AnyPublisher<[Competition], Never>!
+    var standings: AnyPublisher<[Competition.ID : [Competition.Standing]], Never>!
+    var participants: AnyPublisher<[Competition.ID: [User]], Never>!
+    var pendingParticipants: AnyPublisher<[Competition.ID: [User]], Never>!
+    var appOwnedCompetitions: AnyPublisher<[Competition], Never>!
 
     //MARK: - accept
 

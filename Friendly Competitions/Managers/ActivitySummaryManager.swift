@@ -2,12 +2,12 @@ import Combine
 import CombineExt
 import ECKit
 import ECKit_Firebase
+import Factory
 import Firebase
 import FirebaseFirestore
 import FirebaseFunctions
 import Foundation
 import HealthKit
-import Resolver
 import UIKit
 
 // sourcery: AutoMockable
@@ -24,11 +24,11 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
 
     // MARK: - Private Properties
 
-    @Injected private var competitionsManager: CompetitionsManaging
-    @Injected private var healthKitManager: HealthKitManaging
-    @Injected private var database: Firestore
-    @Injected private var userManager: UserManaging
-    @Injected private var workoutManager: WorkoutManaging
+    @Injected(Container.competitionsManager) private var competitionsManager
+    @Injected(Container.healthKitManager) private var healthKitManager
+    @Injected(Container.database) private var database
+    @Injected(Container.userManager) private var userManager
+    @Injected(Container.workoutManager) private var workoutManager
 
     private var _activitySummary: CurrentValueSubject<ActivitySummary?, Never>
 
@@ -49,7 +49,6 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
             .handleEvents(receiveOutput: { UserDefaults.standard.encode($0, forKey: "activity_summary") })
             .receive(on: RunLoop.main)
             .share(replay: 1)
-            .print("activity summary")
             .eraseToAnyPublisher()
 
         Publishers
@@ -73,13 +72,15 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
             .combineLatest(userManager.user)
             .sinkAsync { [weak self] activitySummaries, user in
                 guard let strongSelf = self else { return }
-
+            
                 if let activitySummary = activitySummaries.last, activitySummary.date.isToday {
                     strongSelf._activitySummary.send(activitySummary)
                 }
 
                 let batch = strongSelf.database.batch()
                 try activitySummaries.forEach { activitySummary in
+                    var activitySummary = activitySummary
+                    activitySummary.userID = user.id
                     let documentId = DateFormatter.dateDashed.string(from: activitySummary.date)
                     let document = strongSelf.database.document("users/\(user.id)/activitySummaries/\(documentId)")
                     let _ = try batch.setDataEncodable(activitySummary, forDocument: document)

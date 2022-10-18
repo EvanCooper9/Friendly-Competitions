@@ -1,6 +1,6 @@
 import Combine
+import Factory
 import HealthKit
-import Resolver
 
 // sourcery: AutoMockable
 protocol HealthKitManaging {
@@ -19,7 +19,7 @@ final class HealthKitManager: HealthKitManaging {
 
     // MARK: - Private Properties
     
-    @Injected private var analyticsManager: AnalyticsManaging
+    @Injected(Container.analyticsManager) private var analyticsManager
 
     private let healthStore = HKHealthStore()
     private let _backgroundDeliveryReceived = PassthroughSubject<Void, Never>()

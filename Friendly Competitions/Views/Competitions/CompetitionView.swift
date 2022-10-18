@@ -1,4 +1,4 @@
-import Resolver
+import Factory
 import SwiftUI
 import SwiftUIX
 
@@ -9,8 +9,7 @@ struct CompetitionView: View {
     @State private var canSaveEdits = true
     
     init(competition: Competition) {
-        let vm = Resolver.resolve(CompetitionViewModel.self, args: competition)
-        _viewModel = .init(wrappedValue: vm)
+        _viewModel = .init(wrappedValue: .init(competition: competition))
     }
 
     var body: some View {

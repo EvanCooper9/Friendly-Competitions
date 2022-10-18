@@ -1,5 +1,5 @@
 import Combine
-import Resolver
+import Factory
 import UserNotifications
 import UIKit
 
@@ -17,7 +17,7 @@ final class NotificationManager: NSObject, NotificationManaging {
 
     // MARK: - Private Properties
     
-    @LazyInjected private var analyticsManager: AnalyticsManaging
+    @LazyInjected(Container.analyticsManager) private var analyticsManager
 
     private let _permissionStatus: CurrentValueSubject<PermissionStatus, Never>
 

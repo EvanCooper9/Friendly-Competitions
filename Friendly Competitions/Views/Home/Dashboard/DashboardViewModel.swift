@@ -1,6 +1,7 @@
 import Combine
 import CombineExt
 import ECKit
+import Factory
 import Foundation
 
 enum ActivitySummaryState {
@@ -25,8 +26,18 @@ final class DashboardViewModel: ObservableObject {
     @Published var requiresPermissions = false
     @Published private(set) var title = Bundle.main.name
     @Published private(set) var showDeveloper = false
+    
+    // MARK: - Private Properties
+     
+    @Injected(Container.activitySummaryManager) private var activitySummaryManager
+    @Injected(Container.competitionsManager) private var competitionsManager
+    @Injected(Container.friendsManager) private var friendsManager
+    @Injected(Container.permissionsManager) private var permissionsManager
+    @Injected(Container.userManager) private var userManager
+    
+    // MARK: - Lifecycle
 
-    init(activitySummaryManager: ActivitySummaryManaging, competitionsManager: CompetitionsManaging, friendsManager: FriendsManaging, permissionsManager: PermissionsManaging, userManager: UserManaging) {
+    init() {
 
         #if DEBUG
         showDeveloper = true

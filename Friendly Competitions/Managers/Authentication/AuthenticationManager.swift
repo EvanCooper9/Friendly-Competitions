@@ -3,10 +3,10 @@ import Combine
 import CryptoKit
 import ECKit
 import ECKit_Firebase
+import Factory
 import Firebase
-import FirebaseAuth
+import FirebaseAuthCombineSwift
 import FirebaseFirestore
-import Resolver
 import SwiftUI
 
 // sourcery: AutoMockable
@@ -33,7 +33,7 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
 
     // MARK: - Private Properties
 
-    @LazyInjected private var database: Firestore
+    @LazyInjected(Container.database) private var database
 
     @UserDefault("current_user") private var currentUser: User? = nil
 
@@ -152,26 +152,25 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
     }
     
     private func listenForAuth() {
-        Auth.auth().addStateDidChangeListener { [weak self] auth, firebaseUser in
-            guard let self = self else { return }
-
-            guard let firebaseUser = firebaseUser else {
-                DispatchQueue.main.async {
-                    self.currentUser = nil
-                    self.userListener = nil
+        Auth.auth()
+            .authStateDidChangePublisher()
+            .sink(withUnretained: self) { strongSelf, firebaseUser in
+                guard let firebaseUser = firebaseUser else {
+                    strongSelf.currentUser = nil
+                    strongSelf.userListener = nil
+                    return
                 }
-                return
-            }
-            
-            Task {
-                try await self.updateFirestoreUserWithAuthUser(firebaseUser)
-                let user = try await self.database.document("users/\(firebaseUser.uid)").getDocument().decoded(as: User.self)
-                DispatchQueue.main.async {
-                    self.currentUser = user
-                    self._emailVerified.send(firebaseUser.isEmailVerified || firebaseUser.email == "review@apple.com")
+                
+                Task {
+                    try await self.updateFirestoreUserWithAuthUser(firebaseUser)
+                    let user = try await self.database.document("users/\(firebaseUser.uid)").getDocument().decoded(as: User.self)
+                    DispatchQueue.main.async {
+                        self.currentUser = user
+                        self._emailVerified.send(firebaseUser.isEmailVerified || firebaseUser.email == "review@apple.com")
+                    }
                 }
             }
-        }
+            .store(in: &cancellables)
     }
 
     private func sha256(_ input: String) -> String {
@@ -185,15 +184,15 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
     }
 
     private func registerUserManager(with user: User) {
-        Resolver.register(UserManaging.self) { [weak self, user] in
-            guard let self = self else { fatalError("This should not happen") }
+        Container.userManager.register { [weak self] in
+            guard let strongSelf = self else { fatalError("This should not happen") }
             let userManager = UserManager(user: user)
-            self.userListener = userManager.user
+            strongSelf.userListener = userManager.user
                 .receive(on: RunLoop.main)
                 .map(User?.init)
-                .assign(to: \.currentUser, on: self, ownership: .weak)
+                .assign(to: \.currentUser, on: strongSelf, ownership: .weak)
             return userManager
-        }.scope(.shared)
+        }
     }
     
     private func updateFirestoreUserWithAuthUser(_ firebaseUser: FirebaseAuth.User) async throws {
@@ -229,7 +228,7 @@ extension AuthenticationManager: ASAuthorizationControllerDelegate {
                 // Error. If error.code == .MissingOrInvalidNonce, make sure
                 // you're sending the SHA256-hashed nonce as a hex string with
                 // your request to Apple.
-                print(error.localizedDescription)
+                print(error)
                 return
             }
 

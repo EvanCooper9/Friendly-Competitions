@@ -1,13 +1,13 @@
 import Combine
 import CombineExt
-import Resolver
+import Factory
 
 final class CompetitionDetailsViewModel: ObservableObject {
     
     @Published var competition: Competition
     @Published var isInvitation = false
     
-    @Injected private var userManager: UserManaging
+    @Injected(Container.userManager) private var userManager
     
     init(competition: Competition) {
         self.competition = competition

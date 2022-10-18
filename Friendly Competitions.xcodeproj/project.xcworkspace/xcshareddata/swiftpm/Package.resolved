@@ -37,30 +37,30 @@
       }
     },
     {
-      "identity" : "eckit",
+      "identity" : "factory",
       "kind" : "remoteSourceControl",
-      "location" : "git@github.com:EvanCooper9/ECKit.git",
+      "location" : "https://github.com/hmlongco/Factory",
       "state" : {
-        "branch" : "main",
-        "revision" : "0711a59de16e7b6592d2fce22011f6c6bd39d49e"
+        "revision" : "8557426f3286e20b631ecdac8115242f888656e0",
+        "version" : "1.2.8"
       }
     },
     {
       "identity" : "files",
       "kind" : "remoteSourceControl",
-      "location" : "git@github.com:JohnSundell/Files.git",
+      "location" : "https://github.com/JohnSundell/Files",
       "state" : {
-        "branch" : "master",
-        "revision" : "d273b5b7025d386feef79ef6bad7de762e106eaf"
+        "revision" : "d273b5b7025d386feef79ef6bad7de762e106eaf",
+        "version" : "4.2.0"
       }
     },
     {
       "identity" : "firebase-ios-sdk",
       "kind" : "remoteSourceControl",
-      "location" : "git@github.com:firebase/firebase-ios-sdk.git",
+      "location" : "https://github.com/firebase/firebase-ios-sdk",
       "state" : {
-        "revision" : "7e80c25b51c2ffa238879b07fbfc5baa54bb3050",
-        "version" : "9.6.0"
+        "revision" : "5c4893c55f9d6114e2bb7c691d7ffd81208ac713",
+        "version" : "10.0.0"
       }
     },
     {
@@ -68,8 +68,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/GoogleAppMeasurement.git",
       "state" : {
-        "revision" : "c1cfde8067668027b23a42c29d11c246152fe046",
-        "version" : "9.6.0"
+        "revision" : "e3dd02f390cae79a7073b46dfb0cb6b60c48401b",
+        "version" : "10.0.0"
       }
     },
     {
@@ -145,24 +145,6 @@
       }
     },
     {
-      "identity" : "resolver",
-      "kind" : "remoteSourceControl",
-      "location" : "git@github.com:hmlongco/Resolver",
-      "state" : {
-        "revision" : "97de0b0320036607564af4a60025b48f8d041221",
-        "version" : "1.5.0"
-      }
-    },
-    {
-      "identity" : "resolverautoregistration",
-      "kind" : "remoteSourceControl",
-      "location" : "git@github.com:hatchcredit/ResolverAutoregistration",
-      "state" : {
-        "revision" : "4281e11709e36527ce5e2227f79e1789deb9e3e9",
-        "version" : "1.1.0"
-      }
-    },
-    {
       "identity" : "swift-algorithms",
       "kind" : "remoteSourceControl",
       "location" : "git@github.com:apple/swift-algorithms.git",
@@ -192,7 +174,7 @@
     {
       "identity" : "swiftuix",
       "kind" : "remoteSourceControl",
-      "location" : "git@github.com:SwiftUIX/SwiftUIX",
+      "location" : "https://github.com/SwiftUIX/SwiftUIX",
       "state" : {
         "branch" : "master",
         "revision" : "a37392e4f4d37b38fdb091d4b854939c778f2569"

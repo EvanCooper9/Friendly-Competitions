@@ -1,5 +1,5 @@
 import ECKit
-import Resolver
+import Factory
 import SwiftUI
 import SwiftUIX
 import HealthKit
@@ -8,7 +8,7 @@ struct NewCompetition: View {
 
     @Environment(\.dismiss) private var dismiss
     
-    @StateObject private var viewModel = Resolver.resolve(NewCompetitionViewModel.self)
+    @StateObject private var viewModel = NewCompetitionViewModel()
     @State private var presentAddFriends = false
 
     var body: some View {

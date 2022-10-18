@@ -1,12 +1,12 @@
 import Combine
 import ECKit
 import ECKit_Firebase
+import Factory
 import Firebase
 import FirebaseCrashlytics
 import FirebaseFirestore
 import FirebaseFunctions
 import FirebaseFunctionsCombineSwift
-import Resolver
 import UIKit
 
 // sourcery: AutoMockable
@@ -24,10 +24,10 @@ final class UserManager: UserManaging {
 
     // MARK: - Private Properties
 
-    @Injected private var analyticsManager: AnalyticsManaging
-    @Injected private var authenticationManager: AuthenticationManaging
-    @Injected private var functions: Functions
-    @Injected private var database: Firestore
+    @Injected(Container.analyticsManager) private var analyticsManager
+    @Injected(Container.authenticationManager) private var authenticationManager
+    @Injected(Container.functions) private var functions
+    @Injected(Container.database) private var database
 
     private var cancellables = Cancellables()
     private var listenerBag = ListenerBag()

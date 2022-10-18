@@ -1,8 +1,8 @@
 import Combine
+import Factory
 import Files
 import FirebaseStorage
 import Foundation
-import Resolver
 
 // sourcery: AutoMockable
 protocol StorageManaging {
@@ -13,13 +13,8 @@ final class StorageManager: StorageManaging {
 
     // MARK: - Private Properties
 
-    @Injected private var storageRef: StorageReference
-    private let fileManager = FileManager.default
+    @Injected(Container.storage) private var storage
 
-    private var documentsDirectory: URL {
-        fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
-    }
-    
     // MARK: - Lifecycle
 
     init() {
@@ -29,14 +24,18 @@ final class StorageManager: StorageManaging {
     // MARK: - Public Methods
 
     func data(for storagePath: String) async throws -> Data {
-        let localPath = documentsDirectory.appendingPathComponent(storagePath)
+        guard let documents = Folder.documents?.url else {
+            return try await storage.child(storagePath).data(maxSize: .max)
+        }
+
+        let localPath = documents.appendingPathComponent(storagePath)
         let localData = try? Data(contentsOf: localPath)
         if let localData, !localData.isEmpty {
             return localData
         }
 
         return try await withCheckedThrowingContinuation { continuation in
-            storageRef.child(storagePath).write(toFile: localPath) { url, error in
+            storage.child(storagePath).write(toFile: localPath) { url, error in
                 if let error {
                     continuation.resume(throwing: error)
                     return
@@ -54,11 +53,11 @@ final class StorageManager: StorageManaging {
     // MARK: - Private Methods
 
     private func cleanup() throws {
-        let folder = try Folder(path: documentsDirectory.absoluteString)
-        try folder.files.forEach { file in
+        guard let documents = Folder.documents else { return }
+        try documents.files.forEach { file in
             try file.delete()
         }
-        try folder.subfolders.forEach { folder in
+        try documents.subfolders.forEach { folder in
             try folder.delete()
         }
     }

@@ -1,5 +1,5 @@
 import ECKit
-import Resolver
+import Factory
 import SwiftUI
 import SwiftUIX
 
@@ -8,8 +8,7 @@ struct UserView: View {
     @StateObject private var viewModel: UserViewModel
         
     init(user: User) {
-        let vm = Resolver.resolve(UserViewModel.self, args: user)
-        _viewModel = .init(wrappedValue: vm)
+        _viewModel = .init(wrappedValue: .init(user: user))
     }
     
     var body: some View {

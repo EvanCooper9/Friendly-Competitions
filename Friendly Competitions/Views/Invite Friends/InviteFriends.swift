@@ -1,5 +1,5 @@
 import ECKit
-import Resolver
+import Factory
 import SwiftUI
 
 struct InviteFriends: View {
@@ -7,8 +7,7 @@ struct InviteFriends: View {
     @StateObject private var viewModel: InviteFriendsViewModel
     
     init(action: InviteFriendsAction) {
-        let vm = Resolver.resolve(InviteFriendsViewModel.self, args: action)
-        _viewModel = .init(wrappedValue: vm)
+        _viewModel = .init(wrappedValue: .init(action: action))
     }
     
     var body: some View {

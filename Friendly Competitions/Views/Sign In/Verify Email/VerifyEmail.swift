@@ -1,9 +1,9 @@
-import Resolver
+import Factory
 import SwiftUI
 
 struct VerifyEmail: View {
     
-    @StateObject private var viewModel = Resolver.resolve(VerifyEmailViewModel.self)
+    @StateObject private var viewModel = VerifyEmailViewModel()
     
     var body: some View {
         VStack(spacing: 50) {
