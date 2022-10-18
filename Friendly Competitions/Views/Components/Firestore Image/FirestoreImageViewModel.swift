@@ -4,16 +4,24 @@ import Factory
 
 final class FirestoreImageViewModel: ObservableObject {
     
+    // MARK: - Private Properties
+    
     @Published private(set) var failed = false
     @Published private(set) var imageData: Data?
+    
+    // MARK: - Private Properties
     
     private let path: String
     
     @LazyInjected(Container.storage) private var storage
     
+    // MARK: - Lifecycle
+    
     init(path: String) {
         self.path = path
     }
+    
+    // MARK: - Public Properties
     
     func downloadImage() {
         failed = false

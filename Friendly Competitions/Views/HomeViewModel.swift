@@ -2,6 +2,7 @@ import Combine
 import Factory
 import Foundation
 
+@MainActor
 final class HomeViewModel: ObservableObject {
     
     // MARK: - Public Properties

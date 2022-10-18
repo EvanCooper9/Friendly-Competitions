@@ -7,7 +7,6 @@ struct FriendlyCompetitions: App {
 
     @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
 
-    /// Can't use `@InjectedObject` or else Firebase crashes because `FirebaseApp.configure` isn't called first.
     @StateObject private var appModel = FriendlyCompetitionsAppModel()
 
     init() {

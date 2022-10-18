@@ -3,6 +3,7 @@ import CombineExt
 import ECKit
 import Factory
 
+@MainActor
 final class SignInViewModel: ObservableObject {
 
     private enum Constants {
@@ -35,13 +36,8 @@ final class SignInViewModel: ObservableObject {
     // MARK: - Lifecycle
     
     init() {
-        hud
-            .receive(on: RunLoop.main)
-            .assign(to: &appState.$hudState)
-        
-        isLoading
-            .receive(on: RunLoop.main)
-            .assign(to: &$loading)
+        hud.assign(to: &appState.$hudState)
+        isLoading.assign(to: &$loading)
 
         _forgot
             .setFailureType(to: Error.self)

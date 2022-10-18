@@ -3,6 +3,7 @@ import CombineExt
 import ECKit
 import Factory
 
+@MainActor
 final class InviteFriendsViewModel: ObservableObject {
     
     struct RowConfig: Identifiable {
@@ -105,7 +106,6 @@ final class InviteFriendsViewModel: ObservableObject {
                 case .addFriend:
                     return strongSelf.friendsManager
                         .accept(friendRequest: user)
-                        .receive(on: RunLoop.main)
                         .isLoading { [weak self] in self?.loading = $0 }
                         .ignoreFailure()
                 case .competitionInvite:
@@ -134,7 +134,6 @@ final class InviteFriendsViewModel: ObservableObject {
             .store(in: &cancellables)
 
         _share
-            .receive(on: RunLoop.main)
             .sink(withUnretained: self) { strongSelf in
                 let deepLink: DeepLink?
                 switch action {

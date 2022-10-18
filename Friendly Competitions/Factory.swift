@@ -7,21 +7,20 @@ import FirebaseStorage
 extension Container {
     
     // Managers
-    static let activitySummaryManager = Factory { ActivitySummaryManager() as ActivitySummaryManaging }
-    static let analyticsManager = Factory { AnalyticsManager() as AnalyticsManaging }
-    static let authenticationManager = Factory { AuthenticationManager() as AuthenticationManaging }
-    static let competitionsManager  = Factory { CompetitionsManager() as CompetitionsManaging }
-    static let friendsManager  = Factory { FriendsManager() as FriendsManaging }
-    static let healthKitManager  = Factory { HealthKitManager() as HealthKitManaging }
-    static let notificationManager  = Factory { NotificationManager() as NotificationManaging }
-    static let permissionsManager  = Factory { PermissionsManager() as PermissionsManaging }
-    static let storageManager  = Factory { StorageManager() as StorageManaging }
-    static let workoutManager  = Factory { WorkoutManager() as WorkoutManaging }
-    static let userManager = Factory<UserManaging> { fatalError("User manager not initialized") }
+    static let activitySummaryManager = Factory(scope: .shared) { ActivitySummaryManager() as ActivitySummaryManaging }
+    static let analyticsManager = Factory(scope: .shared) { AnalyticsManager() as AnalyticsManaging }
+    static let authenticationManager = Factory(scope: .shared) { AuthenticationManager() as AuthenticationManaging }
+    static let competitionsManager  = Factory(scope: .shared) { CompetitionsManager() as CompetitionsManaging }
+    static let friendsManager  = Factory(scope: .shared) { FriendsManager() as FriendsManaging }
+    static let healthKitManager  = Factory(scope: .shared) { HealthKitManager() as HealthKitManaging }
+    static let notificationManager  = Factory(scope: .shared) { NotificationManager() as NotificationManaging }
+    static let permissionsManager  = Factory(scope: .shared) { PermissionsManager() as PermissionsManaging }
+    static let storageManager  = Factory(scope: .shared) { StorageManager() as StorageManaging }
+    static let workoutManager  = Factory(scope: .shared) { WorkoutManager() as WorkoutManaging }
+    static let userManager = Factory<UserManaging>(scope: .shared) { fatalError("User manager not initialized") }
     
     // Global state
     static let appState = Factory(scope: .shared) { AppState() }
-    
     
     static let database = Factory(scope: .shared) {
         let environment = UserDefaults.standard.decode(FirestoreEnvironment.self, forKey: "environment") ?? .defaultEnvionment

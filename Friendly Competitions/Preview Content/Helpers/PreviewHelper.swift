@@ -45,7 +45,7 @@ fileprivate struct Container {
         competitionsManager.appOwnedCompetitions = .just([.mockPublic])
         competitionsManager.searchReturnValue = .just([.mockPublic, .mock])
 
-        storageManager.dataForReturnValue = .init()
+        storageManager.dataForReturnValue = .just(.init())
     }
 }
 

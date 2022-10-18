@@ -57,7 +57,6 @@ final class UserViewModel: ObservableObject {
                 case .deleteFriend:
                     return strongSelf.friendsManager
                         .delete(friend: strongSelf.user)
-                        .receive(on: RunLoop.main)
                         .isLoading { [weak self] in self?.loading = $0 }
                         .ignoreFailure()
                 default:
@@ -73,19 +72,16 @@ final class UserViewModel: ObservableObject {
                 case .acceptFriendRequest:
                     return strongSelf.friendsManager
                         .accept(friendRequest: user)
-                        .receive(on: RunLoop.main)
                         .isLoading { [weak self] in self?.loading = $0 }
                         .ignoreFailure()
                 case .denyFriendRequest:
                     return strongSelf.friendsManager
                         .decline(friendRequest: user)
-                        .receive(on: RunLoop.main)
                         .isLoading { [weak self] in self?.loading = $0 }
                         .ignoreFailure()
                 case .request:
                     return strongSelf.friendsManager
                         .add(user: user)
-                        .receive(on: RunLoop.main)
                         .isLoading { [weak self] in self?.loading = $0 }
                         .ignoreFailure()
                 case .deleteFriend:

@@ -3,6 +3,7 @@ import CombineExt
 import ECKit
 import Factory
 
+@MainActor
 final class VerifyEmailViewModel: ObservableObject {
 
     private enum Constants {
@@ -24,10 +25,7 @@ final class VerifyEmailViewModel: ObservableObject {
     
     init() {
         user = userManager.user.value
-
-        hud
-            .receive(on: RunLoop.main)
-            .assign(to: &appState.$hudState)
+        hud.assign(to: &appState.$hudState)
 
         _back
             .sinkAsync { [weak self] in try self?.authenticationManager.signOut() }

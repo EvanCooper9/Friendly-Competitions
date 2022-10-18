@@ -735,25 +735,21 @@ class StorageManagingMock: StorageManaging {
 
     //MARK: - data
 
-    var dataForThrowableError: Error?
     var dataForCallsCount = 0
     var dataForCalled: Bool {
         return dataForCallsCount > 0
     }
     var dataForReceivedStoragePath: String?
     var dataForReceivedInvocations: [String] = []
-    var dataForReturnValue: Data!
-    var dataForClosure: ((String) async throws -> Data)?
+    var dataForReturnValue: AnyPublisher<Data, Error>!
+    var dataForClosure: ((String) -> AnyPublisher<Data, Error>)?
 
-    func data(for storagePath: String) async throws -> Data {
-        if let error = dataForThrowableError {
-            throw error
-        }
+    func data(for storagePath: String) -> AnyPublisher<Data, Error> {
         dataForCallsCount += 1
         dataForReceivedStoragePath = storagePath
         dataForReceivedInvocations.append(storagePath)
         if let dataForClosure = dataForClosure {
-            return try await dataForClosure(storagePath)
+            return dataForClosure(storagePath)
         } else {
             return dataForReturnValue
         }

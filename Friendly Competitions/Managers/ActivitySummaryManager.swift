@@ -5,10 +5,8 @@ import ECKit_Firebase
 import Factory
 import Firebase
 import FirebaseFirestore
-import FirebaseFunctions
 import Foundation
 import HealthKit
-import UIKit
 
 // sourcery: AutoMockable
 protocol ActivitySummaryManaging {
@@ -104,7 +102,8 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
     /// Don't call this directly, call `query` instead
     private func requestActivitySummaries() -> AnyPublisher<[ActivitySummary], Never> {
         competitionsManager.competitions
-            .map { $0.filter(\.isActive).dateInterval }
+            .filterMany(\.isActive)
+            .map(\.dateInterval)
             .flatMap { [weak self] dateInterval -> AnyPublisher<[ActivitySummary], Error> in
                 guard let self = self else { return .never() }
                 let subject = PassthroughSubject<[ActivitySummary], Error>()

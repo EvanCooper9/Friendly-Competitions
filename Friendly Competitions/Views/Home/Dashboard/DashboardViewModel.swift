@@ -4,12 +4,7 @@ import ECKit
 import Factory
 import Foundation
 
-enum ActivitySummaryState {
-    case found(ActivitySummary)
-    case missing
-    case permissionsDenied
-}
-
+@MainActor
 final class DashboardViewModel: ObservableObject {
     
     struct FriendRow: Equatable, Identifiable {
@@ -52,11 +47,12 @@ final class DashboardViewModel: ObservableObject {
         competitionsManager.invitedCompetitions.assign(to: &$invitedCompetitions)
         
         let friendRequests = friendsManager.friendRequests
-            .map { friendRequests in
+            .combineLatest(friendsManager.friendActivitySummaries)
+            .map { friendRequests, activitySummaries in
                 friendRequests.map { friendRequest in
                     FriendRow(
                         user: friendRequest,
-                        activitySummary: nil,
+                        activitySummary: activitySummaries[friendRequest.id],
                         isInvitation: true
                     )
                 }

@@ -1,12 +1,12 @@
 import Combine
 import Factory
 import Files
-import FirebaseStorage
+import FirebaseStorageCombineSwift
 import Foundation
 
 // sourcery: AutoMockable
 protocol StorageManaging {
-    func data(for storagePath: String) async throws -> Data
+    func data(for storagePath: String) -> AnyPublisher<Data, Error>
 }
 
 final class StorageManager: StorageManaging {
@@ -22,32 +22,26 @@ final class StorageManager: StorageManaging {
     }
 
     // MARK: - Public Methods
-
-    func data(for storagePath: String) async throws -> Data {
+    
+    func data(for storagePath: String) -> AnyPublisher<Data, Error> {
+        let storageReference = storage.child(storagePath)
+        
         guard let documents = Folder.documents?.url else {
-            return try await storage.child(storagePath).data(maxSize: .max)
+            return storageReference
+                .getData(maxSize: .max)
+                .eraseToAnyPublisher()
         }
-
+        
         let localPath = documents.appendingPathComponent(storagePath)
         let localData = try? Data(contentsOf: localPath)
         if let localData, !localData.isEmpty {
-            return localData
+            return .just(localData)
         }
-
-        return try await withCheckedThrowingContinuation { continuation in
-            storage.child(storagePath).write(toFile: localPath) { url, error in
-                if let error {
-                    continuation.resume(throwing: error)
-                    return
-                }
-
-                do {
-                    continuation.resume(returning: try Data(contentsOf: url!))
-                } catch {
-                    continuation.resume(throwing: error)
-                }
-            }
-        }
+        
+        return storageReference
+            .getData(maxSize: .max)
+            .handleEvents(receiveOutput: { _ = try? Folder.documents?.createFileIfNeeded(at: storagePath, contents: $0) })
+            .eraseToAnyPublisher()
     }
 
     // MARK: - Private Methods

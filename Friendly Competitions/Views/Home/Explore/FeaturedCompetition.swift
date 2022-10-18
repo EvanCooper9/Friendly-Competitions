@@ -39,7 +39,7 @@ struct FeaturedCompetitionView_Previews: PreviewProvider {
         competitionsManager.standings = .just([:])
         competitionsManager.participants = .just([:])
         competitionsManager.pendingParticipants = .just([:])
-        storageManager.dataForReturnValue = .init()
+        storageManager.dataForReturnValue = .just(.init())
     }
 
     static var previews: some View {

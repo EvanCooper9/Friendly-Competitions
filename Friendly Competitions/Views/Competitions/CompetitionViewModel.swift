@@ -3,7 +3,6 @@ import CombineExt
 import ECKit
 import Factory
 
-@MainActor
 final class CompetitionViewModel: ObservableObject {
     
     private enum ActionRequiringConfirmation {
@@ -75,13 +74,12 @@ final class CompetitionViewModel: ObservableObject {
             .assign(to: &$actions)
         
         competitionsManager.competitions
-            .receive(on: RunLoop.main)
             .compactMap { $0.first { $0.id == competition.id } }
+            .receive(on: RunLoop.main)
             .assign(to: &$competition)
         
         competitionsManager.standings
             .combineLatest(competitionsManager.participants, userManager.user)
-            .receive(on: RunLoop.main)
             .map { standings, participants, currentUser -> [CompetitionParticipantView.Config] in
                 guard let standings = standings[competition.id],
                       let participants = participants[competition.id]
@@ -101,11 +99,11 @@ final class CompetitionViewModel: ObservableObject {
                     )
                 }
             }
+            .receive(on: RunLoop.main)
             .assign(to: &$standings)
         
         competitionsManager.pendingParticipants
             .combineLatest(userManager.user)
-            .receive(on: RunLoop.main)
             .map { pendingParticipants, user in
                 guard let pendingParticipants = pendingParticipants[competition.id] else { return [] }
                 return pendingParticipants.map { pendingParticipant in
@@ -121,6 +119,7 @@ final class CompetitionViewModel: ObservableObject {
                     )
                 }
             }
+            .receive(on: RunLoop.main)
             .assign(to: &$pendingParticipants)
 
         _confirm
