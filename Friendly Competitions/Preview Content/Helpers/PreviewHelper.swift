@@ -1,7 +1,7 @@
 import Factory
 import SwiftUI
 
-fileprivate struct Container {
+fileprivate enum Dependencies {
     static let appState = AppState()
     static let activitySummaryManager = ActivitySummaryManagingMock()
     static let analyticsManager = AnalyticsManagingMock()
@@ -13,22 +13,17 @@ fileprivate struct Container {
     static let storageManager = StorageManagingMock()
     static let userManager = UserManagingMock()
     
-    static func registerDependencies() {
-//        Resolver.registerViewModels()
-//        Resolver.register { Container.appState }
-//        Resolver.register(ActivitySummaryManaging.self) { Container.activitySummaryManager }
-//        Resolver.register(AnalyticsManaging.self) { Container.analyticsManager }
-//        Resolver.register(AuthenticationManaging.self) { Container.authenticationManager }
-//        Resolver.register(CompetitionsManaging.self) { Container.competitionsManager }
-//        Resolver.register(FriendsManaging.self) { Container.friendsManager }
-//        Resolver.register(HealthKitManaging.self) { Container.healthKitManager }
-//        Resolver.register(PermissionsManaging.self) { Container.permissionsManager }
-//        Resolver.register(StorageManaging.self) { Container.storageManager }
-//        Resolver.register(UserManaging.self) {
-//            let userManager = Container.userManager
-//            userManager.user = .init(.evan)
-//            return userManager
-//        }
+    static func register() {
+        Container.appState.register { appState }
+        Container.activitySummaryManager.register { activitySummaryManager }
+        Container.analyticsManager.register { analyticsManager }
+        Container.authenticationManager.register { authenticationManager }
+        Container.competitionsManager.register { competitionsManager }
+        Container.friendsManager.register { friendsManager }
+        Container.healthKitManager.register { healthKitManager }
+        Container.permissionsManager.register { permissionsManager }
+        Container.storageManager.register { storageManager }
+        Container.userManager.register { userManager }
     }
 
     static func baseSetupMocks() {
@@ -46,30 +41,28 @@ fileprivate struct Container {
         competitionsManager.searchReturnValue = .just([.mockPublic, .mock])
 
         storageManager.dataForReturnValue = .just(.init())
+        
+        userManager.user = .init(.evan)
     }
 }
 
 extension PreviewProvider {
-    static var appState: AppState { Container.appState }
-    static var activitySummaryManager: ActivitySummaryManagingMock { Container.activitySummaryManager }
-    static var analyticsManager: AnalyticsManagingMock { Container.analyticsManager }
-    static var authenticationManager: AuthenticationManagingMock { Container.authenticationManager }
-    static var competitionsManager: CompetitionsManagingMock { Container.competitionsManager }
-    static var friendsManager: FriendsManagingMock { Container.friendsManager }
-    static var healthKitManager: HealthKitManagingMock { Container.healthKitManager }
-    static var permissionsManager: PermissionsManagingMock { Container.permissionsManager }
-    static var storageManager: StorageManagingMock { Container.storageManager }
-    static var userManager: UserManagingMock { Container.userManager }
-
-    static func registerDependencies() {
-        Container.registerDependencies()
-    }
+    static var appState: AppState { Dependencies.appState }
+    static var activitySummaryManager: ActivitySummaryManagingMock { Dependencies.activitySummaryManager }
+    static var analyticsManager: AnalyticsManagingMock { Dependencies.analyticsManager }
+    static var authenticationManager: AuthenticationManagingMock { Dependencies.authenticationManager }
+    static var competitionsManager: CompetitionsManagingMock { Dependencies.competitionsManager }
+    static var friendsManager: FriendsManagingMock { Dependencies.friendsManager }
+    static var healthKitManager: HealthKitManagingMock { Dependencies.healthKitManager }
+    static var permissionsManager: PermissionsManagingMock { Dependencies.permissionsManager }
+    static var storageManager: StorageManagingMock { Dependencies.storageManager }
+    static var userManager: UserManagingMock { Dependencies.userManager }
 }
 
 extension View {
     func setupMocks(_ setupMocks: @escaping () -> Void = {}) -> some View {
-        Container.registerDependencies()
-        Container.baseSetupMocks()
+        Dependencies.register()
+        Dependencies.baseSetupMocks()
         setupMocks()
         return self
     }

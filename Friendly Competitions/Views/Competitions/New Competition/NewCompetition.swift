@@ -5,10 +5,9 @@ import SwiftUIX
 import HealthKit
 
 struct NewCompetition: View {
-
-    @Environment(\.dismiss) private var dismiss
     
     @StateObject private var viewModel = NewCompetitionViewModel()
+    @Environment(\.dismiss) private var dismiss
     @State private var presentAddFriends = false
 
     var body: some View {
@@ -16,16 +15,15 @@ struct NewCompetition: View {
             CompetitionInfo(
                 competition: $viewModel.competition,
                 editing: true,
-                canSaveEdits: viewModel.canSaveEdits
+                canSaveEdits: { _ in }
             )
+
             friendsView
+
             Section {
-                Button("Create") {
-                    viewModel.create()
-                    dismiss()
-                }
-                .disabled(viewModel.createDisabled)
-                .frame(maxWidth: .infinity)
+                Button("Create", action: viewModel.create)
+                    .disabled(viewModel.createDisabled)
+                    .frame(maxWidth: .infinity)
             } footer: {
                 Text(viewModel.disabledReason ?? "")
             }
@@ -34,6 +32,7 @@ struct NewCompetition: View {
         .embeddedInNavigationView()
         .sheet(isPresented: $presentAddFriends) { InviteFriends(action: .addFriend) }
         .registerScreenView(name: "New Competition")
+        .onChange(of: viewModel.dismiss) { _ in dismiss() }
     }
 
     private var friendsView: some View {
@@ -61,6 +60,7 @@ struct NewCompetition: View {
     }
 }
 
+#if DEBUG
 struct NewCompetitionView_Previews: PreviewProvider {
 
     private static func setupMocks() {
@@ -72,3 +72,4 @@ struct NewCompetitionView_Previews: PreviewProvider {
             .setupMocks(setupMocks)
     }
 }
+#endif

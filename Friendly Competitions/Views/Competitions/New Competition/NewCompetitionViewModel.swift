@@ -19,7 +19,8 @@ final class NewCompetitionViewModel: ObservableObject {
     // MARK: - Public Properties
     
     @Published var competition: Competition
-    @Published var friendRows = [InviteFriendsRow]()
+    @Published private(set) var friendRows = [InviteFriendsRow]()
+    @Published private(set) var dismiss = false
     
     var createDisabled: Bool { disabledReason != nil }
     var disabledReason: String? {
@@ -82,7 +83,7 @@ final class NewCompetitionViewModel: ObservableObject {
                 strongSelf.competition = competition
                 return strongSelf.competitionsManager.create(competition)
             }
-            .sink()
+            .sink(withUnretained: self) { $0.dismiss = true }
             .store(in: &cancellables)
     }
 
@@ -90,9 +91,5 @@ final class NewCompetitionViewModel: ObservableObject {
     
     func create() {
         _create.send()
-    }
-
-    func canSaveEdits(_ canSave: Bool) {
-            
     }
 }

@@ -90,6 +90,7 @@ struct CompetitionView: View {
     }
 }
 
+#if DEBUG
 struct CompetitionView_Previews: PreviewProvider {
 
     private static let competition = Competition.mock
@@ -120,9 +121,9 @@ struct CompetitionView_Previews: PreviewProvider {
     }
 
     static var previews: some View {
-        registerDependencies()
-        setupMocks()
-        return CompetitionView(competition: competition)
+        CompetitionView(competition: competition)
             .embeddedInNavigationView()
+            .setupMocks(setupMocks)
     }
 }
+#endif

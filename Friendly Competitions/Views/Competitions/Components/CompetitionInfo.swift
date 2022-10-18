@@ -13,10 +13,14 @@ struct CompetitionInfo: View {
         var description: String { rawValue }
     }
     
+    // MARK: - Public Properties
+    
     @Binding var competition: Competition
 
     let editing: Bool
     let canSaveEdits: (Bool) -> Void
+    
+    // MARK: - Private Properties
 
     @State private var underlyingScoringModel: UnderlyingScoringModel? = .workout
     @State private var underlyingWorkoutType: WorkoutType? = .running
@@ -127,6 +131,7 @@ struct CompetitionInfo: View {
     }
 }
 
+#if DEBUG
 struct CompetitionInfo_Previews: PreviewProvider {
 
     private struct Preview: View {
@@ -147,3 +152,5 @@ struct CompetitionInfo_Previews: PreviewProvider {
             .embeddedInNavigationView()
     }
 }
+
+#endif
