@@ -3,7 +3,7 @@ import CombineExt
 import ECKit
 import ECKit_Firebase
 import Factory
-import Firebase
+import FirebaseFirestore
 import FirebaseFirestoreCombineSwift
 import FirebaseFunctionsCombineSwift
 import SwiftUI
@@ -65,7 +65,6 @@ final class FriendsManager: FriendsManaging {
             .map { user, allFriends in
                 allFriends.filter { user.friends.contains($0.id) }
             }
-            .print("friends")
             .sink(withUnretained: self) { $0.friendsSubject.send($1) }
             .store(in: &cancellables)
 
@@ -74,7 +73,6 @@ final class FriendsManager: FriendsManaging {
             .map { user, allFriends in
                 allFriends.filter { user.incomingFriendRequests.contains($0.id) }
             }
-            .print("friend requests")
             .sink(withUnretained: self) { $0.friendRequestsSubject.send($1) }
             .store(in: &cancellables)
 
@@ -83,7 +81,7 @@ final class FriendsManager: FriendsManaging {
                 guard let strongSelf = self else { return [:] }
                 
                 let activitySummaries = try await strongSelf.database.collectionGroup("activitySummaries")
-                    .whereField("userID", in: friends.map(\.id))
+                    .whereFieldWithChunking("userID", in: friends.map(\.id))
                     .whereField("date", isEqualTo: DateFormatter.dateDashed.string(from: .now))
                     .getDocuments()
                     .documents
