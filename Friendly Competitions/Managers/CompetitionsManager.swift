@@ -110,15 +110,13 @@ final class CompetitionsManager: CompetitionsManaging {
     // MARK: - Public Methods
 
     func accept(_ competition: Competition) -> AnyPublisher<Void, Error> {
-        var competition = competition
-        competition.pendingParticipants.remove(userManager.user.value.id)
-        if !competition.participants.contains(userManager.user.value.id) {
-            competition.participants.append(userManager.user.value.id)
-        }
-        _competitions.append(competition)
-        _invitedCompetitions.remove(competition)
-        analyticsManager.log(event: .acceptCompetition(id: competition.id))
-        return update(competition)
+        functions.httpsCallable("respondToCompetitionInvite")
+            .call([
+                "competitionID": competition.id,
+                "accept": true
+            ])
+            .mapToVoid()
+            .eraseToAnyPublisher()
     }
 
     func create(_ competition: Competition) -> AnyPublisher<Void, Error> {
@@ -135,37 +133,30 @@ final class CompetitionsManager: CompetitionsManaging {
     }
 
     func decline(_ competition: Competition) -> AnyPublisher<Void, Error> {
-        var competition = competition
-        competition.pendingParticipants.remove(userManager.user.value.id)
-        analyticsManager.log(event: .declineCompetition(id: competition.id))
-        return update(competition)
+        functions.httpsCallable("respondToCompetitionInvite")
+            .call([
+                "competitionID": competition.id,
+                "accept": false
+            ])
+            .mapToVoid()
+            .eraseToAnyPublisher()
     }
 
     func delete(_ competition: Competition) -> AnyPublisher<Void, Error> {
-        _competitions.remove(competition)
-        _standings[competition.id] = nil
-        analyticsManager.log(event: .deleteCompetition(id: competition.id))
-        return .fromAsync { [weak self] in
-            guard let self = self else { return }
-            let batch = self.database.batch()
-            try await self.database
-                .collection("competitions/\(competition.id)/standings")
-                .getDocuments()
-                .documents
-                .map(\.documentID)
-                .forEach { standingId in
-                    batch.deleteDocument(self.database.document("competitions/\(competition.id)/standings/\(standingId)"))
-                }
-            batch.deleteDocument(self.database.document("competitions/\(competition.id)"))
-            try await batch.commit()
-        }
+        functions.httpsCallable("deleteCompetition")
+            .call(["competitionID": competition.id])
+            .mapToVoid()
+            .eraseToAnyPublisher()
     }
 
     func invite(_ user: User, to competition: Competition) -> AnyPublisher<Void, Error> {
-        var competition = competition
-        competition.pendingParticipants.append(user.id)
-        analyticsManager.log(event: .inviteFriendToCompetition(id: competition.id, friendId: user.id))
-        return update(competition)
+        functions.httpsCallable("inviteUserToCompetition")
+            .call([
+                "competitionID": competition.id,
+                "userID": user.id
+            ])
+            .mapToVoid()
+            .eraseToAnyPublisher()
     }
 
     func join(_ competition: Competition) -> AnyPublisher<Void, Error> {
