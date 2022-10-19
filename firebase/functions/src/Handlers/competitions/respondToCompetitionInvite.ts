@@ -15,12 +15,9 @@ function respondToCompetitionInvite(competitionID: string, callerID: string, acc
         .get()
         .then(doc => new Competition(doc))
         .then(competition => {
-            
-            // competition.pendingParticipants.remove(callerID);
-            if (accept) {
-                competition.participants.push(callerID);
-            }
-
+            const index = competition.participants.indexOf(callerID, 0);
+            if (index > -1) competition.participants.splice(index, 1);
+            if (accept) competition.participants.push(callerID);
             const obj = Object.assign({}, competition);
             return firestore.doc(`competitions/${competitionID}`).set(obj);
         })
