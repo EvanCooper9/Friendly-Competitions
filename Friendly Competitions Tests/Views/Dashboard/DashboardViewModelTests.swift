@@ -1,5 +1,7 @@
-import ECKit
 import Combine
+import ECKit
+import Factory
+import Foundation
 import XCTest
 
 @testable import Friendly_Competitions
@@ -30,6 +32,12 @@ final class DashboardViewModelTests: XCTestCase {
         friendsManager.friendActivitySummaries = .never()
         permissionsManager.requiresPermission = .never()
         userManager.user = .init(.evan)
+        
+        Container.activitySummaryManager.register { self.activitySummaryManager }
+        Container.competitionsManager.register { self.competitionsManager }
+        Container.friendsManager.register { self.friendsManager }
+        Container.permissionsManager.register { self.permissionsManager }
+        Container.userManager.register { self.userManager }
 
         super.setUp()
     }
@@ -52,7 +60,8 @@ final class DashboardViewModelTests: XCTestCase {
 
         let ac = ActivitySummary.mock
 
-        makeViewModel().$activitySummary
+        let viewModel = DashboardViewModel()
+        viewModel.$activitySummary
             .expect(nil, ac, nil, ac, expectation: expectation)
             .store(in: &cancellables)
 
@@ -71,7 +80,8 @@ final class DashboardViewModelTests: XCTestCase {
         let comp1 = Competition.mock
         let comp2 = Competition.mockOld
 
-        makeViewModel().$competitions
+        let viewModel = DashboardViewModel()
+        viewModel.$competitions
             .expect([], [comp1], [comp1, comp2], expectation: expectation)
             .store(in: &cancellables)
 
@@ -89,7 +99,8 @@ final class DashboardViewModelTests: XCTestCase {
         let comp1 = Competition.mock
         let comp2 = Competition.mockOld
 
-        makeViewModel().$invitedCompetitions
+        let viewModel = DashboardViewModel()
+        viewModel.$invitedCompetitions
             .expect([], [comp1], [comp1, comp2], expectation: expectation)
             .store(in: &cancellables)
 
@@ -114,7 +125,8 @@ final class DashboardViewModelTests: XCTestCase {
         let evanWithAC = DashboardViewModel.FriendRow(user: .evan, activitySummary: activitySummary, isInvitation: false)
         let andrew = DashboardViewModel.FriendRow(user: .andrew, activitySummary: nil, isInvitation: true)
 
-        makeViewModel().$friends
+        let viewModel = DashboardViewModel()
+        viewModel.$friends
             .expect([], [evan], [evanWithAC], [evanWithAC, andrew], expectation: expectation)
             .store(in: &cancellables)
 
@@ -131,7 +143,8 @@ final class DashboardViewModelTests: XCTestCase {
         let subject = CurrentValueSubject<Bool, Never>(true)
         permissionsManager.requiresPermission = subject.eraseToAnyPublisher()
 
-        makeViewModel().$requiresPermissions
+        let viewModel = DashboardViewModel()
+        viewModel.$requiresPermissions
             .expect(true, false, true, false, expectation: expectation)
             .store(in: &cancellables)
 
@@ -147,7 +160,8 @@ final class DashboardViewModelTests: XCTestCase {
         let subject = CurrentValueSubject<User, Never>(.evan)
         userManager.user = subject
 
-        makeViewModel().$title
+        let viewModel = DashboardViewModel()
+        viewModel.$title
             .expect(User.evan.name, Bundle.main.name, expectation: expectation)
             .store(in: &cancellables)
 
@@ -155,11 +169,5 @@ final class DashboardViewModelTests: XCTestCase {
         subject.send(noName)
 
         waitForExpectations(timeout: 1)
-    }
-
-    // MARK: - Private Methods
-
-    private func makeViewModel() -> DashboardViewModel {
-        .init(activitySummaryManager: activitySummaryManager, competitionsManager: competitionsManager, friendsManager: friendsManager, permissionsManager: permissionsManager, userManager: userManager)
     }
 }

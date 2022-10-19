@@ -21,7 +21,7 @@
     {
       "identity" : "codablefirebase",
       "kind" : "remoteSourceControl",
-      "location" : "git@github.com:alickbass/CodableFirebase",
+      "location" : "https://github.com/alickbass/CodableFirebase",
       "state" : {
         "revision" : "a4cda89948db93ec21249a35ecdacab8c489a116",
         "version" : "0.2.2"
@@ -30,10 +30,19 @@
     {
       "identity" : "combineext",
       "kind" : "remoteSourceControl",
-      "location" : "git@github.com:CombineCommunity/CombineExt",
+      "location" : "https://github.com/CombineCommunity/CombineExt",
       "state" : {
         "revision" : "aaf1a0981c05360000af972473034cb952be4ca0",
         "version" : "1.8.0"
+      }
+    },
+    {
+      "identity" : "eckit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/EvanCooper9/ECKit",
+      "state" : {
+        "branch" : "main",
+        "revision" : "66b7f1a9de9045347497ce609df63de11cb61db5"
       }
     },
     {
@@ -111,7 +120,7 @@
     {
       "identity" : "keychainaccess",
       "kind" : "remoteSourceControl",
-      "location" : "git@github.com:kishikawakatsumi/KeychainAccess",
+      "location" : "https://github.com/kishikawakatsumi/KeychainAccess",
       "state" : {
         "revision" : "84e546727d66f1adc5439debad16270d0fdd04e7",
         "version" : "4.2.2"
@@ -147,7 +156,7 @@
     {
       "identity" : "swift-algorithms",
       "kind" : "remoteSourceControl",
-      "location" : "git@github.com:apple/swift-algorithms.git",
+      "location" : "https://github.com/apple/swift-algorithms",
       "state" : {
         "revision" : "b14b7f4c528c942f121c8b860b9410b2bf57825e",
         "version" : "1.0.0"
@@ -177,7 +186,7 @@
       "location" : "https://github.com/SwiftUIX/SwiftUIX",
       "state" : {
         "branch" : "master",
-        "revision" : "a37392e4f4d37b38fdb091d4b854939c778f2569"
+        "revision" : "c097ed5539508e365178d6cc33f891e76fae2b81"
       }
     }
   ],

@@ -2,7 +2,7 @@ import Combine
 import CombineExt
 import Factory
 
-final class FirestoreImageViewModel: ObservableObject {
+final class FirebaseImageViewModel: ObservableObject {
     
     // MARK: - Private Properties
     

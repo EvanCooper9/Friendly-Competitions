@@ -1,5 +1,6 @@
-import ECKit
 import Combine
+import ECKit
+import Factory
 import XCTest
 
 @testable import Friendly_Competitions
@@ -12,17 +13,20 @@ final class HomeViewModelTests: XCTestCase {
     private var cancellables: Cancellables!
 
     override func setUp() {
+        super.setUp()
         competitionsManager = .init()
         friendsManager = .init()
         cancellables = .init()
-        super.setUp()
+        
+        Container.competitionsManager.register { self.competitionsManager }
+        Container.friendsManager.register { self.friendsManager }
     }
 
     override func tearDown() {
-        super.tearDown()
         competitionsManager = nil
         friendsManager = nil
         cancellables = nil
+        super.tearDown()
     }
 
     func testThatCompetitionInviteURLIsHandled() {
@@ -31,7 +35,7 @@ final class HomeViewModelTests: XCTestCase {
         let competition = Competition.mock
         competitionsManager.searchByIDReturnValue = .just(competition)
 
-        let viewModel = makeViewModel()
+        let viewModel = HomeViewModel()
         viewModel.$deepLinkedCompetition
             .expect(nil, competition, expectation: expectation)
             .store(in: &cancellables)
@@ -46,18 +50,12 @@ final class HomeViewModelTests: XCTestCase {
         let user = User.evan
         friendsManager.userWithIdReturnValue = .just(user)
 
-        let viewModel = makeViewModel()
+        let viewModel = HomeViewModel()
         viewModel.$deepLinkedUser
             .expect(nil, user, expectation: expectation)
             .store(in: &cancellables)
 
         viewModel.handle(url: DeepLink.friendReferral(id: user.id).url)
         waitForExpectations(timeout: 1)
-    }
-
-    // MARK: - Private Methods
-
-    private func makeViewModel() -> HomeViewModel {
-        .init(competitionsManager: competitionsManager, friendsManager: friendsManager)
     }
 }

@@ -35,7 +35,7 @@
 		C132944A27DAB12200117548 /* DeepLinkTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132944927DAB12200117548 /* DeepLinkTests.swift */; };
 		C132945627DF6D9E00117548 /* Binding+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132945527DF6D9E00117548 /* Binding+Extensions.swift */; };
 		C13F922C27BFFF9900FC6880 /* StorageManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13F922B27BFFF9900FC6880 /* StorageManager.swift */; };
-		C13F922E27C0017400FC6880 /* FirestoreImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13F922D27C0017400FC6880 /* FirestoreImage.swift */; };
+		C13F922E27C0017400FC6880 /* FirebaseImage.swift in Sources */ = {isa = PBXBuildFile; fileRef = C13F922D27C0017400FC6880 /* FirebaseImage.swift */; };
 		C1401F8926D933560080F74F /* Profile.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1401F8826D933560080F74F /* Profile.swift */; };
 		C1401F8B26D94D1C0080F74F /* ImmutableListItemView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1401F8A26D94D1C0080F74F /* ImmutableListItemView.swift */; };
 		C155229C26E793B300FE0DA7 /* User+Mock.swift in Sources */ = {isa = PBXBuildFile; fileRef = C155229B26E793B300FE0DA7 /* User+Mock.swift */; };
@@ -129,7 +129,7 @@
 		ED901B4F280249B000FE619E /* CompetitionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED901B4E280249B000FE619E /* CompetitionViewModel.swift */; };
 		ED901B5128024D5F00FE619E /* Text+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED901B5028024D5F00FE619E /* Text+Extensions.swift */; };
 		ED901B682802504A00FE619E /* ExploreViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED901B672802504A00FE619E /* ExploreViewModel.swift */; };
-		ED901B6B2802525700FE619E /* FirestoreImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED901B6A2802525700FE619E /* FirestoreImageViewModel.swift */; };
+		ED901B6B2802525700FE619E /* FirebaseImageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED901B6A2802525700FE619E /* FirebaseImageViewModel.swift */; };
 		ED901B6D2802558400FE619E /* UserViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED901B6C2802558400FE619E /* UserViewModel.swift */; };
 		ED901B6F28025FC500FE619E /* PermissionsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED901B6E28025FC500FE619E /* PermissionsViewModel.swift */; };
 		ED901B712802618700FE619E /* NewCompetitionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED901B702802618700FE619E /* NewCompetitionViewModel.swift */; };
@@ -205,7 +205,7 @@
 		C132944927DAB12200117548 /* DeepLinkTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkTests.swift; sourceTree = "<group>"; };
 		C132945527DF6D9E00117548 /* Binding+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Binding+Extensions.swift"; sourceTree = "<group>"; };
 		C13F922B27BFFF9900FC6880 /* StorageManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StorageManager.swift; sourceTree = "<group>"; };
-		C13F922D27C0017400FC6880 /* FirestoreImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreImage.swift; sourceTree = "<group>"; };
+		C13F922D27C0017400FC6880 /* FirebaseImage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseImage.swift; sourceTree = "<group>"; };
 		C1401F8826D933560080F74F /* Profile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Profile.swift; sourceTree = "<group>"; };
 		C1401F8A26D94D1C0080F74F /* ImmutableListItemView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImmutableListItemView.swift; sourceTree = "<group>"; };
 		C1401F8D26D97C3D0080F74F /* ActivitySummaryManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitySummaryManager.swift; sourceTree = "<group>"; };
@@ -272,7 +272,6 @@
 		ED1CFAA12864FF0000192E49 /* WorkoutMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutMetric.swift; sourceTree = "<group>"; };
 		ED1E08D628DF4C6600497E20 /* View+RemovingMargin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+RemovingMargin.swift"; sourceTree = "<group>"; };
 		ED277B1C2838002C00DDF29A /* HomeViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModelTests.swift; sourceTree = "<group>"; };
-		ED3CEAE028F6F8FA005BED69 /* ECKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = ECKit; path = ../ECKit; sourceTree = "<group>"; };
 		ED3ED8F6284F951800B5100F /* AutoMockable.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AutoMockable.generated.swift; sourceTree = "<group>"; };
 		ED438FF627F7B3B600D72F99 /* View+ConfirmationDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+ConfirmationDialog.swift"; sourceTree = "<group>"; };
 		ED438FF827F7C2B900D72F99 /* View+Analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Analytics.swift"; sourceTree = "<group>"; };
@@ -294,7 +293,7 @@
 		ED901B4E280249B000FE619E /* CompetitionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionViewModel.swift; sourceTree = "<group>"; };
 		ED901B5028024D5F00FE619E /* Text+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Text+Extensions.swift"; sourceTree = "<group>"; };
 		ED901B672802504A00FE619E /* ExploreViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreViewModel.swift; sourceTree = "<group>"; };
-		ED901B6A2802525700FE619E /* FirestoreImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreImageViewModel.swift; sourceTree = "<group>"; };
+		ED901B6A2802525700FE619E /* FirebaseImageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseImageViewModel.swift; sourceTree = "<group>"; };
 		ED901B6C2802558400FE619E /* UserViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserViewModel.swift; sourceTree = "<group>"; };
 		ED901B6E28025FC500FE619E /* PermissionsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionsViewModel.swift; sourceTree = "<group>"; };
 		ED901B702802618700FE619E /* NewCompetitionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCompetitionViewModel.swift; sourceTree = "<group>"; };
@@ -390,7 +389,7 @@
 				C123C9D327A88D3200375F73 /* UserInfoSection.swift */,
 				C123C9CC27A863F100375F73 /* UserHashIDPill.swift */,
 				ED901B4B280247D900FE619E /* Competition Details */,
-				ED901B692802524900FE619E /* Firestore Image */,
+				ED901B692802524900FE619E /* Firebase Image */,
 				C1884E4926D58AC800C21014 /* UIKit Wrappers */,
 			);
 			path = Components;
@@ -563,7 +562,6 @@
 		C1691DBA26D55FCF006FFA30 = {
 			isa = PBXGroup;
 			children = (
-				ED3CEAE028F6F8FA005BED69 /* ECKit */,
 				C1691DC526D55FCF006FFA30 /* Friendly Competitions */,
 				C155CA5827AB989D005F49F4 /* Friendly Competitions Tests */,
 				C1691DC426D55FCF006FFA30 /* Products */,
@@ -890,13 +888,13 @@
 			path = "Competition Details";
 			sourceTree = "<group>";
 		};
-		ED901B692802524900FE619E /* Firestore Image */ = {
+		ED901B692802524900FE619E /* Firebase Image */ = {
 			isa = PBXGroup;
 			children = (
-				C13F922D27C0017400FC6880 /* FirestoreImage.swift */,
-				ED901B6A2802525700FE619E /* FirestoreImageViewModel.swift */,
+				C13F922D27C0017400FC6880 /* FirebaseImage.swift */,
+				ED901B6A2802525700FE619E /* FirebaseImageViewModel.swift */,
 			);
-			path = "Firestore Image";
+			path = "Firebase Image";
 			sourceTree = "<group>";
 		};
 		ED901B722802648600FE619E /* Verify Email */ = {
@@ -1038,6 +1036,7 @@
 			packageReferences = (
 				ED71E2A128F70212001FED74 /* XCRemoteSwiftPackageReference "Files" */,
 				ED0470A928FF2DB200A941AC /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				ED74033A28FF7297005BD155 /* XCRemoteSwiftPackageReference "ECKit" */,
 			);
 			productRefGroup = C1691DC426D55FCF006FFA30 /* Products */;
 			projectDirPath = "";
@@ -1182,7 +1181,7 @@
 				7CBF67E827F4BA910047DC81 /* User+Visibility.swift in Sources */,
 				ED901B4D280247E600FE619E /* CompetitionDetailsViewModel.swift in Sources */,
 				ED7881AD2850F6DF00C7F6CB /* SignUpError.swift in Sources */,
-				ED901B6B2802525700FE619E /* FirestoreImageViewModel.swift in Sources */,
+				ED901B6B2802525700FE619E /* FirebaseImageViewModel.swift in Sources */,
 				EDC373D227FB5B0C00318245 /* VerifyEmail.swift in Sources */,
 				C1ABB21526D6987C00716984 /* NewCompetition.swift in Sources */,
 				ED3ED8F7284F951800B5100F /* AutoMockable.generated.swift in Sources */,
@@ -1233,7 +1232,7 @@
 				ED901B712802618700FE619E /* NewCompetitionViewModel.swift in Sources */,
 				C1185A2526D6717C002E2377 /* ActivitySummary.swift in Sources */,
 				C171465027E53E8E00F56BB9 /* PreviewHelper.swift in Sources */,
-				C13F922E27C0017400FC6880 /* FirestoreImage.swift in Sources */,
+				C13F922E27C0017400FC6880 /* FirebaseImage.swift in Sources */,
 				ED7881AB2850F6C400C7F6CB /* SignInMethod.swift in Sources */,
 				C1930E4527C55EF500DB45C1 /* AppState.swift in Sources */,
 				EDAF6C47285277FF002BC0DD /* Nonce.swift in Sources */,
@@ -1573,6 +1572,14 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 4.0.0;
+			};
+		};
+		ED74033A28FF7297005BD155 /* XCRemoteSwiftPackageReference "ECKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/EvanCooper9/ECKit";
+			requirement = {
+				branch = main;
+				kind = branch;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

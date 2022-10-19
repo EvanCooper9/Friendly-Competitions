@@ -11,7 +11,7 @@ struct FeaturedCompetition: View {
             .aspectRatio(3/2, contentMode: .fit)
             .overlay {
                 if let banner = competition.banner {
-                    FirestoreImage(path: banner)
+                    FirebaseImage(path: banner)
                 }
             }
             .overlay {

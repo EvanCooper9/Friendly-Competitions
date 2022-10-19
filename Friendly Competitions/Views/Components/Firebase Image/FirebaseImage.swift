@@ -1,9 +1,9 @@
 import SwiftUI
 import SwiftUIX
 
-struct FirestoreImage: View {
+struct FirebaseImage: View {
 
-    @StateObject private var viewModel: FirestoreImageViewModel
+    @StateObject private var viewModel: FirebaseImageViewModel
     
     var contentMode = ContentMode.fit
     
@@ -41,9 +41,9 @@ struct FirestoreImage: View {
     }
 }
 
-struct FirestoreImage_Previews: PreviewProvider {
+struct FirebaseImage_Previews: PreviewProvider {
     static var previews: some View {
-        FirestoreImage(path: "")
+        FirebaseImage(path: "")
             .setupMocks()
     }
 }
