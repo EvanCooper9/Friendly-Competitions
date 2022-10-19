@@ -1,7 +1,7 @@
 import Combine
 import CombineExt
 import ECKit
-import Resolver
+import Factory
 
 struct FirestoreEnvironment: Codable {
 
@@ -60,7 +60,7 @@ final class DeveloperViewModel: ObservableObject {
             }
             .sink { environment in
                 UserDefaults.standard.encode(environment, forKey: "environment")
-                Resolver.registerFirebase(environment: environment)
+//                Resolver.registerFirebase(environment: environment)
             }
             .store(in: &cancellables)
     }

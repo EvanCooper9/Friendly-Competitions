@@ -1,5 +1,5 @@
+import Factory
 import Firebase
-import Resolver
 import SwiftUI
 
 @main
@@ -7,7 +7,6 @@ struct FriendlyCompetitions: App {
 
     @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
 
-    /// Can't use `@InjectedObject` or else Firebase crashes because `FirebaseApp.configure` isn't called first.
     @StateObject private var appModel = FriendlyCompetitionsAppModel()
 
     init() {
@@ -33,13 +32,19 @@ struct FriendlyCompetitions: App {
 }
 
 final class FriendlyCompetitionsAppModel: ObservableObject {
+    
+    // MARK: - Public Properties
 
     @Published var loggedIn = false
     @Published var emailVerified = false
     @Published var hud: HUDState?
+    
+    // MARK: - Private Properties
 
-    @Injected private var appState: AppState
-    @Injected private var authenticationManager: AuthenticationManaging
+    @Injected(Container.appState) private var appState
+    @Injected(Container.authenticationManager) private var authenticationManager
+    
+    // MARK: - Lifecycle
 
     init() {
         authenticationManager.loggedIn.assign(to: &$loggedIn)

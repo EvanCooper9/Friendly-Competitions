@@ -1,15 +1,14 @@
 import Combine
 import CombineExt
+import Factory
 
 final class PermissionsViewModel: ObservableObject {
         
     @Published private(set) var permissionStatuses = [(Permission, PermissionStatus)]()
 
-    private let permissionsManager: PermissionsManaging
+    @Injected(Container.permissionsManager) private var permissionsManager
 
-    init(permissionsManager: PermissionsManaging) {
-        self.permissionsManager = permissionsManager
-
+    init() {
         permissionsManager.permissionStatus
             .map { statuses in
                 statuses

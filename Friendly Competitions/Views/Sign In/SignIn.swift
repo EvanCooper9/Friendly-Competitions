@@ -1,11 +1,11 @@
-import Resolver
+import Factory
 import SwiftUI
 
 struct SignIn: View {
 
     @Environment(\.colorScheme) private var colorScheme
 
-    @StateObject private var viewModel = Resolver.resolve(SignInViewModel.self)
+    @StateObject private var viewModel = SignInViewModel()
 
     var body: some View {
         VStack(spacing: 30) {

@@ -1,6 +1,6 @@
 import Combine
 import CombineExt
-import Resolver
+import Factory
 
 final class ExploreViewModel: ObservableObject {
     
@@ -8,16 +8,22 @@ final class ExploreViewModel: ObservableObject {
     @Published var searchText = ""
     @Published var searchResults = [Competition]()
     @Published var appOwnedCompetitions = [Competition]()
+    
+    // MARK: - Private Properties
+    
+    @Injected(Container.competitionsManager) private var competitionsManager
+    
+    // MARK: - Lifecycle
 
-    init(competitionsManager: CompetitionsManaging) {
-
-        competitionsManager.appOwnedCompetitions.assign(to: &$appOwnedCompetitions)
+    init() {
+        competitionsManager.appOwnedCompetitions
+            .print("app owned competitions")
+            .assign(to: &$appOwnedCompetitions)
         
         $searchText
-            .flatMapLatest { searchText -> AnyPublisher<[Competition], Never> in
+            .flatMapLatest(withUnretained: self) { strongSelf, searchText -> AnyPublisher<[Competition], Never> in
                 guard !searchText.isEmpty else { return .just([]) }
-                return competitionsManager.search(searchText)
-                    .receive(on: RunLoop.main)
+                return strongSelf.competitionsManager.search(searchText)
                     .isLoading { [weak self] in self?.loading = $0 }
                     .ignoreFailure()
             }

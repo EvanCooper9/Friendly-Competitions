@@ -2,11 +2,10 @@ import Combine
 import CombineExt
 import ECKit
 import ECKit_Firebase
+import Factory
 import Firebase
-import FirebaseFirestore
-import FirebaseFunctions
+import FirebaseFirestoreCombineSwift
 import FirebaseFunctionsCombineSwift
-import Resolver
 import SwiftUI
 
 // sourcery: AutoMockable
@@ -31,74 +30,74 @@ final class FriendsManager: FriendsManaging {
 
     // MARK: - Public Properties
 
-    let friends: AnyPublisher<[User], Never>
-    let friendActivitySummaries: AnyPublisher<[User.ID : ActivitySummary], Never>
-    let friendRequests: AnyPublisher<[User], Never>
+    var friends: AnyPublisher<[User], Never> { friendsSubject.share(replay: 1).eraseToAnyPublisher() }
+    var friendActivitySummaries: AnyPublisher<[User.ID : ActivitySummary], Never> { friendActivitySummariesSubject.share(replay: 1).eraseToAnyPublisher() }
+    var friendRequests: AnyPublisher<[User], Never> { friendRequestsSubject.share(replay: 1).eraseToAnyPublisher() }
 
     // MARK: - Private Properties
 
-    private let database: Firestore
-    private let functions: Functions
-    private let userManager: UserManaging
+    @Injected(Container.database) private var database
+    @Injected(Container.functions) private var functions
+    @Injected(Container.userManager) private var userManager
+    
+    let friendsSubject = PassthroughSubject<[User], Never>()
+    let friendActivitySummariesSubject = PassthroughSubject<[User.ID : ActivitySummary], Never>()
+    let friendRequestsSubject = PassthroughSubject<[User], Never>()
 
     private var cancellables = Cancellables()
 
     // MARK: - Lifecycle
 
-    init(database: Firestore, functions: Functions, userManager: UserManaging) {
-        self.database = database
-        self.functions = functions
-        self.userManager = userManager
-
+    init() {
         let allFriends = userManager.user
-            .flatMapAsync { user in
-                try await database.collection("users")
+            .flatMapAsync { [weak self] user -> [User] in
+                guard let strongSelf = self else { return [] }                
+                return try await strongSelf.database.collection("users")
                     .whereFieldWithChunking("id", in: user.friends + user.incomingFriendRequests)
                     .decoded(asArrayOf: User.self)
                     .sorted(by: \.name)
             }
+            .share(replay: 1)
             .ignoreFailure()
 
-        friends = Publishers
+        Publishers
             .CombineLatest(userManager.user, allFriends)
             .map { user, allFriends in
                 allFriends.filter { user.friends.contains($0.id) }
             }
-            .share(replay: 1)
-            .eraseToAnyPublisher()
+            .print("friends")
+            .sink(withUnretained: self) { $0.friendsSubject.send($1) }
+            .store(in: &cancellables)
 
-        friendRequests = Publishers
+        Publishers
             .CombineLatest(userManager.user, allFriends)
             .map { user, allFriends in
                 allFriends.filter { user.incomingFriendRequests.contains($0.id) }
             }
-            .share(replay: 1)
-            .eraseToAnyPublisher()
+            .print("friend requests")
+            .sink(withUnretained: self) { $0.friendRequestsSubject.send($1) }
+            .store(in: &cancellables)
 
-        friendActivitySummaries = allFriends
-            .flatMapAsync { friends in
-                try await withThrowingTaskGroup(of: (User.ID, ActivitySummary?).self) { group -> [User.ID: ActivitySummary] in
-                    let today = DateFormatter.dateDashed.string(from: .now)
-                    friends.forEach { friend in
-                        group.addTask {
-                            let activitySummary = try? await database
-                                .document("users/\(friend.id)/activitySummaries/\(today)")
-                                .getDocument()
-                                .decoded(as: ActivitySummary.self)
-                            return (friend.id, activitySummary)
-                        }
-                    }
-
-                    var friendActivitySummaries = [User.ID: ActivitySummary]()
-                    for try await (friendId, activitySummary) in group {
-                        friendActivitySummaries[friendId] = activitySummary
-                    }
-                    return friendActivitySummaries
+        allFriends
+            .flatMapAsync { [weak self] (friends: [User]) in
+                guard let strongSelf = self else { return [:] }
+                
+                let activitySummaries = try await strongSelf.database.collectionGroup("activitySummaries")
+                    .whereField("userID", in: friends.map(\.id))
+                    .whereField("date", isEqualTo: DateFormatter.dateDashed.string(from: .now))
+                    .getDocuments()
+                    .documents
+                    .decoded(asArrayOf: ActivitySummary.self)
+                
+                let pairs = activitySummaries.compactMap { activitySummary -> (User.ID, ActivitySummary)? in
+                    guard let userID = activitySummary.userID else { return nil }
+                    return (userID, activitySummary)
                 }
+                
+                return Dictionary(uniqueKeysWithValues: pairs)
             }
-            .prepend([:])
-            .share(replay: 1)
-            .ignoreFailure()
+            .sink(withUnretained: self) { $0.friendActivitySummariesSubject.send($1) }
+            .store(in: &cancellables)
     }
 
     // MARK: - Public Methods
@@ -126,7 +125,6 @@ final class FriendsManager: FriendsManaging {
                 "userID": friendRequest.id,
                 "accept": false
             ])
-            .print()
             .mapToVoid()
             .eraseToAnyPublisher()
     }

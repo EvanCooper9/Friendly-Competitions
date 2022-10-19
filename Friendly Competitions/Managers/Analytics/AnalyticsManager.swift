@@ -1,9 +1,7 @@
+import Factory
 import FirebaseAnalytics
 import FirebaseCrashlytics
 import Foundation
-import Resolver
-
-let analytics = Resolver.resolve(AnalyticsManaging.self)
 
 // sourcery: AutoMockable
 protocol AnalyticsManaging {

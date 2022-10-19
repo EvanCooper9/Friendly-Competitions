@@ -1,6 +1,7 @@
 import Combine
 import CombineExt
 import ECKit
+import Factory
 
 final class CompetitionViewModel: ObservableObject {
     
@@ -32,6 +33,9 @@ final class CompetitionViewModel: ObservableObject {
     private var actionRequiringConfirmation: CompetitionViewAction? {
         didSet { confirmationRequired = actionRequiringConfirmation != nil }
     }
+    
+    @Injected(Container.competitionsManager) private var competitionsManager
+    @Injected(Container.userManager) private var userManager
 
     private let _confirm = PassthroughSubject<Void, Error>()
     private let _perform = PassthroughSubject<CompetitionViewAction, Error>()
@@ -40,7 +44,7 @@ final class CompetitionViewModel: ObservableObject {
     
     // MARK: - Lifecycle
     
-    init(competitionsManager: CompetitionsManaging, userManager: UserManaging, competition: Competition) {
+    init(competition: Competition) {
         self.competition = competition
         self.competitionPreEdit = competition
 
@@ -52,6 +56,9 @@ final class CompetitionViewModel: ObservableObject {
             .combineLatest(userManager.user)
             .map { competition, user -> [CompetitionViewAction] in
                 var actions = [CompetitionViewAction]()
+                if competition.repeats || !competition.ended {
+                    actions.append(.invite)
+                }
                 if competition.pendingParticipants.contains(user.id) {
                     actions.append(contentsOf: [.acceptInvite, .declineInvite])
                 } else if competition.participants.contains(user.id) {
@@ -59,21 +66,16 @@ final class CompetitionViewModel: ObservableObject {
                 } else {
                     actions.append(.join)
                 }
-                
-                if competition.repeats || !competition.ended {
-                    actions.append(.invite)
-                }
-                
                 if competition.owner == user.id {
                     actions.append(.delete)
                 }
-                
                 return actions
             }
             .assign(to: &$actions)
         
         competitionsManager.competitions
             .compactMap { $0.first { $0.id == competition.id } }
+            .receive(on: RunLoop.main)
             .assign(to: &$competition)
         
         competitionsManager.standings
@@ -97,6 +99,7 @@ final class CompetitionViewModel: ObservableObject {
                     )
                 }
             }
+            .receive(on: RunLoop.main)
             .assign(to: &$standings)
         
         competitionsManager.pendingParticipants
@@ -116,18 +119,19 @@ final class CompetitionViewModel: ObservableObject {
                     )
                 }
             }
+            .receive(on: RunLoop.main)
             .assign(to: &$pendingParticipants)
 
         _confirm
-            .flatMapLatest(withUnretained: self) { object -> AnyPublisher<Void, Error> in
-                switch object.actionRequiringConfirmation {
+            .flatMapLatest(withUnretained: self) { strongSelf -> AnyPublisher<Void, Error> in
+                switch strongSelf.actionRequiringConfirmation {
                 case .delete:
-                    return competitionsManager.delete(competition)
+                    return strongSelf.competitionsManager.delete(competition)
                 case .edit:
-                    object._saveEdits.send()
+                    strongSelf._saveEdits.send()
                     return .just(())
                 case .leave:
-                    return competitionsManager.leave(competition)
+                    return strongSelf.competitionsManager.leave(competition)
                 default:
                     return .empty()
                 }
@@ -139,29 +143,29 @@ final class CompetitionViewModel: ObservableObject {
             .flatMapLatest(withUnretained: self) { strongSelf -> AnyPublisher<Void, Error> in
                 strongSelf.editing.toggle()
                 strongSelf.competitionPreEdit = strongSelf.competition
-                return competitionsManager.update(strongSelf.competition)
+                return strongSelf.competitionsManager.update(strongSelf.competition)
             }
             .sink()
             .store(in: &cancellables)
 
         _perform
-            .flatMapLatest(withUnretained: self) { object, action -> AnyPublisher<Void, Error> in
+            .flatMapLatest(withUnretained: self) { strongSelf, action -> AnyPublisher<Void, Error> in
                 switch action {
                 case .acceptInvite:
-                    return competitionsManager.accept(competition)
+                    return strongSelf.competitionsManager.accept(competition)
                 case .declineInvite:
-                    return competitionsManager.decline(competition)
+                    return strongSelf.competitionsManager.decline(competition)
                 case .delete, .leave:
-                    object.actionRequiringConfirmation = action
+                    strongSelf.actionRequiringConfirmation = action
                     return .empty()
                 case .edit:
-                    object.editing.toggle()
+                    strongSelf.editing.toggle()
                     return .empty()
                 case .invite:
-                    object.showInviteFriend.toggle()
+                    strongSelf.showInviteFriend.toggle()
                     return .empty()
                 case .join:
-                    return competitionsManager.join(competition)
+                    return strongSelf.competitionsManager.join(competition)
                 }
             }
             .sink()

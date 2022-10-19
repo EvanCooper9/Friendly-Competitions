@@ -1,4 +1,4 @@
-import Resolver
+import Factory
 import SwiftUI
 import SwiftUIX
 
@@ -9,8 +9,7 @@ struct CompetitionView: View {
     @State private var canSaveEdits = true
     
     init(competition: Competition) {
-        let vm = Resolver.resolve(CompetitionViewModel.self, args: competition)
-        _viewModel = .init(wrappedValue: vm)
+        _viewModel = .init(wrappedValue: .init(competition: competition))
     }
 
     var body: some View {
@@ -91,6 +90,7 @@ struct CompetitionView: View {
     }
 }
 
+#if DEBUG
 struct CompetitionView_Previews: PreviewProvider {
 
     private static let competition = Competition.mock
@@ -121,9 +121,9 @@ struct CompetitionView_Previews: PreviewProvider {
     }
 
     static var previews: some View {
-        registerDependencies()
-        setupMocks()
-        return CompetitionView(competition: competition)
+        CompetitionView(competition: competition)
             .embeddedInNavigationView()
+            .setupMocks(setupMocks)
     }
 }
+#endif

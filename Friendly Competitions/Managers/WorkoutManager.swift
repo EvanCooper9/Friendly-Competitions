@@ -2,10 +2,10 @@ import Algorithms
 import Combine
 import ECKit
 import ECKit_Firebase
+import Factory
 import Firebase
 import FirebaseFirestore
 import HealthKit
-import Resolver
 import UIKit
 
 protocol WorkoutManaging {
@@ -14,10 +14,10 @@ protocol WorkoutManaging {
 
 final class WorkoutManager: WorkoutManaging {
     
-    @Injected private var competitionsManager: CompetitionsManaging
-    @Injected private var healthKitManager: HealthKitManaging
-    @Injected private var userManager: UserManaging
-    @Injected private var database: Firestore
+    @Injected(Container.competitionsManager) private var competitionsManager
+    @Injected(Container.healthKitManager) private var healthKitManager
+    @Injected(Container.userManager) private var userManager
+    @Injected(Container.database) private var database
     
     private let query = PassthroughSubject<Void, Never>()
 

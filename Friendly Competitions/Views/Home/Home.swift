@@ -1,9 +1,9 @@
-import Resolver
+import Factory
 import SwiftUI
 
 struct Home: View {
 
-    @StateObject private var viewModel = Resolver.resolve(HomeViewModel.self)
+    @StateObject private var viewModel = HomeViewModel()
 
     var body: some View {
         TabView {

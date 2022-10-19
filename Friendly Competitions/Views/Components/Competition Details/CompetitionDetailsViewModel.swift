@@ -1,13 +1,19 @@
 import Combine
 import CombineExt
-import Resolver
+import Factory
 
 final class CompetitionDetailsViewModel: ObservableObject {
+    
+    // MARK: - Public Properties
     
     @Published var competition: Competition
     @Published var isInvitation = false
     
-    @Injected private var userManager: UserManaging
+    // MARK: - Private Properties
+    
+    @Injected(Container.userManager) private var userManager
+    
+    // MARK: - Lifecycle
     
     init(competition: Competition) {
         self.competition = competition

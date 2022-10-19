@@ -1,6 +1,7 @@
 import Combine
 import CombineExt
 import ECKit
+import Factory
 
 final class UserViewModel: ObservableObject {
     
@@ -12,9 +13,14 @@ final class UserViewModel: ObservableObject {
     @Published var confirmationRequired = false
     @Published var loading = false
     
+    // MARK: - Private Properties
+    
     private var actionRequiringConfirmation: UserViewAction? {
         didSet { confirmationRequired = actionRequiringConfirmation != nil }
     }
+    
+    @Injected(Container.friendsManager) private var friendsManager
+    @Injected(Container.userManager) private var userManager
 
     private var _confirm = PassthroughSubject<Void, Never>()
     private var _perform = PassthroughSubject<UserViewAction, Never>()
@@ -22,7 +28,9 @@ final class UserViewModel: ObservableObject {
     private let user: User
     private var cancellables = Cancellables()
     
-    init(friendsManager: FriendsManaging, userManager: UserManaging, user: User) {
+    // MARK: - Lifecycle
+    
+    init(user: User) {
         self.user = user
         title = user.name
         statistics = user.statistics ?? .zero
@@ -47,9 +55,8 @@ final class UserViewModel: ObservableObject {
             .flatMapLatest(withUnretained: self) { strongSelf -> AnyPublisher<Void, Never> in
                 switch strongSelf.actionRequiringConfirmation {
                 case .deleteFriend:
-                    return friendsManager
+                    return strongSelf.friendsManager
                         .delete(friend: strongSelf.user)
-                        .receive(on: RunLoop.main)
                         .isLoading { [weak self] in self?.loading = $0 }
                         .ignoreFailure()
                 default:
@@ -63,21 +70,18 @@ final class UserViewModel: ObservableObject {
             .flatMapLatest(withUnretained: self) { strongSelf, action -> AnyPublisher<Void, Never> in
                 switch action {
                 case .acceptFriendRequest:
-                    return friendsManager
+                    return strongSelf.friendsManager
                         .accept(friendRequest: user)
-                        .receive(on: RunLoop.main)
                         .isLoading { [weak self] in self?.loading = $0 }
                         .ignoreFailure()
                 case .denyFriendRequest:
-                    return friendsManager
+                    return strongSelf.friendsManager
                         .decline(friendRequest: user)
-                        .receive(on: RunLoop.main)
                         .isLoading { [weak self] in self?.loading = $0 }
                         .ignoreFailure()
                 case .request:
-                    return friendsManager
+                    return strongSelf.friendsManager
                         .add(user: user)
-                        .receive(on: RunLoop.main)
                         .isLoading { [weak self] in self?.loading = $0 }
                         .ignoreFailure()
                 case .deleteFriend:

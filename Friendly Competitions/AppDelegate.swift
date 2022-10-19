@@ -1,12 +1,12 @@
+import Factory
 import Firebase
 import FirebaseFirestore
 import FirebaseMessaging
-import Resolver
 import UIKit
 
 final class AppDelegate: NSObject, UIApplicationDelegate {
 
-    @Injected private var database: Firestore
+    @Injected(Container.database) private var database
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         Messaging.messaging().delegate = self

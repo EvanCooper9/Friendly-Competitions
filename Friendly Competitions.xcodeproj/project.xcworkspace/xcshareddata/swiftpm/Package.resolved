@@ -21,7 +21,7 @@
     {
       "identity" : "codablefirebase",
       "kind" : "remoteSourceControl",
-      "location" : "git@github.com:alickbass/CodableFirebase",
+      "location" : "https://github.com/alickbass/CodableFirebase",
       "state" : {
         "revision" : "a4cda89948db93ec21249a35ecdacab8c489a116",
         "version" : "0.2.2"
@@ -30,7 +30,7 @@
     {
       "identity" : "combineext",
       "kind" : "remoteSourceControl",
-      "location" : "git@github.com:CombineCommunity/CombineExt",
+      "location" : "https://github.com/CombineCommunity/CombineExt",
       "state" : {
         "revision" : "aaf1a0981c05360000af972473034cb952be4ca0",
         "version" : "1.8.0"
@@ -39,28 +39,37 @@
     {
       "identity" : "eckit",
       "kind" : "remoteSourceControl",
-      "location" : "git@github.com:EvanCooper9/ECKit.git",
+      "location" : "https://github.com/EvanCooper9/ECKit",
       "state" : {
         "branch" : "main",
-        "revision" : "0711a59de16e7b6592d2fce22011f6c6bd39d49e"
+        "revision" : "66b7f1a9de9045347497ce609df63de11cb61db5"
+      }
+    },
+    {
+      "identity" : "factory",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/hmlongco/Factory",
+      "state" : {
+        "revision" : "8557426f3286e20b631ecdac8115242f888656e0",
+        "version" : "1.2.8"
       }
     },
     {
       "identity" : "files",
       "kind" : "remoteSourceControl",
-      "location" : "git@github.com:JohnSundell/Files.git",
+      "location" : "https://github.com/JohnSundell/Files",
       "state" : {
-        "branch" : "master",
-        "revision" : "d273b5b7025d386feef79ef6bad7de762e106eaf"
+        "revision" : "d273b5b7025d386feef79ef6bad7de762e106eaf",
+        "version" : "4.2.0"
       }
     },
     {
       "identity" : "firebase-ios-sdk",
       "kind" : "remoteSourceControl",
-      "location" : "git@github.com:firebase/firebase-ios-sdk.git",
+      "location" : "https://github.com/firebase/firebase-ios-sdk",
       "state" : {
-        "revision" : "7e80c25b51c2ffa238879b07fbfc5baa54bb3050",
-        "version" : "9.6.0"
+        "revision" : "5c4893c55f9d6114e2bb7c691d7ffd81208ac713",
+        "version" : "10.0.0"
       }
     },
     {
@@ -68,8 +77,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/GoogleAppMeasurement.git",
       "state" : {
-        "revision" : "c1cfde8067668027b23a42c29d11c246152fe046",
-        "version" : "9.6.0"
+        "revision" : "e3dd02f390cae79a7073b46dfb0cb6b60c48401b",
+        "version" : "10.0.0"
       }
     },
     {
@@ -111,7 +120,7 @@
     {
       "identity" : "keychainaccess",
       "kind" : "remoteSourceControl",
-      "location" : "git@github.com:kishikawakatsumi/KeychainAccess",
+      "location" : "https://github.com/kishikawakatsumi/KeychainAccess",
       "state" : {
         "revision" : "84e546727d66f1adc5439debad16270d0fdd04e7",
         "version" : "4.2.2"
@@ -145,27 +154,9 @@
       }
     },
     {
-      "identity" : "resolver",
-      "kind" : "remoteSourceControl",
-      "location" : "git@github.com:hmlongco/Resolver",
-      "state" : {
-        "revision" : "97de0b0320036607564af4a60025b48f8d041221",
-        "version" : "1.5.0"
-      }
-    },
-    {
-      "identity" : "resolverautoregistration",
-      "kind" : "remoteSourceControl",
-      "location" : "git@github.com:hatchcredit/ResolverAutoregistration",
-      "state" : {
-        "revision" : "4281e11709e36527ce5e2227f79e1789deb9e3e9",
-        "version" : "1.1.0"
-      }
-    },
-    {
       "identity" : "swift-algorithms",
       "kind" : "remoteSourceControl",
-      "location" : "git@github.com:apple/swift-algorithms.git",
+      "location" : "https://github.com/apple/swift-algorithms",
       "state" : {
         "revision" : "b14b7f4c528c942f121c8b860b9410b2bf57825e",
         "version" : "1.0.0"
@@ -192,10 +183,10 @@
     {
       "identity" : "swiftuix",
       "kind" : "remoteSourceControl",
-      "location" : "git@github.com:SwiftUIX/SwiftUIX",
+      "location" : "https://github.com/SwiftUIX/SwiftUIX",
       "state" : {
         "branch" : "master",
-        "revision" : "a37392e4f4d37b38fdb091d4b854939c778f2569"
+        "revision" : "c097ed5539508e365178d6cc33f891e76fae2b81"
       }
     }
   ],

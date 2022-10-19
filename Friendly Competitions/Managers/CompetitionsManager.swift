@@ -1,20 +1,20 @@
 import Combine
 import ECKit
 import ECKit_Firebase
+import Factory
 import Firebase
 import FirebaseFirestore
-import FirebaseFunctions
-import Resolver
+import FirebaseFunctionsCombineSwift
 import UIKit
 
 // sourcery: AutoMockable
 protocol CompetitionsManaging {
-    var competitions: AnyPublisher<[Competition], Never> { get }
-    var invitedCompetitions: AnyPublisher<[Competition], Never> { get }
-    var standings: AnyPublisher<[Competition.ID : [Competition.Standing]], Never> { get }
-    var participants: AnyPublisher<[Competition.ID: [User]], Never> { get }
-    var pendingParticipants: AnyPublisher<[Competition.ID: [User]], Never> { get }
-    var appOwnedCompetitions: AnyPublisher<[Competition], Never> { get }
+    var competitions: AnyPublisher<[Competition], Never>! { get }
+    var invitedCompetitions: AnyPublisher<[Competition], Never>! { get }
+    var standings: AnyPublisher<[Competition.ID : [Competition.Standing]], Never>! { get }
+    var participants: AnyPublisher<[Competition.ID: [User]], Never>! { get }
+    var pendingParticipants: AnyPublisher<[Competition.ID: [User]], Never>! { get }
+    var appOwnedCompetitions: AnyPublisher<[Competition], Never>! { get }
 
     func accept(_ competition: Competition) -> AnyPublisher<Void, Error>
     func create(_ competition: Competition) -> AnyPublisher<Void, Error>
@@ -41,13 +41,13 @@ final class CompetitionsManager: CompetitionsManaging {
     }
     
     // MARK: - Public Properties
-    
-    var competitions: AnyPublisher<[Competition], Never> { $_competitions.share(replay: 1).eraseToAnyPublisher() }
-    var invitedCompetitions: AnyPublisher<[Competition], Never> { $_invitedCompetitions.share(replay: 1).eraseToAnyPublisher() }
-    var standings: AnyPublisher<[Competition.ID : [Competition.Standing]], Never> { $_standings.share(replay: 1).eraseToAnyPublisher() }
-    var participants: AnyPublisher<[Competition.ID : [User]], Never> { $_participants.share(replay: 1).eraseToAnyPublisher() }
-    var pendingParticipants: AnyPublisher<[Competition.ID : [User]], Never> { $_pendingParticipants.share(replay: 1).eraseToAnyPublisher() }
-    var appOwnedCompetitions: AnyPublisher<[Competition], Never> { $_appOwnedCompetitions.share(replay: 1).eraseToAnyPublisher() }
+
+    private(set) var competitions: AnyPublisher<[Competition], Never>!
+    private(set) var invitedCompetitions: AnyPublisher<[Competition], Never>!
+    private(set) var standings: AnyPublisher<[Competition.ID : [Competition.Standing]], Never>!
+    private(set) var participants: AnyPublisher<[Competition.ID : [User]], Never>!
+    private(set) var pendingParticipants: AnyPublisher<[Competition.ID : [User]], Never>!
+    private(set) var appOwnedCompetitions: AnyPublisher<[Competition], Never>!
 
     // MARK: - Private Properties
 
@@ -58,12 +58,12 @@ final class CompetitionsManager: CompetitionsManaging {
     @Published private var _pendingParticipants = [Competition.ID : [User]]()
     @Published private var _appOwnedCompetitions = [Competition]()
 
-    @LazyInjected private var activitySummaryManager: ActivitySummaryManaging
-    @Injected private var analyticsManager: AnalyticsManaging
-    @Injected private var database: Firestore
-    @Injected private var functions: Functions
-    @Injected private var userManager: UserManaging
-    @LazyInjected private var workoutManager: WorkoutManaging
+    @LazyInjected(Container.activitySummaryManager) private var activitySummaryManager
+    @Injected(Container.analyticsManager) private var analyticsManager
+    @Injected(Container.database) private var database
+    @Injected(Container.functions) private var functions
+    @Injected(Container.userManager) private var userManager
+    @LazyInjected(Container.workoutManager) private var workoutManager
 
     private var updateTask: Task<Void, Error>? {
         willSet { updateTask?.cancel() }
@@ -75,20 +75,34 @@ final class CompetitionsManager: CompetitionsManaging {
     // MARK: - Lifecycle
 
     init() {
-        if UIApplication.shared.applicationState == .active {
-            listen()
-            fetchCompetitionData()
-        }
+
+        competitions = $_competitions.share(replay: 1).eraseToAnyPublisher()
+        invitedCompetitions = $_invitedCompetitions.share(replay: 1).eraseToAnyPublisher()
+        standings = $_standings.share(replay: 1).eraseToAnyPublisher()
+        participants = $_participants.share(replay: 1).eraseToAnyPublisher()
+        pendingParticipants = $_pendingParticipants.share(replay: 1).eraseToAnyPublisher()
+        appOwnedCompetitions = $_appOwnedCompetitions.share(replay: 1).eraseToAnyPublisher()
+
+        NotificationCenter.default
+            .publisher(for: UIApplication.didBecomeActiveNotification)
+            .first()
+            .mapToVoid()
+            .sink(withUnretained: self) { strongSelf in
+                strongSelf.listen()
+                strongSelf.fetchCompetitionData()
+            }
+            .store(in: &cancellables)
 
         Publishers
             .CombineLatest3(competitions, appOwnedCompetitions, invitedCompetitions)
-            .mapToValue(())
-            .prepend(())
+            .map { $0 + $1 + $2 }
+            .removeDuplicates()
+            .mapToVoid()
             .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
             .eraseToAnyPublisher()
             .setFailureType(to: Error.self)
             .flatMapLatest(withUnretained: self) { $0.updateStandings() }
-            .handleEvents(withUnretained: self, receiveOutput: { owner in owner.fetchCompetitionData() })
+            .handleEvents(withUnretained: self, receiveOutput: { $0.fetchCompetitionData() })
             .sink()
             .store(in: &cancellables)
     }

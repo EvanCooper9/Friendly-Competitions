@@ -1,25 +1,20 @@
 import Combine
+import Factory
 import Files
-import FirebaseStorage
+import FirebaseStorageCombineSwift
 import Foundation
-import Resolver
 
 // sourcery: AutoMockable
 protocol StorageManaging {
-    func data(for storagePath: String) async throws -> Data
+    func data(for storagePath: String) -> AnyPublisher<Data, Error>
 }
 
 final class StorageManager: StorageManaging {
 
     // MARK: - Private Properties
 
-    @Injected private var storageRef: StorageReference
-    private let fileManager = FileManager.default
+    @Injected(Container.storage) private var storage
 
-    private var documentsDirectory: URL {
-        fileManager.urls(for: .documentDirectory, in: .userDomainMask)[0]
-    }
-    
     // MARK: - Lifecycle
 
     init() {
@@ -27,38 +22,36 @@ final class StorageManager: StorageManaging {
     }
 
     // MARK: - Public Methods
-
-    func data(for storagePath: String) async throws -> Data {
-        let localPath = documentsDirectory.appendingPathComponent(storagePath)
+    
+    func data(for storagePath: String) -> AnyPublisher<Data, Error> {
+        let storageReference = storage.child(storagePath)
+        
+        guard let documents = Folder.documents?.url else {
+            return storageReference
+                .getData(maxSize: .max)
+                .eraseToAnyPublisher()
+        }
+        
+        let localPath = documents.appendingPathComponent(storagePath)
         let localData = try? Data(contentsOf: localPath)
         if let localData, !localData.isEmpty {
-            return localData
+            return .just(localData)
         }
-
-        return try await withCheckedThrowingContinuation { continuation in
-            storageRef.child(storagePath).write(toFile: localPath) { url, error in
-                if let error {
-                    continuation.resume(throwing: error)
-                    return
-                }
-
-                do {
-                    continuation.resume(returning: try Data(contentsOf: url!))
-                } catch {
-                    continuation.resume(throwing: error)
-                }
-            }
-        }
+        
+        return storageReference
+            .getData(maxSize: .max)
+            .handleEvents(receiveOutput: { _ = try? Folder.documents?.createFileIfNeeded(at: storagePath, contents: $0) })
+            .eraseToAnyPublisher()
     }
 
     // MARK: - Private Methods
 
     private func cleanup() throws {
-        let folder = try Folder(path: documentsDirectory.absoluteString)
-        try folder.files.forEach { file in
+        guard let documents = Folder.documents else { return }
+        try documents.files.forEach { file in
             try file.delete()
         }
-        try folder.subfolders.forEach { folder in
+        try documents.subfolders.forEach { folder in
             try folder.delete()
         }
     }

@@ -1,7 +1,9 @@
 import Combine
 import CombineExt
 import ECKit
+import Factory
 
+@MainActor
 final class InviteFriendsViewModel: ObservableObject {
     
     struct RowConfig: Identifiable {
@@ -12,19 +14,28 @@ final class InviteFriendsViewModel: ObservableObject {
         var buttonDisabled: Bool
         let buttonAction: () -> Void
     }
+    
+    // MARK: - Public Properties
 
     @Published var loading = false
     @Published var footerText: String?
     @Published var rows = [RowConfig]()
     @Published var searchText = ""
+    
+    // MARK: - Private Properties
+    
+    @Injected(Container.competitionsManager) private var competitionsManager
+    @Injected(Container.friendsManager) private var friendsManager
+    @Injected(Container.userManager) private var userManager
 
     private let _accept = PassthroughSubject<User, Never>()
     private let _invite = PassthroughSubject<User, Never>()
     private let _share = PassthroughSubject<Void, Never>()
-
     private var cancellables = Cancellables()
     
-    init(competitionsManager: CompetitionsManaging, friendsManager: FriendsManaging, userManager: UserManaging, action: InviteFriendsAction) {
+    // MARK: - Lifecycle
+    
+    init(action: InviteFriendsAction) {
         let alreadyInvited: AnyPublisher<[User.ID], Never>
         let incomingRequests: AnyPublisher<[User.ID], Never>
 
@@ -55,9 +66,9 @@ final class InviteFriendsViewModel: ObservableObject {
         }
 
         $searchText
-            .flatMapLatest { searchText -> AnyPublisher<[User], Never> in
+            .flatMapLatest(withUnretained: self) { strongSelf, searchText -> AnyPublisher<[User], Never> in
                 guard !searchText.isEmpty else { return .just([]) }
-                return friendsManager.search(with: searchText).ignoreFailure()
+                return strongSelf.friendsManager.search(with: searchText).ignoreFailure()
             }
             .combineLatest(alreadyInvited, incomingRequests)
             .map { [weak self] users, alreadyInvited, incomingRequests -> [RowConfig] in
@@ -90,12 +101,11 @@ final class InviteFriendsViewModel: ObservableObject {
             .assign(to: &$rows)
 
         _accept
-            .flatMapLatest { [weak self] user -> AnyPublisher<Void, Never> in
+            .flatMapLatest(withUnretained: self) { [weak self] strongSelf, user -> AnyPublisher<Void, Never> in
                 switch action {
                 case .addFriend:
-                    return friendsManager
+                    return strongSelf.friendsManager
                         .accept(friendRequest: user)
-                        .receive(on: RunLoop.main)
                         .isLoading { [weak self] in self?.loading = $0 }
                         .ignoreFailure()
                 case .competitionInvite:
@@ -106,15 +116,15 @@ final class InviteFriendsViewModel: ObservableObject {
             .store(in: &cancellables)
 
         _invite
-            .flatMapLatest { [weak self] friend -> AnyPublisher<Void, Never> in
+            .flatMapLatest(withUnretained: self) { [weak self] strongSelf, friend -> AnyPublisher<Void, Never> in
                 switch action {
                 case .addFriend:
-                    return friendsManager
+                    return strongSelf.friendsManager
                         .add(user: friend)
                         .isLoading { [weak self] in self?.loading = $0 }
                         .ignoreFailure()
                 case .competitionInvite(let competition):
-                    return competitionsManager
+                    return strongSelf.competitionsManager
                         .invite(friend, to: competition)
                         .isLoading { [weak self] in self?.loading = $0 }
                         .ignoreFailure()
@@ -124,12 +134,11 @@ final class InviteFriendsViewModel: ObservableObject {
             .store(in: &cancellables)
 
         _share
-            .receive(on: RunLoop.main)
-            .sink {
+            .sink(withUnretained: self) { strongSelf in
                 let deepLink: DeepLink?
                 switch action {
                 case .addFriend:
-                    deepLink = .friendReferral(id: userManager.user.value.id)
+                    deepLink = .friendReferral(id: strongSelf.userManager.user.value.id)
                 case .competitionInvite(let competition):
                     deepLink = .competitionInvite(id: competition.id)
                 }

@@ -1,7 +1,9 @@
 import Combine
 import CombineExt
 import ECKit
+import Factory
 
+@MainActor
 final class SignInViewModel: ObservableObject {
 
     private enum Constants {
@@ -19,6 +21,9 @@ final class SignInViewModel: ObservableObject {
     @Published var passwordConfirmation = ""
 
     // MARK: - Private Properties
+    
+    @Injected(Container.appState) private var appState
+    @Injected(Container.authenticationManager) private var authenticationManager
 
     private let _forgot = PassthroughSubject<Void, Never>()
     private let _signIn = PassthroughSubject<SignInMethod, Never>()
@@ -28,45 +33,43 @@ final class SignInViewModel: ObservableObject {
 
     private var cancellables = Cancellables()
     
-    init(appState: AppState, authenticationManager: AuthenticationManaging) {
-        hud
-            .receive(on: RunLoop.main)
-            .assign(to: &appState.$hudState)
-        
-        isLoading
-            .receive(on: RunLoop.main)
-            .assign(to: &$loading)
+    // MARK: - Lifecycle
+    
+    init() {
+        hud.assign(to: &appState.$hudState)
+        isLoading.assign(to: &$loading)
 
         _forgot
             .setFailureType(to: Error.self)
             .handleEvents(withUnretained: self, receiveOutput: { $0.loading = true })
-            .flatMapLatest(withUnretained: self) { object in
-                authenticationManager.sendPasswordReset(to: object.email)
+            .flatMapLatest(withUnretained: self) { strongSelf in
+                strongSelf.authenticationManager.sendPasswordReset(to: strongSelf.email)
             }
             .handleEvents(withUnretained: self, receiveOutput: { $0.loading = false })
             .mapToResult()
-            .sink(withUnretained: self, receiveValue: { object, result in
+            .sink(withUnretained: self, receiveValue: { strongSelf, result in
                 switch result {
                 case .failure(let error):
-                    object.hud.send(.error(error))
+                    strongSelf.hud.send(.error(error))
                 case .success:
-                    object.hud.send(.success(text: Constants.checkEmail))
+                    strongSelf.hud.send(.success(text: Constants.checkEmail))
                 }
             })
             .store(in: &cancellables)
 
         _signIn
             .setFailureType(to: Error.self)
-            .handleEvents(withUnretained: self, receiveOutput: { object, _ in object.loading = true })
-            .flatMapLatest { signInMethod in
-                authenticationManager.signIn(with: signInMethod)
+            .flatMapLatest(withUnretained: self) { strongSelf, signInMethod in
+                strongSelf.authenticationManager
+                    .signIn(with: signInMethod)
+                    .isLoading { [weak self] in self?.loading = $0  }
+                    .eraseToAnyPublisher()
             }
             .mapToResult()
-            .sink(withUnretained: self, receiveValue: { object, result in
-                object.loading = false
+            .sink(withUnretained: self, receiveValue: { strongSelf, result in
                 switch result {
                 case .failure(let error):
-                    object.hud.send(.error(error))
+                    strongSelf.hud.send(.error(error))
                 case .success:
                     break
                 }
@@ -75,27 +78,30 @@ final class SignInViewModel: ObservableObject {
 
         _signUp
             .setFailureType(to: Error.self)
-            .handleEvents(withUnretained: self, receiveOutput: { $0.loading = true })
-            .flatMapLatest(withUnretained: self) { object in
-                authenticationManager.signUp(
-                    name: object.name,
-                    email: object.email,
-                    password: object.password,
-                    passwordConfirmation: object.passwordConfirmation
-                )
+            .flatMapLatest(withUnretained: self) { strongSelf in
+                strongSelf.authenticationManager
+                    .signUp(
+                        name: strongSelf.name,
+                        email: strongSelf.email,
+                        password: strongSelf.password,
+                        passwordConfirmation: strongSelf.passwordConfirmation
+                    )
+                    .isLoading { [weak self] in self?.loading = $0 }
+                    .eraseToAnyPublisher()
             }
             .mapToResult()
-            .sink(withUnretained: self, receiveValue: { object, result in
-                object.loading = false
+            .sink(withUnretained: self, receiveValue: { strongSelf, result in
                 switch result {
                 case .failure(let error):
-                    object.hud.send(.error(error))
+                    strongSelf.hud.send(.error(error))
                 case .success:
                     break
                 }
             })
             .store(in: &cancellables)
     }
+    
+    // MARK: - Public Methods
     
     func forgot() {
         _forgot.send()

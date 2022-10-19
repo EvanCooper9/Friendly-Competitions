@@ -10,18 +10,17 @@ struct FeaturedCompetition: View {
         color
             .aspectRatio(3/2, contentMode: .fit)
             .overlay {
-                ZStack {
-                    if let banner = competition.banner {
-                        FirestoreImage(path: banner)
-                    }
-
-                    // has navigation link already
-                    CompetitionDetails(competition: competition, showParticipantCount: true, isFeatured: true)
-                        .padding(.vertical, 8)
-                        .padding(.horizontal)
-                        .background(.ultraThinMaterial)
-                        .frame(maxHeight: .infinity, alignment: .bottom)
+                if let banner = competition.banner {
+                    FirebaseImage(path: banner)
                 }
+            }
+            .overlay {
+                // has navigation link already
+                CompetitionDetails(competition: competition, showParticipantCount: true, isFeatured: true)
+                    .padding(.vertical, 8)
+                    .padding(.horizontal)
+                    .background(.ultraThinMaterial)
+                    .frame(maxHeight: .infinity, alignment: .bottom)
             }
             .cornerRadius(10)
     }
@@ -40,7 +39,7 @@ struct FeaturedCompetitionView_Previews: PreviewProvider {
         competitionsManager.standings = .just([:])
         competitionsManager.participants = .just([:])
         competitionsManager.pendingParticipants = .just([:])
-        storageManager.dataForReturnValue = .init()
+        storageManager.dataForReturnValue = .just(.init())
     }
 
     static var previews: some View {

@@ -1,10 +1,10 @@
 import ECKit
-import Resolver
+import Factory
 import SwiftUI
 
 struct DeveloperView: View {
 
-    @StateObject private var viewModel = Resolver.resolve(DeveloperViewModel.self)
+    @StateObject private var viewModel = DeveloperViewModel()
 
     var body: some View {
         List {
