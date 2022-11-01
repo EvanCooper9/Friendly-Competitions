@@ -32,8 +32,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/CombineCommunity/CombineExt",
       "state" : {
-        "revision" : "aaf1a0981c05360000af972473034cb952be4ca0",
-        "version" : "1.8.0"
+        "revision" : "d7b896fa9ca8b47fa7bcde6b43ef9b70bf8c1f56",
+        "version" : "1.8.1"
       }
     },
     {
@@ -42,7 +42,7 @@
       "location" : "https://github.com/EvanCooper9/ECKit",
       "state" : {
         "branch" : "main",
-        "revision" : "66b7f1a9de9045347497ce609df63de11cb61db5"
+        "revision" : "352680fe42cc81458beb88b2737dec4b176252f2"
       }
     },
     {
@@ -186,7 +186,7 @@
       "location" : "https://github.com/SwiftUIX/SwiftUIX",
       "state" : {
         "branch" : "master",
-        "revision" : "c097ed5539508e365178d6cc33f891e76fae2b81"
+        "revision" : "4aa90ad55822f11c9651b0e4fad1365a5de9d491"
       }
     }
   ],

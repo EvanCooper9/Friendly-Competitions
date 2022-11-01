@@ -2,6 +2,7 @@ import Combine
 import CombineExt
 import ECKit
 import Factory
+import Foundation
 
 final class CompetitionViewModel: ObservableObject {
     

@@ -1,7 +1,7 @@
 import Factory
 import SwiftUI
 
-struct VerifyEmail: View {
+struct VerifyEmailView: View {
     
     @StateObject private var viewModel = VerifyEmailViewModel()
     
@@ -37,9 +37,11 @@ struct VerifyEmail: View {
     }
 }
 
-struct VerifyEmail_Previews: PreviewProvider {
+#if DEBUG
+struct VerifyEmailView_Previews: PreviewProvider {
     static var previews: some View {
-        VerifyEmail()
+        VerifyEmailView()
             .setupMocks()
     }
 }
+#endif
