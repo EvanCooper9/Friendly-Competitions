@@ -83,10 +83,8 @@ final class FriendsManager: FriendsManaging {
                 guard let strongSelf = self else { return [:] }
                 
                 let activitySummaries = try await strongSelf.database.collectionGroup("activitySummaries")
-                    .whereField("userID", in: friends.map(\.id))
                     .whereField("date", isEqualTo: DateFormatter.dateDashed.string(from: .now))
-                    .getDocuments()
-                    .documents
+                    .whereFieldWithChunking("userID", in: friends.map(\.id))
                     .decoded(asArrayOf: ActivitySummary.self)
                 
                 let pairs = activitySummaries.compactMap { activitySummary -> (User.ID, ActivitySummary)? in

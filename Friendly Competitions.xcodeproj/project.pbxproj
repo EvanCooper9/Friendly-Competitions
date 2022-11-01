@@ -118,8 +118,6 @@
 		ED604B2B28DA2C660097B76F /* DeveloperViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED604B2928DA2C660097B76F /* DeveloperViewModel.swift */; };
 		ED65D3BD280CF36C00B38486 /* WorkoutType.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED65D3BC280CF36C00B38486 /* WorkoutType.swift */; };
 		ED71E2A328F70212001FED74 /* Files in Frameworks */ = {isa = PBXBuildFile; productRef = ED71E2A228F70212001FED74 /* Files */; };
-		ED71E2C028F70391001FED74 /* ECKit in Frameworks */ = {isa = PBXBuildFile; productRef = ED71E2BF28F70391001FED74 /* ECKit */; };
-		ED71E2C228F70391001FED74 /* ECKit+Firebase in Frameworks */ = {isa = PBXBuildFile; productRef = ED71E2C128F70391001FED74 /* ECKit+Firebase */; };
 		ED7881AB2850F6C400C7F6CB /* SignInMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED7881AA2850F6C400C7F6CB /* SignInMethod.swift */; };
 		ED7881AD2850F6DF00C7F6CB /* SignUpError.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED7881AC2850F6DF00C7F6CB /* SignUpError.swift */; };
 		ED7881B02850F71E00C7F6CB /* AnalyticsEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED7881AF2850F71E00C7F6CB /* AnalyticsEvent.swift */; };
@@ -338,11 +336,9 @@
 				ED0470B928FF2F4700A941AC /* FirebaseCrashlytics in Frameworks */,
 				ED0470AB28FF2DB200A941AC /* FirebaseAuthCombine-Community in Frameworks */,
 				C1C8B24926F3FBA3008D6B1B /* HealthKitUI.framework in Frameworks */,
-				ED71E2C228F70391001FED74 /* ECKit+Firebase in Frameworks */,
 				ED0470AF28FF2DB200A941AC /* FirebaseFunctionsCombine-Community in Frameworks */,
 				ED493E9727FDE47300A94F4A /* AuthenticationServices.framework in Frameworks */,
 				ED0470B128FF2DB200A941AC /* FirebaseStorageCombine-Community in Frameworks */,
-				ED71E2C028F70391001FED74 /* ECKit in Frameworks */,
 				ED0470AD28FF2DB200A941AC /* FirebaseFirestoreCombine-Community in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -994,8 +990,6 @@
 			name = "Friendly Competitions";
 			packageProductDependencies = (
 				ED71E2A228F70212001FED74 /* Files */,
-				ED71E2BF28F70391001FED74 /* ECKit */,
-				ED71E2C128F70391001FED74 /* ECKit+Firebase */,
 				ED0470AA28FF2DB200A941AC /* FirebaseAuthCombine-Community */,
 				ED0470AC28FF2DB200A941AC /* FirebaseFirestoreCombine-Community */,
 				ED0470AE28FF2DB200A941AC /* FirebaseFunctionsCombine-Community */,
@@ -1628,14 +1622,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = ED71E2A128F70212001FED74 /* XCRemoteSwiftPackageReference "Files" */;
 			productName = Files;
-		};
-		ED71E2BF28F70391001FED74 /* ECKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = ECKit;
-		};
-		ED71E2C128F70391001FED74 /* ECKit+Firebase */ = {
-			isa = XCSwiftPackageProductDependency;
-			productName = "ECKit+Firebase";
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
