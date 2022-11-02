@@ -123,6 +123,8 @@
 		ED7881B02850F71E00C7F6CB /* AnalyticsEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED7881AF2850F71E00C7F6CB /* AnalyticsEvent.swift */; };
 		ED8C324729118DC400339988 /* VerifyEmailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED8C324629118DC400339988 /* VerifyEmailView.swift */; };
 		ED8C324929118E5500339988 /* FriendlyCompetitionsAppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED8C324829118E5500339988 /* FriendlyCompetitionsAppModel.swift */; };
+		ED8C324C2911BFD300339988 /* ECKit in Frameworks */ = {isa = PBXBuildFile; productRef = ED8C324B2911BFD300339988 /* ECKit */; };
+		ED8C324E2911BFD300339988 /* ECKit+Firebase in Frameworks */ = {isa = PBXBuildFile; productRef = ED8C324D2911BFD300339988 /* ECKit+Firebase */; };
 		ED901B452802426800FE619E /* DashboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED901B442802426800FE619E /* DashboardViewModel.swift */; };
 		ED901B4A2802463900FE619E /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED901B492802463900FE619E /* ProfileViewModel.swift */; };
 		ED901B4D280247E600FE619E /* CompetitionDetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED901B4C280247E600FE619E /* CompetitionDetailsViewModel.swift */; };
@@ -338,6 +340,8 @@
 				C1C8B24926F3FBA3008D6B1B /* HealthKitUI.framework in Frameworks */,
 				ED0470AF28FF2DB200A941AC /* FirebaseFunctionsCombine-Community in Frameworks */,
 				ED493E9727FDE47300A94F4A /* AuthenticationServices.framework in Frameworks */,
+				ED8C324C2911BFD300339988 /* ECKit in Frameworks */,
+				ED8C324E2911BFD300339988 /* ECKit+Firebase in Frameworks */,
 				ED0470B128FF2DB200A941AC /* FirebaseStorageCombine-Community in Frameworks */,
 				ED0470AD28FF2DB200A941AC /* FirebaseFirestoreCombine-Community in Frameworks */,
 			);
@@ -997,6 +1001,8 @@
 				ED0470B428FF2F4700A941AC /* FirebaseAnalyticsSwift */,
 				ED0470B828FF2F4700A941AC /* FirebaseCrashlytics */,
 				ED0470C028FF2F4700A941AC /* FirebaseMessaging */,
+				ED8C324B2911BFD300339988 /* ECKit */,
+				ED8C324D2911BFD300339988 /* ECKit+Firebase */,
 			);
 			productName = CompyBoi;
 			productReference = C1691DC326D55FCF006FFA30 /* Friendly Competitions.app */;
@@ -1622,6 +1628,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = ED71E2A128F70212001FED74 /* XCRemoteSwiftPackageReference "Files" */;
 			productName = Files;
+		};
+		ED8C324B2911BFD300339988 /* ECKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ED74033A28FF7297005BD155 /* XCRemoteSwiftPackageReference "ECKit" */;
+			productName = ECKit;
+		};
+		ED8C324D2911BFD300339988 /* ECKit+Firebase */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ED74033A28FF7297005BD155 /* XCRemoteSwiftPackageReference "ECKit" */;
+			productName = "ECKit+Firebase";
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
