@@ -154,33 +154,22 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
     private func listenForAuth() {
         Auth.auth()
             .authStateDidChangePublisher()
-            .sink(withUnretained: self) { strongSelf, firebaseUser in
+            .sinkAsync { [weak self] firebaseUser in
                 guard let firebaseUser = firebaseUser else {
-                    strongSelf.currentUser = nil
-                    strongSelf.userListener = nil
+                    self?.currentUser = nil
+                    self?.userListener = nil
                     return
                 }
                 
-                Task {
-                    try await self.updateFirestoreUserWithAuthUser(firebaseUser)
-                    let user = try await self.database.document("users/\(firebaseUser.uid)").getDocument().decoded(as: User.self)
-                    DispatchQueue.main.async {
-                        self.currentUser = user
-                        self._emailVerified.send(firebaseUser.isEmailVerified || firebaseUser.email == "review@apple.com")
-                    }
-                }
+                try await self?.updateFirestoreUserWithAuthUser(firebaseUser)
             }
             .store(in: &cancellables)
     }
 
     private func sha256(_ input: String) -> String {
-        let inputData = Data(input.utf8)
-        let hashedData = SHA256.hash(data: inputData)
-        let hashString = hashedData.compactMap {
-            return String(format: "%02x", $0)
-        }.joined()
-
-        return hashString
+        SHA256.hash(data: Data(input.utf8))
+            .compactMap { String(format: "%02x", $0) }
+            .joined()
     }
 
     private func registerUserManager(with user: User) {
@@ -210,6 +199,12 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
             guard let nsError = error as NSError?, nsError.domain == "FIRFirestoreErrorDomain", nsError.code == 5 else { return }
             let user = User(id: firebaseUser.uid, email: email, name: name)
             try await database.document("users/\(user.id)").setDataEncodable(user)
+        }
+        
+        let user = try await self.database.document("users/\(firebaseUser.uid)").getDocument().decoded(as: User.self)
+        DispatchQueue.main.async {
+            self.currentUser = user
+            self._emailVerified.send(firebaseUser.isEmailVerified || firebaseUser.email == "review@apple.com")
         }
     }
 }
