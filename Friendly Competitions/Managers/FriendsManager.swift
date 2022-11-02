@@ -65,7 +65,6 @@ final class FriendsManager: FriendsManaging {
             .map { user, allFriends in
                 allFriends.filter { user.friends.contains($0.id) }
             }
-            .print("friends")
             .sink(withUnretained: self) { $0.friendsSubject.send($1) }
             .store(in: &cancellables)
 
@@ -74,7 +73,6 @@ final class FriendsManager: FriendsManaging {
             .map { user, allFriends in
                 allFriends.filter { user.incomingFriendRequests.contains($0.id) }
             }
-            .print("friend requests")
             .sink(withUnretained: self) { $0.friendRequestsSubject.send($1) }
             .store(in: &cancellables)
 

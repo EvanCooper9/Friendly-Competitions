@@ -217,47 +217,27 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
 extension AuthenticationManager: ASAuthorizationControllerDelegate {
     func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
         guard let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential,
-              let tokenData = appleIDCredential.identityToken, let identityToken = String(data: tokenData, encoding: .utf8)
+              let tokenData = appleIDCredential.identityToken,
+              let idToken = String(data: tokenData, encoding: .utf8)
         else { return }
+        
+        let appleIDName = [appleIDCredential.fullName?.givenName, appleIDCredential.fullName?.familyName]
+            .compactMap { $0 }
+            .joined(separator: " ")
 
-        let credential = OAuthProvider.credential(withProviderID: "apple.com", idToken: identityToken, rawNonce: currentNonce)
+        let credential = OAuthProvider.credential(withProviderID: "apple.com", idToken: idToken, rawNonce: currentNonce)
 
-        // Sign in with Firebase.
         Auth.auth().signIn(with: credential) { [weak self] authResult, error in
-            if let error {
-                // Error. If error.code == .MissingOrInvalidNonce, make sure
-                // you're sending the SHA256-hashed nonce as a hex string with
-                // your request to Apple.
-                print(error)
-                return
-            }
-
-            let name = [appleIDCredential.fullName?.givenName, appleIDCredential.fullName?.familyName]
-                .compactMap { $0 }
-                .joined(separator: " ")
-
-            let firebaseUser = Auth.auth().currentUser
-
-            let displayName = name.isEmpty ?
-                firebaseUser?.displayName ?? "" :
-                name
-
-            let changeRequest = firebaseUser?.createProfileChangeRequest()
-            changeRequest?.displayName = displayName
-            changeRequest?.commitChanges(completion: nil)
-
-            guard let firebaseUser = firebaseUser, let email = appleIDCredential.email ?? firebaseUser.email else { return }
-            let userJson = [
-                "id": firebaseUser.uid,
-                "email": email,
-                "name": displayName
-            ]
-            self?.database.document("users/\(firebaseUser.uid)").updateData(userJson) { error in
-                guard let nsError = error as NSError?,
-                    nsError.domain == "FIRFirestoreErrorDomain",
-                    nsError.code == 5 else { return }
-                let user = User(id: firebaseUser.uid, email: email, name: displayName)
-                try? self?.database.document("users/\(user.id)").setDataEncodable(user)
+            guard let firebaseUser = authResult?.user else { return }
+            let displayName = appleIDName.nilIfEmpty ?? firebaseUser.displayName ?? ""
+            guard firebaseUser.displayName != displayName else { return }
+            
+            let changeRequest = firebaseUser.createProfileChangeRequest()
+            changeRequest.displayName = displayName
+            changeRequest.commitChanges { [weak self] error in
+                Task { [weak self] in
+                    try await self?.updateFirestoreUserWithAuthUser(firebaseUser)
+                }
             }
         }
     }

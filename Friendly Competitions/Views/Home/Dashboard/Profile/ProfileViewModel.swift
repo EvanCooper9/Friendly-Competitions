@@ -42,13 +42,12 @@ final class ProfileViewModel: ObservableObject {
             .assign(to: &$user)
 
         _delete
-            .handleEvents(withUnretained: self, receiveOutput: { $0.loading = true })
             .flatMapLatest(withUnretained: self) { strongSelf in
                 strongSelf.userManager
                     .deleteAccount()
+                    .isLoading { [weak self] in self?.loading = $0 }
                     .ignoreFailure()
             }
-            .handleEvents(withUnretained: self, receiveOutput: { $0.loading = false })
             .sink()
             .store(in: &cancellables)
 

@@ -16,9 +16,7 @@ final class ExploreViewModel: ObservableObject {
     // MARK: - Lifecycle
 
     init() {
-        competitionsManager.appOwnedCompetitions
-            .print("app owned competitions")
-            .assign(to: &$appOwnedCompetitions)
+        competitionsManager.appOwnedCompetitions.assign(to: &$appOwnedCompetitions)
         
         $searchText
             .flatMapLatest(withUnretained: self) { strongSelf, searchText -> AnyPublisher<[Competition], Never> in
