@@ -32,8 +32,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/CombineCommunity/CombineExt",
       "state" : {
-        "revision" : "aaf1a0981c05360000af972473034cb952be4ca0",
-        "version" : "1.8.0"
+        "revision" : "d7b896fa9ca8b47fa7bcde6b43ef9b70bf8c1f56",
+        "version" : "1.8.1"
       }
     },
     {
@@ -42,7 +42,7 @@
       "location" : "https://github.com/EvanCooper9/ECKit",
       "state" : {
         "branch" : "main",
-        "revision" : "66b7f1a9de9045347497ce609df63de11cb61db5"
+        "revision" : "07c0c526cc638c112ffc87b94490dac0b34a6fbd"
       }
     },
     {
@@ -68,8 +68,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/firebase/firebase-ios-sdk",
       "state" : {
-        "revision" : "5c4893c55f9d6114e2bb7c691d7ffd81208ac713",
-        "version" : "10.0.0"
+        "revision" : "f0926478fda955aef0dfbf99263b5c24b2ca5db4",
+        "version" : "10.1.0"
       }
     },
     {
@@ -77,8 +77,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/GoogleAppMeasurement.git",
       "state" : {
-        "revision" : "e3dd02f390cae79a7073b46dfb0cb6b60c48401b",
-        "version" : "10.0.0"
+        "revision" : "71eb6700dd53a851473c48d392f00a3ab26699a6",
+        "version" : "10.1.0"
       }
     },
     {
@@ -186,7 +186,7 @@
       "location" : "https://github.com/SwiftUIX/SwiftUIX",
       "state" : {
         "branch" : "master",
-        "revision" : "c097ed5539508e365178d6cc33f891e76fae2b81"
+        "revision" : "93105dbdc9f47585a56d74cc0c7558f6dd60cea3"
       }
     }
   ],

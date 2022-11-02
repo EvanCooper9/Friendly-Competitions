@@ -1,3 +1,4 @@
+import ECKit_Firebase
 import Factory
 import Firebase
 import FirebaseFirestore
@@ -6,9 +7,11 @@ import UIKit
 
 final class AppDelegate: NSObject, UIApplicationDelegate {
 
-    @Injected(Container.database) private var database
+    // Needs to be lazy so that `FirebaseApp.configure()` is called first
+    @LazyInjected(Container.database) private var database
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+        FirebaseApp.configure()
         Messaging.messaging().delegate = self
         return true
     }

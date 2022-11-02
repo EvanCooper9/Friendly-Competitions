@@ -118,11 +118,13 @@
 		ED604B2B28DA2C660097B76F /* DeveloperViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED604B2928DA2C660097B76F /* DeveloperViewModel.swift */; };
 		ED65D3BD280CF36C00B38486 /* WorkoutType.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED65D3BC280CF36C00B38486 /* WorkoutType.swift */; };
 		ED71E2A328F70212001FED74 /* Files in Frameworks */ = {isa = PBXBuildFile; productRef = ED71E2A228F70212001FED74 /* Files */; };
-		ED71E2C028F70391001FED74 /* ECKit in Frameworks */ = {isa = PBXBuildFile; productRef = ED71E2BF28F70391001FED74 /* ECKit */; };
-		ED71E2C228F70391001FED74 /* ECKit+Firebase in Frameworks */ = {isa = PBXBuildFile; productRef = ED71E2C128F70391001FED74 /* ECKit+Firebase */; };
 		ED7881AB2850F6C400C7F6CB /* SignInMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED7881AA2850F6C400C7F6CB /* SignInMethod.swift */; };
 		ED7881AD2850F6DF00C7F6CB /* SignUpError.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED7881AC2850F6DF00C7F6CB /* SignUpError.swift */; };
 		ED7881B02850F71E00C7F6CB /* AnalyticsEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED7881AF2850F71E00C7F6CB /* AnalyticsEvent.swift */; };
+		ED8C324729118DC400339988 /* VerifyEmailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED8C324629118DC400339988 /* VerifyEmailView.swift */; };
+		ED8C324929118E5500339988 /* FriendlyCompetitionsAppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED8C324829118E5500339988 /* FriendlyCompetitionsAppModel.swift */; };
+		ED8C324C2911BFD300339988 /* ECKit in Frameworks */ = {isa = PBXBuildFile; productRef = ED8C324B2911BFD300339988 /* ECKit */; };
+		ED8C324E2911BFD300339988 /* ECKit+Firebase in Frameworks */ = {isa = PBXBuildFile; productRef = ED8C324D2911BFD300339988 /* ECKit+Firebase */; };
 		ED901B452802426800FE619E /* DashboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED901B442802426800FE619E /* DashboardViewModel.swift */; };
 		ED901B4A2802463900FE619E /* ProfileViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED901B492802463900FE619E /* ProfileViewModel.swift */; };
 		ED901B4D280247E600FE619E /* CompetitionDetailsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED901B4C280247E600FE619E /* CompetitionDetailsViewModel.swift */; };
@@ -144,7 +146,6 @@
 		EDB749B72875BC3F00021014 /* StringKeyEncoded.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDB749B62875BC3F00021014 /* StringKeyEncoded.swift */; };
 		EDBEA170281459D200058A47 /* CompetitionInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBEA16F281459D200058A47 /* CompetitionInfo.swift */; };
 		EDC373D027FB39A500318245 /* EmailSignInForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC373CF27FB39A500318245 /* EmailSignInForm.swift */; };
-		EDC373D227FB5B0C00318245 /* VerifyEmail.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC373D127FB5B0C00318245 /* VerifyEmail.swift */; };
 		EDC5FC3F27FA7C1B00F2882D /* View+HUD.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC5FC3E27FA7C1B00F2882D /* View+HUD.swift */; };
 		EDC5FC4127FA7F3700F2882D /* Color+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC5FC4027FA7F3700F2882D /* Color+Extensions.swift */; };
 		EDC7849828034CCD001FE005 /* WorkoutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC7849728034CCD001FE005 /* WorkoutManager.swift */; };
@@ -287,6 +288,8 @@
 		ED7881AA2850F6C400C7F6CB /* SignInMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInMethod.swift; sourceTree = "<group>"; };
 		ED7881AC2850F6DF00C7F6CB /* SignUpError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignUpError.swift; sourceTree = "<group>"; };
 		ED7881AF2850F71E00C7F6CB /* AnalyticsEvent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsEvent.swift; sourceTree = "<group>"; };
+		ED8C324629118DC400339988 /* VerifyEmailView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VerifyEmailView.swift; sourceTree = "<group>"; };
+		ED8C324829118E5500339988 /* FriendlyCompetitionsAppModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FriendlyCompetitionsAppModel.swift; sourceTree = "<group>"; };
 		ED901B442802426800FE619E /* DashboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewModel.swift; sourceTree = "<group>"; };
 		ED901B492802463900FE619E /* ProfileViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfileViewModel.swift; sourceTree = "<group>"; };
 		ED901B4C280247E600FE619E /* CompetitionDetailsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionDetailsViewModel.swift; sourceTree = "<group>"; };
@@ -308,7 +311,6 @@
 		EDB749B62875BC3F00021014 /* StringKeyEncoded.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StringKeyEncoded.swift; sourceTree = "<group>"; };
 		EDBEA16F281459D200058A47 /* CompetitionInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionInfo.swift; sourceTree = "<group>"; };
 		EDC373CF27FB39A500318245 /* EmailSignInForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailSignInForm.swift; sourceTree = "<group>"; };
-		EDC373D127FB5B0C00318245 /* VerifyEmail.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyEmail.swift; sourceTree = "<group>"; };
 		EDC5FC3E27FA7C1B00F2882D /* View+HUD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+HUD.swift"; sourceTree = "<group>"; };
 		EDC5FC4027FA7F3700F2882D /* Color+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Extensions.swift"; sourceTree = "<group>"; };
 		EDC7849728034CCD001FE005 /* WorkoutManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutManager.swift; sourceTree = "<group>"; };
@@ -336,11 +338,11 @@
 				ED0470B928FF2F4700A941AC /* FirebaseCrashlytics in Frameworks */,
 				ED0470AB28FF2DB200A941AC /* FirebaseAuthCombine-Community in Frameworks */,
 				C1C8B24926F3FBA3008D6B1B /* HealthKitUI.framework in Frameworks */,
-				ED71E2C228F70391001FED74 /* ECKit+Firebase in Frameworks */,
 				ED0470AF28FF2DB200A941AC /* FirebaseFunctionsCombine-Community in Frameworks */,
 				ED493E9727FDE47300A94F4A /* AuthenticationServices.framework in Frameworks */,
+				ED8C324C2911BFD300339988 /* ECKit in Frameworks */,
+				ED8C324E2911BFD300339988 /* ECKit+Firebase in Frameworks */,
 				ED0470B128FF2DB200A941AC /* FirebaseStorageCombine-Community in Frameworks */,
-				ED71E2C028F70391001FED74 /* ECKit in Frameworks */,
 				ED0470AD28FF2DB200A941AC /* FirebaseFirestoreCombine-Community in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -586,6 +588,7 @@
 				C163E30026F2344D00C9EC30 /* Info.plist */,
 				C1E6406226F4395200E3E70A /* FriendlyCompetitions.entitlements */,
 				C1691DC626D55FCF006FFA30 /* FriendlyCompetitions.swift */,
+				ED8C324829118E5500339988 /* FriendlyCompetitionsAppModel.swift */,
 				C1B2F4E3272B505C0028449F /* AppDelegate.swift */,
 				C1930E4427C55EF500DB45C1 /* AppState.swift */,
 				C1A4696926DA823C00254105 /* Factory.swift */,
@@ -900,7 +903,7 @@
 		ED901B722802648600FE619E /* Verify Email */ = {
 			isa = PBXGroup;
 			children = (
-				EDC373D127FB5B0C00318245 /* VerifyEmail.swift */,
+				ED8C324629118DC400339988 /* VerifyEmailView.swift */,
 				ED901B732802649200FE619E /* VerifyEmailViewModel.swift */,
 			);
 			path = "Verify Email";
@@ -991,8 +994,6 @@
 			name = "Friendly Competitions";
 			packageProductDependencies = (
 				ED71E2A228F70212001FED74 /* Files */,
-				ED71E2BF28F70391001FED74 /* ECKit */,
-				ED71E2C128F70391001FED74 /* ECKit+Firebase */,
 				ED0470AA28FF2DB200A941AC /* FirebaseAuthCombine-Community */,
 				ED0470AC28FF2DB200A941AC /* FirebaseFirestoreCombine-Community */,
 				ED0470AE28FF2DB200A941AC /* FirebaseFunctionsCombine-Community */,
@@ -1000,6 +1001,8 @@
 				ED0470B428FF2F4700A941AC /* FirebaseAnalyticsSwift */,
 				ED0470B828FF2F4700A941AC /* FirebaseCrashlytics */,
 				ED0470C028FF2F4700A941AC /* FirebaseMessaging */,
+				ED8C324B2911BFD300339988 /* ECKit */,
+				ED8C324D2911BFD300339988 /* ECKit+Firebase */,
 			);
 			productName = CompyBoi;
 			productReference = C1691DC326D55FCF006FFA30 /* Friendly Competitions.app */;
@@ -1182,7 +1185,7 @@
 				ED901B4D280247E600FE619E /* CompetitionDetailsViewModel.swift in Sources */,
 				ED7881AD2850F6DF00C7F6CB /* SignUpError.swift in Sources */,
 				ED901B6B2802525700FE619E /* FirebaseImageViewModel.swift in Sources */,
-				EDC373D227FB5B0C00318245 /* VerifyEmail.swift in Sources */,
+				ED8C324729118DC400339988 /* VerifyEmailView.swift in Sources */,
 				C1ABB21526D6987C00716984 /* NewCompetition.swift in Sources */,
 				ED3ED8F7284F951800B5100F /* AutoMockable.generated.swift in Sources */,
 				EDA35298283713C200390585 /* Sharable.swift in Sources */,
@@ -1264,6 +1267,7 @@
 				ED48783228295A2100AC1E2C /* InviteFriendsAction.swift in Sources */,
 				C1C8B24326F3FB47008D6B1B /* ActivitySummaryManager.swift in Sources */,
 				C10E5548272B47080053BBA6 /* XCAssets+Generated.swift in Sources */,
+				ED8C324929118E5500339988 /* FriendlyCompetitionsAppModel.swift in Sources */,
 				C1E4AB9826FCC8BD00B1AF12 /* ActivitySummaryInfoView.swift in Sources */,
 				C16CC40627A7332800C26208 /* UserView.swift in Sources */,
 				ED438FF927F7C2B900D72F99 /* View+Analytics.swift in Sources */,
@@ -1625,12 +1629,14 @@
 			package = ED71E2A128F70212001FED74 /* XCRemoteSwiftPackageReference "Files" */;
 			productName = Files;
 		};
-		ED71E2BF28F70391001FED74 /* ECKit */ = {
+		ED8C324B2911BFD300339988 /* ECKit */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = ED74033A28FF7297005BD155 /* XCRemoteSwiftPackageReference "ECKit" */;
 			productName = ECKit;
 		};
-		ED71E2C128F70391001FED74 /* ECKit+Firebase */ = {
+		ED8C324D2911BFD300339988 /* ECKit+Firebase */ = {
 			isa = XCSwiftPackageProductDependency;
+			package = ED74033A28FF7297005BD155 /* XCRemoteSwiftPackageReference "ECKit" */;
 			productName = "ECKit+Firebase";
 		};
 /* End XCSwiftPackageProductDependency section */

@@ -2,8 +2,8 @@ import Combine
 import CombineExt
 import ECKit
 import Factory
+import Foundation
 
-@MainActor
 final class VerifyEmailViewModel: ObservableObject {
 
     private enum Constants {
@@ -19,33 +19,33 @@ final class VerifyEmailViewModel: ObservableObject {
     @Injected(Container.userManager) private var userManager
 
     private let hud = PassthroughSubject<HUDState?, Never>()
-    private let _back = PassthroughSubject<Void, Never>()
-    private let _resend = PassthroughSubject<Void, Error>()
+    private let backSubject = PassthroughSubject<Void, Never>()
+    private let resendSubject = PassthroughSubject<Void, Error>()
     private var cancellables = Cancellables()
     
     init() {
         user = userManager.user.value
         hud.assign(to: &appState.$hudState)
 
-        _back
+        backSubject
             .sinkAsync { [weak self] in try self?.authenticationManager.signOut() }
             .store(in: &cancellables)
 
-        _resend
+        resendSubject
             .flatMapLatest(authenticationManager.resendEmailVerification)
             .mapToResult()
-            .sink(withUnretained: self, receiveValue: { owner, result in
+            .sink(withUnretained: self) { strongSelf, result in
                 switch result {
                 case .failure(let error):
-                    owner.hud.send(.error(error))
+                    strongSelf.hud.send(.error(error))
                 case .success:
-                    owner.hud.send(.success(text: Constants.resentEmailVerification))
+                    strongSelf.hud.send(.success(text: Constants.resentEmailVerification))
                 }
-            })
+            }
             .store(in: &cancellables)
         
         Timer
-            .publish(every: 1.seconds, on: .main, in: .default)
+            .publish(every: 5.seconds, on: .main, in: .default)
             .autoconnect()
             .mapToValue(())
             .eraseToAnyPublisher()
@@ -55,15 +55,15 @@ final class VerifyEmailViewModel: ObservableObject {
                     .ignoreFailure()
                     .eraseToAnyPublisher()
             }
-            .sink(receiveValue: {})
+            .sink()
             .store(in: &cancellables)
     }
     
     func back() {
-        _back.send()
+        backSubject.send()
     }
     
     func resendVerification() {
-        _resend.send()
+        resendSubject.send()
     }
 }

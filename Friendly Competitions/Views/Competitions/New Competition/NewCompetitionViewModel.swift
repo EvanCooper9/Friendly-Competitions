@@ -2,11 +2,12 @@ import Combine
 import CombineExt
 import ECKit
 import Factory
+import Foundation
 
 final class NewCompetitionViewModel: ObservableObject {
 
     private enum Constants {
-        static let defaultInterval: TimeInterval = 7
+        static let defaultInterval: TimeInterval = 7.days
     }
     
     struct InviteFriendsRow: Identifiable {
@@ -45,15 +46,15 @@ final class NewCompetitionViewModel: ObservableObject {
         
     init() {
         competition = .init(
-            name: "Test",
+            name: "",
             owner: "",
             participants: [],
             pendingParticipants: [],
-            scoringModel: .workout(.walking, [.distance, .heartRate, .steps]),
-            start: .now.advanced(by: -10.days),
-            end: .now.advanced(by: Constants.defaultInterval.days + 1.days),
+            scoringModel: .percentOfGoals,
+            start: .now.advanced(by: 1.days),
+            end: .now.advanced(by: Constants.defaultInterval + 1.days),
             repeats: false,
-            isPublic: true,
+            isPublic: false,
             banner: nil
         )
 
