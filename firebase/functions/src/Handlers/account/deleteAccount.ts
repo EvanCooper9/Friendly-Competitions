@@ -15,8 +15,7 @@ async function deleteAccount(userID: string) {
     (await firestore.collection("competitions").where("participants", "array-contains", userID).get())
         .forEach(doc => {
             const competition = new Competition(doc);
-            const participants = competition.participants;
-            participants.remove(userID);
+            const participants = competition.participants.filter(x => x != userID);
             batch.update(firestore.doc(`competitions/${competition.id}`), {participants: participants});
             batch.delete(firestore.doc(`competitions/${competition.id}/standings/${userID}`));
         });
@@ -25,8 +24,7 @@ async function deleteAccount(userID: string) {
     (await firestore.collection("competitions").where("pendingParticipants", "array-contains", userID).get())
         .forEach(doc => {
             const competition = new Competition(doc);
-            const pendingParticipants = competition.pendingParticipants;
-            pendingParticipants.remove(userID);
+            const pendingParticipants = competition.pendingParticipants.filter(x => x != userID);
             batch.update(firestore.doc(`competitions/${competition.id}`), {pendingParticipants: pendingParticipants});
         });
     
@@ -34,8 +32,7 @@ async function deleteAccount(userID: string) {
     (await firestore.collection("users").where("friends", "array-contains", userID).get())
         .forEach(doc => {
             const user = new User(doc);
-            const friends = user.friends;
-            friends.remove(userID);
+            const friends = user.friends.filter(x => x != userID);
             batch.update(firestore.doc(`users/${user.id}`), {friends: friends});
         });
 
@@ -43,8 +40,7 @@ async function deleteAccount(userID: string) {
     (await firestore.collection("users").where("incomingFriendRequests", "array-contains", userID).get())
         .forEach(doc => {
             const user = new User(doc);
-            const incomingFriendRequests = user.incomingFriendRequests;
-            incomingFriendRequests.remove(userID);
+            const incomingFriendRequests = user.incomingFriendRequests.filter(x => x != userID);
             batch.update(firestore.doc(`users/${user.id}`), {incomingFriendRequests: incomingFriendRequests});
         });
 
@@ -52,8 +48,7 @@ async function deleteAccount(userID: string) {
     (await firestore.collection("users").where("outgoingFriendRequests", "array-contains", userID).get())
         .forEach(doc => {
             const user = new User(doc);
-            const outgoingFriendRequests = user.outgoingFriendRequests;
-            outgoingFriendRequests.remove(userID);
+            const outgoingFriendRequests = user.outgoingFriendRequests.filter(x => x != userID);
             batch.update(firestore.doc(`users/${user.id}`), {outgoingFriendRequests: outgoingFriendRequests});
         });
 
