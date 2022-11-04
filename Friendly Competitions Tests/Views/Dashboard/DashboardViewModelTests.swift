@@ -31,7 +31,7 @@ final class DashboardViewModelTests: XCTestCase {
         friendsManager.friendRequests = .never()
         friendsManager.friendActivitySummaries = .never()
         permissionsManager.requiresPermission = .never()
-        userManager.user = .init(.evan)
+        userManager.userPublisher = .just(.evan)
         
         Container.activitySummaryManager.register { self.activitySummaryManager }
         Container.competitionsManager.register { self.competitionsManager }
@@ -158,7 +158,7 @@ final class DashboardViewModelTests: XCTestCase {
         let expectation = expectation(description: #function)
 
         let subject = CurrentValueSubject<User, Never>(.evan)
-        userManager.user = subject
+        userManager.userPublisher = subject.eraseToAnyPublisher()
 
         let viewModel = DashboardViewModel()
         viewModel.$title

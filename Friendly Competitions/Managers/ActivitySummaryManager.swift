@@ -67,7 +67,7 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
             .flatMapLatest(requestActivitySummaries)
             .removeDuplicates()
             .filter(\.isNotEmpty)
-            .combineLatest(userManager.user)
+            .combineLatest(userManager.userPublisher)
             .sinkAsync { [weak self] activitySummaries, user in
                 guard let strongSelf = self else { return }
             

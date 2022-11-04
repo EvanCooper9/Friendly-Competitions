@@ -11,7 +11,8 @@ import UIKit
 
 // sourcery: AutoMockable
 protocol UserManaging {
-    var user: CurrentValueSubject<User, Never> { get }
+    var user: User { get }
+    var userPublisher: AnyPublisher<User, Never> { get }
     func deleteAccount() -> AnyPublisher<Void, Error>
     func update(with user: User) -> AnyPublisher<Void, Error>
 }
@@ -20,7 +21,8 @@ final class UserManager: UserManaging {
 
     // MARK: - Public Properties
 
-    var user: CurrentValueSubject<User, Never>
+    var user: User { userSubject.value }
+    var userPublisher: AnyPublisher<User, Never>
 
     // MARK: - Private Properties
 
@@ -28,15 +30,24 @@ final class UserManager: UserManaging {
     @Injected(Container.authenticationManager) private var authenticationManager
     @Injected(Container.functions) private var functions
     @Injected(Container.database) private var database
+    
+    private let userSubject: CurrentValueSubject<User, Never>
 
     private var cancellables = Cancellables()
     private var listenerBag = ListenerBag()
 
     init(user: User) {
-        self.user = .init(user)
-        if UIApplication.shared.applicationState == .active {
-            listenForUser()
-        }
+        userSubject = .init(user)
+        userPublisher = userSubject
+            .share(replay: 1)
+            .eraseToAnyPublisher()
+        
+        NotificationCenter.default
+            .publisher(for: UIApplication.didBecomeActiveNotification)
+            .first()
+            .mapToVoid()
+            .sink(withUnretained: self) { $0.listenForUser() }
+            .store(in: &cancellables)
     }
 
     func deleteAccount() -> AnyPublisher<Void, Error> {
@@ -49,7 +60,7 @@ final class UserManager: UserManaging {
     }
 
     func update(with user: User) -> AnyPublisher<Void, Error> {
-        guard user != self.user.value else { return .just(()) }
+        guard user != self.user else { return .just(()) }
         return .fromAsync { [weak self] in
             try await self?.database.document("users/\(user.id)").updateDataEncodable(user)
         }
@@ -58,11 +69,13 @@ final class UserManager: UserManaging {
     // MARK: - Private Methods
 
     private func listenForUser() {
-        database.document("users/\(user.value.id)")
+        database.document("users/\(user.id)")
             .addSnapshotListener { [weak self] snapshot, _ in
                 guard let self = self, let user = try? snapshot?.decoded(as: User.self) else { return }
                 self.analyticsManager.set(userId: user.id)
-                self.user.send(user)
+                DispatchQueue.main.async { [weak self] in
+                    self?.userSubject.send(user)
+                }
             }
             .store(in: listenerBag)
     }

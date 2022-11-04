@@ -757,11 +757,16 @@ class StorageManagingMock: StorageManaging {
 
 }
 class UserManagingMock: UserManaging {
-    var user: CurrentValueSubject<User, Never> {
+    var user: User {
         get { return underlyingUser }
         set(value) { underlyingUser = value }
     }
-    var underlyingUser: CurrentValueSubject<User, Never>!
+    var underlyingUser: User!
+    var userPublisher: AnyPublisher<User, Never> {
+        get { return underlyingUserPublisher }
+        set(value) { underlyingUserPublisher = value }
+    }
+    var underlyingUserPublisher: AnyPublisher<User, Never>!
 
     //MARK: - deleteAccount
 

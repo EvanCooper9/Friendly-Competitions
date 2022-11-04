@@ -57,14 +57,17 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
         if let currentUser {
             registerUserManager(with: currentUser)
         }
-
+        
         $currentUser
-            .receive(on: RunLoop.main)
-            .sink(withUnretained: self) { strongSelf, currentUser in
-                if let currentUser {
-                    strongSelf.registerUserManager(with: currentUser)
+            .removeDuplicates { $0?.id == $1?.id }
+            .dropFirst()
+            .sink(withUnretained: self) { strongSelf, user in
+                if let user = user {
+                    strongSelf.registerUserManager(with: user)
+                } else {
+                    Container.userManager.reset()
                 }
-                strongSelf._loggedIn.send(currentUser != nil)
+                strongSelf._loggedIn.send(user != nil)
             }
             .store(in: &cancellables)
 
@@ -176,7 +179,7 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
         Container.userManager.register { [weak self] in
             guard let strongSelf = self else { fatalError("This should not happen") }
             let userManager = UserManager(user: user)
-            strongSelf.userListener = userManager.user
+            strongSelf.userListener = userManager.userPublisher
                 .receive(on: RunLoop.main)
                 .map(User?.init)
                 .assign(to: \.currentUser, on: strongSelf, ownership: .weak)
