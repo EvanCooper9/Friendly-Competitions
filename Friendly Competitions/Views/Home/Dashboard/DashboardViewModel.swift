@@ -37,7 +37,7 @@ final class DashboardViewModel: ObservableObject {
         showDeveloper = true
         #else
         userManager.userPublisher
-            .map { $0.id == "0IQfVBJIgGdfC9CHgYefpZUQ13l1" || $0.id == "o2E4T1HS9tUqCYfrm7qPd3TuryE2" }
+            .map { ["evan.cooper@rogers.com", "evancmcooper@gmail.com"].contains($0.email) }
             .assign(to: &$showDeveloper)
         #endif
 
