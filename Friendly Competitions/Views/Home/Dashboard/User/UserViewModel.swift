@@ -39,7 +39,7 @@ final class UserViewModel: ObservableObject {
             .compactMap { $0[user.id] }
             .assign(to: &$activitySummary)
         
-        userManager.user
+        userManager.userPublisher
             .map { loggedInUser in
                 if loggedInUser.friends.contains(user.id) {
                     return [.deleteFriend]

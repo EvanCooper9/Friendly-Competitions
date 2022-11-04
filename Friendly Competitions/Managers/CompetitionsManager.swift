@@ -111,9 +111,9 @@ final class CompetitionsManager: CompetitionsManaging {
 
     func accept(_ competition: Competition) -> AnyPublisher<Void, Error> {
         var competition = competition
-        competition.pendingParticipants.remove(userManager.user.value.id)
-        if !competition.participants.contains(userManager.user.value.id) {
-            competition.participants.append(userManager.user.value.id)
+        competition.pendingParticipants.remove(userManager.user.id)
+        if !competition.participants.contains(userManager.user.id) {
+            competition.participants.append(userManager.user.id)
         }
         _competitions.append(competition)
         _invitedCompetitions.remove(competition)
@@ -136,7 +136,7 @@ final class CompetitionsManager: CompetitionsManaging {
 
     func decline(_ competition: Competition) -> AnyPublisher<Void, Error> {
         var competition = competition
-        competition.pendingParticipants.remove(userManager.user.value.id)
+        competition.pendingParticipants.remove(userManager.user.id)
         analyticsManager.log(event: .declineCompetition(id: competition.id))
         return update(competition)
     }
@@ -170,21 +170,21 @@ final class CompetitionsManager: CompetitionsManaging {
 
     func join(_ competition: Competition) -> AnyPublisher<Void, Error> {
         var competition = competition
-        competition.participants.append(userManager.user.value.id)
+        competition.participants.append(userManager.user.id)
         analyticsManager.log(event: .joinCompetition(id: competition.id))
         return update(competition)
     }
 
     func leave(_ competition: Competition) -> AnyPublisher<Void, Error> {
         var competition = competition
-        competition.participants.remove(userManager.user.value.id)
+        competition.participants.remove(userManager.user.id)
         _competitions.remove(competition)
         _standings[competition.id] = nil
         _participants[competition.id] = nil
         _pendingParticipants[competition.id] = nil
         Task { [weak self, competition] in
             guard let self = self else { return }
-            let user = userManager.user.value
+            let user = userManager.user
             try await self.database.document("competitions/\(competition.id)/standings/\(user.id)").delete()
             try await self.database.document("competitions/\(competition.id)").updateDataEncodable(competition)
         }
@@ -252,7 +252,7 @@ final class CompetitionsManager: CompetitionsManaging {
 
     private func listen() {
         database.collection("competitions")
-            .whereField("participants", arrayContains: userManager.user.value.id)
+            .whereField("participants", arrayContains: userManager.user.id)
             .addSnapshotListener { [weak self] snapshot, error in
                 guard let self = self, let snapshot = snapshot else { return }
                 let competitions = snapshot.documents.decoded(asArrayOf: Competition.self)
@@ -261,7 +261,7 @@ final class CompetitionsManager: CompetitionsManaging {
             .store(in: listenerBag)
 
         database.collection("competitions")
-            .whereField("pendingParticipants", arrayContains: userManager.user.value.id)
+            .whereField("pendingParticipants", arrayContains: userManager.user.id)
             .addSnapshotListener { [weak self] snapshot, error in
                 guard let self = self, let snapshot = snapshot else { return }
                 let competitions = snapshot.documents.decoded(asArrayOf: Competition.self)
@@ -298,9 +298,9 @@ final class CompetitionsManager: CompetitionsManaging {
                         .documents
                         .decoded(asArrayOf: Competition.Standing.self)
 
-                    if !standings.contains(where: { $0.userId == self.userManager.user.value.id }) {
+                    if !standings.contains(where: { $0.userId == self.userManager.user.id }) {
                         let standing = try await standingsRef
-                            .whereField("userId", isEqualTo: self.userManager.user.value.id)
+                            .whereField("userId", isEqualTo: self.userManager.user.id)
                             .getDocuments()
                             .documents
                             .first?

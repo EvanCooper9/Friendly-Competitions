@@ -24,7 +24,7 @@ final class VerifyEmailViewModel: ObservableObject {
     private var cancellables = Cancellables()
     
     init() {
-        user = userManager.user.value
+        user = userManager.user
         hud.assign(to: &appState.$hudState)
 
         backSubject

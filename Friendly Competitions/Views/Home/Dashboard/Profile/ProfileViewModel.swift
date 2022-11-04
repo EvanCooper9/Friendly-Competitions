@@ -22,8 +22,8 @@ final class ProfileViewModel: ObservableObject {
     // MARK: - Lifecycle
 
     init() {
-        user = userManager.user.value
-        sharedDeepLink = .friendReferral(id: userManager.user.value.id)
+        user = userManager.user
+        sharedDeepLink = .friendReferral(id: userManager.user.id)
         
         $user
             .removeDuplicates()
@@ -36,7 +36,7 @@ final class ProfileViewModel: ObservableObject {
             .sink()
             .store(in: &cancellables)
         
-        userManager.user
+        userManager.userPublisher
             .removeDuplicates()
             .map(User?.init)
             .assign(to: &$user)

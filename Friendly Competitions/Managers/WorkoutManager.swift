@@ -43,7 +43,7 @@ final class WorkoutManager: WorkoutManaging {
             }
             .flatMapLatest(requestWorkouts)
             .filter(\.isNotEmpty)
-            .combineLatest(userManager.user)
+            .combineLatest(userManager.userPublisher)
             .sinkAsync { [weak self] workouts, user in
                 guard let self = self else { return }
                 let batch = self.database.batch()
