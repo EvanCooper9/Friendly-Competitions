@@ -3,7 +3,6 @@ import CombineExt
 import ECKit
 import Factory
 
-@MainActor
 final class InviteFriendsViewModel: ObservableObject {
     
     struct RowConfig: Identifiable {
@@ -46,6 +45,7 @@ final class InviteFriendsViewModel: ObservableObject {
                 .eraseToAnyPublisher()
             incomingRequests = userManager.userPublisher
                 .map(\.incomingFriendRequests)
+                .print("incoming requests")
                 .eraseToAnyPublisher()
         case .competitionInvite(let competition):
             alreadyInvited = Publishers

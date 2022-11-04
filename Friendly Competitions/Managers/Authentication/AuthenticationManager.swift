@@ -50,6 +50,7 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
 
     override init() {
         super.init()
+        try! Auth.auth().useUserAccessGroup(Bundle.main.bundleIdentifier!)
 
         _emailVerified = .init(Auth.auth().currentUser?.isEmailVerified ?? false)
         _loggedIn = .init(currentUser != nil)
@@ -70,21 +71,31 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
                 strongSelf._loggedIn.send(user != nil)
             }
             .store(in: &cancellables)
-
-        listenForAuth()
     }
 
     // MARK: - Public Methods
     
     func signIn(with signInMethod: SignInMethod) -> AnyPublisher<Void, Error> {
+        let publisher: AnyPublisher<Void, Error>
         switch signInMethod {
         case .apple:
-            return signInWithApple()
+            publisher = signInWithApple()
         case .email(let email, let password):
-            return .fromAsync {
-                try await Auth.auth().signIn(withEmail: email, password: password)
-            }
+            publisher = signIn(email: email, password: password)
         }
+        
+        return publisher
+            .handleEvents(withUnretained: self, receiveOutput: { strongSelf in
+                guard let firebaseUser = Auth.auth().currentUser else { return }
+                Task {
+                    let user = try await self.database.document("users/\(firebaseUser.uid)").getDocument().decoded(as: User.self)
+                    DispatchQueue.main.async {
+                        self.currentUser = user
+                        self._emailVerified.send(firebaseUser.isEmailVerified || firebaseUser.email == "review@apple.com")
+                    }
+                }
+            })
+            .eraseToAnyPublisher()
     }
     
     func signUp(name: String, email: String, password: String, passwordConfirmation: String) -> AnyPublisher<Void, Error> {
@@ -128,6 +139,8 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
 
     func signOut() throws {
         try Auth.auth().signOut()
+        currentUser = nil
+        _emailVerified.send(false)
     }
     
     // MARK: - Private Methods
@@ -150,23 +163,10 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
         return subject.eraseToAnyPublisher()
     }
     
-    private func signIn(email: String, password: String) async throws {
-        try await Auth.auth().signIn(withEmail: email, password: password)
-    }
-    
-    private func listenForAuth() {
-        Auth.auth()
-            .authStateDidChangePublisher()
-            .sinkAsync { [weak self] firebaseUser in
-                guard let firebaseUser = firebaseUser else {
-                    self?.currentUser = nil
-                    self?.userListener = nil
-                    return
-                }
-                
-                try await self?.updateFirestoreUserWithAuthUser(firebaseUser)
-            }
-            .store(in: &cancellables)
+    private func signIn(email: String, password: String) -> AnyPublisher<Void, Error> {
+        .fromAsync {
+            try await Auth.auth().signIn(withEmail: email, password: password)
+        }
     }
 
     private func sha256(_ input: String) -> String {
@@ -202,12 +202,6 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
             guard let nsError = error as NSError?, nsError.domain == "FIRFirestoreErrorDomain", nsError.code == 5 else { return }
             let user = User(id: firebaseUser.uid, email: email, name: name)
             try await database.document("users/\(user.id)").setDataEncodable(user)
-        }
-        
-        let user = try await self.database.document("users/\(firebaseUser.uid)").getDocument().decoded(as: User.self)
-        DispatchQueue.main.async {
-            self.currentUser = user
-            self._emailVerified.send(firebaseUser.isEmailVerified || firebaseUser.email == "review@apple.com")
         }
     }
 }

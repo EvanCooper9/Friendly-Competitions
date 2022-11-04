@@ -1,5 +1,13 @@
 {
   "indexes": [
+    {
+      "collectionGroup": "activitySummaries",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [
+        { "fieldPath": "date", "order": "ASCENDING" },
+        { "fieldPath": "userID", "order": "ASCENDING" }
+      ]
+    },
     { 
       "collectionGroup": "competitions",
       "queryScope": "COLLECTION",
@@ -9,11 +17,11 @@
       ]
     },
     {
-      "collectionGroup": "activitySummaries",
-      "queryScope": "COLLECTION_GROUP",
+      "collectionGroup": "users",
+      "queryScope": "COLLECTION",
       "fields": [
-        { "fieldPath": "date", "order": "ASCENDING" },
-        { "fieldPath": "userID", "order": "ASCENDING" }
+        { "fieldPath": "id", "order": "ASCENDING" },
+        { "fieldPath": "searchable", "order": "ASCENDING" }
       ]
     }
   ],
