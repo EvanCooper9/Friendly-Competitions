@@ -109,7 +109,7 @@ struct Dashboard: View {
                         Spacer()
                         if row.isInvitation {
                             Text("Invited")
-                                .foregroundColor(.gray)
+                                .foregroundColor(.secondaryLabel)
                         }
                     }
                 }

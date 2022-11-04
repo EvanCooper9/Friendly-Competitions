@@ -17,6 +17,6 @@ final class CompetitionDetailsViewModel: ObservableObject {
     
     init(competition: Competition) {
         self.competition = competition
-        isInvitation = competition.pendingParticipants.contains(userManager.user.value.id)
+        isInvitation = competition.pendingParticipants.contains(userManager.user.id)
     }
 }

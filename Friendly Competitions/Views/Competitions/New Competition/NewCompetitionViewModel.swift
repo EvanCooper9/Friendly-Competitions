@@ -75,7 +75,7 @@ final class NewCompetitionViewModel: ObservableObject {
             .assign(to: &$friendRows)
 
         _create
-            .withLatestFrom(userManager.user)
+            .withLatestFrom(userManager.userPublisher)
             .setFailureType(to: Error.self)
             .flatMapLatest(withUnretained: self) { strongSelf, user -> AnyPublisher<Void, Error> in
                 var competition = strongSelf.competition

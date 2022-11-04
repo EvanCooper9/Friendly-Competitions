@@ -41,15 +41,10 @@ final class InviteFriendsViewModel: ObservableObject {
 
         switch action {
         case .addFriend:
-            alreadyInvited = Publishers
-                .CombineLatest(
-                    friendsManager.friends.mapMany(\.id),
-                    userManager.user.map(\.outgoingFriendRequests)
-                )
-                .map { $0 + $1 }
+            alreadyInvited = userManager.userPublisher
+                .map { $0.friends + $0.outgoingFriendRequests }
                 .eraseToAnyPublisher()
-
-            incomingRequests = userManager.user
+            incomingRequests = userManager.userPublisher
                 .map(\.incomingFriendRequests)
                 .eraseToAnyPublisher()
         case .competitionInvite(let competition):
@@ -60,6 +55,7 @@ final class InviteFriendsViewModel: ObservableObject {
                     let pendingParticipants = pendingParticipants[competition.id] ?? []
                     return (participants + pendingParticipants).map(\.id)
                 }
+                .share(replay: 1)
                 .eraseToAnyPublisher()
 
             incomingRequests = .just([])
@@ -138,7 +134,7 @@ final class InviteFriendsViewModel: ObservableObject {
                 let deepLink: DeepLink?
                 switch action {
                 case .addFriend:
-                    deepLink = .friendReferral(id: strongSelf.userManager.user.value.id)
+                    deepLink = .friendReferral(id: strongSelf.userManager.user.id)
                 case .competitionInvite(let competition):
                     deepLink = .competitionInvite(id: competition.id)
                 }

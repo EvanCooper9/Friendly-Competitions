@@ -49,12 +49,12 @@ final class CompetitionViewModel: ObservableObject {
         self.competition = competition
         self.competitionPreEdit = competition
 
-        userManager.user
+        userManager.userPublisher
             .map { $0.id == competition.owner }
             .assign(to: &$canEdit)
         
         $competition
-            .combineLatest(userManager.user)
+            .combineLatest(userManager.userPublisher)
             .map { competition, user -> [CompetitionViewAction] in
                 var actions = [CompetitionViewAction]()
                 if competition.repeats || !competition.ended {
@@ -80,7 +80,7 @@ final class CompetitionViewModel: ObservableObject {
             .assign(to: &$competition)
         
         competitionsManager.standings
-            .combineLatest(competitionsManager.participants, userManager.user)
+            .combineLatest(competitionsManager.participants, userManager.userPublisher)
             .map { standings, participants, currentUser -> [CompetitionParticipantView.Config] in
                 guard let standings = standings[competition.id],
                       let participants = participants[competition.id]
@@ -104,7 +104,7 @@ final class CompetitionViewModel: ObservableObject {
             .assign(to: &$standings)
         
         competitionsManager.pendingParticipants
-            .combineLatest(userManager.user)
+            .combineLatest(userManager.userPublisher)
             .map { pendingParticipants, user in
                 guard let pendingParticipants = pendingParticipants[competition.id] else { return [] }
                 return pendingParticipants.map { pendingParticipant in
