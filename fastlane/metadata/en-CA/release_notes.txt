@@ -1,7 +1,8 @@
 New features: 
-• Sign in with email and password
-• Send invite links to competitions
-• Competitions can be edited by their owners
+• Create competitions based on workouts
 
 Improvements:
-• Competitions scores are more up to date
+• Fixed an issue where a user's name could be blank when using Sign-in With Apple
+• Adding friends is more reliable
+• Background updates consume less battery
+• Performance Improvements
