@@ -1,7 +1,7 @@
 import Factory
 import SwiftUI
 
-struct Explore: View {
+struct ExploreView: View {
 
     private enum Constants {
         static let horizontalPadding = 20.0
@@ -53,7 +53,7 @@ struct Explore: View {
 #if DEBUG
 struct ExploreCompetitions_Previews: PreviewProvider {
     static var previews: some View {
-        Explore()
+        ExploreView()
             .embeddedInNavigationView()
             .setupMocks()
     }

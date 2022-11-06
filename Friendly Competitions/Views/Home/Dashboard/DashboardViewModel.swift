@@ -46,7 +46,6 @@ final class DashboardViewModel: ObservableObject {
         competitionsManager.invitedCompetitions.assign(to: &$invitedCompetitions)
         
         let friendRequests = friendsManager.friendRequests
-//            .combineLatest(friendsManager.friendActivitySummaries)
             .map { friendRequests in
                 friendRequests.map { friendRequest in
                     FriendRow(

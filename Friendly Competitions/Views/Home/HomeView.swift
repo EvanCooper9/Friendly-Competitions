@@ -1,17 +1,17 @@
 import Factory
 import SwiftUI
 
-struct Home: View {
+struct HomeView: View {
 
     @StateObject private var viewModel = HomeViewModel()
 
     var body: some View {
         TabView {
-            Dashboard()
+            DashboardView()
                 .embeddedInNavigationView()
                 .tabItem { Label("Home", systemImage: .houseFill) }
         
-            Explore()
+            ExploreView()
                 .embeddedInNavigationView()
                 .tabItem { Label("Explore", systemImage: .sparkleMagnifyingglass) }
         }
@@ -45,7 +45,7 @@ struct Home_Previews: PreviewProvider {
     }
 
     static var previews: some View {
-        Home()
+        HomeView()
             .setupMocks(setupMocks)
     }
 }

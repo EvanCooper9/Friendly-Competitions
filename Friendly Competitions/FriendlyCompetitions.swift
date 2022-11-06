@@ -11,7 +11,7 @@ struct FriendlyCompetitions: App {
             Group {
                 if appModel.loggedIn {
                     if appModel.emailVerified {
-                        Home()
+                        HomeView()
                     } else {
                         VerifyEmailView()
                     }

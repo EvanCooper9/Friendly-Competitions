@@ -25,21 +25,18 @@ final class SignInViewModel: ObservableObject {
     @Injected(Container.appState) private var appState
     @Injected(Container.authenticationManager) private var authenticationManager
 
-    private let _forgot = PassthroughSubject<Void, Never>()
-    private let _signIn = PassthroughSubject<SignInMethod, Never>()
-    private let _signUp = PassthroughSubject<Void, Never>()
+    private let forgotSubject = PassthroughSubject<Void, Never>()
+    private let signInSubject = PassthroughSubject<SignInMethod, Never>()
+    private let signUpSubject = PassthroughSubject<Void, Never>()
     private let hud = PassthroughSubject<HUDState?, Never>()
-    private let isLoading = PassthroughSubject<Bool, Never>()
-
     private var cancellables = Cancellables()
     
     // MARK: - Lifecycle
     
     init() {
         hud.assign(to: &appState.$hudState)
-        isLoading.assign(to: &$loading)
 
-        _forgot
+        forgotSubject
             .setFailureType(to: Error.self)
             .handleEvents(withUnretained: self, receiveOutput: { $0.loading = true })
             .flatMapLatest(withUnretained: self) { strongSelf in
@@ -57,7 +54,7 @@ final class SignInViewModel: ObservableObject {
             })
             .store(in: &cancellables)
 
-        _signIn
+        signInSubject
             .setFailureType(to: Error.self)
             .flatMapLatest(withUnretained: self) { strongSelf, signInMethod in
                 strongSelf.authenticationManager
@@ -76,7 +73,7 @@ final class SignInViewModel: ObservableObject {
             })
             .store(in: &cancellables)
 
-        _signUp
+        signUpSubject
             .setFailureType(to: Error.self)
             .flatMapLatest(withUnretained: self) { strongSelf in
                 strongSelf.authenticationManager
@@ -104,18 +101,18 @@ final class SignInViewModel: ObservableObject {
     // MARK: - Public Methods
     
     func forgot() {
-        _forgot.send()
+        forgotSubject.send()
     }
     
     func submit() {
         if signingInWithEmail {
             if isSigningUp {
-                _signUp.send()
+                signUpSubject.send()
             } else {
-                _signIn.send(.email(email, password: password))
+                signInSubject.send(.email(email, password: password))
             }
         } else {
-            _signIn.send(.apple)
+            signInSubject.send(.apple)
         }
     }
 }

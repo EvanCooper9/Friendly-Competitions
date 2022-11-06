@@ -1,7 +1,7 @@
 import SwiftUI
 import SwiftUIX
 
-struct Dashboard: View {
+struct DashboardView: View {
     
     @StateObject private var viewModel = DashboardViewModel()
             
@@ -40,11 +40,11 @@ struct Dashboard: View {
             }
         }
         .sheet(isPresented: $presentAbout) { About() }
-        .sheet(isPresented: $presentSearchFriendsSheet) { InviteFriends(action: .addFriend) }
-        .sheet(isPresented: $presentNewCompetition) { NewCompetition() }
+        .sheet(isPresented: $presentSearchFriendsSheet) { InviteFriendsView(action: .addFriend) }
+        .sheet(isPresented: $presentNewCompetition) { NewCompetitionView() }
         .sheet(isPresented: $viewModel.requiresPermissions) { PermissionsView() }
         .sheet(isPresented: $presentDeveloper) { DeveloperView() }
-        .registerScreenView(name: "Home")
+        .registerScreenView(name: "Dashboard")
     }
     
     private var activitySummary: some View {
@@ -160,7 +160,7 @@ struct Dashboard_Previews: PreviewProvider {
     }
     
     static var previews: some View {
-        Dashboard()
+        DashboardView()
             .setupMocks(setupMocks)
             .embeddedInNavigationView()
     }

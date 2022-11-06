@@ -10,14 +10,14 @@ extension Container {
     static let activitySummaryManager = Factory(scope: .shared) { ActivitySummaryManager() as ActivitySummaryManaging }
     static let analyticsManager = Factory(scope: .shared) { AnalyticsManager() as AnalyticsManaging }
     static let authenticationManager = Factory(scope: .shared) { AuthenticationManager() as AuthenticationManaging }
-    static let competitionsManager  = Factory(scope: .shared) { CompetitionsManager() as CompetitionsManaging }
-    static let friendsManager  = Factory(scope: .shared) { FriendsManager() as FriendsManaging }
-    static let healthKitManager  = Factory(scope: .shared) { HealthKitManager() as HealthKitManaging }
-    static let notificationManager  = Factory(scope: .shared) { NotificationManager() as NotificationManaging }
-    static let permissionsManager  = Factory(scope: .shared) { PermissionsManager() as PermissionsManaging }
-    static let storageManager  = Factory(scope: .shared) { StorageManager() as StorageManaging }
-    static let workoutManager  = Factory(scope: .shared) { WorkoutManager() as WorkoutManaging }
+    static let competitionsManager = Factory(scope: .shared) { CompetitionsManager() as CompetitionsManaging }
+    static let friendsManager = Factory(scope: .shared) { FriendsManager() as FriendsManaging }
+    static let healthKitManager = Factory(scope: .shared) { HealthKitManager() as HealthKitManaging }
+    static let notificationManager = Factory(scope: .shared) { NotificationManager() as NotificationManaging }
+    static let permissionsManager = Factory(scope: .shared) { PermissionsManager() as PermissionsManaging }
+    static let storageManager = Factory(scope: .shared) { StorageManager() as StorageManaging }
     static let userManager = Factory<UserManaging>(scope: .shared) { fatalError("User manager not initialized") }
+    static let workoutManager = Factory(scope: .shared) { WorkoutManager() as WorkoutManaging }
     
     // Global state
     static let appState = Factory(scope: .shared) { AppState() }

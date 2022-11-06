@@ -8,6 +8,7 @@ import FirebaseFirestore
 import HealthKit
 import UIKit
 
+// sourcery: AutoMockable
 protocol WorkoutManaging {
     func update() -> AnyPublisher<Void, Error>
 }
@@ -42,13 +43,13 @@ final class WorkoutManager: WorkoutManaging {
                     .eraseToAnyPublisher()
             }
             .flatMapLatest(requestWorkouts)
-            .filter(\.isNotEmpty)
             .combineLatest(userManager.userPublisher)
             .sinkAsync { [weak self] workouts, user in
-                guard let self = self else { return }
-                let batch = self.database.batch()
+                guard let strongSelf = self else { return }
+                defer { strongSelf.uploadFinished.send() }
+                let batch = strongSelf.database.batch()
                 try workouts.forEach { workout in
-                    let document = self.database.document("users/\(user.id)/workouts/\(workout.id)")
+                    let document = strongSelf.database.document("users/\(user.id)/workouts/\(workout.id)")
                     _ = try batch.setDataEncodable(workout, forDocument: document)
                 }
                 try await batch.commit()
