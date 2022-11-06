@@ -57,10 +57,10 @@ final class ProfileViewModel: ObservableObject {
     }
     
     func deleteAccount() {
-        deleteSubject.accept()
+        deleteSubject.send()
     }
     
     func signOut() {
-        _signOut.accept()
+        signOutSubject.send()
     }
 }
