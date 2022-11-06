@@ -126,8 +126,6 @@ final class CompetitionsManager: CompetitionsManaging {
                 .document("competitions/\(competition.id)")
                 .setDataEncodable(competition)
         }
-        .flatMapLatest(withUnretained: self) { $0.activitySummaryManager.update() }
-        .flatMapLatest(withUnretained: self) { $0.workoutManager.update() }
         .handleEvents(withUnretained: self, receiveOutput: {
             $0.analyticsManager.log(event: .createCompetition(name: competition.name))
         })
