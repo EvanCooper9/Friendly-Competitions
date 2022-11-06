@@ -14,6 +14,12 @@ struct HomeView: View {
             ExploreView()
                 .embeddedInNavigationView()
                 .tabItem { Label("Explore", systemImage: .sparkleMagnifyingglass) }
+            
+            if #available(iOS 16, *) {
+                StatisticsView()
+                    .embeddedInNavigationView()
+                    .tabItem { Label("Statistics", systemImage: .chartXyaxisLine) }
+            }
         }
         .onOpenURL(perform: viewModel.handle)
         .sheet(item: $viewModel.deepLinkedCompetition) { CompetitionView(competition: $0).embeddedInNavigationView() }

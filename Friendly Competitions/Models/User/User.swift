@@ -8,7 +8,7 @@ struct User: Codable, Equatable, Identifiable {
     var incomingFriendRequests = [User.ID]()
     var outgoingFriendRequests = [User.ID]()
     var notificationTokens: [String]? = []
-    var statistics: Statistics? = .zero
+    var statistics: Medals? = .zero
 
     var searchable: Bool? = true
     var showRealName: Bool? = true

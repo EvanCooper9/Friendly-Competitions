@@ -14,7 +14,7 @@
 		C10E5548272B47080053BBA6 /* XCAssets+Generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = C10E5547272B47080053BBA6 /* XCAssets+Generated.swift */; };
 		C114314227B9B6ED00915757 /* DeepLink.swift in Sources */ = {isa = PBXBuildFile; fileRef = C114314127B9B6ED00915757 /* DeepLink.swift */; };
 		C1185A2526D6717C002E2377 /* ActivitySummary.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1185A2426D6717C002E2377 /* ActivitySummary.swift */; };
-		C123C9C527A740FE00375F73 /* StatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C123C9C427A740FE00375F73 /* StatisticsView.swift */; };
+		C123C9C527A740FE00375F73 /* MedalsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = C123C9C427A740FE00375F73 /* MedalsView.swift */; };
 		C123C9C727A74C4100375F73 /* Button+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = C123C9C627A74C4000375F73 /* Button+Extensions.swift */; };
 		C123C9C927A74F3500375F73 /* PermissionsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = C123C9C827A74F3500375F73 /* PermissionsManager.swift */; };
 		C123C9CD27A863F100375F73 /* UserHashIDPill.swift in Sources */ = {isa = PBXBuildFile; fileRef = C123C9CC27A863F100375F73 /* UserHashIDPill.swift */; };
@@ -141,6 +141,13 @@
 		EDA035B829173F140091E7A6 /* ArrayBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA035B729173F140091E7A6 /* ArrayBuilder.swift */; };
 		EDA035BB2917FE190091E7A6 /* NotificationName+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA035BA2917FE190091E7A6 /* NotificationName+Extensions.swift */; };
 		EDA035BE2917FFF90091E7A6 /* Dictionary+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA035BD2917FFF90091E7A6 /* Dictionary+Extensions.swift */; };
+		EDA035C029180D8F0091E7A6 /* CompetitionHistorySection.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA035BF29180D8F0091E7A6 /* CompetitionHistorySection.swift */; };
+		EDA035C42918245C0091E7A6 /* StatisticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA035C22918245C0091E7A6 /* StatisticsView.swift */; };
+		EDA035C52918245C0091E7A6 /* StatisticsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA035C32918245C0091E7A6 /* StatisticsViewModel.swift */; };
+		EDA035C9291827B10091E7A6 /* StatisticsPaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA035C7291827B10091E7A6 /* StatisticsPaywallView.swift */; };
+		EDA035CA291827B10091E7A6 /* StatisticsPaywallViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA035C8291827B10091E7A6 /* StatisticsPaywallViewModel.swift */; };
+		EDA035CC291860090091E7A6 /* StoreKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA035CB291860090091E7A6 /* StoreKitManager.swift */; };
+		EDA035CE2918619C0091E7A6 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EDA035CD2918619C0091E7A6 /* StoreKit.framework */; };
 		EDA352902836EFB600390585 /* UserViewAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA3528F2836EFB600390585 /* UserViewAction.swift */; };
 		EDA352932836F87600390585 /* CompetitionViewAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA352922836F87600390585 /* CompetitionViewAction.swift */; };
 		EDA3529528370F4C00390585 /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA3529428370F4C00390585 /* HomeViewModel.swift */; };
@@ -189,7 +196,7 @@
 		C10E5547272B47080053BBA6 /* XCAssets+Generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "XCAssets+Generated.swift"; sourceTree = "<group>"; };
 		C114314127B9B6ED00915757 /* DeepLink.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLink.swift; sourceTree = "<group>"; };
 		C1185A2426D6717C002E2377 /* ActivitySummary.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitySummary.swift; sourceTree = "<group>"; };
-		C123C9C427A740FE00375F73 /* StatisticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsView.swift; sourceTree = "<group>"; };
+		C123C9C427A740FE00375F73 /* MedalsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MedalsView.swift; sourceTree = "<group>"; };
 		C123C9C627A74C4000375F73 /* Button+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Button+Extensions.swift"; sourceTree = "<group>"; };
 		C123C9C827A74F3500375F73 /* PermissionsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionsManager.swift; sourceTree = "<group>"; };
 		C123C9CC27A863F100375F73 /* UserHashIDPill.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserHashIDPill.swift; sourceTree = "<group>"; };
@@ -310,6 +317,13 @@
 		EDA035B729173F140091E7A6 /* ArrayBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrayBuilder.swift; sourceTree = "<group>"; };
 		EDA035BA2917FE190091E7A6 /* NotificationName+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotificationName+Extensions.swift"; sourceTree = "<group>"; };
 		EDA035BD2917FFF90091E7A6 /* Dictionary+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Dictionary+Extensions.swift"; sourceTree = "<group>"; };
+		EDA035BF29180D8F0091E7A6 /* CompetitionHistorySection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionHistorySection.swift; sourceTree = "<group>"; };
+		EDA035C22918245C0091E7A6 /* StatisticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsView.swift; sourceTree = "<group>"; };
+		EDA035C32918245C0091E7A6 /* StatisticsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsViewModel.swift; sourceTree = "<group>"; };
+		EDA035C7291827B10091E7A6 /* StatisticsPaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsPaywallView.swift; sourceTree = "<group>"; };
+		EDA035C8291827B10091E7A6 /* StatisticsPaywallViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticsPaywallViewModel.swift; sourceTree = "<group>"; };
+		EDA035CB291860090091E7A6 /* StoreKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreKitManager.swift; sourceTree = "<group>"; };
+		EDA035CD2918619C0091E7A6 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		EDA3528F2836EFB600390585 /* UserViewAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserViewAction.swift; sourceTree = "<group>"; };
 		EDA352922836F87600390585 /* CompetitionViewAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionViewAction.swift; sourceTree = "<group>"; };
 		EDA3529428370F4C00390585 /* HomeViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
@@ -340,6 +354,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				ED0470C128FF2F4700A941AC /* FirebaseMessaging in Frameworks */,
+				EDA035CE2918619C0091E7A6 /* StoreKit.framework in Frameworks */,
 				ED0470B528FF2F4700A941AC /* FirebaseAnalyticsSwift in Frameworks */,
 				ED71E2A328F70212001FED74 /* Files in Frameworks */,
 				C1C8B24726F3FB9C008D6B1B /* HealthKit.framework in Frameworks */,
@@ -446,7 +461,7 @@
 			children = (
 				C1401F8826D933560080F74F /* Profile.swift */,
 				ED901B492802463900FE619E /* ProfileViewModel.swift */,
-				C123C9C427A740FE00375F73 /* StatisticsView.swift */,
+				C123C9C427A740FE00375F73 /* MedalsView.swift */,
 			);
 			path = Profile;
 			sourceTree = "<group>";
@@ -627,6 +642,7 @@
 		C1691DD526D56024006FFA30 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				EDA035CD2918619C0091E7A6 /* StoreKit.framework */,
 				ED493E9627FDE47300A94F4A /* AuthenticationServices.framework */,
 				C1C8B24826F3FBA3008D6B1B /* HealthKitUI.framework */,
 				C1C8B24626F3FB9C008D6B1B /* HealthKit.framework */,
@@ -724,6 +740,7 @@
 				EDA3529428370F4C00390585 /* HomeViewModel.swift */,
 				C19B7F2E27BEA69200BCA4B9 /* Dashboard */,
 				C19B7F2927BD8C5C00BCA4B9 /* Explore */,
+				EDA035C1291824430091E7A6 /* Statistics */,
 				C1F7DFF226D7F77900B46F91 /* Competitions */,
 				ED48782C282747B100AC1E2C /* Invite Friends */,
 				C10E5544272B44B30053BBA6 /* Permissions */,
@@ -752,6 +769,7 @@
 				C1F9D7CC26FF871A00B25651 /* NotificationManaging.swift */,
 				C123C9C827A74F3500375F73 /* PermissionsManager.swift */,
 				C13F922B27BFFF9900FC6880 /* StorageManager.swift */,
+				EDA035CB291860090091E7A6 /* StoreKitManager.swift */,
 				C123C9DA27A8A98800375F73 /* UserManager.swift */,
 				EDC7849728034CCD001FE005 /* WorkoutManager.swift */,
 				ED7881AE2850F70C00C7F6CB /* Analytics */,
@@ -936,6 +954,25 @@
 			path = "Std Lib";
 			sourceTree = "<group>";
 		};
+		EDA035C1291824430091E7A6 /* Statistics */ = {
+			isa = PBXGroup;
+			children = (
+				EDA035C22918245C0091E7A6 /* StatisticsView.swift */,
+				EDA035C32918245C0091E7A6 /* StatisticsViewModel.swift */,
+				EDA035C62918279C0091E7A6 /* Paywall */,
+			);
+			path = Statistics;
+			sourceTree = "<group>";
+		};
+		EDA035C62918279C0091E7A6 /* Paywall */ = {
+			isa = PBXGroup;
+			children = (
+				EDA035C7291827B10091E7A6 /* StatisticsPaywallView.swift */,
+				EDA035C8291827B10091E7A6 /* StatisticsPaywallViewModel.swift */,
+			);
+			path = Paywall;
+			sourceTree = "<group>";
+		};
 		EDA352912836F5EA00390585 /* User */ = {
 			isa = PBXGroup;
 			children = (
@@ -967,6 +1004,7 @@
 			isa = PBXGroup;
 			children = (
 				EDBEA16F281459D200058A47 /* EditCompetitionSection.swift */,
+				EDA035BF29180D8F0091E7A6 /* CompetitionHistorySection.swift */,
 				ED4878242826F43800AC1E2C /* CompetitionParticipantRow.swift */,
 			);
 			path = Components;
@@ -1216,12 +1254,14 @@
 				ED7881AD2850F6DF00C7F6CB /* SignUpError.swift in Sources */,
 				ED901B6B2802525700FE619E /* FirebaseImageViewModel.swift in Sources */,
 				ED8C324729118DC400339988 /* VerifyEmailView.swift in Sources */,
+				EDA035CA291827B10091E7A6 /* StatisticsPaywallViewModel.swift in Sources */,
 				C1ABB21526D6987C00716984 /* NewCompetitionView.swift in Sources */,
 				ED3ED8F7284F951800B5100F /* AutoMockable.generated.swift in Sources */,
 				EDA35298283713C200390585 /* Sharable.swift in Sources */,
 				C155CA7627AC1A63005F49F4 /* Competition+Standing.swift in Sources */,
 				C123C9CD27A863F100375F73 /* UserHashIDPill.swift in Sources */,
 				ED901B6D2802558400FE619E /* UserViewModel.swift in Sources */,
+				EDA035C52918245C0091E7A6 /* StatisticsViewModel.swift in Sources */,
 				ED901B4F280249B000FE619E /* CompetitionViewModel.swift in Sources */,
 				C132335F27BEA97A00196D81 /* FlatLinkStyle.swift in Sources */,
 				C1691DD926D5603D006FFA30 /* ActivityRingView.swift in Sources */,
@@ -1236,8 +1276,10 @@
 				C10A267927E9528700FD1C2C /* ColorScheme+Extensions.swift in Sources */,
 				C132336727BEBB1600196D81 /* UIScreen+Extensions.swift in Sources */,
 				C19B7F2627BD843000BCA4B9 /* ExploreView.swift in Sources */,
+				EDA035C42918245C0091E7A6 /* StatisticsView.swift in Sources */,
 				C16CC40927A73E6E00C26208 /* User+Statistics.swift in Sources */,
 				ED65D3BD280CF36C00B38486 /* WorkoutType.swift in Sources */,
+				EDA035CC291860090091E7A6 /* StoreKitManager.swift in Sources */,
 				ED7881B02850F71E00C7F6CB /* AnalyticsEvent.swift in Sources */,
 				C1884E5426D5A40E00C21014 /* Competition.swift in Sources */,
 				ED901B76280265DB00FE619E /* SignInViewModel.swift in Sources */,
@@ -1246,7 +1288,7 @@
 				C1E4C7C327B6EB400090239A /* AuthenticationManager.swift in Sources */,
 				C132336927BECCA800196D81 /* AttributedText.swift in Sources */,
 				C1D0177D273F63CF00C9EEAE /* PermissionStatus.swift in Sources */,
-				C123C9C527A740FE00375F73 /* StatisticsView.swift in Sources */,
+				C123C9C527A740FE00375F73 /* MedalsView.swift in Sources */,
 				ED901B6F28025FC500FE619E /* PermissionsViewModel.swift in Sources */,
 				C132336527BEB58B00196D81 /* AppIcon.swift in Sources */,
 				EDDF77D828BA82E000BB8B97 /* HealthKitPermissionType.swift in Sources */,
@@ -1274,6 +1316,7 @@
 				C1930E5227C68E5F00DB45C1 /* CompetitionDetails.swift in Sources */,
 				C1E1A9D127A6D9D700E8E360 /* FriendsManager.swift in Sources */,
 				C1AAE944275AEE6F00921E41 /* UIViewController+Extensions.swift in Sources */,
+				EDA035C9291827B10091E7A6 /* StatisticsPaywallView.swift in Sources */,
 				C19B7F2827BD8A5E00BCA4B9 /* HomeView.swift in Sources */,
 				C1691DDE26D561D5006FFA30 /* SignIn.swift in Sources */,
 				C155229E26E793C600FE0DA7 /* Competition+Mock.swift in Sources */,
@@ -1285,6 +1328,7 @@
 				EDA035BE2917FFF90091E7A6 /* Dictionary+Extensions.swift in Sources */,
 				C123C9D427A88D3200375F73 /* UserInfoSection.swift in Sources */,
 				C132945627DF6D9E00117548 /* Binding+Extensions.swift in Sources */,
+				EDA035C029180D8F0091E7A6 /* CompetitionHistorySection.swift in Sources */,
 				C132336D27BF0C0F00196D81 /* View+CornerRadius.swift in Sources */,
 				C19B7F2B27BD8C7100BCA4B9 /* FeaturedCompetition.swift in Sources */,
 				EDC373D027FB39A500318245 /* EmailSignInForm.swift in Sources */,

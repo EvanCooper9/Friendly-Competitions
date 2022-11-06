@@ -23,7 +23,7 @@ extension User {
     }
 }
 
-extension User.Statistics {
+extension User.Medals {
     static var mock: Self {
         .init(golds: 3, silvers: 2, bronzes: 1)
     }

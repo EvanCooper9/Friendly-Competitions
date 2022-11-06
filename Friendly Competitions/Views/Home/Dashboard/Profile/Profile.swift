@@ -12,8 +12,8 @@ struct Profile: View {
             UserInfoSection(user: viewModel.user)
             Button("Share invite link", systemImage: .personCropCircleBadgePlus) { viewModel.sharedDeepLink.share() }
             
-            Section("Statistics") {
-                StatisticsView(statistics: viewModel.user.statistics ?? .zero)
+            Section("Medals") {
+                MedalsView(statistics: viewModel.user.statistics ?? .zero)
             }
             
             Section {
