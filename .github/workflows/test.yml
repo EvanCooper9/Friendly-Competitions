@@ -29,7 +29,7 @@ jobs:
         ssh-private-key: ${{ secrets.SSH_KEY }}
   
     - name: Build Cache
-      uses: mikehardy/buildcache-action@v1
+      uses: mikehardy/buildcache-action@latest
     
     - name: Cache Swift Packages
       uses: actions/cache@v3
