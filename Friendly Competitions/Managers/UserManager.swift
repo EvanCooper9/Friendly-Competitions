@@ -42,10 +42,8 @@ final class UserManager: UserManaging {
             .share(replay: 1)
             .eraseToAnyPublisher()
         
-        NotificationCenter.default
-            .publisher(for: UIApplication.didBecomeActiveNotification)
+        UIApplication.didBecomeActiveNotification.publisher
             .first()
-            .mapToVoid()
             .sink(withUnretained: self) { $0.listenForUser() }
             .store(in: &cancellables)
     }

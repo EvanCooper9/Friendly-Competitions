@@ -83,10 +83,8 @@ final class CompetitionsManager: CompetitionsManaging {
         pendingParticipants = $_pendingParticipants.share(replay: 1).eraseToAnyPublisher()
         appOwnedCompetitions = $_appOwnedCompetitions.share(replay: 1).eraseToAnyPublisher()
 
-        NotificationCenter.default
-            .publisher(for: UIApplication.didBecomeActiveNotification)
+        UIApplication.didBecomeActiveNotification.publisher
             .first()
-            .mapToVoid()
             .sink(withUnretained: self) { strongSelf in
                 strongSelf.listen()
                 strongSelf.fetchCompetitionData()
