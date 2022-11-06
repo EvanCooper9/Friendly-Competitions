@@ -58,19 +58,13 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
                     .mapToValue(())
             )
             .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
-            .flatMapLatest(withUnretained: self) {
-                $0.healthKitManager.permissionStatus
-                    .filter { $0 == .authorized }
-                    .mapToValue(())
-                    .eraseToAnyPublisher()
-            }
             .flatMapLatest(requestActivitySummaries)
-            .removeDuplicates()
-            .filter(\.isNotEmpty)
             .combineLatest(userManager.userPublisher)
             .sinkAsync { [weak self] activitySummaries, user in
                 guard let strongSelf = self else { return }
+                defer { strongSelf.uploadFinished.send() }
             
+                guard activitySummaries.isNotEmpty else { return }
                 if let activitySummary = activitySummaries.last, activitySummary.date.isToday {
                     strongSelf._activitySummary.send(activitySummary)
                 }
@@ -84,7 +78,6 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
                     let _ = try batch.setDataEncodable(activitySummary, forDocument: document)
                 }
                 try await batch.commit()
-                strongSelf.uploadFinished.send()
             }
             .store(in: &cancellables)
     }

@@ -130,7 +130,9 @@ final class CompetitionsManager: CompetitionsManaging {
         }
         .flatMapLatest(withUnretained: self) { $0.activitySummaryManager.update() }
         .flatMapLatest(withUnretained: self) { $0.workoutManager.update() }
-        .handleEvents(withUnretained: self, receiveOutput: { $0.analyticsManager.log(event: .createCompetition(name: competition.name)) })
+        .handleEvents(withUnretained: self, receiveOutput: {
+            $0.analyticsManager.log(event: .createCompetition(name: competition.name))
+        })
         .eraseToAnyPublisher()
     }
 

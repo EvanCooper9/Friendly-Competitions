@@ -14,9 +14,8 @@ final class ProfileViewModel: ObservableObject {
     @Injected(Container.authenticationManager) private var authenticationManager
     @Injected(Container.userManager) private var userManager
 
-    private var _delete = PassthroughRelay<Void>()
-    private var _signOut = PassthroughRelay<Void>()
-    
+    private let deleteSubject = PassthroughSubject<Void, Never>()
+    private let signOutSubject = PassthroughSubject<Void, Never>()
     private var cancellables = Cancellables()
     
     // MARK: - Lifecycle
@@ -41,7 +40,7 @@ final class ProfileViewModel: ObservableObject {
             .map(User?.init)
             .assign(to: &$user)
 
-        _delete
+        deleteSubject
             .flatMapLatest(withUnretained: self) { strongSelf in
                 strongSelf.userManager
                     .deleteAccount()
@@ -51,17 +50,17 @@ final class ProfileViewModel: ObservableObject {
             .sink()
             .store(in: &cancellables)
 
-        _signOut
+        signOutSubject
             .flatMapAsync { [weak self] in try self?.authenticationManager.signOut() }
             .sink()
             .store(in: &cancellables)
     }
     
     func deleteAccount() {
-        _delete.accept()
+        deleteSubject.send()
     }
     
     func signOut() {
-        _signOut.accept()
+        signOutSubject.send()
     }
 }
