@@ -83,10 +83,8 @@ final class CompetitionsManager: CompetitionsManaging {
         pendingParticipants = $_pendingParticipants.share(replay: 1).eraseToAnyPublisher()
         appOwnedCompetitions = $_appOwnedCompetitions.share(replay: 1).eraseToAnyPublisher()
 
-        NotificationCenter.default
-            .publisher(for: UIApplication.didBecomeActiveNotification)
+        UIApplication.didBecomeActiveNotification.publisher
             .first()
-            .mapToVoid()
             .sink(withUnretained: self) { strongSelf in
                 strongSelf.listen()
                 strongSelf.fetchCompetitionData()
@@ -128,8 +126,6 @@ final class CompetitionsManager: CompetitionsManaging {
                 .document("competitions/\(competition.id)")
                 .setDataEncodable(competition)
         }
-        .flatMapLatest(withUnretained: self) { $0.activitySummaryManager.update() }
-        .flatMapLatest(withUnretained: self) { $0.workoutManager.update() }
         .handleEvents(withUnretained: self, receiveOutput: {
             $0.analyticsManager.log(event: .createCompetition(name: competition.name))
         })

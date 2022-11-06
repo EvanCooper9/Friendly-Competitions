@@ -53,9 +53,7 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
             .Merge3(
                 healthKitManager.backgroundDeliveryReceived,
                 query,
-                NotificationCenter.default
-                    .publisher(for: UIApplication.willEnterForegroundNotification)
-                    .mapToValue(())
+                UIApplication.willEnterForegroundNotification.publisher
             )
             .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
             .flatMapLatest(requestActivitySummaries)
