@@ -14,16 +14,15 @@ final class ProfileViewModel: ObservableObject {
     @Injected(Container.authenticationManager) private var authenticationManager
     @Injected(Container.userManager) private var userManager
 
-    private var _delete = PassthroughRelay<Void>()
-    private var _signOut = PassthroughRelay<Void>()
-    
+    private let deleteSubject = PassthroughSubject<Void, Never>()
+    private let signOutSubject = PassthroughSubject<Void, Never>()
     private var cancellables = Cancellables()
     
     // MARK: - Lifecycle
 
     init() {
-        user = userManager.user.value
-        sharedDeepLink = .friendReferral(id: userManager.user.value.id)
+        user = userManager.user
+        sharedDeepLink = .friendReferral(id: userManager.user.id)
         
         $user
             .removeDuplicates()
@@ -36,33 +35,32 @@ final class ProfileViewModel: ObservableObject {
             .sink()
             .store(in: &cancellables)
         
-        userManager.user
+        userManager.userPublisher
             .removeDuplicates()
             .map(User?.init)
             .assign(to: &$user)
 
-        _delete
-            .handleEvents(withUnretained: self, receiveOutput: { $0.loading = true })
+        deleteSubject
             .flatMapLatest(withUnretained: self) { strongSelf in
                 strongSelf.userManager
                     .deleteAccount()
+                    .isLoading { [weak self] in self?.loading = $0 }
                     .ignoreFailure()
             }
-            .handleEvents(withUnretained: self, receiveOutput: { $0.loading = false })
             .sink()
             .store(in: &cancellables)
 
-        _signOut
+        signOutSubject
             .flatMapAsync { [weak self] in try self?.authenticationManager.signOut() }
             .sink()
             .store(in: &cancellables)
     }
     
     func deleteAccount() {
-        _delete.accept()
+        deleteSubject.send()
     }
     
     func signOut() {
-        _signOut.accept()
+        signOutSubject.send()
     }
 }

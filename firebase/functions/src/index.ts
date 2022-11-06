@@ -18,33 +18,15 @@ import { getFirestore } from "./Utilities/firstore";
 admin.initializeApp();
 const firestore = getFirestore();
 
+// Account
+
 exports.deleteAccount = functions.https.onCall(async (_data, context) => {
     const userID = context.auth?.uid;
     if (userID == null) return;
     await deleteAccount(userID);
 });
 
-exports.sendFriendRequest = functions.https.onCall((data, context) => {
-    const requesterID = context.auth?.uid;
-    const requesteeID = data.userID;
-    if (requesterID == null) return Promise.resolve();
-    return handleFriendRequest(requesterID, requesteeID, FriendRequestAction.create);
-});
-
-exports.respondToFriendRequest = functions.https.onCall((data, context) => {
-    const requesterID = context.auth?.uid;
-    const requesteeID = data.userID;
-    const accept = data.accept;
-    if (requesterID == null) return Promise.resolve();
-    return handleFriendRequest(requesterID, requesteeID, accept ? FriendRequestAction.accept : FriendRequestAction.decline);
-});
-
-exports.deleteFriend = functions.https.onCall((data, context) => {
-    const userID = context.auth?.uid;
-    const friendID = data.userID;
-    if (userID == null) return Promise.resolve();
-    return deleteFriend(userID, friendID);
-});
+// Competitions 
 
 exports.deleteCompetition = functions.https.onCall(data => {
     const competitionID = data.competitionID;
@@ -72,6 +54,32 @@ exports.updateCompetitionStandings = functions.https.onCall((_data, context) => 
     if (userID == null) return Promise.resolve();
     return updateCompetitionStandings(userID);
 });
+
+// Friends
+
+exports.sendFriendRequest = functions.https.onCall((data, context) => {
+    const requesterID = context.auth?.uid;
+    const requesteeID = data.userID;
+    if (requesterID == null) return Promise.resolve();
+    return handleFriendRequest(requesterID, requesteeID, FriendRequestAction.create);
+});
+
+exports.respondToFriendRequest = functions.https.onCall((data, context) => {
+    const requesterID = context.auth?.uid;
+    const requesteeID = data.userID;
+    const accept = data.accept;
+    if (requesterID == null) return Promise.resolve();
+    return handleFriendRequest(requesterID, requesteeID, accept ? FriendRequestAction.accept : FriendRequestAction.decline);
+});
+
+exports.deleteFriend = functions.https.onCall((data, context) => {
+    const userID = context.auth?.uid;
+    const friendID = data.userID;
+    if (userID == null) return Promise.resolve();
+    return deleteFriend(userID, friendID);
+});
+
+// Jobs
 
 exports.cleanStaleActivitySummaries = functions.pubsub.schedule("every day 02:00")
     .timeZone("America/Toronto")

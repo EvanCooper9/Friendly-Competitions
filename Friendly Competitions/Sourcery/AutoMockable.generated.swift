@@ -757,11 +757,16 @@ class StorageManagingMock: StorageManaging {
 
 }
 class UserManagingMock: UserManaging {
-    var user: CurrentValueSubject<User, Never> {
+    var user: User {
         get { return underlyingUser }
         set(value) { underlyingUser = value }
     }
-    var underlyingUser: CurrentValueSubject<User, Never>!
+    var underlyingUser: User!
+    var userPublisher: AnyPublisher<User, Never> {
+        get { return underlyingUserPublisher }
+        set(value) { underlyingUserPublisher = value }
+    }
+    var underlyingUserPublisher: AnyPublisher<User, Never>!
 
     //MARK: - deleteAccount
 
@@ -800,6 +805,27 @@ class UserManagingMock: UserManaging {
             return updateWithClosure(user)
         } else {
             return updateWithReturnValue
+        }
+    }
+
+}
+class WorkoutManagingMock: WorkoutManaging {
+
+    //MARK: - update
+
+    var updateCallsCount = 0
+    var updateCalled: Bool {
+        return updateCallsCount > 0
+    }
+    var updateReturnValue: AnyPublisher<Void, Error>!
+    var updateClosure: (() -> AnyPublisher<Void, Error>)?
+
+    func update() -> AnyPublisher<Void, Error> {
+        updateCallsCount += 1
+        if let updateClosure = updateClosure {
+            return updateClosure()
+        } else {
+            return updateReturnValue
         }
     }
 

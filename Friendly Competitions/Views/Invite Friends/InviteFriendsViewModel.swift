@@ -3,7 +3,6 @@ import CombineExt
 import ECKit
 import Factory
 
-@MainActor
 final class InviteFriendsViewModel: ObservableObject {
     
     struct RowConfig: Identifiable {
@@ -28,9 +27,9 @@ final class InviteFriendsViewModel: ObservableObject {
     @Injected(Container.friendsManager) private var friendsManager
     @Injected(Container.userManager) private var userManager
 
-    private let _accept = PassthroughSubject<User, Never>()
-    private let _invite = PassthroughSubject<User, Never>()
-    private let _share = PassthroughSubject<Void, Never>()
+    private let acceptSubject = PassthroughSubject<User, Never>()
+    private let inviteSubject = PassthroughSubject<User, Never>()
+    private let shareSubject = PassthroughSubject<Void, Never>()
     private var cancellables = Cancellables()
     
     // MARK: - Lifecycle
@@ -41,15 +40,10 @@ final class InviteFriendsViewModel: ObservableObject {
 
         switch action {
         case .addFriend:
-            alreadyInvited = Publishers
-                .CombineLatest(
-                    friendsManager.friends.mapMany(\.id),
-                    userManager.user.map(\.outgoingFriendRequests)
-                )
-                .map { $0 + $1 }
+            alreadyInvited = userManager.userPublisher
+                .map { $0.friends + $0.outgoingFriendRequests }
                 .eraseToAnyPublisher()
-
-            incomingRequests = userManager.user
+            incomingRequests = userManager.userPublisher
                 .map(\.incomingFriendRequests)
                 .eraseToAnyPublisher()
         case .competitionInvite(let competition):
@@ -60,6 +54,7 @@ final class InviteFriendsViewModel: ObservableObject {
                     let pendingParticipants = pendingParticipants[competition.id] ?? []
                     return (participants + pendingParticipants).map(\.id)
                 }
+                .share(replay: 1)
                 .eraseToAnyPublisher()
 
             incomingRequests = .just([])
@@ -87,12 +82,12 @@ final class InviteFriendsViewModel: ObservableObject {
                             switch action {
                             case .addFriend:
                                 if hasIncomingInvite {
-                                    self._accept.send(friend)
+                                    self.acceptSubject.send(friend)
                                 } else {
-                                    self._invite.send(friend)
+                                    self.inviteSubject.send(friend)
                                 }
                             case .competitionInvite:
-                                self._invite.send(friend)
+                                self.inviteSubject.send(friend)
                             }
                         }
                     )
@@ -100,7 +95,7 @@ final class InviteFriendsViewModel: ObservableObject {
             }
             .assign(to: &$rows)
 
-        _accept
+        acceptSubject
             .flatMapLatest(withUnretained: self) { [weak self] strongSelf, user -> AnyPublisher<Void, Never> in
                 switch action {
                 case .addFriend:
@@ -115,7 +110,7 @@ final class InviteFriendsViewModel: ObservableObject {
             .sink()
             .store(in: &cancellables)
 
-        _invite
+        inviteSubject
             .flatMapLatest(withUnretained: self) { [weak self] strongSelf, friend -> AnyPublisher<Void, Never> in
                 switch action {
                 case .addFriend:
@@ -133,12 +128,12 @@ final class InviteFriendsViewModel: ObservableObject {
             .sink()
             .store(in: &cancellables)
 
-        _share
+        shareSubject
             .sink(withUnretained: self) { strongSelf in
                 let deepLink: DeepLink?
                 switch action {
                 case .addFriend:
-                    deepLink = .friendReferral(id: strongSelf.userManager.user.value.id)
+                    deepLink = .friendReferral(id: strongSelf.userManager.user.id)
                 case .competitionInvite(let competition):
                     deepLink = .competitionInvite(id: competition.id)
                 }
@@ -150,6 +145,6 @@ final class InviteFriendsViewModel: ObservableObject {
     // MARK: - Publie Methods
     
     func sendInviteLink() {
-        _share.send()
+        shareSubject.send()
     }
 }

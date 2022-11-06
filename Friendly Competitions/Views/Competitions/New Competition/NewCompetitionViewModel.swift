@@ -2,87 +2,112 @@ import Combine
 import CombineExt
 import ECKit
 import Factory
+import Foundation
 
 final class NewCompetitionViewModel: ObservableObject {
 
     private enum Constants {
-        static let defaultInterval: TimeInterval = 7
+        static let defaultInterval: TimeInterval = 7.days
     }
     
     struct InviteFriendsRow: Identifiable {
         let id: String
         let name: String
         var invited: Bool
-        let onTap: () -> Void
+        
+        mutating func onTap() {
+            invited.toggle()
+        }
     }
 
     // MARK: - Public Properties
     
-    @Published var competition: Competition
-    @Published private(set) var friendRows = [InviteFriendsRow]()
+    @Published var name = ""
+    @Published var scoringModel: Competition.ScoringModel = .percentOfGoals
+    @Published var start: Date = .now.advanced(by: 1.days)
+    @Published var end: Date = .now.advanced(by: 8.days)
+    @Published var repeats = false
+    @Published var isPublic = false
+    @Published var friendRows = [InviteFriendsRow]()
+    @Published private(set) var createDisabled = true
+    @Published private(set) var disabledReason: String?
+    
+    @Published private(set) var loading = false
     @Published private(set) var dismiss = false
     
-    var createDisabled: Bool { disabledReason != nil }
-    var disabledReason: String? {
-        if competition.name.isEmpty {
-            return "Please enter a name"
-        } else if !competition.isPublic && competition.pendingParticipants.isEmpty {
-            return "Please invite at least 1 friend"
-        }
-        return nil
-    }
-
     // MARK: - Private Properties
     
     @Injected(Container.competitionsManager) private var competitionsManager
     @Injected(Container.friendsManager) private var friendsManager
     @Injected(Container.userManager) private var userManager
 
-    private let _create = PassthroughSubject<Void, Never>()
+    private let createSubject = PassthroughSubject<Void, Never>()
     private var cancellables = Cancellables()
 
     // MARK: - Lifecycle
         
     init() {
-        competition = .init(
-            name: "Test",
-            owner: "",
-            participants: [],
-            pendingParticipants: [],
-            scoringModel: .workout(.walking, [.distance, .heartRate, .steps]),
-            start: .now.advanced(by: -10.days),
-            end: .now.advanced(by: Constants.defaultInterval.days + 1.days),
-            repeats: false,
-            isPublic: true,
-            banner: nil
-        )
-
-        Publishers
-            .CombineLatest(friendsManager.friends, $competition)
-            .map { friends, competition in
-                friends.map { friend in
-                    InviteFriendsRow(
-                        id: friend.id,
-                        name: friend.name,
-                        invited: competition.pendingParticipants.contains(friend.id),
-                        onTap: {
-                            self.competition.pendingParticipants.toggle(friend.id)
-                        }
-                    )
-                }
+        
+        friendsManager.friends
+            .mapMany { friend in
+                InviteFriendsRow(
+                    id: friend.id,
+                    name: friend.name,
+                    invited: false
+                )
             }
             .assign(to: &$friendRows)
-
-        _create
-            .withLatestFrom(userManager.user)
-            .setFailureType(to: Error.self)
-            .flatMapLatest(withUnretained: self) { strongSelf, user -> AnyPublisher<Void, Error> in
-                var competition = strongSelf.competition
-                competition.owner = user.id
-                competition.participants = [user.id]
-                strongSelf.competition = competition
-                return strongSelf.competitionsManager.create(competition)
+        
+        let inputs = Publishers
+            .CombineLatest3(
+                Publishers.CombineLatest4($name, $scoringModel, $start, $end),
+                Publishers.CombineLatest3($repeats, $isPublic, $friendRows),
+                userManager.userPublisher
+            )
+            .map { result1, result2, user in
+                let (name, scoringModel, start, end) = result1
+                let (repeats, isPublic, friendRows) = result2
+                return (name, scoringModel, start, end, repeats, isPublic, friendRows, user)
             }
+        
+        let disabledReason = inputs
+            .map { name, scoringModel, start, end, repeats, isPublic, friendRows, user -> String? in
+                if name.isEmpty {
+                    return "Please enter a name"
+                } else if !isPublic && friendRows.filter(\.invited).isEmpty {
+                    return "Please invite at least 1 friend"
+                }
+                return nil
+            }
+        disabledReason.assign(to: &$disabledReason)
+        disabledReason.map { $0 != nil }.assign(to: &$createDisabled)
+        
+        let competition = inputs
+            .map { name, scoringModel, start, end, repeats, isPublic, friendRows, user in
+                Competition(
+                    name: name,
+                    owner: user.id,
+                    participants: [user.id],
+                    pendingParticipants: friendRows.filter(\.invited).map(\.id),
+                    scoringModel: scoringModel,
+                    start: start,
+                    end: end,
+                    repeats: repeats,
+                    isPublic: isPublic,
+                    banner: nil
+                )
+            }
+
+        createSubject
+            .withLatestFrom(competition)
+            .setFailureType(to: Error.self)
+            .flatMapLatest(withUnretained: self) { strongSelf, competition in
+                strongSelf.competitionsManager
+                    .create(competition)
+                    .isLoading { strongSelf.loading = $0 }
+                    .eraseToAnyPublisher()
+            }
+            .receive(on: RunLoop.main)
             .sink(withUnretained: self) { $0.dismiss = true }
             .store(in: &cancellables)
     }
@@ -90,6 +115,6 @@ final class NewCompetitionViewModel: ObservableObject {
     // MARK: - Public Properties
     
     func create() {
-        _create.send()
+        createSubject.send()
     }
 }

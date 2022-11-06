@@ -57,14 +57,17 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
         if let currentUser {
             registerUserManager(with: currentUser)
         }
-
+        
         $currentUser
-            .receive(on: RunLoop.main)
-            .sink(withUnretained: self) { strongSelf, currentUser in
-                if let currentUser {
-                    strongSelf.registerUserManager(with: currentUser)
+            .removeDuplicates { $0?.id == $1?.id }
+            .dropFirst()
+            .sink(withUnretained: self) { strongSelf, user in
+                if let user = user {
+                    strongSelf.registerUserManager(with: user)
+                } else {
+                    Container.userManager.reset()
                 }
-                strongSelf._loggedIn.send(currentUser != nil)
+                strongSelf._loggedIn.send(user != nil)
             }
             .store(in: &cancellables)
 
@@ -154,40 +157,29 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
     private func listenForAuth() {
         Auth.auth()
             .authStateDidChangePublisher()
-            .sink(withUnretained: self) { strongSelf, firebaseUser in
+            .sinkAsync { [weak self] firebaseUser in
                 guard let firebaseUser = firebaseUser else {
-                    strongSelf.currentUser = nil
-                    strongSelf.userListener = nil
+                    self?.currentUser = nil
+                    self?.userListener = nil
                     return
                 }
                 
-                Task {
-                    try await self.updateFirestoreUserWithAuthUser(firebaseUser)
-                    let user = try await self.database.document("users/\(firebaseUser.uid)").getDocument().decoded(as: User.self)
-                    DispatchQueue.main.async {
-                        self.currentUser = user
-                        self._emailVerified.send(firebaseUser.isEmailVerified || firebaseUser.email == "review@apple.com")
-                    }
-                }
+                try await self?.updateFirestoreUserWithAuthUser(firebaseUser)
             }
             .store(in: &cancellables)
     }
 
     private func sha256(_ input: String) -> String {
-        let inputData = Data(input.utf8)
-        let hashedData = SHA256.hash(data: inputData)
-        let hashString = hashedData.compactMap {
-            return String(format: "%02x", $0)
-        }.joined()
-
-        return hashString
+        SHA256.hash(data: Data(input.utf8))
+            .compactMap { String(format: "%02x", $0) }
+            .joined()
     }
 
     private func registerUserManager(with user: User) {
         Container.userManager.register { [weak self] in
             guard let strongSelf = self else { fatalError("This should not happen") }
             let userManager = UserManager(user: user)
-            strongSelf.userListener = userManager.user
+            strongSelf.userListener = userManager.userPublisher
                 .receive(on: RunLoop.main)
                 .map(User?.init)
                 .assign(to: \.currentUser, on: strongSelf, ownership: .weak)
@@ -211,53 +203,39 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
             let user = User(id: firebaseUser.uid, email: email, name: name)
             try await database.document("users/\(user.id)").setDataEncodable(user)
         }
+        
+        let user = try await self.database.document("users/\(firebaseUser.uid)").getDocument().decoded(as: User.self)
+        DispatchQueue.main.async {
+            self.currentUser = user
+            self._emailVerified.send(firebaseUser.isEmailVerified || firebaseUser.email == "review@apple.com")
+        }
     }
 }
 
 extension AuthenticationManager: ASAuthorizationControllerDelegate {
     func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
         guard let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential,
-              let tokenData = appleIDCredential.identityToken, let identityToken = String(data: tokenData, encoding: .utf8)
+              let tokenData = appleIDCredential.identityToken,
+              let idToken = String(data: tokenData, encoding: .utf8)
         else { return }
+        
+        let appleIDName = [appleIDCredential.fullName?.givenName, appleIDCredential.fullName?.familyName]
+            .compactMap { $0 }
+            .joined(separator: " ")
 
-        let credential = OAuthProvider.credential(withProviderID: "apple.com", idToken: identityToken, rawNonce: currentNonce)
+        let credential = OAuthProvider.credential(withProviderID: "apple.com", idToken: idToken, rawNonce: currentNonce)
 
-        // Sign in with Firebase.
         Auth.auth().signIn(with: credential) { [weak self] authResult, error in
-            if let error {
-                // Error. If error.code == .MissingOrInvalidNonce, make sure
-                // you're sending the SHA256-hashed nonce as a hex string with
-                // your request to Apple.
-                print(error)
-                return
-            }
-
-            let name = [appleIDCredential.fullName?.givenName, appleIDCredential.fullName?.familyName]
-                .compactMap { $0 }
-                .joined(separator: " ")
-
-            let firebaseUser = Auth.auth().currentUser
-
-            let displayName = name.isEmpty ?
-                firebaseUser?.displayName ?? "" :
-                name
-
-            let changeRequest = firebaseUser?.createProfileChangeRequest()
-            changeRequest?.displayName = displayName
-            changeRequest?.commitChanges(completion: nil)
-
-            guard let firebaseUser = firebaseUser, let email = appleIDCredential.email ?? firebaseUser.email else { return }
-            let userJson = [
-                "id": firebaseUser.uid,
-                "email": email,
-                "name": displayName
-            ]
-            self?.database.document("users/\(firebaseUser.uid)").updateData(userJson) { error in
-                guard let nsError = error as NSError?,
-                    nsError.domain == "FIRFirestoreErrorDomain",
-                    nsError.code == 5 else { return }
-                let user = User(id: firebaseUser.uid, email: email, name: displayName)
-                try? self?.database.document("users/\(user.id)").setDataEncodable(user)
+            guard let firebaseUser = authResult?.user else { return }
+            let displayName = appleIDName.nilIfEmpty ?? firebaseUser.displayName ?? ""
+            guard firebaseUser.displayName != displayName else { return }
+            
+            let changeRequest = firebaseUser.createProfileChangeRequest()
+            changeRequest.displayName = displayName
+            changeRequest.commitChanges { [weak self] error in
+                Task { [weak self] in
+                    try await self?.updateFirestoreUserWithAuthUser(firebaseUser)
+                }
             }
         }
     }

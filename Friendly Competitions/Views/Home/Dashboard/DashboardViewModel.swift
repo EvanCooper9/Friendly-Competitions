@@ -7,7 +7,7 @@ import Foundation
 final class DashboardViewModel: ObservableObject {
     
     struct FriendRow: Equatable, Identifiable {
-        var id: String { user.id }
+        var id: String { "\(user.id) - \(isInvitation)" }
         let user: User
         let activitySummary: ActivitySummary?
         let isInvitation: Bool
@@ -36,8 +36,8 @@ final class DashboardViewModel: ObservableObject {
         #if DEBUG
         showDeveloper = true
         #else
-        userManager.user
-            .map { $0.id == "0IQfVBJIgGdfC9CHgYefpZUQ13l1" || $0.id == "o2E4T1HS9tUqCYfrm7qPd3TuryE2" }
+        userManager.userPublisher
+            .map { ["evan.cooper@rogers.com", "evancmcooper@gmail.com"].contains($0.email) }
             .assign(to: &$showDeveloper)
         #endif
 
@@ -46,7 +46,6 @@ final class DashboardViewModel: ObservableObject {
         competitionsManager.invitedCompetitions.assign(to: &$invitedCompetitions)
         
         let friendRequests = friendsManager.friendRequests
-//            .combineLatest(friendsManager.friendActivitySummaries)
             .map { friendRequests in
                 friendRequests.map { friendRequest in
                     FriendRow(
@@ -77,7 +76,7 @@ final class DashboardViewModel: ObservableObject {
             .requiresPermission
             .assign(to: &$requiresPermissions)
         
-        userManager.user
+        userManager.userPublisher
             .map { $0.name.ifEmpty(Bundle.main.name) }
             .assign(to: &$title)
     }

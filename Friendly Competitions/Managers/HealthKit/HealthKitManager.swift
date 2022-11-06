@@ -1,4 +1,5 @@
 import Combine
+import CombineExt
 import Factory
 import HealthKit
 
@@ -45,6 +46,7 @@ final class HealthKitManager: HealthKitManaging {
                 let authorized = HealthKitPermissionType.allCases.allSatisfy { permissionStatuses[$0] == .authorized }
                 return authorized ? .authorized : .denied
             }
+            .share(replay: 1)
             .eraseToAnyPublisher()
 
         registerForBackgroundDelivery()

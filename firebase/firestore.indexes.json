@@ -7,6 +7,14 @@
         { "fieldPath": "isPublic", "order": "ASCENDING" },
         { "fieldPath": "owner", "order": "ASCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "activitySummaries",
+      "queryScope": "COLLECTION_GROUP",
+      "fields": [
+        { "fieldPath": "date", "order": "ASCENDING" },
+        { "fieldPath": "userID", "order": "ASCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []

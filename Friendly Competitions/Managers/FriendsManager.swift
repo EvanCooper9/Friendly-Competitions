@@ -30,9 +30,9 @@ final class FriendsManager: FriendsManaging {
 
     // MARK: - Public Properties
 
-    var friends: AnyPublisher<[User], Never> { friendsSubject.share(replay: 1).eraseToAnyPublisher() }
-    var friendActivitySummaries: AnyPublisher<[User.ID : ActivitySummary], Never> { friendActivitySummariesSubject.share(replay: 1).eraseToAnyPublisher() }
-    var friendRequests: AnyPublisher<[User], Never> { friendRequestsSubject.share(replay: 1).eraseToAnyPublisher() }
+    let friends: AnyPublisher<[User], Never>
+    let friendActivitySummaries: AnyPublisher<[User.ID : ActivitySummary], Never>
+    let friendRequests: AnyPublisher<[User], Never>
 
     // MARK: - Private Properties
 
@@ -40,16 +40,20 @@ final class FriendsManager: FriendsManaging {
     @Injected(Container.functions) private var functions
     @Injected(Container.userManager) private var userManager
     
-    let friendsSubject = PassthroughSubject<[User], Never>()
-    let friendActivitySummariesSubject = PassthroughSubject<[User.ID : ActivitySummary], Never>()
-    let friendRequestsSubject = PassthroughSubject<[User], Never>()
+    let friendsSubject = CurrentValueSubject<[User], Never>([])
+    let friendActivitySummariesSubject = CurrentValueSubject<[User.ID : ActivitySummary], Never>([:])
+    let friendRequestsSubject = CurrentValueSubject<[User], Never>([])
 
     private var cancellables = Cancellables()
 
     // MARK: - Lifecycle
 
     init() {
-        let allFriends = userManager.user
+        friends = friendsSubject.eraseToAnyPublisher()
+        friendActivitySummaries = friendActivitySummariesSubject.eraseToAnyPublisher()
+        friendRequests = friendRequestsSubject.eraseToAnyPublisher()
+        
+        let allFriends = userManager.userPublisher
             .flatMapAsync { [weak self] user -> [User] in
                 guard let strongSelf = self else { return [] }                
                 return try await strongSelf.database.collection("users")
@@ -61,7 +65,7 @@ final class FriendsManager: FriendsManaging {
             .ignoreFailure()
 
         Publishers
-            .CombineLatest(userManager.user, allFriends)
+            .CombineLatest(userManager.userPublisher, allFriends)
             .map { user, allFriends in
                 allFriends.filter { user.friends.contains($0.id) }
             }
@@ -69,7 +73,7 @@ final class FriendsManager: FriendsManaging {
             .store(in: &cancellables)
 
         Publishers
-            .CombineLatest(userManager.user, allFriends)
+            .CombineLatest(userManager.userPublisher, allFriends)
             .map { user, allFriends in
                 allFriends.filter { user.incomingFriendRequests.contains($0.id) }
             }
@@ -81,10 +85,8 @@ final class FriendsManager: FriendsManaging {
                 guard let strongSelf = self else { return [:] }
                 
                 let activitySummaries = try await strongSelf.database.collectionGroup("activitySummaries")
-                    .whereFieldWithChunking("userID", in: friends.map(\.id))
                     .whereField("date", isEqualTo: DateFormatter.dateDashed.string(from: .now))
-                    .getDocuments()
-                    .documents
+                    .whereFieldWithChunking("userID", in: friends.map(\.id))
                     .decoded(asArrayOf: ActivitySummary.self)
                 
                 let pairs = activitySummaries.compactMap { activitySummary -> (User.ID, ActivitySummary)? in
@@ -135,35 +137,29 @@ final class FriendsManager: FriendsManaging {
     }
 
     func user(withId id: String) -> AnyPublisher<User?, Error> {
-        .fromAsync { [weak self] in
-            try await self?.database.collection("users")
-                .whereField("id", isEqualTo: id)
-                .getDocuments()
-                .documents
-                .first?
-                .decoded(as: User.self)
-        }
+        database.document("users/\(id)")
+            .getDocument()
+            .decoded(as: User.self)
     }
 
     func search(with text: String) -> AnyPublisher<[User], Error> {
-        userManager.user
+        userManager.userPublisher
             .map(\.id)
             .setFailureType(to: Error.self)
-            .flatMapAsync { [weak self] currentUserID in
-                guard let self = self else { return [] }
-                return try await self.database.collection("users")
+            .flatMapLatest(withUnretained: self) { strongSelf, currentUserID in
+                strongSelf.database.collection("users")
                     .whereField("id", isNotEqualTo: currentUserID)
                     .whereField("searchable", isEqualTo: true)
                     .getDocuments()
-                    .documents
                     .decoded(asArrayOf: User.self)
-                    .filter { someUser in
-                        someUser.name
-                            .lowercased()
-                            .split(separator: " ")
-                            .contains { $0.starts(with: text.lowercased()) }
-                    }
-                    .sorted(by: \.name)
             }
+            .filterMany { user in
+                user.name
+                    .lowercased()
+                    .split(separator: " ")
+                    .contains { $0.starts(with: text.lowercased()) }
+            }
+            .map { $0.sorted(by: \.name) }
+            .eraseToAnyPublisher()
     }
 }

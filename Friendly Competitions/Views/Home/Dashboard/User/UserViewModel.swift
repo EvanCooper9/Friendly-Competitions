@@ -22,16 +22,13 @@ final class UserViewModel: ObservableObject {
     @Injected(Container.friendsManager) private var friendsManager
     @Injected(Container.userManager) private var userManager
 
-    private var _confirm = PassthroughSubject<Void, Never>()
-    private var _perform = PassthroughSubject<UserViewAction, Never>()
-    
-    private let user: User
+    private var confimActionSubject = PassthroughSubject<Void, Never>()
+    private var performActionSubject = PassthroughSubject<UserViewAction, Never>()
     private var cancellables = Cancellables()
     
     // MARK: - Lifecycle
     
     init(user: User) {
-        self.user = user
         title = user.name
         statistics = user.statistics ?? .zero
         
@@ -39,7 +36,7 @@ final class UserViewModel: ObservableObject {
             .compactMap { $0[user.id] }
             .assign(to: &$activitySummary)
         
-        userManager.user
+        userManager.userPublisher
             .map { loggedInUser in
                 if loggedInUser.friends.contains(user.id) {
                     return [.deleteFriend]
@@ -51,12 +48,12 @@ final class UserViewModel: ObservableObject {
             }
             .assign(to: &$actions)
 
-        _confirm
+        confimActionSubject
             .flatMapLatest(withUnretained: self) { strongSelf -> AnyPublisher<Void, Never> in
                 switch strongSelf.actionRequiringConfirmation {
                 case .deleteFriend:
                     return strongSelf.friendsManager
-                        .delete(friend: strongSelf.user)
+                        .delete(friend: user)
                         .isLoading { [weak self] in self?.loading = $0 }
                         .ignoreFailure()
                 default:
@@ -66,7 +63,7 @@ final class UserViewModel: ObservableObject {
             .sink()
             .store(in: &cancellables)
 
-        _perform
+        performActionSubject
             .flatMapLatest(withUnretained: self) { strongSelf, action -> AnyPublisher<Void, Never> in
                 switch action {
                 case .acceptFriendRequest:
@@ -94,10 +91,10 @@ final class UserViewModel: ObservableObject {
     }
     
     func confirm() {
-        _confirm.send()
+        confimActionSubject.send()
     }
     
     func perform(_ action: UserViewAction) {
-        _perform.send(action)
+        performActionSubject.send(action)
     }
 }

@@ -2,6 +2,7 @@ import Combine
 import CombineExt
 import ECKit
 import Factory
+import Foundation
 
 final class CompetitionViewModel: ObservableObject {
     
@@ -18,13 +19,12 @@ final class CompetitionViewModel: ObservableObject {
     @Published var confirmationRequired = false
     @Published var competition: Competition
     @Published var editButtonTitle = "Edit"
-    @Published var editing = false {
-        didSet { editButtonTitle = editing ? "Cancel" : "Edit" }
-    }
-    @Published var standings = [CompetitionParticipantView.Config]()
-    @Published var pendingParticipants = [CompetitionParticipantView.Config]()
+    @Published var editing = false
+    @Published var standings = [CompetitionParticipantRow.Config]()
+    @Published var pendingParticipants = [CompetitionParticipantRow.Config]()
     @Published var actions = [CompetitionViewAction]()
     @Published var showInviteFriend = false
+    @Published var loading = false
     
     // MARK: - Private Properties
 
@@ -37,39 +37,44 @@ final class CompetitionViewModel: ObservableObject {
     @Injected(Container.competitionsManager) private var competitionsManager
     @Injected(Container.userManager) private var userManager
 
-    private let _confirm = PassthroughSubject<Void, Error>()
-    private let _perform = PassthroughSubject<CompetitionViewAction, Error>()
-    private let _saveEdits = PassthroughSubject<Void, Error>()
+    private let confirmActionSubject = PassthroughSubject<Void, Error>()
+    private let performActionSubject = PassthroughSubject<CompetitionViewAction, Error>()
+    private let saveEditsSubject = PassthroughSubject<Void, Error>()
     private var cancellables = Cancellables()
     
     // MARK: - Lifecycle
     
     init(competition: Competition) {
         self.competition = competition
-        self.competitionPreEdit = competition
+        competitionPreEdit = competition
 
-        userManager.user
+        userManager.userPublisher
             .map { $0.id == competition.owner }
             .assign(to: &$canEdit)
         
+        $editing
+            .map { $0  ? "Cancel" : "Edit" }
+            .assign(to: &$editButtonTitle)
+        
         $competition
-            .combineLatest(userManager.user)
+            .combineLatest(userManager.userPublisher)
             .map { competition, user -> [CompetitionViewAction] in
-                var actions = [CompetitionViewAction]()
-                if competition.repeats || !competition.ended {
-                    actions.append(.invite)
+                .build {
+                    if competition.repeats || !competition.ended {
+                        .invite
+                    }
+                    if competition.pendingParticipants.contains(user.id) {
+                        CompetitionViewAction.acceptInvite
+                        CompetitionViewAction.declineInvite
+                    } else if competition.participants.contains(user.id) {
+                        .leave
+                    } else {
+                        .join
+                    }
+                    if competition.owner == user.id {
+                        .delete
+                    }
                 }
-                if competition.pendingParticipants.contains(user.id) {
-                    actions.append(contentsOf: [.acceptInvite, .declineInvite])
-                } else if competition.participants.contains(user.id) {
-                    actions.append(.leave)
-                } else {
-                    actions.append(.join)
-                }
-                if competition.owner == user.id {
-                    actions.append(.delete)
-                }
-                return actions
             }
             .assign(to: &$actions)
         
@@ -79,8 +84,8 @@ final class CompetitionViewModel: ObservableObject {
             .assign(to: &$competition)
         
         competitionsManager.standings
-            .combineLatest(competitionsManager.participants, userManager.user)
-            .map { standings, participants, currentUser -> [CompetitionParticipantView.Config] in
+            .combineLatest(competitionsManager.participants, userManager.userPublisher)
+            .map { standings, participants, currentUser -> [CompetitionParticipantRow.Config] in
                 guard let standings = standings[competition.id],
                       let participants = participants[competition.id]
                 else { return [] }
@@ -88,7 +93,7 @@ final class CompetitionViewModel: ObservableObject {
                 return standings.map { standing in
                     let user = participants.first { $0.id == standing.userId }
                     let visibility = user?.visibility(by: currentUser) ?? .hidden
-                    return CompetitionParticipantView.Config(
+                    return CompetitionParticipantRow.Config(
                         id: standing.id,
                         rank: standing.rank.ordinalString ?? "?",
                         name: user?.name ?? standing.userId,
@@ -103,12 +108,12 @@ final class CompetitionViewModel: ObservableObject {
             .assign(to: &$standings)
         
         competitionsManager.pendingParticipants
-            .combineLatest(userManager.user)
+            .combineLatest(userManager.userPublisher)
             .map { pendingParticipants, user in
                 guard let pendingParticipants = pendingParticipants[competition.id] else { return [] }
                 return pendingParticipants.map { pendingParticipant in
                     let visibility = user.visibility(by: user)
-                    return CompetitionParticipantView.Config(
+                    return CompetitionParticipantRow.Config(
                         id: pendingParticipant.id,
                         rank: nil,
                         name: pendingParticipant.name,
@@ -122,16 +127,22 @@ final class CompetitionViewModel: ObservableObject {
             .receive(on: RunLoop.main)
             .assign(to: &$pendingParticipants)
 
-        _confirm
+        confirmActionSubject
             .flatMapLatest(withUnretained: self) { strongSelf -> AnyPublisher<Void, Error> in
                 switch strongSelf.actionRequiringConfirmation {
                 case .delete:
-                    return strongSelf.competitionsManager.delete(competition)
+                    return strongSelf.competitionsManager
+                        .delete(competition)
+                        .isLoading { strongSelf.loading = $0 }
+                        .eraseToAnyPublisher()
                 case .edit:
-                    strongSelf._saveEdits.send()
+                    strongSelf.saveEditsSubject.send()
                     return .just(())
                 case .leave:
-                    return strongSelf.competitionsManager.leave(competition)
+                    return strongSelf.competitionsManager
+                        .leave(competition)
+                        .isLoading { strongSelf.loading = $0 }
+                        .eraseToAnyPublisher()
                 default:
                     return .empty()
                 }
@@ -139,22 +150,31 @@ final class CompetitionViewModel: ObservableObject {
             .sink()
             .store(in: &cancellables)
 
-        _saveEdits
+        saveEditsSubject
             .flatMapLatest(withUnretained: self) { strongSelf -> AnyPublisher<Void, Error> in
                 strongSelf.editing.toggle()
                 strongSelf.competitionPreEdit = strongSelf.competition
-                return strongSelf.competitionsManager.update(strongSelf.competition)
+                return strongSelf.competitionsManager
+                    .update(strongSelf.competition)
+                    .isLoading { strongSelf.loading = $0 }
+                    .eraseToAnyPublisher()
             }
             .sink()
             .store(in: &cancellables)
 
-        _perform
+        performActionSubject
             .flatMapLatest(withUnretained: self) { strongSelf, action -> AnyPublisher<Void, Error> in
                 switch action {
                 case .acceptInvite:
-                    return strongSelf.competitionsManager.accept(competition)
+                    return strongSelf.competitionsManager
+                        .accept(competition)
+                        .isLoading { strongSelf.loading = $0 }
+                        .eraseToAnyPublisher()
                 case .declineInvite:
-                    return strongSelf.competitionsManager.decline(competition)
+                    return strongSelf.competitionsManager
+                        .decline(competition)
+                        .isLoading { strongSelf.loading = $0 }
+                        .eraseToAnyPublisher()
                 case .delete, .leave:
                     strongSelf.actionRequiringConfirmation = action
                     return .empty()
@@ -165,7 +185,10 @@ final class CompetitionViewModel: ObservableObject {
                     strongSelf.showInviteFriend.toggle()
                     return .empty()
                 case .join:
-                    return strongSelf.competitionsManager.join(competition)
+                    return strongSelf.competitionsManager
+                        .join(competition)
+                        .isLoading { strongSelf.loading = $0 }
+                        .eraseToAnyPublisher()
                 }
             }
             .sink()
@@ -185,15 +208,15 @@ final class CompetitionViewModel: ObservableObject {
         if competition.start != competitionPreEdit.start || competition.end != competitionPreEdit.end {
             actionRequiringConfirmation = .edit
         } else {
-            _saveEdits.send()
+            saveEditsSubject.send()
         }
     }
     
     func confirm() {
-        _confirm.send()
+        confirmActionSubject.send()
     }
     
     func perform(_ action: CompetitionViewAction) {
-        _perform.send(action)
+        performActionSubject.send(action)
     }
 }
