@@ -4,13 +4,11 @@ import SwiftUI
 struct Profile: View {
     
     @StateObject private var viewModel = ProfileViewModel()
-    
-    @State private var presentDeleteAccountAlert = false
-    
+        
     var body: some View {
         Form {
             UserInfoSection(user: viewModel.user)
-            Button("Share invite link", systemImage: .personCropCircleBadgePlus) { viewModel.sharedDeepLink.share() }
+            Button("Share invite link", systemImage: .personCropCircleBadgePlus, action: viewModel.shareInviteLinkTapped)
             
             Section("Statistics") {
                 StatisticsView(statistics: viewModel.user.statistics ?? .zero)
@@ -31,32 +29,32 @@ struct Profile: View {
             }
             
             Section("Session") {
-                Button("Sign out", systemImage: .personCropCircleBadgeMinus) {
-                    viewModel.signOut()
-                }
-                Button(toggling: $presentDeleteAccountAlert) {
+                Button("Sign out", systemImage: .personCropCircleBadgeMinus, action: viewModel.signOutTapped)
+                Button(action: viewModel.deleteAccountTapped) {
                     Label("Delete account", systemImage: .trash)
+                        .foregroundColor(.red)
                 }
-                .foregroundColor(.red)
             }
         }
         .navigationTitle("Profile")
         .confirmationDialog(
             "Are you sure? This cannot be undone.",
-            isPresented: $presentDeleteAccountAlert,
+            isPresented: $viewModel.confirmationRequired,
             titleVisibility: .visible
         ) {
-            Button("Yes", role: .destructive, action: viewModel.deleteAccount)
+            Button("Yes", role: .destructive, action: viewModel.confirmTapped)
             Button("Cancel", role: .cancel) {}
         }
         .registerScreenView(name: "Profile")
     }
 }
 
-struct SettingsView_Previews: PreviewProvider {
+#if DEBUG
+struct Profile_Previews: PreviewProvider {
     static var previews: some View {
         Profile()
             .setupMocks()
             .embeddedInNavigationView()
     }
 }
+#endif
