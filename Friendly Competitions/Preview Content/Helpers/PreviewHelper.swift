@@ -43,6 +43,7 @@ fileprivate enum Dependencies {
 
         storageManager.dataForReturnValue = .just(.init())
         
+        userManager.user = .evan
         userManager.userPublisher = .just(.evan)
     }
 }
