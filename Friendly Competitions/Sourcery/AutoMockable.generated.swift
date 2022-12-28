@@ -809,3 +809,24 @@ class UserManagingMock: UserManaging {
     }
 
 }
+class WorkoutManagingMock: WorkoutManaging {
+
+    //MARK: - update
+
+    var updateCallsCount = 0
+    var updateCalled: Bool {
+        return updateCallsCount > 0
+    }
+    var updateReturnValue: AnyPublisher<Void, Error>!
+    var updateClosure: (() -> AnyPublisher<Void, Error>)?
+
+    func update() -> AnyPublisher<Void, Error> {
+        updateCallsCount += 1
+        if let updateClosure = updateClosure {
+            return updateClosure()
+        } else {
+            return updateReturnValue
+        }
+    }
+
+}

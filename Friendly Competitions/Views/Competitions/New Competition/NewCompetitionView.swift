@@ -4,7 +4,7 @@ import SwiftUI
 import SwiftUIX
 import HealthKit
 
-struct NewCompetition: View {
+struct NewCompetitionView: View {
     
     @StateObject private var viewModel = NewCompetitionViewModel()
     @Environment(\.dismiss) private var dismiss
@@ -12,49 +12,54 @@ struct NewCompetition: View {
 
     var body: some View {
         Form {
-            CompetitionInfo(
-                competition: $viewModel.competition,
-                editing: true,
-                canSaveEdits: { _ in }
+            EditCompetitionSection(
+                name: $viewModel.name,
+                scoringModel: $viewModel.scoringModel,
+                start: $viewModel.start,
+                end: $viewModel.end,
+                repeats: $viewModel.repeats,
+                isPublic: $viewModel.isPublic
             )
 
-            friendsView
+            friends
 
             Section {
                 Button("Create", action: viewModel.create)
                     .disabled(viewModel.createDisabled)
                     .frame(maxWidth: .infinity)
             } footer: {
-                Text(viewModel.disabledReason ?? "")
+                if let disabledReason = viewModel.disabledReason {
+                    Text(disabledReason)
+                }
             }
         }
         .navigationTitle("New Competition")
         .embeddedInNavigationView()
-        .sheet(isPresented: $presentAddFriends) { InviteFriends(action: .addFriend) }
+        .sheet(isPresented: $presentAddFriends) { InviteFriendsView(action: .addFriend) }
         .registerScreenView(name: "New Competition")
+        .withLoadingOverlay(isLoading: viewModel.loading)
         .onChange(of: viewModel.dismiss) { _ in dismiss() }
     }
 
-    private var friendsView: some View {
+    private var friends: some View {
         Section("Invite friends") {
-            if viewModel.friendRows.isEmpty {
-                LazyHStack {
-                    Text("Nothing here, yet!")
-                    Button("Add friends.", toggling: $presentAddFriends)
-                }
-                .padding(.vertical, 6)
-            }
-
-            ForEach(viewModel.friendRows) { rowConfig in
+            ForEach($viewModel.friendRows) { $friend in
                 HStack {
-                    Text(rowConfig.name)
+                    Text(friend.name)
                     Spacer()
-                    if rowConfig.invited {
+                    if friend.invited {
                         Image(systemName: .checkmarkCircleFill)
                     }
                 }
                 .contentShape(Rectangle())
-                .onTapGesture(perform: rowConfig.onTap)
+                .onTapGesture { friend.onTap() }
+            }
+            
+            if viewModel.friendRows.isEmpty {
+                HStack {
+                    Text("Nothing here, yet!")
+                    Button("Add friends.", toggling: $presentAddFriends)
+                }
             }
         }
     }
@@ -68,7 +73,7 @@ struct NewCompetitionView_Previews: PreviewProvider {
     }
 
     static var previews: some View {
-        NewCompetition()
+        NewCompetitionView()
             .setupMocks(setupMocks)
     }
 }

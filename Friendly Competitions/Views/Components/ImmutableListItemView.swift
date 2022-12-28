@@ -44,8 +44,7 @@ struct ImmutableListItemView: View {
             Label(valueType.description, systemImage: valueType.systemImageName)
             Spacer()
             Text(value)
-                .foregroundColor(.gray)
-                .lineLimit(1)
+                .foregroundColor(.secondaryLabel)
         }
     }
 }

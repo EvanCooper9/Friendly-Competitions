@@ -5,25 +5,23 @@ import Factory
 
 final class ProfileViewModel: ObservableObject {
 
-    @Published var loading = false
     @Published var user: User!
-    @Published var sharedDeepLink: DeepLink!
+    @Published var confirmationRequired = false
+    @Published var loading = false
     
     // MARK: - Private Properties
     
     @Injected(Container.authenticationManager) private var authenticationManager
     @Injected(Container.userManager) private var userManager
 
-    private var _delete = PassthroughRelay<Void>()
-    private var _signOut = PassthroughRelay<Void>()
-    
+    private let deleteAccountSubject = PassthroughSubject<Void, Never>()
+    private let signOutSubject = PassthroughSubject<Void, Never>()
     private var cancellables = Cancellables()
     
     // MARK: - Lifecycle
 
     init() {
-        user = userManager.user
-        sharedDeepLink = .friendReferral(id: userManager.user.id)
+        user = .evan // userManager.user 
         
         $user
             .removeDuplicates()
@@ -41,7 +39,7 @@ final class ProfileViewModel: ObservableObject {
             .map(User?.init)
             .assign(to: &$user)
 
-        _delete
+        deleteAccountSubject
             .flatMapLatest(withUnretained: self) { strongSelf in
                 strongSelf.userManager
                     .deleteAccount()
@@ -51,17 +49,27 @@ final class ProfileViewModel: ObservableObject {
             .sink()
             .store(in: &cancellables)
 
-        _signOut
+        signOutSubject
             .flatMapAsync { [weak self] in try self?.authenticationManager.signOut() }
             .sink()
             .store(in: &cancellables)
     }
     
-    func deleteAccount() {
-        _delete.accept()
+    // MARK: - Public Methods
+    
+    func confirmTapped() {
+        deleteAccountSubject.send()
     }
     
-    func signOut() {
-        _signOut.accept()
+    func deleteAccountTapped() {
+        confirmationRequired.toggle()
+    }
+    
+    func shareInviteLinkTapped() {
+        DeepLink.friendReferral(id: userManager.user.id).share()
+    }
+    
+    func signOutTapped() {
+        signOutSubject.send()
     }
 }

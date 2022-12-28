@@ -3,7 +3,6 @@ import CombineExt
 import ECKit
 import Factory
 
-@MainActor
 final class InviteFriendsViewModel: ObservableObject {
     
     struct RowConfig: Identifiable {
@@ -28,9 +27,9 @@ final class InviteFriendsViewModel: ObservableObject {
     @Injected(Container.friendsManager) private var friendsManager
     @Injected(Container.userManager) private var userManager
 
-    private let _accept = PassthroughSubject<User, Never>()
-    private let _invite = PassthroughSubject<User, Never>()
-    private let _share = PassthroughSubject<Void, Never>()
+    private let acceptSubject = PassthroughSubject<User, Never>()
+    private let inviteSubject = PassthroughSubject<User, Never>()
+    private let shareSubject = PassthroughSubject<Void, Never>()
     private var cancellables = Cancellables()
     
     // MARK: - Lifecycle
@@ -83,12 +82,12 @@ final class InviteFriendsViewModel: ObservableObject {
                             switch action {
                             case .addFriend:
                                 if hasIncomingInvite {
-                                    self._accept.send(friend)
+                                    self.acceptSubject.send(friend)
                                 } else {
-                                    self._invite.send(friend)
+                                    self.inviteSubject.send(friend)
                                 }
                             case .competitionInvite:
-                                self._invite.send(friend)
+                                self.inviteSubject.send(friend)
                             }
                         }
                     )
@@ -96,7 +95,7 @@ final class InviteFriendsViewModel: ObservableObject {
             }
             .assign(to: &$rows)
 
-        _accept
+        acceptSubject
             .flatMapLatest(withUnretained: self) { [weak self] strongSelf, user -> AnyPublisher<Void, Never> in
                 switch action {
                 case .addFriend:
@@ -111,7 +110,7 @@ final class InviteFriendsViewModel: ObservableObject {
             .sink()
             .store(in: &cancellables)
 
-        _invite
+        inviteSubject
             .flatMapLatest(withUnretained: self) { [weak self] strongSelf, friend -> AnyPublisher<Void, Never> in
                 switch action {
                 case .addFriend:
@@ -129,7 +128,7 @@ final class InviteFriendsViewModel: ObservableObject {
             .sink()
             .store(in: &cancellables)
 
-        _share
+        shareSubject
             .sink(withUnretained: self) { strongSelf in
                 let deepLink: DeepLink?
                 switch action {
@@ -146,6 +145,6 @@ final class InviteFriendsViewModel: ObservableObject {
     // MARK: - Publie Methods
     
     func sendInviteLink() {
-        _share.send()
+        shareSubject.send()
     }
 }

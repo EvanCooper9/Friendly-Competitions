@@ -61,7 +61,6 @@ final class DeveloperViewModel: ObservableObject {
             }
             .sink { environment in
                 UserDefaults.standard.encode(environment, forKey: "environment")
-//                Resolver.registerFirebase(environment: environment)
             }
             .store(in: &cancellables)
     }

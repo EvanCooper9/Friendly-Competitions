@@ -15,12 +15,41 @@ struct CompetitionView: View {
     var body: some View {
         List {
             standings
+            
             if !viewModel.pendingParticipants.isEmpty {
                 pendingInvites
             }
-            CompetitionInfo(competition: $viewModel.competition, editing: viewModel.editing) {
-                canSaveEdits = $0
+            
+            if viewModel.editing {
+                EditCompetitionSection(
+                    name: $viewModel.competition.name,
+                    scoringModel: $viewModel.competition.scoringModel,
+                    start: $viewModel.competition.start,
+                    end: $viewModel.competition.end,
+                    repeats: $viewModel.competition.repeats,
+                    isPublic: $viewModel.competition.isPublic
+                )
+            } else {
+                ImmutableListItemView(
+                    value: viewModel.competition.start.formatted(date: .abbreviated, time: .omitted),
+                    valueType: .date(description: viewModel.competition.started ? "Started" : "Starts")
+                )
+                ImmutableListItemView(
+                    value: viewModel.competition.end.formatted(date: .abbreviated, time: .omitted),
+                    valueType: .date(description: viewModel.competition.ended ? "Ended" : "Ends")
+                )
+                ImmutableListItemView(
+                    value: viewModel.competition.scoringModel.displayName,
+                    valueType: .other(systemImage: .plusminusCircle, description: "Scoring model")
+                )
+                if viewModel.competition.repeats {
+                    ImmutableListItemView(
+                        value: "Yes",
+                        valueType: .other(systemImage: .repeatCircle, description: "Restarts")
+                    )
+                }
             }
+            
             actions
         }
         .navigationTitle(viewModel.competition.name)
@@ -43,12 +72,13 @@ struct CompetitionView: View {
                 "name": viewModel.competition.name
             ]
         )
+        .withLoadingOverlay(isLoading: viewModel.loading)
     }
 
     private var standings: some View {
         Section {
             ForEach(viewModel.standings) {
-                CompetitionParticipantView(config: $0)
+                CompetitionParticipantRow(config: $0)
             }
         } header: {
             Text("Standings")
@@ -62,7 +92,7 @@ struct CompetitionView: View {
     private var pendingInvites: some View {
         Section("Pending invites") {
             ForEach(viewModel.pendingParticipants) {
-                CompetitionParticipantView(config: $0)
+                CompetitionParticipantRow(config: $0)
             }
         }
     }
@@ -85,7 +115,7 @@ struct CompetitionView: View {
             Button("Cancel", role: .cancel) {}
         }
         .sheet(isPresented: $viewModel.showInviteFriend) {
-            InviteFriends(action: .competitionInvite(viewModel.competition))
+            InviteFriendsView(action: .competitionInvite(viewModel.competition))
         }
     }
 }

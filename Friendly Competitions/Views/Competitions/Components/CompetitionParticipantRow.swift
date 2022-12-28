@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct CompetitionParticipantView: View {
+struct CompetitionParticipantRow: View {
     
     struct Config: Identifiable {
         let id: String

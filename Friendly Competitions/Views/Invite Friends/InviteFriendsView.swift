@@ -2,7 +2,7 @@ import ECKit
 import Factory
 import SwiftUI
 
-struct InviteFriends: View {
+struct InviteFriendsView: View {
     
     @StateObject private var viewModel: InviteFriendsViewModel
     
@@ -30,7 +30,9 @@ struct InviteFriends: View {
                     }
                     HStack {
                         Text("Having trouble?")
+                            .font(.body)
                         Button("Send an invite link", action: viewModel.sendInviteLink)
+                            .font(.body)
                     }
                 }
             }
@@ -45,7 +47,7 @@ struct InviteFriends: View {
 
 struct InviteFriends_Previews: PreviewProvider {
     static var previews: some View {
-        InviteFriends(action: .addFriend)
+        InviteFriendsView(action: .addFriend)
             .setupMocks()
     }
 }

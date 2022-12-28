@@ -12,6 +12,7 @@ fileprivate enum Dependencies {
     static let permissionsManager = PermissionsManagingMock()
     static let storageManager = StorageManagingMock()
     static let userManager = UserManagingMock()
+    static let workoutManager = WorkoutManagingMock()
     
     static func register() {
         Container.appState.register { appState }
@@ -42,6 +43,7 @@ fileprivate enum Dependencies {
 
         storageManager.dataForReturnValue = .just(.init())
         
+        userManager.user = .evan
         userManager.userPublisher = .just(.evan)
     }
 }

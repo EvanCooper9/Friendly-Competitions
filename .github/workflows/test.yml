@@ -29,12 +29,12 @@ jobs:
         ssh-private-key: ${{ secrets.SSH_KEY }}
   
     - name: Build Cache
-      uses: mikehardy/buildcache-action@v1
+      uses: mikehardy/buildcache-action@v2
     
     - name: Cache Swift Packages
       uses: actions/cache@v3
       with:
-        path: .build
+        path: ~/Library/Developer/Xcode/DerivedData/**/SourcePackages/checkouts
         key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
         restore-keys: |
           ${{ runner.os }}-spm-
@@ -57,4 +57,8 @@ jobs:
     - name: Fastlane
       run: bundle exec fastlane test
       env:
+        CC: "clang" 
+        CPLUSPLUS: "clang++" 
+        LD: "clang" 
+        LDPLUSPLUS: "clang++"
         FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: 120
