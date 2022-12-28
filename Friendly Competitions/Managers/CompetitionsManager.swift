@@ -167,29 +167,22 @@ final class CompetitionsManager: CompetitionsManaging {
     }
 
     func search(_ searchText: String) -> AnyPublisher<[Competition], Error> {
-        .fromAsync { [weak self] in
-            guard let self = self else { return [] }
-            return try await self.database
-                .collection("competitions")
-                .whereField("isPublic", isEqualTo: true)
-                .getDocuments()
-                .documents
-                .filter { document in
-                    guard let searchResult = try? document.decoded(as: SearchResult.self) else { return false }
-                    return searchResult.name.localizedCaseInsensitiveContains(searchText)
-                }
-                .decoded(asArrayOf: Competition.self)
-        }
+        database.collection("competitions")
+            .whereField("isPublic", isEqualTo: true)
+            .getDocuments()
+            .map(\.documents)
+            .filterMany { document in
+                guard let searchResult = try? document.decoded(as: SearchResult.self) else { return false }
+                return searchResult.name.localizedCaseInsensitiveContains(searchText)
+            }
+            .compactMapMany { try? $0.decoded(as: Competition.self) }
+            .eraseToAnyPublisher()
     }
 
     func search(byID competitionID: Competition.ID) -> AnyPublisher<Competition?, Error> {
-        .fromAsync { [weak self] in
-            guard let self = self else { return nil }
-            return try await self.database
-                .document("competitions/\(competitionID)")
-                .getDocument()
-                .decoded(as: Competition.self)
-        }
+        database.document("competitions/\(competitionID)")
+            .getDocument()
+            .decoded(as: Competition.self)
     }
     
     func update(_ competition: Competition) -> AnyPublisher<Void, Error> {
