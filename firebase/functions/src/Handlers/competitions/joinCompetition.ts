@@ -8,16 +8,16 @@ import { getFirestore } from "../../Utilities/firstore";
  * @param {boolean} accept Accept or decline the competition invite
  * @return {Promise<void>} A promise that resolve when completed
  */
-function respondToCompetitionInvite(competitionID: string, callerID: string, accept: boolean): Promise<void> {
+function joinCompetition(competitionID: string, userID: string): Promise<void> {
     const firestore = getFirestore();
 
     return firestore.doc(`competitions/${competitionID}`)
         .get()
         .then(doc => new Competition(doc))
         .then(competition => {
-            const index = competition.pendingParticipants.indexOf(callerID, 0);
+            const index = competition.pendingParticipants.indexOf(userID, 0);
             if (index > -1) competition.pendingParticipants.splice(index, 1);
-            if (accept) competition.participants.push(callerID);
+            competition.participants.push(userID);
             const obj = Object.assign({}, competition);
             return firestore.doc(`competitions/${competitionID}`).set(obj);
         })
@@ -25,5 +25,5 @@ function respondToCompetitionInvite(competitionID: string, callerID: string, acc
 }
 
 export {
-    respondToCompetitionInvite
+    joinCompetition
 };
