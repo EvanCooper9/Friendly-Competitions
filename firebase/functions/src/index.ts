@@ -14,6 +14,8 @@ import { Standing } from "./Models/Standing";
 import { User } from "./Models/User";
 import * as notifications from "./notifications";
 import { getFirestore } from "./Utilities/firstore";
+import { joinCompetition } from "./Handlers/competitions/joinCompetition";
+import { leaveCompetition } from "./Handlers/competitions/leaveCompetition";
 
 admin.initializeApp();
 const firestore = getFirestore();
@@ -53,6 +55,20 @@ exports.updateCompetitionStandings = functions.https.onCall((_data, context) => 
     const userID = context.auth?.uid;
     if (userID == null) return Promise.resolve();
     return updateCompetitionStandings(userID);
+});
+
+exports.joinCompetition = functions.https.onCall((data, context) => {
+    const competitionID = data.competitionID;
+    const userID = context.auth?.uid;
+    if (userID == null) return Promise.resolve();
+    return joinCompetition(competitionID, userID);
+});
+
+exports.leaveCompetition = functions.https.onCall((data, context) => {
+    const competitionID = data.competitionID;
+    const userID = context.auth?.uid;
+    if (userID == null) return Promise.resolve();
+    return leaveCompetition(competitionID, userID);
 });
 
 // Friends
