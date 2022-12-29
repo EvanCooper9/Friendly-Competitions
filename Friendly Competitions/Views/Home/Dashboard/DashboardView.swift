@@ -36,6 +36,7 @@ struct DashboardView: View {
                     Profile()
                 } label: {
                     Image(systemName: .personCropCircle)
+                        .withTutorialPopup(for: .dashboardProfile, position: .bottom)
                 }
             }
         }
@@ -76,6 +77,7 @@ struct DashboardView: View {
                 let text = competitionsFiltered ? "Active competitions" : "Competitions"
                 Text(text).font(.title3)
                 Spacer()
+                
                 Button {
                     withAnimation { competitionsFiltered.toggle() }
                 } label: {
@@ -87,6 +89,7 @@ struct DashboardView: View {
                 Button(toggling: $presentNewCompetition) {
                     Image(systemName: .plusCircle)
                         .font(.title2)
+                        .withTutorialPopup(for: .dashboardCreateCompetition)
                 }
             }
         } footer: {
@@ -122,6 +125,7 @@ struct DashboardView: View {
                 Button(toggling: $presentSearchFriendsSheet) {
                     Image(systemName: .personCropCircleBadgePlus)
                         .font(.title2)
+                        .withTutorialPopup(for: .dashboardAddFriends)
                 }
             }
         } footer: {

@@ -11,6 +11,7 @@ fileprivate enum Dependencies {
     static let healthKitManager = HealthKitManagingMock()
     static let permissionsManager = PermissionsManagingMock()
     static let storageManager = StorageManagingMock()
+    static let tutorialManager = TutorialManagingMock()
     static let userManager = UserManagingMock()
     static let workoutManager = WorkoutManagingMock()
     
@@ -24,6 +25,7 @@ fileprivate enum Dependencies {
         Container.healthKitManager.register { healthKitManager }
         Container.permissionsManager.register { permissionsManager }
         Container.storageManager.register { storageManager }
+        Container.tutorialManager.register { tutorialManager }
         Container.userManager.register { userManager }
     }
 
@@ -43,6 +45,8 @@ fileprivate enum Dependencies {
 
         storageManager.dataForReturnValue = .just(.init())
         
+        tutorialManager.remainingSteps = .just([])
+        
         userManager.user = .evan
         userManager.userPublisher = .just(.evan)
     }
@@ -58,6 +62,7 @@ extension PreviewProvider {
     static var healthKitManager: HealthKitManagingMock { Dependencies.healthKitManager }
     static var permissionsManager: PermissionsManagingMock { Dependencies.permissionsManager }
     static var storageManager: StorageManagingMock { Dependencies.storageManager }
+    static var tutorialManager: TutorialManagingMock { Dependencies.tutorialManager }
     static var userManager: UserManagingMock { Dependencies.userManager }
 }
 

@@ -97,6 +97,7 @@
 		ED0470B528FF2F4700A941AC /* FirebaseAnalyticsSwift in Frameworks */ = {isa = PBXBuildFile; productRef = ED0470B428FF2F4700A941AC /* FirebaseAnalyticsSwift */; };
 		ED0470B928FF2F4700A941AC /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = ED0470B828FF2F4700A941AC /* FirebaseCrashlytics */; };
 		ED0470C128FF2F4700A941AC /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = ED0470C028FF2F4700A941AC /* FirebaseMessaging */; };
+		ED05F1FC295D1CBE00875AEA /* TutorialStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED05F1FB295D1CBE00875AEA /* TutorialStep.swift */; };
 		ED19724C283803850018FDFF /* WorkoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED19724B283803850018FDFF /* WorkoutTests.swift */; };
 		ED19724E283803F60018FDFF /* WorkoutTypeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED19724D283803F60018FDFF /* WorkoutTypeTests.swift */; };
 		ED1CFA9B2864AF1D00192E49 /* DashboardViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1CFA9A2864AF1D00192E49 /* DashboardViewModelTests.swift */; };
@@ -105,6 +106,9 @@
 		ED1CFAA22864FF0000192E49 /* WorkoutMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1CFAA12864FF0000192E49 /* WorkoutMetric.swift */; };
 		ED1E08D728DF4C6600497E20 /* View+RemovingMargin.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1E08D628DF4C6600497E20 /* View+RemovingMargin.swift */; };
 		ED277B1D2838002C00DDF29A /* HomeViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED277B1C2838002C00DDF29A /* HomeViewModelTests.swift */; };
+		ED3D5F27295D49BA00211E86 /* Popovers in Frameworks */ = {isa = PBXBuildFile; productRef = ED3D5F26295D49BA00211E86 /* Popovers */; };
+		ED3D5F29295D49C800211E86 /* View+Tutorial.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3D5F28295D49C800211E86 /* View+Tutorial.swift */; };
+		ED3D5F2C295D546100211E86 /* HomeTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3D5F2B295D546100211E86 /* HomeTab.swift */; };
 		ED3ED8F7284F951800B5100F /* AutoMockable.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3ED8F6284F951800B5100F /* AutoMockable.generated.swift */; };
 		ED438FF727F7B3B600D72F99 /* View+ConfirmationDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED438FF627F7B3B600D72F99 /* View+ConfirmationDialog.swift */; };
 		ED438FF927F7C2B900D72F99 /* View+Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED438FF827F7C2B900D72F99 /* View+Analytics.swift */; };
@@ -155,6 +159,7 @@
 		EDC7849828034CCD001FE005 /* WorkoutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC7849728034CCD001FE005 /* WorkoutManager.swift */; };
 		EDC7849B280358E9001FE005 /* Workout.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC7849A280358E9001FE005 /* Workout.swift */; };
 		EDC7849D28035A67001FE005 /* HKWorkoutActivityType+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC7849C28035A67001FE005 /* HKWorkoutActivityType+Extensions.swift */; };
+		EDCB5257295CF23C00EF05B9 /* TutorialManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDCB5256295CF23C00EF05B9 /* TutorialManager.swift */; };
 		EDDF77D828BA82E000BB8B97 /* HealthKitPermissionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDDF77D728BA82E000BB8B97 /* HealthKitPermissionType.swift */; };
 /* End PBXBuildFile section */
 
@@ -269,6 +274,7 @@
 		C1EA986826D6E8C900219E84 /* CompetitionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionView.swift; sourceTree = "<group>"; };
 		C1EBB16627AD7AF600376E59 /* UserDefaultsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserDefaultsTests.swift; sourceTree = "<group>"; };
 		C1F9D7CC26FF871A00B25651 /* NotificationManaging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManaging.swift; sourceTree = "<group>"; };
+		ED05F1FB295D1CBE00875AEA /* TutorialStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialStep.swift; sourceTree = "<group>"; };
 		ED19724B283803850018FDFF /* WorkoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutTests.swift; sourceTree = "<group>"; };
 		ED19724D283803F60018FDFF /* WorkoutTypeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutTypeTests.swift; sourceTree = "<group>"; };
 		ED1CFA9A2864AF1D00192E49 /* DashboardViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewModelTests.swift; sourceTree = "<group>"; };
@@ -277,6 +283,8 @@
 		ED1CFAA12864FF0000192E49 /* WorkoutMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutMetric.swift; sourceTree = "<group>"; };
 		ED1E08D628DF4C6600497E20 /* View+RemovingMargin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+RemovingMargin.swift"; sourceTree = "<group>"; };
 		ED277B1C2838002C00DDF29A /* HomeViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModelTests.swift; sourceTree = "<group>"; };
+		ED3D5F28295D49C800211E86 /* View+Tutorial.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Tutorial.swift"; sourceTree = "<group>"; };
+		ED3D5F2B295D546100211E86 /* HomeTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeTab.swift; sourceTree = "<group>"; };
 		ED3ED8F6284F951800B5100F /* AutoMockable.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AutoMockable.generated.swift; sourceTree = "<group>"; };
 		ED438FF627F7B3B600D72F99 /* View+ConfirmationDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+ConfirmationDialog.swift"; sourceTree = "<group>"; };
 		ED438FF827F7C2B900D72F99 /* View+Analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Analytics.swift"; sourceTree = "<group>"; };
@@ -324,6 +332,7 @@
 		EDC7849728034CCD001FE005 /* WorkoutManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutManager.swift; sourceTree = "<group>"; };
 		EDC7849A280358E9001FE005 /* Workout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Workout.swift; sourceTree = "<group>"; };
 		EDC7849C28035A67001FE005 /* HKWorkoutActivityType+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HKWorkoutActivityType+Extensions.swift"; sourceTree = "<group>"; };
+		EDCB5256295CF23C00EF05B9 /* TutorialManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TutorialManager.swift; sourceTree = "<group>"; };
 		EDDF77D728BA82E000BB8B97 /* HealthKitPermissionType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitPermissionType.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -343,6 +352,7 @@
 				ED0470B528FF2F4700A941AC /* FirebaseAnalyticsSwift in Frameworks */,
 				ED71E2A328F70212001FED74 /* Files in Frameworks */,
 				C1C8B24726F3FB9C008D6B1B /* HealthKit.framework in Frameworks */,
+				ED3D5F27295D49BA00211E86 /* Popovers in Frameworks */,
 				ED0470B928FF2F4700A941AC /* FirebaseCrashlytics in Frameworks */,
 				ED0470AB28FF2DB200A941AC /* FirebaseAuthCombine-Community in Frameworks */,
 				C1C8B24926F3FBA3008D6B1B /* HealthKitUI.framework in Frameworks */,
@@ -437,6 +447,7 @@
 				C132336C27BF0C0F00196D81 /* View+CornerRadius.swift */,
 				EDC5FC3E27FA7C1B00F2882D /* View+HUD.swift */,
 				ED1E08D628DF4C6600497E20 /* View+RemovingMargin.swift */,
+				ED3D5F28295D49C800211E86 /* View+Tutorial.swift */,
 			);
 			path = SwiftUI;
 			sourceTree = "<group>";
@@ -720,6 +731,7 @@
 		C1ABB20C26D6839900716984 /* Views */ = {
 			isa = PBXGroup;
 			children = (
+				ED3D5F2B295D546100211E86 /* HomeTab.swift */,
 				C19B7F2727BD8A5E00BCA4B9 /* HomeView.swift */,
 				EDA3529428370F4C00390585 /* HomeViewModel.swift */,
 				C19B7F2E27BEA69200BCA4B9 /* Dashboard */,
@@ -757,6 +769,7 @@
 				ED7881AE2850F70C00C7F6CB /* Analytics */,
 				ED7881A92850F6B400C7F6CB /* Authentication */,
 				ED6CB45A28BA829000436BBD /* HealthKit */,
+				ED3D5F2A295D4AD100211E86 /* Tutorial */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -824,6 +837,15 @@
 				ED1CFA992864AF1400192E49 /* Dashboard */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		ED3D5F2A295D4AD100211E86 /* Tutorial */ = {
+			isa = PBXGroup;
+			children = (
+				EDCB5256295CF23C00EF05B9 /* TutorialManager.swift */,
+				ED05F1FB295D1CBE00875AEA /* TutorialStep.swift */,
+			);
+			path = Tutorial;
 			sourceTree = "<group>";
 		};
 		ED3ED8F5284F951800B5100F /* Sourcery */ = {
@@ -1031,6 +1053,7 @@
 				ED0470C028FF2F4700A941AC /* FirebaseMessaging */,
 				ED8C324B2911BFD300339988 /* ECKit */,
 				ED8C324D2911BFD300339988 /* ECKit+Firebase */,
+				ED3D5F26295D49BA00211E86 /* Popovers */,
 			);
 			productName = CompyBoi;
 			productReference = C1691DC326D55FCF006FFA30 /* Friendly Competitions.app */;
@@ -1068,6 +1091,7 @@
 				ED71E2A128F70212001FED74 /* XCRemoteSwiftPackageReference "Files" */,
 				ED0470A928FF2DB200A941AC /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				ED74033A28FF7297005BD155 /* XCRemoteSwiftPackageReference "ECKit" */,
+				ED3D5F25295D49BA00211E86 /* XCRemoteSwiftPackageReference "Popovers" */,
 			);
 			productRefGroup = C1691DC426D55FCF006FFA30 /* Products */;
 			projectDirPath = "";
@@ -1208,6 +1232,7 @@
 				EDBEA170281459D200058A47 /* EditCompetitionSection.swift in Sources */,
 				EDA352932836F87600390585 /* CompetitionViewAction.swift in Sources */,
 				C12D640727A5F2FC00259237 /* CompetitionsManager.swift in Sources */,
+				EDCB5257295CF23C00EF05B9 /* TutorialManager.swift in Sources */,
 				C1691DC726D55FCF006FFA30 /* FriendlyCompetitions.swift in Sources */,
 				C123C9C927A74F3500375F73 /* PermissionsManager.swift in Sources */,
 				EDA035B829173F140091E7A6 /* ArrayBuilder.swift in Sources */,
@@ -1220,6 +1245,7 @@
 				ED3ED8F7284F951800B5100F /* AutoMockable.generated.swift in Sources */,
 				EDA35298283713C200390585 /* Sharable.swift in Sources */,
 				C155CA7627AC1A63005F49F4 /* Competition+Standing.swift in Sources */,
+				ED05F1FC295D1CBE00875AEA /* TutorialStep.swift in Sources */,
 				C123C9CD27A863F100375F73 /* UserHashIDPill.swift in Sources */,
 				ED901B6D2802558400FE619E /* UserViewModel.swift in Sources */,
 				ED901B4F280249B000FE619E /* CompetitionViewModel.swift in Sources */,
@@ -1229,11 +1255,13 @@
 				ED438FF727F7B3B600D72F99 /* View+ConfirmationDialog.swift in Sources */,
 				ED438FFB27F7D18600D72F99 /* AnalyticsManager.swift in Sources */,
 				C1884E4826D5894000C21014 /* DashboardView.swift in Sources */,
+				ED3D5F2C295D546100211E86 /* HomeTab.swift in Sources */,
 				C155229C26E793B300FE0DA7 /* User+Mock.swift in Sources */,
 				ED901B452802426800FE619E /* DashboardViewModel.swift in Sources */,
 				C15522A026E793DA00FE0DA7 /* ActivitySummary+Mock.swift in Sources */,
 				ED901B4A2802463900FE619E /* ProfileViewModel.swift in Sources */,
 				C10A267927E9528700FD1C2C /* ColorScheme+Extensions.swift in Sources */,
+				ED3D5F29295D49C800211E86 /* View+Tutorial.swift in Sources */,
 				C132336727BEBB1600196D81 /* UIScreen+Extensions.swift in Sources */,
 				C19B7F2627BD843000BCA4B9 /* ExploreView.swift in Sources */,
 				C16CC40927A73E6E00C26208 /* User+Statistics.swift in Sources */,
@@ -1602,6 +1630,14 @@
 				minimumVersion = 10.0.0;
 			};
 		};
+		ED3D5F25295D49BA00211E86 /* XCRemoteSwiftPackageReference "Popovers" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/aheze/Popovers";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 		ED71E2A128F70212001FED74 /* XCRemoteSwiftPackageReference "Files" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/JohnSundell/Files";
@@ -1655,6 +1691,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = ED0470A928FF2DB200A941AC /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseMessaging;
+		};
+		ED3D5F26295D49BA00211E86 /* Popovers */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ED3D5F25295D49BA00211E86 /* XCRemoteSwiftPackageReference "Popovers" */;
+			productName = Popovers;
 		};
 		ED71E2A228F70212001FED74 /* Files */ = {
 			isa = XCSwiftPackageProductDependency;

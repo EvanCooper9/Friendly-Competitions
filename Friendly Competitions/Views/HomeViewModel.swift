@@ -6,13 +6,25 @@ final class HomeViewModel: ObservableObject {
     
     // MARK: - Public Properties
     
+    @Published var tab = HomeTab.dashboard
     @Published var deepLinkedCompetition: Competition?
     @Published var deepLinkedUser: User?
+    
+    @Published private(set) var tutorialActive = false
     
     // MARK: - Private Properties
     
     @Injected(Container.competitionsManager) private var competitionsManager
     @Injected(Container.friendsManager) private var friendsManager
+    @Injected(Container.tutorialManager) private var tutorialManager
+    
+    // MARK: - Lifecycle
+    
+    init() {
+        tutorialManager.remainingSteps
+            .map(\.isNotEmpty)
+            .assign(to: &$tutorialActive)
+    }
     
     // MARK: - Public Methods
     

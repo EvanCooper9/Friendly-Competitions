@@ -28,6 +28,9 @@ internal enum Asset {
     internal static let health = ImageAsset(name: "health")
     internal static let logo = ImageAsset(name: "logo")
     internal static let notifications = ImageAsset(name: "notifications")
+    internal enum Tutorial {
+      internal static let home = ImageAsset(name: "home")
+    }
   }
 }
 // swiftlint:enable identifier_name line_length nesting type_body_length type_name

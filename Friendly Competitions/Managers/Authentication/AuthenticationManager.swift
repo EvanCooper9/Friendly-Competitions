@@ -61,6 +61,7 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
         $currentUser
             .removeDuplicates { $0?.id == $1?.id }
             .dropFirst()
+            .receive(on: RunLoop.main)
             .sink(withUnretained: self) { strongSelf, user in
                 if let user = user {
                     strongSelf.registerUserManager(with: user)

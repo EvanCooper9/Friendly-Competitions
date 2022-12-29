@@ -756,6 +756,31 @@ class StorageManagingMock: StorageManaging {
     }
 
 }
+class TutorialManagingMock: TutorialManaging {
+    var remainingSteps: AnyPublisher<[TutorialStep], Never> {
+        get { return underlyingRemainingSteps }
+        set(value) { underlyingRemainingSteps = value }
+    }
+    var underlyingRemainingSteps: AnyPublisher<[TutorialStep], Never>!
+
+    //MARK: - complete
+
+    var completeStepCallsCount = 0
+    var completeStepCalled: Bool {
+        return completeStepCallsCount > 0
+    }
+    var completeStepReceivedStep: TutorialStep?
+    var completeStepReceivedInvocations: [TutorialStep] = []
+    var completeStepClosure: ((TutorialStep) -> Void)?
+
+    func complete(step: TutorialStep) {
+        completeStepCallsCount += 1
+        completeStepReceivedStep = step
+        completeStepReceivedInvocations.append(step)
+        completeStepClosure?(step)
+    }
+
+}
 class UserManagingMock: UserManaging {
     var user: User {
         get { return underlyingUser }

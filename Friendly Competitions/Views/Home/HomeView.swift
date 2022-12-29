@@ -6,14 +6,34 @@ struct HomeView: View {
     @StateObject private var viewModel = HomeViewModel()
 
     var body: some View {
-        TabView {
-            DashboardView()
-                .embeddedInNavigationView()
-                .tabItem { Label("Home", systemImage: .houseFill) }
-        
-            ExploreView()
-                .embeddedInNavigationView()
-                .tabItem { Label("Explore", systemImage: .sparkleMagnifyingglass) }
+        ZStack(alignment: .bottom) {
+            TabView(selection: $viewModel.tab) {
+                DashboardView()
+                    .embeddedInNavigationView()
+                    .tabItem { Label("Home", systemImage: .houseFill) }
+                    .tag(HomeTab.dashboard)
+            
+                ExploreView()
+                    .embeddedInNavigationView()
+                    .tabItem { Label("Explore", systemImage: .sparkleMagnifyingglass) }
+                    .tag(HomeTab.explore)
+            }
+            
+            HStack {
+                let ghost = Color.clear
+                    .frame(width: 50, height: 1)
+                    .padding(.bottom, 50)
+                    .maxWidth(.infinity)
+                    .allowsHitTesting(false)
+                ghost
+                    .withTutorialPopup(for: .tabBarDashboard)
+                    .onTapGesture { viewModel.tab = .dashboard }
+                ghost
+                    .withTutorialPopup(for: .tabBarExplore)
+                    .onTapGesture { viewModel.tab = .explore }
+            }
+            .padding(.horizontal, .extraSmall)
+            .disabled(!viewModel.tutorialActive)
         }
         .onOpenURL(perform: viewModel.handle)
         .sheet(item: $viewModel.deepLinkedCompetition) { CompetitionView(competition: $0).embeddedInNavigationView() }

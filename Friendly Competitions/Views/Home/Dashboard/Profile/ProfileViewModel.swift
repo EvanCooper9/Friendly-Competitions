@@ -21,7 +21,7 @@ final class ProfileViewModel: ObservableObject {
     // MARK: - Lifecycle
 
     init() {
-        user = .evan // userManager.user 
+        user = userManager.user 
         
         $user
             .removeDuplicates()

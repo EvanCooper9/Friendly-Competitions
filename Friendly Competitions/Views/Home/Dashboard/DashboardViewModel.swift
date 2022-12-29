@@ -20,6 +20,7 @@ final class DashboardViewModel: ObservableObject {
     @Published var requiresPermissions = false
     @Published private(set) var title = Bundle.main.name
     @Published private(set) var showDeveloper = false
+    @Published var tutorialStep: TutorialStep?
     
     // MARK: - Private Properties
      
@@ -27,6 +28,7 @@ final class DashboardViewModel: ObservableObject {
     @Injected(Container.competitionsManager) private var competitionsManager
     @Injected(Container.friendsManager) private var friendsManager
     @Injected(Container.permissionsManager) private var permissionsManager
+    @Injected(Container.tutorialManager) private var tutorialManager
     @Injected(Container.userManager) private var userManager
     
     // MARK: - Lifecycle
@@ -75,6 +77,12 @@ final class DashboardViewModel: ObservableObject {
         permissionsManager
             .requiresPermission
             .assign(to: &$requiresPermissions)
+        
+        tutorialManager
+            .remainingSteps
+            .filterMany { $0.category == .dashboard }
+            .map(\.first)
+            .assign(to: &$tutorialStep)
         
         userManager.userPublisher
             .map { $0.name.ifEmpty(Bundle.main.name) }

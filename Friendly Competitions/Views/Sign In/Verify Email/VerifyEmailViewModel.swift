@@ -20,7 +20,7 @@ final class VerifyEmailViewModel: ObservableObject {
 
     private let hud = PassthroughSubject<HUDState?, Never>()
     private let backSubject = PassthroughSubject<Void, Never>()
-    private let resendSubject = PassthroughSubject<Void, Error>()
+    private let resendSubject = PassthroughSubject<Void, Never>()
     private var cancellables = Cancellables()
     
     init() {
@@ -28,12 +28,15 @@ final class VerifyEmailViewModel: ObservableObject {
         hud.assign(to: &appState.$hudState)
 
         backSubject
-            .sinkAsync { [weak self] in try self?.authenticationManager.signOut() }
+            .sink(withUnretained: self) { try? $0.authenticationManager.signOut() }
             .store(in: &cancellables)
 
         resendSubject
-            .flatMapLatest(authenticationManager.resendEmailVerification)
-            .mapToResult()
+            .flatMapLatest(withUnretained: self) { strongSelf in
+                strongSelf.authenticationManager
+                    .resendEmailVerification()
+                    .mapToResult()
+            }
             .sink(withUnretained: self) { strongSelf, result in
                 switch result {
                 case .failure(let error):

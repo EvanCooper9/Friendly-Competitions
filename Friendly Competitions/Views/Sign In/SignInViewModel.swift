@@ -2,6 +2,7 @@ import Combine
 import CombineExt
 import ECKit
 import Factory
+import Foundation
 
 @MainActor
 final class SignInViewModel: ObservableObject {
@@ -37,13 +38,13 @@ final class SignInViewModel: ObservableObject {
         hud.assign(to: &appState.$hudState)
 
         forgotSubject
-            .setFailureType(to: Error.self)
-            .handleEvents(withUnretained: self, receiveOutput: { $0.loading = true })
             .flatMapLatest(withUnretained: self) { strongSelf in
-                strongSelf.authenticationManager.sendPasswordReset(to: strongSelf.email)
+                strongSelf.authenticationManager
+                    .sendPasswordReset(to: strongSelf.email)
+                    .isLoading { [weak self] in self?.loading = $0 }
+                    .mapToResult()
             }
-            .handleEvents(withUnretained: self, receiveOutput: { $0.loading = false })
-            .mapToResult()
+            .receive(on: RunLoop.main)
             .sink(withUnretained: self, receiveValue: { strongSelf, result in
                 switch result {
                 case .failure(let error):
@@ -55,14 +56,14 @@ final class SignInViewModel: ObservableObject {
             .store(in: &cancellables)
 
         signInSubject
-            .setFailureType(to: Error.self)
             .flatMapLatest(withUnretained: self) { strongSelf, signInMethod in
                 strongSelf.authenticationManager
                     .signIn(with: signInMethod)
                     .isLoading { [weak self] in self?.loading = $0  }
+                    .mapToResult()
                     .eraseToAnyPublisher()
             }
-            .mapToResult()
+            .receive(on: RunLoop.main)
             .sink(withUnretained: self, receiveValue: { strongSelf, result in
                 switch result {
                 case .failure(let error):
@@ -74,7 +75,6 @@ final class SignInViewModel: ObservableObject {
             .store(in: &cancellables)
 
         signUpSubject
-            .setFailureType(to: Error.self)
             .flatMapLatest(withUnretained: self) { strongSelf in
                 strongSelf.authenticationManager
                     .signUp(
@@ -84,9 +84,9 @@ final class SignInViewModel: ObservableObject {
                         passwordConfirmation: strongSelf.passwordConfirmation
                     )
                     .isLoading { [weak self] in self?.loading = $0 }
-                    .eraseToAnyPublisher()
+                    .mapToResult()
             }
-            .mapToResult()
+            .receive(on: RunLoop.main)
             .sink(withUnretained: self, receiveValue: { strongSelf, result in
                 switch result {
                 case .failure(let error):

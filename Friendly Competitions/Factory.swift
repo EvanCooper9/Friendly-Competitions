@@ -16,6 +16,7 @@ extension Container {
     static let notificationManager = Factory(scope: .shared) { NotificationManager() as NotificationManaging }
     static let permissionsManager = Factory(scope: .shared) { PermissionsManager() as PermissionsManaging }
     static let storageManager = Factory(scope: .shared) { StorageManager() as StorageManaging }
+    static let tutorialManager = Factory(scope: .shared) { TutorialManager() as TutorialManaging }
     static let userManager = Factory<UserManaging>(scope: .shared) { fatalError("User manager not initialized") }
     static let workoutManager = Factory(scope: .shared) { WorkoutManager() as WorkoutManaging }
     
