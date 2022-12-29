@@ -36,7 +36,7 @@ final class WorkoutManager: WorkoutManaging {
                 UIApplication.willEnterForegroundNotification.publisher
             )
             .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
-            .flatMapLatest(requestWorkouts)
+            .flatMapLatest(withUnretained: self) { $0.requestWorkouts() }
             .combineLatest(userManager.userPublisher)
             .sinkAsync { [weak self] workouts, user in
                 guard let strongSelf = self else { return }
@@ -87,7 +87,7 @@ final class WorkoutManager: WorkoutManaging {
 
                 return (workoutTypes, dateInterval)
             }
-            .flatMapAsync { workoutTypes, dateInterval in
+            .flatMapAsync { [weak self] workoutTypes, dateInterval in
                 try await withThrowingTaskGroup(of: (WorkoutType, [Date: [HKQuantityType: Double]]).self) { group -> [Workout] in
                     workoutTypes.forEach { workoutType, workoutMetrics in
                         group.addTask { [weak self] in

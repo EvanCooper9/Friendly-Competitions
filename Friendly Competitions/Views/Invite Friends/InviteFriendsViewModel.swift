@@ -96,12 +96,12 @@ final class InviteFriendsViewModel: ObservableObject {
             .assign(to: &$rows)
 
         acceptSubject
-            .flatMapLatest(withUnretained: self) { [weak self] strongSelf, user -> AnyPublisher<Void, Never> in
+            .flatMapLatest(withUnretained: self) { strongSelf, user -> AnyPublisher<Void, Never> in
                 switch action {
                 case .addFriend:
                     return strongSelf.friendsManager
                         .accept(friendRequest: user)
-                        .isLoading { [weak self] in self?.loading = $0 }
+                        .isLoading { strongSelf.loading = $0 }
                         .ignoreFailure()
                 case .competitionInvite:
                     return .never()
@@ -111,17 +111,17 @@ final class InviteFriendsViewModel: ObservableObject {
             .store(in: &cancellables)
 
         inviteSubject
-            .flatMapLatest(withUnretained: self) { [weak self] strongSelf, friend -> AnyPublisher<Void, Never> in
+            .flatMapLatest(withUnretained: self) { strongSelf, friend -> AnyPublisher<Void, Never> in
                 switch action {
                 case .addFriend:
                     return strongSelf.friendsManager
                         .add(user: friend)
-                        .isLoading { [weak self] in self?.loading = $0 }
+                        .isLoading { strongSelf.loading = $0 }
                         .ignoreFailure()
                 case .competitionInvite(let competition):
                     return strongSelf.competitionsManager
                         .invite(friend, to: competition)
-                        .isLoading { [weak self] in self?.loading = $0 }
+                        .isLoading { strongSelf.loading = $0 }
                         .ignoreFailure()
                 }
             }
