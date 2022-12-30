@@ -21,11 +21,11 @@ final class ProfileViewModel: ObservableObject {
     // MARK: - Lifecycle
 
     init() {
-        user = .evan // userManager.user 
+        user = userManager.user
         
         $user
             .removeDuplicates()
-            .compactMap { $0 }
+            .unwrap()
             .flatMapLatest(withUnretained: self) { strongSelf, user in
                 strongSelf.userManager
                     .update(with: user)

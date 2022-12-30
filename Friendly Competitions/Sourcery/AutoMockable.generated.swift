@@ -498,24 +498,6 @@ class CompetitionsManagingMock: CompetitionsManaging {
         }
     }
 
-    //MARK: - updateStandings
-
-    var updateStandingsCallsCount = 0
-    var updateStandingsCalled: Bool {
-        return updateStandingsCallsCount > 0
-    }
-    var updateStandingsReturnValue: AnyPublisher<Void, Error>!
-    var updateStandingsClosure: (() -> AnyPublisher<Void, Error>)?
-
-    func updateStandings() -> AnyPublisher<Void, Error> {
-        updateStandingsCallsCount += 1
-        if let updateStandingsClosure = updateStandingsClosure {
-            return updateStandingsClosure()
-        } else {
-            return updateStandingsReturnValue
-        }
-    }
-
 }
 class FriendsManagingMock: FriendsManaging {
     var friends: AnyPublisher<[User], Never> {

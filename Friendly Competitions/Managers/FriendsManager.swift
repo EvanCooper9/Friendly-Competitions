@@ -3,7 +3,7 @@ import CombineExt
 import ECKit
 import ECKit_Firebase
 import Factory
-import Firebase
+import FirebaseFirestore
 import FirebaseFirestoreCombineSwift
 import FirebaseFunctionsCombineSwift
 import SwiftUI
@@ -24,6 +24,7 @@ protocol FriendsManaging {
 
 final class FriendsManager: FriendsManaging {
     
+    /// Used for searching, so we don't decode dates and other expensive properties
     private struct SearchResult: Decodable {
         let name: String
     }
@@ -143,22 +144,18 @@ final class FriendsManager: FriendsManaging {
     }
 
     func search(with text: String) -> AnyPublisher<[User], Error> {
-        userManager.userPublisher
-            .map(\.id)
-            .setFailureType(to: Error.self)
-            .flatMapLatest(withUnretained: self) { strongSelf, currentUserID in
-                strongSelf.database.collection("users")
-                    .whereField("id", isNotEqualTo: currentUserID)
-                    .whereField("searchable", isEqualTo: true)
-                    .getDocuments()
-                    .decoded(asArrayOf: User.self)
-            }
-            .filterMany { user in
-                user.name
-                    .lowercased()
+        database.collection("users")
+            .whereField("id", isNotEqualTo: userManager.user.id)
+            .whereField("searchable", isEqualTo: true)
+            .getDocuments()
+            .map(\.documents)
+            .filterMany { document in
+                guard let searchResult = try? document.decoded(as: SearchResult.self) else { return false }
+                return searchResult.name
                     .split(separator: " ")
-                    .contains { $0.starts(with: text.lowercased()) }
+                    .contains { $0.localizedLowercase.starts(with: text.localizedLowercase) }
             }
+            .compactMapMany { try? $0.decoded(as: User.self) }
             .map { $0.sorted(by: \.name) }
             .eraseToAnyPublisher()
     }

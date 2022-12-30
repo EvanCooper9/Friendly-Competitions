@@ -3,6 +3,8 @@ import * as functions from "firebase-functions";
 import * as moment from "moment";
 import { deleteAccount } from "./Handlers/account/deleteAccount";
 import { deleteCompetition } from "./Handlers/competitions/deleteCompetition";
+import { respondToCompetitionInvite } from "./Handlers/competitions/respondToCompetitionInvite";
+import { inviteUserToCompetition } from "./Handlers/competitions/inviteUserToCompetition";
 import { updateCompetitionStandings } from "./Handlers/competitions/updateCompetitionStandings";
 import { deleteFriend } from "./Handlers/friends/deleteFriend";
 import { FriendRequestAction, handleFriendRequest } from "./Handlers/friends/handleFriendRequest";
@@ -12,6 +14,8 @@ import { Standing } from "./Models/Standing";
 import { User } from "./Models/User";
 import * as notifications from "./notifications";
 import { getFirestore } from "./Utilities/firstore";
+import { joinCompetition } from "./Handlers/competitions/joinCompetition";
+import { leaveCompetition } from "./Handlers/competitions/leaveCompetition";
 
 admin.initializeApp();
 const firestore = getFirestore();
@@ -24,17 +28,47 @@ exports.deleteAccount = functions.https.onCall(async (_data, context) => {
     await deleteAccount(userID);
 });
 
-// Competitions
+// Competitions 
 
 exports.deleteCompetition = functions.https.onCall(data => {
     const competitionID = data.competitionID;
     return deleteCompetition(competitionID);
 });
 
+exports.inviteUserToCompetition = functions.https.onCall((data, context) => {
+    const caller = context.auth?.uid;
+    const competitionID = data.competitionID;
+    const userID = data.userID;
+    if (caller == null) return Promise.resolve();
+    return inviteUserToCompetition(competitionID, caller, userID);
+});
+
+exports.respondToCompetitionInvite = functions.https.onCall((data, context) => {
+    const caller = context.auth?.uid;
+    const competitionID = data.competitionID;
+    const accept = data.accept;
+    if (caller == null) return Promise.resolve();
+    return respondToCompetitionInvite(competitionID, caller, accept);
+});
+
 exports.updateCompetitionStandings = functions.https.onCall((_data, context) => {
     const userID = context.auth?.uid;
     if (userID == null) return Promise.resolve();
     return updateCompetitionStandings(userID);
+});
+
+exports.joinCompetition = functions.https.onCall((data, context) => {
+    const competitionID = data.competitionID;
+    const userID = context.auth?.uid;
+    if (userID == null) return Promise.resolve();
+    return joinCompetition(competitionID, userID);
+});
+
+exports.leaveCompetition = functions.https.onCall((data, context) => {
+    const competitionID = data.competitionID;
+    const userID = context.auth?.uid;
+    if (userID == null) return Promise.resolve();
+    return leaveCompetition(competitionID, userID);
 });
 
 // Friends
