@@ -5,16 +5,16 @@ import Factory
 
 final class ProfileViewModel: ObservableObject {
 
-    @Published var loading = false
     @Published var user: User!
-    @Published var sharedDeepLink: DeepLink!
+    @Published var confirmationRequired = false
+    @Published var loading = false
     
     // MARK: - Private Properties
     
     @Injected(Container.authenticationManager) private var authenticationManager
     @Injected(Container.userManager) private var userManager
 
-    private let deleteSubject = PassthroughSubject<Void, Never>()
+    private let deleteAccountSubject = PassthroughSubject<Void, Never>()
     private let signOutSubject = PassthroughSubject<Void, Never>()
     private var cancellables = Cancellables()
     
@@ -22,11 +22,10 @@ final class ProfileViewModel: ObservableObject {
 
     init() {
         user = userManager.user
-        sharedDeepLink = .friendReferral(id: userManager.user.id)
         
         $user
             .removeDuplicates()
-            .compactMap { $0 }
+            .unwrap()
             .flatMapLatest(withUnretained: self) { strongSelf, user in
                 strongSelf.userManager
                     .update(with: user)
@@ -40,11 +39,11 @@ final class ProfileViewModel: ObservableObject {
             .map(User?.init)
             .assign(to: &$user)
 
-        deleteSubject
+        deleteAccountSubject
             .flatMapLatest(withUnretained: self) { strongSelf in
                 strongSelf.userManager
                     .deleteAccount()
-                    .isLoading { [weak self] in self?.loading = $0 }
+                    .isLoading { strongSelf.loading = $0 }
                     .ignoreFailure()
             }
             .sink()
@@ -56,11 +55,21 @@ final class ProfileViewModel: ObservableObject {
             .store(in: &cancellables)
     }
     
-    func deleteAccount() {
-        deleteSubject.send()
+    // MARK: - Public Methods
+    
+    func confirmTapped() {
+        deleteAccountSubject.send()
     }
     
-    func signOut() {
+    func deleteAccountTapped() {
+        confirmationRequired.toggle()
+    }
+    
+    func shareInviteLinkTapped() {
+        DeepLink.friendReferral(id: userManager.user.id).share()
+    }
+    
+    func signOutTapped() {
         signOutSubject.send()
     }
 }

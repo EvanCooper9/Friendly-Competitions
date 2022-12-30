@@ -44,7 +44,7 @@ struct UserView: View {
     }
 }
 
-struct FriendView_Previews: PreviewProvider {
+struct UserView_Previews: PreviewProvider {
     static var previews: some View {
         UserView(user: .gabby)
             .setupMocks()

@@ -7,7 +7,7 @@ final class FriendlyCompetitionsAppModel: ObservableObject {
 
     @Published var loggedIn = false
     @Published var emailVerified = false
-    @Published var hud: HUDState?
+    @Published var hud: HUD?
     
     // MARK: - Private Properties
 
@@ -19,6 +19,6 @@ final class FriendlyCompetitionsAppModel: ObservableObject {
     init() {
         authenticationManager.loggedIn.assign(to: &$loggedIn)
         authenticationManager.emailVerified.assign(to: &$emailVerified)
-        appState.$hudState.assign(to: &$hud)
+        appState.hud.assign(to: &$hud)
     }
 }

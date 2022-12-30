@@ -9,37 +9,46 @@ final class VerifyEmailViewModel: ObservableObject {
     private enum Constants {
         static let resentEmailVerification = "Re-sent email verification. Check your inbox!"
     }
-
-    // MARK: - Private Properties
+    
+    // MARK: - Public Properties
     
     @Published var user: User!
+
+    // MARK: - Private Properties
     
     @Injected(Container.appState) private var appState
     @Injected(Container.authenticationManager) private var authenticationManager
     @Injected(Container.userManager) private var userManager
 
-    private let hud = PassthroughSubject<HUDState?, Never>()
+    private let hudSubject = PassthroughSubject<HUD, Never>()
     private let backSubject = PassthroughSubject<Void, Never>()
-    private let resendSubject = PassthroughSubject<Void, Error>()
+    private let resendSubject = PassthroughSubject<Void, Never>()
     private var cancellables = Cancellables()
     
     init() {
         user = userManager.user
-        hud.assign(to: &appState.$hudState)
+        
+        hudSubject
+            .sink(withUnretained: self) { $0.appState.push(hud: $1) }
+            .store(in: &cancellables)
 
         backSubject
-            .sinkAsync { [weak self] in try self?.authenticationManager.signOut() }
+            .sink(withUnretained: self) { try? $0.authenticationManager.signOut() }
             .store(in: &cancellables)
 
         resendSubject
-            .flatMapLatest(authenticationManager.resendEmailVerification)
-            .mapToResult()
+            .flatMapLatest(withUnretained: self) { strongSelf in
+                strongSelf.authenticationManager
+                    .resendEmailVerification()
+                    .mapToResult()
+            }
+            .receive(on: RunLoop.main)
             .sink(withUnretained: self) { strongSelf, result in
                 switch result {
                 case .failure(let error):
-                    strongSelf.hud.send(.error(error))
+                    strongSelf.hudSubject.send(.error(error))
                 case .success:
-                    strongSelf.hud.send(.success(text: Constants.resentEmailVerification))
+                    strongSelf.hudSubject.send(.success(text: Constants.resentEmailVerification))
                 }
             }
             .store(in: &cancellables)

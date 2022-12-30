@@ -1,6 +1,6 @@
 import SwiftUI
 
-enum HUDState: Equatable {
+enum HUD: Equatable {
     case error(Error)
     case success(text: String)
     case neutral(text: String)
@@ -19,9 +19,9 @@ enum HUDState: Equatable {
     }
 }
 
-struct HUD: View {
+struct HUDView: View {
     
-    let state: HUDState
+    let state: HUD
     
     var body: some View {
         content
@@ -74,7 +74,7 @@ struct HUD: View {
 struct HUDContainer<MainContent: View>: View {
     
     let mainContent: MainContent
-    @Binding var hudState: HUDState?
+    @Binding var hud: HUD?
     
     @State private var dismissTask: Task<Void, Error>? {
         willSet { dismissTask?.cancel() }
@@ -83,13 +83,13 @@ struct HUDContainer<MainContent: View>: View {
     var body: some View {
         ZStack(alignment: .top) {
             mainContent
-            if let hudState {
-                HUD(state: hudState)
+            if let hud {
+                HUDView(state: hud)
                     .transition(
                         .move(edge: .top)
                         .combined(with: .opacity)
                     )
-                    .onChange(of: hudState) { _ in
+                    .onChange(of: hud) { _ in
                         dismissAfterDelay()
                     }
                     .onAppear(perform: dismissAfterDelay)
@@ -104,7 +104,7 @@ struct HUDContainer<MainContent: View>: View {
             try Task.checkCancellation()
             DispatchQueue.main.async {
                 withAnimation {
-                    hudState = nil
+                    hud = nil
                 }
             }
         }
@@ -112,8 +112,8 @@ struct HUDContainer<MainContent: View>: View {
 }
 
 extension View {
-    func hud(state: Binding<HUDState?>) -> some View {
-        HUDContainer(mainContent: self, hudState: state)
+    func hud(state: Binding<HUD?>) -> some View {
+        HUDContainer(mainContent: self, hud: state)
     }
 }
 
@@ -126,23 +126,23 @@ struct HUD_Previews: PreviewProvider {
             var errorDescription: String? { "Bad error!" }
         }
         
-        @State private var hudState: HUDState?
+        @State private var hud: HUD?
         
         var body: some View {
             VStack(spacing: 30) {
                 Spacer()
                 Button("Error HUD") {
-                    hudState = .error(TestError.any)
+                    hud = .error(TestError.any)
                 }
                 Button("Success HUD") {
-                    hudState = .success(text: "Something good!")
+                    hud = .success(text: "Something good!")
                 }
                 Button("Neutral HUD") {
-                    hudState = .neutral(text: "Neutral info")
+                    hud = .neutral(text: "Neutral info")
                 }
                 Spacer()
             }
-            .hud(state: $hudState)
+            .hud(state: $hud)
         }
     }
     

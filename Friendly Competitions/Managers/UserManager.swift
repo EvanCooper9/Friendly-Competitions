@@ -26,6 +26,7 @@ final class UserManager: UserManaging {
 
     // MARK: - Private Properties
 
+    @Injected(Container.appState) private var appState
     @Injected(Container.analyticsManager) private var analyticsManager
     @Injected(Container.authenticationManager) private var authenticationManager
     @Injected(Container.functions) private var functions
@@ -42,8 +43,9 @@ final class UserManager: UserManaging {
             .share(replay: 1)
             .eraseToAnyPublisher()
         
-        UIApplication.didBecomeActiveNotification.publisher
-            .first()
+        appState.didBecomeActive
+            .filter { $0 }
+            .mapToVoid()
             .sink(withUnretained: self) { $0.listenForUser() }
             .store(in: &cancellables)
     }

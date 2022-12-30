@@ -90,6 +90,36 @@ class AnalyticsManagingMock: AnalyticsManaging {
     }
 
 }
+class AppStateProvidingMock: AppStateProviding {
+    var hud: AnyPublisher<HUD?, Never> {
+        get { return underlyingHud }
+        set(value) { underlyingHud = value }
+    }
+    var underlyingHud: AnyPublisher<HUD?, Never>!
+    var didBecomeActive: AnyPublisher<Bool, Never> {
+        get { return underlyingDidBecomeActive }
+        set(value) { underlyingDidBecomeActive = value }
+    }
+    var underlyingDidBecomeActive: AnyPublisher<Bool, Never>!
+
+    //MARK: - push
+
+    var pushHudCallsCount = 0
+    var pushHudCalled: Bool {
+        return pushHudCallsCount > 0
+    }
+    var pushHudReceivedHud: HUD?
+    var pushHudReceivedInvocations: [HUD] = []
+    var pushHudClosure: ((HUD) -> Void)?
+
+    func push(hud: HUD) {
+        pushHudCallsCount += 1
+        pushHudReceivedHud = hud
+        pushHudReceivedInvocations.append(hud)
+        pushHudClosure?(hud)
+    }
+
+}
 class AuthenticationManagingMock: AuthenticationManaging {
     var emailVerified: AnyPublisher<Bool, Never> {
         get { return underlyingEmailVerified }
@@ -465,24 +495,6 @@ class CompetitionsManagingMock: CompetitionsManaging {
             return searchByIDClosure(competitionID)
         } else {
             return searchByIDReturnValue
-        }
-    }
-
-    //MARK: - updateStandings
-
-    var updateStandingsCallsCount = 0
-    var updateStandingsCalled: Bool {
-        return updateStandingsCallsCount > 0
-    }
-    var updateStandingsReturnValue: AnyPublisher<Void, Error>!
-    var updateStandingsClosure: (() -> AnyPublisher<Void, Error>)?
-
-    func updateStandings() -> AnyPublisher<Void, Error> {
-        updateStandingsCallsCount += 1
-        if let updateStandingsClosure = updateStandingsClosure {
-            return updateStandingsClosure()
-        } else {
-            return updateStandingsReturnValue
         }
     }
 

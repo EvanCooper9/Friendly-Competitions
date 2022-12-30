@@ -2,8 +2,8 @@ import Combine
 import CombineExt
 import ECKit
 import Factory
+import Foundation
 
-@MainActor
 final class SignInViewModel: ObservableObject {
 
     private enum Constants {
@@ -28,28 +28,29 @@ final class SignInViewModel: ObservableObject {
     private let forgotSubject = PassthroughSubject<Void, Never>()
     private let signInSubject = PassthroughSubject<SignInMethod, Never>()
     private let signUpSubject = PassthroughSubject<Void, Never>()
-    private let hud = PassthroughSubject<HUDState?, Never>()
+    private let hudSubject = PassthroughSubject<HUD, Never>()
     private var cancellables = Cancellables()
     
     // MARK: - Lifecycle
     
     init() {
-        hud.assign(to: &appState.$hudState)
+        hudSubject
+            .sink(withUnretained: self) { $0.appState.push(hud: $1) }
+            .store(in: &cancellables)
 
         forgotSubject
-            .setFailureType(to: Error.self)
-            .handleEvents(withUnretained: self, receiveOutput: { $0.loading = true })
             .flatMapLatest(withUnretained: self) { strongSelf in
-                strongSelf.authenticationManager.sendPasswordReset(to: strongSelf.email)
+                strongSelf.authenticationManager
+                    .sendPasswordReset(to: strongSelf.email)
+                    .isLoading { strongSelf.loading = $0 }
+                    .mapToResult()
             }
-            .handleEvents(withUnretained: self, receiveOutput: { $0.loading = false })
-            .mapToResult()
             .sink(withUnretained: self, receiveValue: { strongSelf, result in
                 switch result {
                 case .failure(let error):
-                    strongSelf.hud.send(.error(error))
+                    strongSelf.hudSubject.send(.error(error))
                 case .success:
-                    strongSelf.hud.send(.success(text: Constants.checkEmail))
+                    strongSelf.hudSubject.send(.success(text: Constants.checkEmail))
                 }
             })
             .store(in: &cancellables)
@@ -59,14 +60,14 @@ final class SignInViewModel: ObservableObject {
             .flatMapLatest(withUnretained: self) { strongSelf, signInMethod in
                 strongSelf.authenticationManager
                     .signIn(with: signInMethod)
-                    .isLoading { [weak self] in self?.loading = $0  }
+                    .isLoading { strongSelf.loading = $0 }
                     .eraseToAnyPublisher()
             }
             .mapToResult()
             .sink(withUnretained: self, receiveValue: { strongSelf, result in
                 switch result {
                 case .failure(let error):
-                    strongSelf.hud.send(.error(error))
+                    strongSelf.hudSubject.send(.error(error))
                 case .success:
                     break
                 }
@@ -74,7 +75,6 @@ final class SignInViewModel: ObservableObject {
             .store(in: &cancellables)
 
         signUpSubject
-            .setFailureType(to: Error.self)
             .flatMapLatest(withUnretained: self) { strongSelf in
                 strongSelf.authenticationManager
                     .signUp(
@@ -83,14 +83,14 @@ final class SignInViewModel: ObservableObject {
                         password: strongSelf.password,
                         passwordConfirmation: strongSelf.passwordConfirmation
                     )
-                    .isLoading { [weak self] in self?.loading = $0 }
-                    .eraseToAnyPublisher()
+                    .isLoading { strongSelf.loading = $0 }
+                    .mapToResult()
             }
-            .mapToResult()
+            .receive(on: RunLoop.main)
             .sink(withUnretained: self, receiveValue: { strongSelf, result in
                 switch result {
                 case .failure(let error):
-                    strongSelf.hud.send(.error(error))
+                    strongSelf.hudSubject.send(.error(error))
                 case .success:
                     break
                 }

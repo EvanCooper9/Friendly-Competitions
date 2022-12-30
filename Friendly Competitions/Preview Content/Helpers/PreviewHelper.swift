@@ -35,15 +35,24 @@ fileprivate enum Dependencies {
         authenticationManager.loggedIn = .just(true)
 
         competitionsManager.competitions = .just([.mock])
+        competitionsManager.invitedCompetitions = .just([])
         competitionsManager.standings = .just([:])
         competitionsManager.participants = .just([:])
         competitionsManager.pendingParticipants = .just([:])
         competitionsManager.appOwnedCompetitions = .just([.mockPublic])
         competitionsManager.searchReturnValue = .just([.mockPublic, .mock])
+        
+        friendsManager.friends = .just([])
+        friendsManager.friendActivitySummaries = .just([:])
+        friendsManager.friendRequests = .just([])
 
         storageManager.dataForReturnValue = .just(.init())
         
+        userManager.user = .evan
         userManager.userPublisher = .just(.evan)
+        userManager.updateWithReturnValue = .just(())
+        
+        workoutManager.updateReturnValue = .just(())
     }
 }
 

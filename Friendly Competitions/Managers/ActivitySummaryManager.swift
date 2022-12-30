@@ -28,8 +28,7 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
     @Injected(Container.userManager) private var userManager
     @Injected(Container.workoutManager) private var workoutManager
 
-    private var _activitySummary: CurrentValueSubject<ActivitySummary?, Never>
-
+    private var activitySummarySubject: CurrentValueSubject<ActivitySummary?, Never>
     private let upload = PassthroughSubject<[ActivitySummary], Never>()
     private let uploadFinished = PassthroughSubject<Void, Error>()
     private let query = PassthroughSubject<Void, Never>()
@@ -40,9 +39,9 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
 
     init() {
         let storedActivitySummary = UserDefaults.standard.decode(ActivitySummary.self, forKey: "activity_summary")
-        _activitySummary = .init(storedActivitySummary)
+        activitySummarySubject = .init(storedActivitySummary?.date.isToday == true ? storedActivitySummary : nil)
 
-        activitySummary = _activitySummary
+        activitySummary = activitySummarySubject
             .removeDuplicates()
             .handleEvents(receiveOutput: { UserDefaults.standard.encode($0, forKey: "activity_summary") })
             .receive(on: RunLoop.main)
@@ -56,7 +55,7 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
                 UIApplication.willEnterForegroundNotification.publisher
             )
             .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
-            .flatMapLatest(requestActivitySummaries)
+            .flatMapLatest(withUnretained: self) { $0.requestActivitySummaries() }
             .combineLatest(userManager.userPublisher)
             .sinkAsync { [weak self] activitySummaries, user in
                 guard let strongSelf = self else { return }
@@ -64,7 +63,7 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
             
                 guard activitySummaries.isNotEmpty else { return }
                 if let activitySummary = activitySummaries.last, activitySummary.date.isToday {
-                    strongSelf._activitySummary.send(activitySummary)
+                    strongSelf.activitySummarySubject.send(activitySummary)
                 }
 
                 let batch = strongSelf.database.batch()

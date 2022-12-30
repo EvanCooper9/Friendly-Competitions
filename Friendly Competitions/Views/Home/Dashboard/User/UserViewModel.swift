@@ -54,7 +54,7 @@ final class UserViewModel: ObservableObject {
                 case .deleteFriend:
                     return strongSelf.friendsManager
                         .delete(friend: user)
-                        .isLoading { [weak self] in self?.loading = $0 }
+                        .isLoading { strongSelf.loading = $0 }
                         .ignoreFailure()
                 default:
                     return .empty()
@@ -69,17 +69,17 @@ final class UserViewModel: ObservableObject {
                 case .acceptFriendRequest:
                     return strongSelf.friendsManager
                         .accept(friendRequest: user)
-                        .isLoading { [weak self] in self?.loading = $0 }
+                        .isLoading { strongSelf.loading = $0 }
                         .ignoreFailure()
                 case .denyFriendRequest:
                     return strongSelf.friendsManager
                         .decline(friendRequest: user)
-                        .isLoading { [weak self] in self?.loading = $0 }
+                        .isLoading { strongSelf.loading = $0 }
                         .ignoreFailure()
                 case .request:
                     return strongSelf.friendsManager
                         .add(user: user)
-                        .isLoading { [weak self] in self?.loading = $0 }
+                        .isLoading { strongSelf.loading = $0 }
                         .ignoreFailure()
                 case .deleteFriend:
                     strongSelf.actionRequiringConfirmation = .deleteFriend
