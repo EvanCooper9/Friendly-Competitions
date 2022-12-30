@@ -55,7 +55,7 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
                 UIApplication.willEnterForegroundNotification.publisher
             )
             .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
-            .flatMapLatest(requestActivitySummaries)
+            .flatMapLatest(withUnretained: self) { $0.requestActivitySummaries() }
             .combineLatest(userManager.userPublisher)
             .sinkAsync { [weak self] activitySummaries, user in
                 guard let strongSelf = self else { return }

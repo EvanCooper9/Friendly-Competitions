@@ -90,6 +90,36 @@ class AnalyticsManagingMock: AnalyticsManaging {
     }
 
 }
+class AppStateProvidingMock: AppStateProviding {
+    var hud: AnyPublisher<HUD?, Never> {
+        get { return underlyingHud }
+        set(value) { underlyingHud = value }
+    }
+    var underlyingHud: AnyPublisher<HUD?, Never>!
+    var didBecomeActive: AnyPublisher<Bool, Never> {
+        get { return underlyingDidBecomeActive }
+        set(value) { underlyingDidBecomeActive = value }
+    }
+    var underlyingDidBecomeActive: AnyPublisher<Bool, Never>!
+
+    //MARK: - push
+
+    var pushHudCallsCount = 0
+    var pushHudCalled: Bool {
+        return pushHudCallsCount > 0
+    }
+    var pushHudReceivedHud: HUD?
+    var pushHudReceivedInvocations: [HUD] = []
+    var pushHudClosure: ((HUD) -> Void)?
+
+    func push(hud: HUD) {
+        pushHudCallsCount += 1
+        pushHudReceivedHud = hud
+        pushHudReceivedInvocations.append(hud)
+        pushHudClosure?(hud)
+    }
+
+}
 class AuthenticationManagingMock: AuthenticationManaging {
     var emailVerified: AnyPublisher<Bool, Never> {
         get { return underlyingEmailVerified }

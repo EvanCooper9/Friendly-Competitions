@@ -57,6 +57,7 @@ final class CompetitionsManager: CompetitionsManaging {
     private let pendingParticipantsSubject = CurrentValueSubject<[Competition.ID: [User]], Never>([:])
     private let appOwnedCompetitionsSubject = CurrentValueSubject<[Competition], Never>([])
 
+    @Injected(Container.appState) private var appState
     @LazyInjected(Container.activitySummaryManager) private var activitySummaryManager
     @Injected(Container.analyticsManager) private var analyticsManager
     @Injected(Container.database) private var database
@@ -81,9 +82,13 @@ final class CompetitionsManager: CompetitionsManaging {
         pendingParticipants = pendingParticipantsSubject.share(replay: 1).eraseToAnyPublisher()
         appOwnedCompetitions = appOwnedCompetitionsSubject.share(replay: 1).eraseToAnyPublisher()
 
-        UIApplication.didBecomeActiveNotification.publisher
-            .first()
-            .sink(withUnretained: self) { $0.listenForCompetitions() }
+        appState.didBecomeActive
+            .filter { $0 }
+            .mapToVoid()
+            .sink(withUnretained: self) { strongSelf in
+                strongSelf.listen()
+                strongSelf.fetchCompetitionData()
+            }
             .store(in: &cancellables)
 
         Publishers

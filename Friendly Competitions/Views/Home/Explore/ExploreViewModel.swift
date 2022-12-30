@@ -22,7 +22,7 @@ final class ExploreViewModel: ObservableObject {
             .flatMapLatest(withUnretained: self) { strongSelf, searchText -> AnyPublisher<[Competition], Never> in
                 guard !searchText.isEmpty else { return .just([]) }
                 return strongSelf.competitionsManager.search(searchText)
-                    .isLoading { [weak self] in self?.loading = $0 }
+                    .isLoading { strongSelf.loading = $0 }
                     .ignoreFailure()
             }
             .assign(to: &$searchResults)
