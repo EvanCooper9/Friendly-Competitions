@@ -84,9 +84,8 @@ final class CompetitionsManager: CompetitionsManaging {
 
         appState.didBecomeActive
             .filter { $0 }
-            .mapToVoid()
-            .sink(withUnretained: self) { strongSelf in
-                strongSelf.listen()
+            .sink(withUnretained: self) { strongSelf, _ in
+                strongSelf.listenForCompetitions()
                 strongSelf.fetchCompetitionData()
             }
             .store(in: &cancellables)
