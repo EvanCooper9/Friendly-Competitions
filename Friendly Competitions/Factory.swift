@@ -20,7 +20,7 @@ extension Container {
     static let workoutManager = Factory(scope: .shared) { WorkoutManager() as WorkoutManaging }
     
     // Global state
-    static let appState = Factory(scope: .shared) { AppState() }
+    static let appState = Factory(scope: .singleton) { AppState() as AppStateProviding }
     
     static let database = Factory(scope: .shared) {
         let environment = UserDefaults.standard.decode(FirestoreEnvironment.self, forKey: "environment") ?? .defaultEnvionment

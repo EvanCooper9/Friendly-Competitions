@@ -58,6 +58,7 @@ final class CompetitionsManager: CompetitionsManaging {
     @Published private var _pendingParticipants = [Competition.ID : [User]]()
     @Published private var _appOwnedCompetitions = [Competition]()
 
+    @Injected(Container.appState) private var appState
     @LazyInjected(Container.activitySummaryManager) private var activitySummaryManager
     @Injected(Container.analyticsManager) private var analyticsManager
     @Injected(Container.database) private var database
@@ -83,8 +84,9 @@ final class CompetitionsManager: CompetitionsManaging {
         pendingParticipants = $_pendingParticipants.share(replay: 1).eraseToAnyPublisher()
         appOwnedCompetitions = $_appOwnedCompetitions.share(replay: 1).eraseToAnyPublisher()
 
-        UIApplication.didBecomeActiveNotification.publisher
-            .first()
+        appState.didBecomeActive
+            .filter { $0 }
+            .mapToVoid()
             .sink(withUnretained: self) { strongSelf in
                 strongSelf.listen()
                 strongSelf.fetchCompetitionData()

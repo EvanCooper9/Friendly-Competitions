@@ -43,7 +43,7 @@ final class ProfileViewModel: ObservableObject {
             .flatMapLatest(withUnretained: self) { strongSelf in
                 strongSelf.userManager
                     .deleteAccount()
-                    .isLoading { [weak self] in self?.loading = $0 }
+                    .isLoading { strongSelf.loading = $0 }
                     .ignoreFailure()
             }
             .sink()
