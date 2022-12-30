@@ -2,6 +2,7 @@ import Combine
 import ECKit
 import UIKit
 
+// sourcery: AutoMockable
 protocol AppStateProviding {
     var hud: AnyPublisher<HUD?, Never> { get }
     var didBecomeActive: AnyPublisher<Bool, Never> { get }

@@ -105,6 +105,7 @@
 		ED1CFAA22864FF0000192E49 /* WorkoutMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1CFAA12864FF0000192E49 /* WorkoutMetric.swift */; };
 		ED1E08D728DF4C6600497E20 /* View+RemovingMargin.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1E08D628DF4C6600497E20 /* View+RemovingMargin.swift */; };
 		ED277B1D2838002C00DDF29A /* HomeViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED277B1C2838002C00DDF29A /* HomeViewModelTests.swift */; };
+		ED3D5F30295E472500211E86 /* SignInViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3D5F2F295E472500211E86 /* SignInViewModelTests.swift */; };
 		ED3ED8F7284F951800B5100F /* AutoMockable.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3ED8F6284F951800B5100F /* AutoMockable.generated.swift */; };
 		ED438FF727F7B3B600D72F99 /* View+ConfirmationDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED438FF627F7B3B600D72F99 /* View+ConfirmationDialog.swift */; };
 		ED438FF927F7C2B900D72F99 /* View+Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED438FF827F7C2B900D72F99 /* View+Analytics.swift */; };
@@ -277,6 +278,7 @@
 		ED1CFAA12864FF0000192E49 /* WorkoutMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutMetric.swift; sourceTree = "<group>"; };
 		ED1E08D628DF4C6600497E20 /* View+RemovingMargin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+RemovingMargin.swift"; sourceTree = "<group>"; };
 		ED277B1C2838002C00DDF29A /* HomeViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModelTests.swift; sourceTree = "<group>"; };
+		ED3D5F2F295E472500211E86 /* SignInViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInViewModelTests.swift; sourceTree = "<group>"; };
 		ED3ED8F6284F951800B5100F /* AutoMockable.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AutoMockable.generated.swift; sourceTree = "<group>"; };
 		ED438FF627F7B3B600D72F99 /* View+ConfirmationDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+ConfirmationDialog.swift"; sourceTree = "<group>"; };
 		ED438FF827F7C2B900D72F99 /* View+Analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Analytics.swift"; sourceTree = "<group>"; };
@@ -822,8 +824,17 @@
 			children = (
 				ED277B1C2838002C00DDF29A /* HomeViewModelTests.swift */,
 				ED1CFA992864AF1400192E49 /* Dashboard */,
+				ED3D5F2E295E471600211E86 /* Sign In */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		ED3D5F2E295E471600211E86 /* Sign In */ = {
+			isa = PBXGroup;
+			children = (
+				ED3D5F2F295E472500211E86 /* SignInViewModelTests.swift */,
+			);
+			path = "Sign In";
 			sourceTree = "<group>";
 		};
 		ED3ED8F5284F951800B5100F /* Sourcery */ = {
@@ -1181,6 +1192,7 @@
 				ED1CFA9B2864AF1D00192E49 /* DashboardViewModelTests.swift in Sources */,
 				ED277B1D2838002C00DDF29A /* HomeViewModelTests.swift in Sources */,
 				ED19724E283803F60018FDFF /* WorkoutTypeTests.swift in Sources */,
+				ED3D5F30295E472500211E86 /* SignInViewModelTests.swift in Sources */,
 				C1E35D4C27B4606200833EB2 /* Competition+ScoringModelTests.swift in Sources */,
 				C132336327BEB00B00196D81 /* StringTests.swift in Sources */,
 				C155CA6B27AC0AC6005F49F4 /* DecodableTests.swift in Sources */,

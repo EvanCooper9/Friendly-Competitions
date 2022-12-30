@@ -4,7 +4,6 @@ import ECKit
 import Factory
 import Foundation
 
-@MainActor
 final class SignInViewModel: ObservableObject {
 
     private enum Constants {
@@ -17,8 +16,8 @@ final class SignInViewModel: ObservableObject {
     @Published var signingInWithEmail = false
     @Published var isSigningUp = false
     @Published var name = ""
-    @Published var email = "evancmcooper@gmail.com"
-    @Published var password = "Password"
+    @Published var email = ""
+    @Published var password = ""
     @Published var passwordConfirmation = ""
 
     // MARK: - Private Properties
