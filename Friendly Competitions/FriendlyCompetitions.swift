@@ -8,20 +8,19 @@ struct FriendlyCompetitions: App {
 
     var body: some Scene {
         WindowGroup {
-            if appModel.loggedIn {
-                if appModel.emailVerified {
-                    RootView()
-                        .onOpenURL(perform: appModel.handle)
+            Group {
+                if appModel.loggedIn {
+                    if appModel.emailVerified {
+                        RootView()
+                            .onOpenURL(perform: appModel.handle)
+                    } else {
+                        VerifyEmailView()
+                            .onOpenURL(perform: appModel.handle)
+                    }
                 } else {
-                    VerifyEmailView()
+                    SignIn()
                         .onOpenURL(perform: appModel.handle)
                 }
-            } else {
-                SignIn()
-                    .onOpenURL(perform: appModel.handle)
-            }
-            Group {
-                
             }
             .hud(state: $appModel.hud)
         }

@@ -7,7 +7,6 @@ import UIKit
 protocol NotificationManaging {
     var permissionStatus: AnyPublisher<PermissionStatus, Never> { get }
     func requestPermissions()
-    func sendDebugNotification() -> AnyPublisher<Void, Error>
 }
 
 final class NotificationManager: NSObject, NotificationManaging {
@@ -59,13 +58,6 @@ final class NotificationManager: NSObject, NotificationManaging {
                 self._permissionStatus.send(authorized ? .authorized : .denied)
             }
         )
-    }
-    
-    func sendDebugNotification() -> AnyPublisher<Void, Error> {
-        functions.httpsCallable("debug")
-            .call()
-            .mapToVoid()
-            .eraseToAnyPublisher()
     }
 
     // MARK: - Private Methods
