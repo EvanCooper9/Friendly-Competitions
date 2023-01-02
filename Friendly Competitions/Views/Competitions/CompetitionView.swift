@@ -16,6 +16,8 @@ struct CompetitionView: View {
         List {
             standings
             
+            history
+            
             if !viewModel.pendingParticipants.isEmpty {
                 pendingInvites
             }
@@ -85,6 +87,14 @@ struct CompetitionView: View {
         } footer: {
             if viewModel.standings.isEmpty {
                 Text("Nothing here, yet.")
+            }
+        }
+    }
+    
+    private var history: some View {
+        Section {
+            NavigationLink("History") {
+                CompetitionHistoryView(competition: viewModel.competition)
             }
         }
     }

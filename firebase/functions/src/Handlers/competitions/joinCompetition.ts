@@ -4,8 +4,7 @@ import { getFirestore } from "../../Utilities/firstore";
 /**
  * Respond to a competition invite
  * @param {string} competitionID The ID of the competition
- * @param {string} callerID The ID of the user responding to the competition
- * @param {boolean} accept Accept or decline the competition invite
+ * @param {string} userID The ID of the user joining the competition
  * @return {Promise<void>} A promise that resolve when completed
  */
 function joinCompetition(competitionID: string, userID: string): Promise<void> {

@@ -4,6 +4,8 @@ import Factory
 
 final class ExploreViewModel: ObservableObject {
     
+    @Published var navigationDestinations = [NavigationDestination]()
+    
     @Published var loading = false
     @Published var searchText = ""
     @Published var searchResults = [Competition]()

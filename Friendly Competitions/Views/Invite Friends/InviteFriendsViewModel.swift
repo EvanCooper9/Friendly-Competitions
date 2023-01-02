@@ -133,9 +133,9 @@ final class InviteFriendsViewModel: ObservableObject {
                 let deepLink: DeepLink?
                 switch action {
                 case .addFriend:
-                    deepLink = .friendReferral(id: strongSelf.userManager.user.id)
+                    deepLink = .user(id: strongSelf.userManager.user.id)
                 case .competitionInvite(let competition):
-                    deepLink = .competitionInvite(id: competition.id)
+                    deepLink = .competition(id: competition.id)
                 }
                 deepLink?.share()
             }

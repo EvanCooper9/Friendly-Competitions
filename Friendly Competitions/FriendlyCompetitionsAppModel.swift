@@ -1,5 +1,6 @@
 import Combine
 import Factory
+import Foundation
 
 final class FriendlyCompetitionsAppModel: ObservableObject {
     
@@ -20,5 +21,12 @@ final class FriendlyCompetitionsAppModel: ObservableObject {
         authenticationManager.loggedIn.assign(to: &$loggedIn)
         authenticationManager.emailVerified.assign(to: &$emailVerified)
         appState.hud.assign(to: &$hud)
+    }
+    
+    // MARK: - Public Methods
+    
+    func handle(url: URL) {
+        guard let deepLink = DeepLink(from: url) else { return }
+        appState.push(deepLink: deepLink)
     }
 }

@@ -7,6 +7,7 @@ import UIKit
 protocol NotificationManaging {
     var permissionStatus: AnyPublisher<PermissionStatus, Never> { get }
     func requestPermissions()
+    func sendDebugNotification() -> AnyPublisher<Void, Error>
 }
 
 final class NotificationManager: NSObject, NotificationManaging {
@@ -17,7 +18,9 @@ final class NotificationManager: NSObject, NotificationManaging {
 
     // MARK: - Private Properties
     
+    @Injected(Container.appState) private var appState
     @LazyInjected(Container.analyticsManager) private var analyticsManager
+    @Injected(Container.functions) private var functions
 
     private let _permissionStatus: CurrentValueSubject<PermissionStatus, Never>
 
@@ -57,6 +60,13 @@ final class NotificationManager: NSObject, NotificationManaging {
             }
         )
     }
+    
+    func sendDebugNotification() -> AnyPublisher<Void, Error> {
+        functions.httpsCallable("debug")
+            .call()
+            .mapToVoid()
+            .eraseToAnyPublisher()
+    }
 
     // MARK: - Private Methods
 
@@ -70,6 +80,17 @@ final class NotificationManager: NSObject, NotificationManaging {
 extension NotificationManager: UNUserNotificationCenterDelegate {
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification) async -> UNNotificationPresentationOptions {
         [.sound, .banner, .badge, .list]
+    }
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        DispatchQueue.main.async { [weak self] in
+            defer { completionHandler() }
+            guard let link = response.notification.request.content.userInfo["link"] as? String,
+                  let url = URL(string: link),
+                  let deepLink = DeepLink(from: url)
+            else { return }
+            self?.appState.push(deepLink: deepLink)
+        }
     }
 }
 

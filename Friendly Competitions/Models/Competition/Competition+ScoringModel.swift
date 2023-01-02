@@ -1,5 +1,5 @@
 extension Competition {
-    enum ScoringModel: Equatable, Identifiable {
+    enum ScoringModel: Equatable, Hashable, Identifiable {
         case percentOfGoals
         case rawNumbers
         case workout(WorkoutType, [WorkoutMetric])

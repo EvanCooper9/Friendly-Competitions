@@ -6,7 +6,7 @@ import { getFirestore } from "../../Utilities/firstore";
  * Deletes an account and all user data
  * @param {string} userID the user ID of the account to delete
  */
-async function deleteAccount(userID: string) {
+async function deleteAccount(userID: string): Promise<void> {
     const firestore = getFirestore();
 
     const batch = firestore.batch();

@@ -5,7 +5,7 @@ import XCTest
 
 @testable import Friendly_Competitions
 
-final class HomeViewModelTests: XCTestCase {
+final class RootViewModelTests: XCTestCase {
 
     private var competitionsManager: CompetitionsManagingMock!
     private var friendsManager: FriendsManagingMock!
@@ -35,7 +35,7 @@ final class HomeViewModelTests: XCTestCase {
         let competition = Competition.mock
         competitionsManager.searchByIDReturnValue = .just(competition)
 
-        let viewModel = HomeViewModel()
+        let viewModel = RootViewModel()
         viewModel.$deepLinkedCompetition
             .expect(nil, competition, expectation: expectation)
             .store(in: &cancellables)
@@ -50,7 +50,7 @@ final class HomeViewModelTests: XCTestCase {
         let user = User.evan
         friendsManager.userWithIdReturnValue = .just(user)
 
-        let viewModel = HomeViewModel()
+        let viewModel = RootViewModel()
         viewModel.$deepLinkedUser
             .expect(nil, user, expectation: expectation)
             .store(in: &cancellables)

@@ -140,7 +140,8 @@ final class FriendsManager: FriendsManaging {
     func user(withId id: String) -> AnyPublisher<User?, Error> {
         database.document("users/\(id)")
             .getDocument()
-            .decoded(as: User.self)
+            .map { try? $0.data(as: User.self) }
+            .eraseToAnyPublisher()
     }
 
     func search(with text: String) -> AnyPublisher<[User], Error> {
@@ -150,12 +151,12 @@ final class FriendsManager: FriendsManaging {
             .getDocuments()
             .map(\.documents)
             .filterMany { document in
-                guard let searchResult = try? document.decoded(as: SearchResult.self) else { return false }
+                guard let searchResult = try? document.data(as: SearchResult.self) else { return false }
                 return searchResult.name
                     .split(separator: " ")
                     .contains { $0.localizedLowercase.starts(with: text.localizedLowercase) }
             }
-            .compactMapMany { try? $0.decoded(as: User.self) }
+            .compactMapMany { try? $0.data(as: User.self) }
             .map { $0.sorted(by: \.name) }
             .eraseToAnyPublisher()
     }

@@ -28,7 +28,7 @@ extension AppDelegate: MessagingDelegate {
         Task {
             var user = try await database.document("users/\(userId)")
                 .getDocument()
-                .decoded(as: User.self)
+                .data(as: User.self)
 
             guard user.notificationTokens?.contains(fcmToken) == false else { return }
             user.notificationTokens = user.notificationTokens?.appending(fcmToken) ?? [fcmToken]

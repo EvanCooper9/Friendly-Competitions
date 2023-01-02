@@ -1,4 +1,5 @@
 import * as admin from "firebase-admin";
+import { getFirestore } from "firebase-admin/firestore";
 import * as moment from "moment";
 import { ActivitySummary } from "./ActivitySummary";
 import { RawScoringModel, ScoringModel } from "./ScoringModel";
@@ -157,6 +158,28 @@ class Competition {
         return admin.firestore().doc(`competitions/${this.id}`)
             .update(obj)
             .then();
+    }
+
+    /**
+     * Record current standings in history
+     */
+    async recordHistory(): Promise<void> {
+        const firestore = getFirestore();
+        const standingsRef = await firestore.collection(`competitions/${this.id}/standings`).get();
+        const standings = standingsRef.docs.map(doc => new Standing(doc));
+
+        const batch = firestore.batch();
+        
+        const historyRef = firestore.doc(`competition/${this.id}/history/${this.end}`);
+        const historyObj = {id: this.end, start: this.start, end: this.end};
+        batch.set(historyRef, historyObj);
+
+        standings.forEach(standing => {
+            const ref = firestore.doc(`competition/${this.id}/history/${this.end}/standings/${this.id}`);
+            const obj = Object.assign({}, standing);
+            batch.set(ref, obj);
+        });
+        await batch.commit();
     }
 }
 

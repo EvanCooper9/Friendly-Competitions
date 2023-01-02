@@ -91,6 +91,11 @@ class AnalyticsManagingMock: AnalyticsManaging {
 
 }
 class AppStateProvidingMock: AppStateProviding {
+    var deepLink: AnyPublisher<DeepLink?, Never> {
+        get { return underlyingDeepLink }
+        set(value) { underlyingDeepLink = value }
+    }
+    var underlyingDeepLink: AnyPublisher<DeepLink?, Never>!
     var hud: AnyPublisher<HUD?, Never> {
         get { return underlyingHud }
         set(value) { underlyingHud = value }
@@ -117,6 +122,23 @@ class AppStateProvidingMock: AppStateProviding {
         pushHudReceivedHud = hud
         pushHudReceivedInvocations.append(hud)
         pushHudClosure?(hud)
+    }
+
+    //MARK: - push
+
+    var pushDeepLinkCallsCount = 0
+    var pushDeepLinkCalled: Bool {
+        return pushDeepLinkCallsCount > 0
+    }
+    var pushDeepLinkReceivedDeepLink: DeepLink?
+    var pushDeepLinkReceivedInvocations: [DeepLink] = []
+    var pushDeepLinkClosure: ((DeepLink) -> Void)?
+
+    func push(deepLink: DeepLink) {
+        pushDeepLinkCallsCount += 1
+        pushDeepLinkReceivedDeepLink = deepLink
+        pushDeepLinkReceivedInvocations.append(deepLink)
+        pushDeepLinkClosure?(deepLink)
     }
 
 }
@@ -498,6 +520,50 @@ class CompetitionsManagingMock: CompetitionsManaging {
         }
     }
 
+    //MARK: - history
+
+    var historyForCallsCount = 0
+    var historyForCalled: Bool {
+        return historyForCallsCount > 0
+    }
+    var historyForReceivedCompetitionID: Competition.ID?
+    var historyForReceivedInvocations: [Competition.ID] = []
+    var historyForReturnValue: AnyPublisher<[CompetitionHistory], Error>!
+    var historyForClosure: ((Competition.ID) -> AnyPublisher<[CompetitionHistory], Error>)?
+
+    func history(for competitionID: Competition.ID) -> AnyPublisher<[CompetitionHistory], Error> {
+        historyForCallsCount += 1
+        historyForReceivedCompetitionID = competitionID
+        historyForReceivedInvocations.append(competitionID)
+        if let historyForClosure = historyForClosure {
+            return historyForClosure(competitionID)
+        } else {
+            return historyForReturnValue
+        }
+    }
+
+    //MARK: - standings
+
+    var standingsForEndingOnCallsCount = 0
+    var standingsForEndingOnCalled: Bool {
+        return standingsForEndingOnCallsCount > 0
+    }
+    var standingsForEndingOnReceivedArguments: (competitionID: Competition.ID, end: Date)?
+    var standingsForEndingOnReceivedInvocations: [(competitionID: Competition.ID, end: Date)] = []
+    var standingsForEndingOnReturnValue: AnyPublisher<[Competition.Standing], Error>!
+    var standingsForEndingOnClosure: ((Competition.ID, Date) -> AnyPublisher<[Competition.Standing], Error>)?
+
+    func standings(for competitionID: Competition.ID, endingOn end: Date) -> AnyPublisher<[Competition.Standing], Error> {
+        standingsForEndingOnCallsCount += 1
+        standingsForEndingOnReceivedArguments = (competitionID: competitionID, end: end)
+        standingsForEndingOnReceivedInvocations.append((competitionID: competitionID, end: end))
+        if let standingsForEndingOnClosure = standingsForEndingOnClosure {
+            return standingsForEndingOnClosure(competitionID, end)
+        } else {
+            return standingsForEndingOnReturnValue
+        }
+    }
+
 }
 class FriendsManagingMock: FriendsManaging {
     var friends: AnyPublisher<[User], Never> {
@@ -712,6 +778,24 @@ class NotificationManagingMock: NotificationManaging {
         requestPermissionsClosure?()
     }
 
+    //MARK: - sendDebugNotification
+
+    var sendDebugNotificationCallsCount = 0
+    var sendDebugNotificationCalled: Bool {
+        return sendDebugNotificationCallsCount > 0
+    }
+    var sendDebugNotificationReturnValue: AnyPublisher<Void, Error>!
+    var sendDebugNotificationClosure: (() -> AnyPublisher<Void, Error>)?
+
+    func sendDebugNotification() -> AnyPublisher<Void, Error> {
+        sendDebugNotificationCallsCount += 1
+        if let sendDebugNotificationClosure = sendDebugNotificationClosure {
+            return sendDebugNotificationClosure()
+        } else {
+            return sendDebugNotificationReturnValue
+        }
+    }
+
 }
 class PermissionsManagingMock: PermissionsManaging {
     var requiresPermission: AnyPublisher<Bool, Never> {
@@ -766,6 +850,9 @@ class StorageManagingMock: StorageManaging {
             return dataForReturnValue
         }
     }
+
+}
+class StoreKitManagingMock: StoreKitManaging {
 
 }
 class UserManagingMock: UserManaging {

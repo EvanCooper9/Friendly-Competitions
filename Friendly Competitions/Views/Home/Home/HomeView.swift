@@ -1,9 +1,9 @@
 import SwiftUI
 import SwiftUIX
 
-struct DashboardView: View {
+struct HomeView: View {
     
-    @StateObject private var viewModel = DashboardViewModel()
+    @StateObject private var viewModel = HomeViewModel()
             
     @State private var presentAbout = false
     @State private var presentDeveloper = false
@@ -13,38 +13,47 @@ struct DashboardView: View {
     @AppStorage("competitionsFiltered") var competitionsFiltered = false
     
     var body: some View {
-        List {
-            Group {
-                activitySummary
-                competitions
-                friends
+        NavigationStack(path: $viewModel.navigationDestinations) {
+            List {
+                Group {
+                    activitySummary
+                    competitions
+                    friends
+                }
+                .textCase(nil)
             }
-            .textCase(nil)
-        }
-        .navigationBarTitle(viewModel.title)
-        .toolbar {
-            HStack {
-                if viewModel.showDeveloper {
-                    Button(toggling: $presentDeveloper) {
-                        Image(systemName: .hammer)
+            .navigationBarTitle(viewModel.title)
+            .toolbar {
+                HStack {
+                    if viewModel.showDeveloper {
+                        Button(systemImage: .hammer) { presentDeveloper.toggle() }
+                    }
+                    Button(systemImage: .questionmarkCircle) { presentAbout.toggle() }
+                    
+                    NavigationLink {
+                        Profile()
+                    } label: {
+                        Image(systemName: .personCropCircle)
                     }
                 }
-                Button(toggling: $presentAbout) {
-                    Image(systemName: .questionmarkCircle)
-                }
-                NavigationLink {
-                    Profile()
-                } label: {
-                    Image(systemName: .personCropCircle)
+            }
+            .sheet(isPresented: $presentAbout) { About() }
+            .sheet(isPresented: $presentSearchFriendsSheet) { InviteFriendsView(action: .addFriend) }
+            .sheet(isPresented: $presentNewCompetition) { NewCompetitionView() }
+            .sheet(isPresented: $viewModel.requiresPermissions) { PermissionsView() }
+            .sheet(isPresented: $presentDeveloper) { DeveloperView() }
+            .navigationDestination(for: NavigationDestination.self) { destination in
+                switch destination {
+                case .competition(let compeittion):
+                    CompetitionView(competition: compeittion)
+                case .competitionHistory(let competition):
+                    CompetitionHistoryView(competition: competition)
+                case .user(let user):
+                    UserView(user: user)
                 }
             }
+            .registerScreenView(name: "Home")
         }
-        .sheet(isPresented: $presentAbout) { About() }
-        .sheet(isPresented: $presentSearchFriendsSheet) { InviteFriendsView(action: .addFriend) }
-        .sheet(isPresented: $presentNewCompetition) { NewCompetitionView() }
-        .sheet(isPresented: $viewModel.requiresPermissions) { PermissionsView() }
-        .sheet(isPresented: $presentDeveloper) { DeveloperView() }
-        .registerScreenView(name: "Dashboard")
     }
     
     private var activitySummary: some View {
@@ -61,14 +70,11 @@ struct DashboardView: View {
     
     private var competitions: some View {
         Section {
-            ForEach(viewModel.competitions) { competition in
+            ForEach(viewModel.competitions + viewModel.invitedCompetitions) { competition in
                 if competitionsFiltered ? competition.isActive : true {
-                    CompetitionDetails(competition: competition, showParticipantCount: false, isFeatured: false)
-                }
-            }
-            ForEach(viewModel.invitedCompetitions) { competition in
-                if competitionsFiltered ? competition.isActive : true {
-                    CompetitionDetails(competition: competition, showParticipantCount: false, isFeatured: false)
+                    NavigationLink(value: NavigationDestination.competition(competition)) {
+                        CompetitionDetails(competition: competition, showParticipantCount: false, isFeatured: false)
+                    }
                 }
             }
         } header: {
@@ -98,7 +104,7 @@ struct DashboardView: View {
     
     private var friends: some View {
         Section {
-            ForEach(viewModel.friends) { row in
+            ForEach(viewModel.friendRows) { row in
                 NavigationLink {
                     UserView(user: row.user)
                 } label: {
@@ -125,14 +131,15 @@ struct DashboardView: View {
                 }
             }
         } footer: {
-            if viewModel.friends.isEmpty {
+            if viewModel.friendRows.isEmpty {
                 Text("Add friends to get started!")
             }
         }
     }
 }
 
-struct Dashboard_Previews: PreviewProvider {
+#if DEBUG
+struct HomeView_Previews: PreviewProvider {
     
     private static func setupMocks() {
         activitySummaryManager.activitySummary = .just(.mock)
@@ -160,8 +167,9 @@ struct Dashboard_Previews: PreviewProvider {
     }
     
     static var previews: some View {
-        DashboardView()
+        HomeView()
             .setupMocks(setupMocks)
             .embeddedInNavigationView()
     }
 }
+#endif

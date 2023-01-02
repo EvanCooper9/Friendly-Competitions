@@ -29,6 +29,7 @@ final class ProfileViewModel: ObservableObject {
             .flatMapLatest(withUnretained: self) { strongSelf, user in
                 strongSelf.userManager
                     .update(with: user)
+                    .print()
                     .ignoreFailure()
             }
             .sink()
@@ -66,7 +67,7 @@ final class ProfileViewModel: ObservableObject {
     }
     
     func shareInviteLinkTapped() {
-        DeepLink.friendReferral(id: userManager.user.id).share()
+        DeepLink.user(id: userManager.user.id).share()
     }
     
     func signOutTapped() {

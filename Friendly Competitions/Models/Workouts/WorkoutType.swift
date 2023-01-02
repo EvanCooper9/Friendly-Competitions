@@ -1,6 +1,6 @@
 import HealthKit
 
-enum WorkoutType: String, CaseIterable, Codable, CustomStringConvertible {
+enum WorkoutType: String, CaseIterable, Codable, CustomStringConvertible, Hashable {
     case cycling
     case running
     case swimming

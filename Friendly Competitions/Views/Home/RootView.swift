@@ -1,32 +1,18 @@
-import Factory
 import SwiftUI
 
-struct HomeView: View {
-
-    @StateObject private var viewModel = HomeViewModel()
-
+struct RootView: View {
     var body: some View {
         TabView {
-            DashboardView()
-                .embeddedInNavigationView()
+            HomeView()
                 .tabItem { Label("Home", systemImage: .houseFill) }
         
             ExploreView()
-                .embeddedInNavigationView()
                 .tabItem { Label("Explore", systemImage: .sparkleMagnifyingglass) }
-            
-            if #available(iOS 16, *) {
-                StatisticsView()
-                    .embeddedInNavigationView()
-                    .tabItem { Label("Statistics", systemImage: .chartXyaxisLine) }
-            }
         }
-        .onOpenURL(perform: viewModel.handle)
-        .sheet(item: $viewModel.deepLinkedCompetition) { CompetitionView(competition: $0).embeddedInNavigationView() }
-        .sheet(item: $viewModel.deepLinkedUser) { UserView(user: $0).embeddedInNavigationView() }
     }
 }
 
+#if DEBUG
 struct Home_Previews: PreviewProvider {
 
     private static func setupMocks() {
@@ -51,7 +37,8 @@ struct Home_Previews: PreviewProvider {
     }
 
     static var previews: some View {
-        HomeView()
+        RootView()
             .setupMocks(setupMocks)
     }
 }
+#endif
