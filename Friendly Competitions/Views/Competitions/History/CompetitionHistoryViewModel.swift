@@ -10,83 +10,220 @@ final class CompetitionHistoryViewModel: ObservableObject {
     
     @Published private(set) var ranges = [CompetitionHistoryDateRange]()
     @Published private(set) var dataPoints = [CompetitionHistoryDataPoint]()
+    @Published private(set) var locked = false
     @Published private(set) var loading = false
-    
-    var locked: Bool {
-        ranges.first(where: { $0.selected })?.locked ?? true
-    }
 
     // MARK: - Private Properties
     
+    private let competition: Competition
+    
+    @Injected(Container.activitySummaryManager) private var activitySummaryManager
     @Injected(Container.competitionsManager) private var competitionsManager
+    @Injected(Container.storeKitManager) private var storeKitManager
     @Injected(Container.userManager) private var userManager
+    @Injected(Container.workoutManager) private var workoutManager
+    
+    private let selectedIndex = CurrentValueSubject<Int, Never>(0)
+    private let purchaseSubject = PassthroughSubject<Void, Never>()
 
     private var cancellables = Cancellables()
 
     // MARK: - Lifecycle
 
     init(competition: Competition) {
-        competitionsManager
-            .history(for: competition.id)
-            .ignoreFailure()
-            .map { history in
+        self.competition = competition
+        
+        Publishers
+            .CombineLatest3(
+                competitionsManager
+                    .history(for: competition.id)
+                    .catchErrorJustReturn([]),
+                storeKitManager.purchases,
+                selectedIndex
+            )
+            .map { history, purchases, selectedIndex in
                 history
+                    .sorted(by: \.end)
+                    .reversed()
                     .enumerated()
                     .map { offset, event in
                         CompetitionHistoryDateRange(
                             start: event.start,
                             end: event.end,
-                            selected: offset == 0,
-                            locked: offset != 0
+                            selected: offset == selectedIndex,
+                            locked: offset == 0 ? false : !purchases.contains(.competitionHistory)
                         )
                     }
             }
             .assign(to: &$ranges)
         
-        let standings = $ranges
-            .filterMany(\.selected)
-            .compactMap(\.first)
-            .flatMapLatest(withUnretained: self) { strongSelf, dateRange -> AnyPublisher<[Competition.Standing], Never> in
-                guard !dateRange.locked else { return .just([]) }
-                return strongSelf.competitionsManager
-                    .standings(for: competition.id, endingOn: dateRange.end)
-                    .isLoading { strongSelf.loading = $0 }
-                    .ignoreFailure()
+        let currentRanges = $ranges
+            .compactMap { ranges -> (CompetitionHistoryDateRange, CompetitionHistoryDateRange?)?  in
+                guard let currentIndex = ranges.firstIndex(where: \.selected) else { return nil }
+                if let previousIndex = currentIndex <= ranges.count - 2 ? currentIndex + 1 : nil {
+                    return (ranges[currentIndex], ranges[previousIndex])
+                }
+                return (ranges[currentIndex], nil)
             }
             .share(replay: 1)
         
-        standings
-            .combineLatest(userManager.userPublisher)
-            .map { standings, user in
-                var dataSets = [CompetitionHistoryDataPoint]()
-                
-                if let standing = standings.first(where: { $0.userId == user.id }) {
-                    dataSets.append(.rank(standing.rank))
-                    dataSets.append(.points(standing.points))
-                }
-                
-                if let index = standings.firstIndex(where: { $0.userId == user.id }) {
-                    let floor = Swift.max(0, index - 2)
-                    let ceil = Swift.min(floor + 5, standings.count - 1)
-                    dataSets.append(.standings(Array(standings[floor...ceil])))
-                }
-                
-                return dataSets
+        currentRanges
+            .map(\.0.locked)
+            .assign(to: &$locked)
+        
+        currentRanges
+            .filter { !$0.0.locked }
+            .flatMapLatest(withUnretained: self) { strongSelf, ranges in
+                Publishers
+                    .CombineLatest(
+                        strongSelf.standingsDataPoints(currentRange: ranges.0, previousRange: ranges.1),
+                        strongSelf.scoringDataPoints(currentRange: ranges.0, previousRange: ranges.1)
+                    )
+                    .first()
+                    .map(+)
+                    .isLoading { strongSelf.loading = $0 }
+                    .eraseToAnyPublisher()
             }
+            .receive(on: RunLoop.main)
             .assign(to: &$dataPoints)
+            
+        purchaseSubject
+            .flatMapLatest(withUnretained: self) { strongSelf in
+                strongSelf.storeKitManager
+                    .purchase(.competitionHistory)
+                    .isLoading { strongSelf.loading = $0 }
+                    .ignoreFailure()
+                    .eraseToAnyPublisher()
+            }
+            .sink()
+            .store(in: &cancellables)
     }
 
     // MARK: - Public Methods
     
     func select(_ dateRange: CompetitionHistoryDateRange) {
-        ranges = ranges.map { range in
-            var range = range
-            range.selected = range == dateRange
-            return range
-        }
+        guard let index = ranges.firstIndex(of: dateRange) else { return }
+        selectedIndex.send(index)
     }
     
     func purchaseTapped() {
+        purchaseSubject.send()
+    }
+    
+    // MARK: - Private Methods
+    
+    private func standingsDataPoints(currentRange: CompetitionHistoryDateRange, previousRange: CompetitionHistoryDateRange?) -> AnyPublisher<[CompetitionHistoryDataPoint], Never> {
+        let previousStandings: AnyPublisher<[Competition.Standing]?, Never> = {
+            guard let previousRange else { return .just(nil) }
+            return competitionsManager
+                .standings(for: competition.id, endingOn: previousRange.dateInterval.end)
+                .map { $0 as [Competition.Standing]? }
+                .catch { _ in AnyPublisher<[Competition.Standing]?, Never>.just(nil) }
+                .eraseToAnyPublisher()
+        }()
         
+        let currentStandings = competitionsManager
+            .standings(for: competition.id, endingOn: currentRange.end)
+            .catch { _ in AnyPublisher<[Competition.Standing], Never>.just([]) }
+        
+        return Publishers
+            .CombineLatest3(currentStandings, previousStandings, userManager.userPublisher)
+            .map { currentStandings, previousStandings, user -> [CompetitionHistoryDataPoint] in
+                var dataPoints = [CompetitionHistoryDataPoint]()
+
+                if let standing = currentStandings.first(where: { $0.userId == user.id }) {
+                    let previous = previousStandings?.first(where: { $0.userId == user.id })
+                    dataPoints.append(.rank(
+                        current: standing.rank,
+                        previous: previous?.rank
+                    ))
+                    dataPoints.append(.points(
+                        current: standing.points,
+                        previous: previous?.points
+                    ))
+                }
+
+                dataPoints.append(.standings(
+                    currentStandings
+                        .sorted(by: \.points)
+                        .reversed()
+                        .map { standing in
+                            .init(
+                                rank: standing.rank,
+                                points: standing.points,
+                                isHighlighted: standing.userId == user.id
+                            )
+                        }
+                ))
+                return dataPoints
+            }
+            .eraseToAnyPublisher()
+    }
+    
+    private func scoringDataPoints(currentRange: CompetitionHistoryDateRange, previousRange: CompetitionHistoryDateRange?) -> AnyPublisher<[CompetitionHistoryDataPoint], Never> {
+        switch competition.scoringModel {
+        case .rawNumbers, .percentOfGoals:
+            let previousActivitySummaries: AnyPublisher<[ActivitySummary]?, Never> = {
+                guard let previousRange else { return .just(nil) }
+                return activitySummaryManager
+                    .activitySummaries(in: previousRange.dateInterval)
+                    .map { $0 as [ActivitySummary]? }
+                    .catch { _ in AnyPublisher<[ActivitySummary]?, Never>.just(nil) }
+                    .eraseToAnyPublisher()
+            }()
+            
+            let currentActivitySummaries = activitySummaryManager
+                .activitySummaries(in: currentRange.dateInterval)
+                .catch { _ in AnyPublisher<[ActivitySummary], Never>.just([]) }
+
+            return Publishers
+                .CombineLatest(
+                    currentActivitySummaries,
+                    previousActivitySummaries
+                )
+                .ignoreFailure()
+                .map { [weak self] currentActivitySummaries, previousActivitySummaries in
+                    guard let strongSelf = self else { return [] }
+                    let scoringModel = strongSelf.competition.scoringModel
+                    let best = currentActivitySummaries
+                        .sorted { $0.points(from: scoringModel) > $1.points(from: scoringModel) }
+                        .first
+                    return [
+                        .activitySummaryBestDay(best),
+                        .activitySummaryCloseCount(
+                            current: currentActivitySummaries.filter(\.closed).count,
+                            previous: previousActivitySummaries?.filter(\.closed).count
+                        )
+                    ]
+                }
+                .eraseToAnyPublisher()
+        case let .workout(type, metrics):
+            let previousWorkouts: AnyPublisher<[Workout]?, Error> = {
+                guard let previousRange else { return .just(nil) }
+                return workoutManager
+                    .workouts(of: type, with: metrics, in: previousRange.dateInterval)
+                    .map { $0 as [Workout]? }
+                    .eraseToAnyPublisher()
+            }()
+            return Publishers
+                .CombineLatest(
+                    workoutManager.workouts(of: type, with: metrics, in: currentRange.dateInterval),
+                    previousWorkouts
+                )
+                .ignoreFailure()
+                .map { currentWorkouts, previousWorkouts in
+                    let best = currentWorkouts
+                        .sorted { lhs, rhs in
+                            let lhsPoints = lhs.points.map(\.value).reduce(0, +)
+                            let rhsPoints = rhs.points.map(\.value).reduce(0, +)
+                            return lhsPoints > rhsPoints
+                        }
+                        .first
+                    return [
+                        .workoutsBestDay(best)
+                    ]
+                }
+                .eraseToAnyPublisher()
+        }
     }
 }

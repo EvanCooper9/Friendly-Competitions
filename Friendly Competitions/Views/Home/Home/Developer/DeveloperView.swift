@@ -12,23 +12,23 @@ struct DeveloperView: View {
                 HStack {
                     Text("Environment type")
                     Spacer()
-                    Picker("", selection: $viewModel.environment) {
+                    Picker("", selection: $viewModel.environmentType) {
                         ForEach(FirestoreEnvironment.EnvironmentType.allCases) { environment in
                             Text(environment.rawValue).tag(environment)
                         }
                     }
                 }
-                if viewModel.environment == .debug {
+                if viewModel.environmentType == .debug {
                     HStack {
                         Text("Emulation type")
                         Spacer()
-                        Picker("", selection: $viewModel.emulation) {
+                        Picker("", selection: $viewModel.environmentEmulationType) {
                             ForEach(FirestoreEnvironment.EmulationType.allCases) { emulation in
                                 Text(emulation.rawValue).tag(emulation)
                             }
                         }
                     }
-                    if viewModel.emulation == .custom {
+                    if viewModel.environmentEmulationType == .custom {
                         HStack {
                             Text("Emulation destination")
                             TextField("Emulation destination", text: $viewModel.emulationDestination)
@@ -36,6 +36,8 @@ struct DeveloperView: View {
                         }
                     }
                 }
+                
+                Button("Save", action: viewModel.saveTapped)
             }
         }
         .navigationBarTitle("Developer")

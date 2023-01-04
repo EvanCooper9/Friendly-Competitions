@@ -15,7 +15,11 @@ struct ExploreView: View {
                 if viewModel.searchText.isEmpty {
                     Section {
                         ForEach(viewModel.appOwnedCompetitions) { competition in
-                            FeaturedCompetition(competition: competition)
+                            ZStack {
+                                NavigationLink(value: NavigationDestination.competition(competition)) { EmptyView() }
+                                    .opacity(0)
+                                FeaturedCompetition(competition: competition)
+                            }
                         }
                     }
                     .removingMargin()
@@ -30,12 +34,16 @@ struct ExploreView: View {
                                 .frame(maxWidth: .infinity, alignment: .center)
                         } else {
                             ForEach(viewModel.searchResults.filter(\.appOwned)) { competition in
-                                NavigationLink(value: NavigationDestination.competition(competition)) {
+                                ZStack {
+                                    NavigationLink(value: NavigationDestination.competition(competition)) { EmptyView() }
+                                        .opacity(0)
                                     FeaturedCompetition(competition: competition)
                                 }
                             }
                             ForEach(viewModel.searchResults.filter(\.appOwned.not)) { competition in
-                                NavigationLink(value: NavigationDestination.competition(competition)) {
+                                ZStack {
+                                    NavigationLink(value: NavigationDestination.competition(competition)) { EmptyView() }
+                                        .opacity(0)
                                     CompetitionDetails(competition: competition, showParticipantCount: true, isFeatured: false)
                                         .padding()
                                         .background(.white)
@@ -50,16 +58,7 @@ struct ExploreView: View {
             .searchable(text: $viewModel.searchText, placement: .navigationBarDrawer(displayMode: .always))
             .navigationTitle("Explore")
             .registerScreenView(name: "Explore")
-            .navigationDestination(for: NavigationDestination.self) { destination in
-                switch destination {
-                case .competition(let competition):
-                    CompetitionView(competition: competition)
-                case .competitionHistory(let competition):
-                    CompetitionHistoryView(competition: competition)
-                case .user(let user):
-                    UserView(user: user)
-                }
-            }
+            .navigationDestination(for: NavigationDestination.self) { $0.view }
         }
     }
 }

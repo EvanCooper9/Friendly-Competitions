@@ -1,0 +1,54 @@
+{
+  "identifier" : "C95EF067",
+  "nonRenewingSubscriptions" : [
+
+  ],
+  "products" : [
+
+  ],
+  "settings" : {
+    "_applicationInternalID" : "1586333967",
+    "_developerTeamID" : "HP22MNWU5C",
+    "_lastSynchronizedDate" : 694333532.117419
+  },
+  "subscriptionGroups" : [
+    {
+      "id" : "21111332",
+      "localizations" : [
+
+      ],
+      "name" : "Friendly Competitions Subscription Group",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "1.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "6445274872",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Access even older competition history",
+              "displayName" : "Competition History",
+              "locale" : "en_CA"
+            }
+          ],
+          "productID" : "com.evancooper.CompetitionHistory",
+          "recurringSubscriptionPeriod" : "P6M",
+          "referenceName" : "Competition History",
+          "subscriptionGroupID" : "21111332",
+          "type" : "RecurringSubscription"
+        }
+      ]
+    }
+  ],
+  "version" : {
+    "major" : 2,
+    "minor" : 0
+  }
+}

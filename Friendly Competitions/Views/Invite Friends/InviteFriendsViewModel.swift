@@ -63,7 +63,9 @@ final class InviteFriendsViewModel: ObservableObject {
         $searchText
             .flatMapLatest(withUnretained: self) { strongSelf, searchText -> AnyPublisher<[User], Never> in
                 guard !searchText.isEmpty else { return .just([]) }
-                return strongSelf.friendsManager.search(with: searchText).ignoreFailure()
+                return strongSelf.friendsManager
+                    .search(with: searchText)
+                    .catchErrorJustReturn([])
             }
             .combineLatest(alreadyInvited, incomingRequests)
             .map { [weak self] users, alreadyInvited, incomingRequests -> [RowConfig] in

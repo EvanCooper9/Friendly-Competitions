@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct CompetitionHistoryDateRange: Equatable {
+struct CompetitionHistoryDateRange: Equatable, Identifiable {
     
     // MARK: - Public Properties
     
@@ -8,10 +8,18 @@ struct CompetitionHistoryDateRange: Equatable {
     let end: Date
     var selected: Bool
     var locked: Bool
+    let title: String
     
-    lazy var title: String = {
-        Self.dateFormatter.string(from: start, to: end)
-    }()
+    var id: String { title }
+    var dateInterval: DateInterval { .init(start: start, end: end) }
+    
+    init(start: Date, end: Date, selected: Bool, locked: Bool) {
+        self.start = start
+        self.end = end
+        self.selected = selected
+        self.locked = locked
+        self.title = Self.dateFormatter.string(from: start, to: end)
+    }
     
     // MARK: - Private Properties
     

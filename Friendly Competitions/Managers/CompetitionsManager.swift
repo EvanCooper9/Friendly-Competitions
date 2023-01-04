@@ -212,13 +212,12 @@ final class CompetitionsManager: CompetitionsManaging {
     }
     
     func standings(for competitionID: Competition.ID, endingOn end: Date) -> AnyPublisher<[Competition.Standing], Error> {
-        if let cachedResults = historyCache[competitionID] { return .just(cachedResults) }
+//        if let cachedResults = historyCache[competitionID] { return .just(cachedResults) }
         let dateString = DateFormatter.dateDashed.string(from: end)
         return database.collection("competitions/\(competitionID)/history/\(dateString)/standings")
             .getDocuments()
             .map { $0.documents.compactMap { try? $0.data(as: Competition.Standing.self) } }
             .handleEvents(withUnretained: self, receiveOutput: { $0.historyCache[competitionID] = $1 })
-            .delay(for: .seconds(2), scheduler: RunLoop.main)
             .eraseToAnyPublisher()
     }
 

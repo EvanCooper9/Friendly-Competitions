@@ -63,7 +63,6 @@ final class FriendsManager: FriendsManaging {
                     .sorted(by: \.name)
             }
             .share(replay: 1)
-            .ignoreFailure()
 
         Publishers
             .CombineLatest(userManager.userPublisher, allFriends)

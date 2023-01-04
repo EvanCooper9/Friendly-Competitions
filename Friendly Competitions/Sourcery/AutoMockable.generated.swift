@@ -34,6 +34,28 @@ class ActivitySummaryManagingMock: ActivitySummaryManaging {
     }
     var underlyingActivitySummary: AnyPublisher<ActivitySummary?, Never>!
 
+    //MARK: - activitySummaries
+
+    var activitySummariesInCallsCount = 0
+    var activitySummariesInCalled: Bool {
+        return activitySummariesInCallsCount > 0
+    }
+    var activitySummariesInReceivedDateInterval: DateInterval?
+    var activitySummariesInReceivedInvocations: [DateInterval] = []
+    var activitySummariesInReturnValue: AnyPublisher<[ActivitySummary], Error>!
+    var activitySummariesInClosure: ((DateInterval) -> AnyPublisher<[ActivitySummary], Error>)?
+
+    func activitySummaries(in dateInterval: DateInterval) -> AnyPublisher<[ActivitySummary], Error> {
+        activitySummariesInCallsCount += 1
+        activitySummariesInReceivedDateInterval = dateInterval
+        activitySummariesInReceivedInvocations.append(dateInterval)
+        if let activitySummariesInClosure = activitySummariesInClosure {
+            return activitySummariesInClosure(dateInterval)
+        } else {
+            return activitySummariesInReturnValue
+        }
+    }
+
     //MARK: - update
 
     var updateCallsCount = 0
@@ -565,6 +587,36 @@ class CompetitionsManagingMock: CompetitionsManaging {
     }
 
 }
+class EnvironmentManagingMock: EnvironmentManaging {
+    var firestoreEnvironment: FirestoreEnvironment {
+        get { return underlyingFirestoreEnvironment }
+        set(value) { underlyingFirestoreEnvironment = value }
+    }
+    var underlyingFirestoreEnvironment: FirestoreEnvironment!
+    var firestoreEnvironmentDidChange: AnyPublisher<Void, Never> {
+        get { return underlyingFirestoreEnvironmentDidChange }
+        set(value) { underlyingFirestoreEnvironmentDidChange = value }
+    }
+    var underlyingFirestoreEnvironmentDidChange: AnyPublisher<Void, Never>!
+
+    //MARK: - set
+
+    var setCallsCount = 0
+    var setCalled: Bool {
+        return setCallsCount > 0
+    }
+    var setReceivedEnvironment: FirestoreEnvironment?
+    var setReceivedInvocations: [FirestoreEnvironment] = []
+    var setClosure: ((FirestoreEnvironment) -> Void)?
+
+    func set(_ environment: FirestoreEnvironment) {
+        setCallsCount += 1
+        setReceivedEnvironment = environment
+        setReceivedInvocations.append(environment)
+        setClosure?(environment)
+    }
+
+}
 class FriendsManagingMock: FriendsManaging {
     var friends: AnyPublisher<[User], Never> {
         get { return underlyingFriends }
@@ -778,24 +830,6 @@ class NotificationManagingMock: NotificationManaging {
         requestPermissionsClosure?()
     }
 
-    //MARK: - sendDebugNotification
-
-    var sendDebugNotificationCallsCount = 0
-    var sendDebugNotificationCalled: Bool {
-        return sendDebugNotificationCallsCount > 0
-    }
-    var sendDebugNotificationReturnValue: AnyPublisher<Void, Error>!
-    var sendDebugNotificationClosure: (() -> AnyPublisher<Void, Error>)?
-
-    func sendDebugNotification() -> AnyPublisher<Void, Error> {
-        sendDebugNotificationCallsCount += 1
-        if let sendDebugNotificationClosure = sendDebugNotificationClosure {
-            return sendDebugNotificationClosure()
-        } else {
-            return sendDebugNotificationReturnValue
-        }
-    }
-
 }
 class PermissionsManagingMock: PermissionsManaging {
     var requiresPermission: AnyPublisher<Bool, Never> {
@@ -853,6 +887,33 @@ class StorageManagingMock: StorageManaging {
 
 }
 class StoreKitManagingMock: StoreKitManaging {
+    var purchases: AnyPublisher<[FriendlyCompetitionsProduct], Never> {
+        get { return underlyingPurchases }
+        set(value) { underlyingPurchases = value }
+    }
+    var underlyingPurchases: AnyPublisher<[FriendlyCompetitionsProduct], Never>!
+
+    //MARK: - purchase
+
+    var purchaseCallsCount = 0
+    var purchaseCalled: Bool {
+        return purchaseCallsCount > 0
+    }
+    var purchaseReceivedProduct: FriendlyCompetitionsProduct?
+    var purchaseReceivedInvocations: [FriendlyCompetitionsProduct] = []
+    var purchaseReturnValue: AnyPublisher<Void, Error>!
+    var purchaseClosure: ((FriendlyCompetitionsProduct) -> AnyPublisher<Void, Error>)?
+
+    func purchase(_ product: FriendlyCompetitionsProduct) -> AnyPublisher<Void, Error> {
+        purchaseCallsCount += 1
+        purchaseReceivedProduct = product
+        purchaseReceivedInvocations.append(product)
+        if let purchaseClosure = purchaseClosure {
+            return purchaseClosure(product)
+        } else {
+            return purchaseReturnValue
+        }
+    }
 
 }
 class UserManagingMock: UserManaging {
@@ -925,6 +986,28 @@ class WorkoutManagingMock: WorkoutManaging {
             return updateClosure()
         } else {
             return updateReturnValue
+        }
+    }
+
+    //MARK: - workouts
+
+    var workoutsOfWithInCallsCount = 0
+    var workoutsOfWithInCalled: Bool {
+        return workoutsOfWithInCallsCount > 0
+    }
+    var workoutsOfWithInReceivedArguments: (type: WorkoutType, metrics: [WorkoutMetric], dateInterval: DateInterval)?
+    var workoutsOfWithInReceivedInvocations: [(type: WorkoutType, metrics: [WorkoutMetric], dateInterval: DateInterval)] = []
+    var workoutsOfWithInReturnValue: AnyPublisher<[Workout], Error>!
+    var workoutsOfWithInClosure: ((WorkoutType, [WorkoutMetric], DateInterval) -> AnyPublisher<[Workout], Error>)?
+
+    func workouts(of type: WorkoutType, with metrics: [WorkoutMetric], in dateInterval: DateInterval) -> AnyPublisher<[Workout], Error> {
+        workoutsOfWithInCallsCount += 1
+        workoutsOfWithInReceivedArguments = (type: type, metrics: metrics, dateInterval: dateInterval)
+        workoutsOfWithInReceivedInvocations.append((type: type, metrics: metrics, dateInterval: dateInterval))
+        if let workoutsOfWithInClosure = workoutsOfWithInClosure {
+            return workoutsOfWithInClosure(type, metrics, dateInterval)
+        } else {
+            return workoutsOfWithInReturnValue
         }
     }
 

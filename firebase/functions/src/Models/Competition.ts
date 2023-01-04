@@ -139,15 +139,15 @@ class Competition {
      * @return {Promise<void>} A promise that completes when the update is finished
      */
     async updateRepeatingCompetition(): Promise<void> {
-        if (!this.repeats) return Promise.resolve();
+        if (!this.repeats) return;
 
         const competitionStart = moment(this.start);
         const competitionEnd = moment(this.end);
         let newStart = competitionStart;
         let newEnd = competitionEnd;
         if (competitionStart.day() == 1 && competitionEnd.day() == competitionEnd.daysInMonth()) {
-            newStart = moment(this.start).add(1, "month");
-            newEnd = moment(this.start).set("day", newStart.daysInMonth());
+            newStart = moment(this.end).add(1, "days");
+            newEnd = moment(this.end).add(1, "days").set("day", newStart.daysInMonth());
         } else {
             const diff = competitionEnd.diff(competitionStart, "days");
             newStart = moment(this.end).add(1, "days");
@@ -155,9 +155,7 @@ class Competition {
         }
 
         const obj = { start: newStart.format(dateFormat), end: newEnd.format(dateFormat) };
-        return admin.firestore().doc(`competitions/${this.id}`)
-            .update(obj)
-            .then();
+        await admin.firestore().doc(`competitions/${this.id}`).update(obj);
     }
 
     /**
@@ -170,12 +168,17 @@ class Competition {
 
         const batch = firestore.batch();
         
-        const historyRef = firestore.doc(`competition/${this.id}/history/${this.end}`);
-        const historyObj = {id: this.end, start: this.start, end: this.end};
+        const end = moment(this.end).format(dateFormat);
+        const historyRef = firestore.doc(`competitions/${this.id}/history/${end}`);
+        const historyObj = {
+            id: end, 
+            start: moment(this.start).format(dateFormat), 
+            end: end
+        };
         batch.set(historyRef, historyObj);
 
         standings.forEach(standing => {
-            const ref = firestore.doc(`competition/${this.id}/history/${this.end}/standings/${this.id}`);
+            const ref = firestore.doc(`competitions/${this.id}/history/${end}/standings/${standing.userId}`);
             const obj = Object.assign({}, standing);
             batch.set(ref, obj);
         });

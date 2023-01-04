@@ -1,7 +1,7 @@
 import Factory
 import SwiftUI
 
-struct Profile: View {
+struct ProfileView: View {
     
     @StateObject private var viewModel = ProfileViewModel()
         
@@ -50,9 +50,9 @@ struct Profile: View {
 }
 
 #if DEBUG
-struct Profile_Previews: PreviewProvider {
+struct ProfileView_Previews: PreviewProvider {
     static var previews: some View {
-        Profile()
+        ProfileView()
             .setupMocks()
             .embeddedInNavigationView()
     }

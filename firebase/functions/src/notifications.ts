@@ -35,7 +35,7 @@ async function sendNotificationsToUser(user: User, title: string, body: string, 
  * @param {string?} deepLink (Optional) A deep link for navigation when interacting with a notification
  */
 async function sendNotification(fcmToken: string, title: string, body: string, deepLink?: string) {
-    let notificationPayload = {
+    const notificationPayload = {
         token: fcmToken,
         data: {},
         notification: {
@@ -44,7 +44,6 @@ async function sendNotification(fcmToken: string, title: string, body: string, d
         }
     };
     if (deepLink != null) notificationPayload.data = { link: deepLink };
-    console.log(notificationPayload);
     await admin.messaging().send(notificationPayload);
 }
 

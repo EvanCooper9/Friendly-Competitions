@@ -5,24 +5,29 @@ struct FriendlyCompetitions: App {
 
     @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @StateObject private var appModel = FriendlyCompetitionsAppModel()
+    
+    @State private var reload = false
 
     var body: some Scene {
         WindowGroup {
-            Group {
-                if appModel.loggedIn {
-                    if appModel.emailVerified {
-                        RootView()
-                            .onOpenURL(perform: appModel.handle)
+            if reload {
+                ProgressView().onAppear { reload.toggle() }
+            } else {
+                Group {
+                    if appModel.loggedIn {
+                        if appModel.emailVerified {
+                            RootView()
+                        } else {
+                            VerifyEmailView()
+                        }
                     } else {
-                        VerifyEmailView()
-                            .onOpenURL(perform: appModel.handle)
+                        SignIn()
                     }
-                } else {
-                    SignIn()
-                        .onOpenURL(perform: appModel.handle)
                 }
+                .hud(state: $appModel.hud)
+                .onOpenURL(perform: appModel.handle)
+                .onReceive(appModel.$environmentUUID.dropFirst()) { _ in reload.toggle() }
             }
-            .hud(state: $appModel.hud)
         }
     }
 }

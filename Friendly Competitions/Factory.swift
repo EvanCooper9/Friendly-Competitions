@@ -11,6 +11,7 @@ extension Container {
     static let analyticsManager = Factory(scope: .shared) { AnalyticsManager() as AnalyticsManaging }
     static let authenticationManager = Factory(scope: .shared) { AuthenticationManager() as AuthenticationManaging }
     static let competitionsManager = Factory(scope: .shared) { CompetitionsManager() as CompetitionsManaging }
+    static let environmentManager = Factory(scope: .singleton) { EnvironmentManager() as EnvironmentManaging }
     static let friendsManager = Factory(scope: .shared) { FriendsManager() as FriendsManaging }
     static let healthKitManager = Factory(scope: .shared) { HealthKitManager() as HealthKitManaging }
     static let notificationManager = Factory(scope: .shared) { NotificationManager() as NotificationManaging }
@@ -24,7 +25,7 @@ extension Container {
     static let appState = Factory(scope: .singleton) { AppState() as AppStateProviding }
     
     static let database = Factory(scope: .shared) {
-        let environment = UserDefaults.standard.decode(FirestoreEnvironment.self, forKey: "environment") ?? .defaultEnvionment
+        let environment = Container.environmentManager.callAsFunction().firestoreEnvironment
         let firestore = Firestore.firestore()
         let settings = firestore.settings
         settings.isPersistenceEnabled = false
@@ -48,7 +49,7 @@ extension Container {
     }
     
     static let functions = Factory(scope: .shared) {
-        let environment = UserDefaults.standard.decode(FirestoreEnvironment.self, forKey: "environment") ?? .defaultEnvionment
+        let environment = Container.environmentManager.callAsFunction().firestoreEnvironment
         let functions = Functions.functions()
 
         switch environment.type {
@@ -67,7 +68,7 @@ extension Container {
     }
     
     static let storage = Factory(scope: .shared) {
-        let environment = UserDefaults.standard.decode(FirestoreEnvironment.self, forKey: "environment") ?? .defaultEnvionment
+        let environment = Container.environmentManager.callAsFunction().firestoreEnvironment
         let storage = Storage.storage()
 
         switch environment.type {

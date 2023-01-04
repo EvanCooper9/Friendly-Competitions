@@ -13,10 +13,8 @@ async function sendCompetitionCompleteNotifications(): Promise<void> {
     const firestore = getFirestore();
 
     const yesterday = moment().utc().subtract(1, "day");
-    const yString = `${yesterday.year}-${yesterday.month}-${yesterday.day}`;
-
     const competitionsRef = await firestore.collection("competitions")
-        .where("end", "==", yString)
+        .where("end", "==", yesterday.format("YYYY-MM-DD"))
         .get();
 
     const competitionPromises = competitionsRef.docs.map(async doc => {

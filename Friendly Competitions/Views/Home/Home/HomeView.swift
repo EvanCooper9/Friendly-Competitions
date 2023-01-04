@@ -30,9 +30,7 @@ struct HomeView: View {
                     }
                     Button(systemImage: .questionmarkCircle) { presentAbout.toggle() }
                     
-                    NavigationLink {
-                        Profile()
-                    } label: {
+                    NavigationLink(value: NavigationDestination.profile) {
                         Image(systemName: .personCropCircle)
                     }
                 }
@@ -42,16 +40,7 @@ struct HomeView: View {
             .sheet(isPresented: $presentNewCompetition) { NewCompetitionView() }
             .sheet(isPresented: $viewModel.requiresPermissions) { PermissionsView() }
             .sheet(isPresented: $presentDeveloper) { DeveloperView() }
-            .navigationDestination(for: NavigationDestination.self) { destination in
-                switch destination {
-                case .competition(let compeittion):
-                    CompetitionView(competition: compeittion)
-                case .competitionHistory(let competition):
-                    CompetitionHistoryView(competition: competition)
-                case .user(let user):
-                    UserView(user: user)
-                }
-            }
+            .navigationDestination(for: NavigationDestination.self) { $0.view }
             .registerScreenView(name: "Home")
         }
     }
@@ -105,9 +94,7 @@ struct HomeView: View {
     private var friends: some View {
         Section {
             ForEach(viewModel.friendRows) { row in
-                NavigationLink {
-                    UserView(user: row.user)
-                } label: {
+                NavigationLink(value: NavigationDestination.user(row.user)) {
                     HStack {
                         ActivityRingView(activitySummary: row.activitySummary?.hkActivitySummary)
                             .frame(width: 35, height: 35)

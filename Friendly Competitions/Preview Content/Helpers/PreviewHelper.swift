@@ -68,6 +68,7 @@ extension PreviewProvider {
     static var permissionsManager: PermissionsManagingMock { Dependencies.permissionsManager }
     static var storageManager: StorageManagingMock { Dependencies.storageManager }
     static var userManager: UserManagingMock { Dependencies.userManager }
+    static var workoutManager: WorkoutManagingMock { Dependencies.workoutManager }
 }
 
 extension View {

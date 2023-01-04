@@ -14,7 +14,7 @@ final class CompetitionViewModel: ObservableObject {
     
     // MARK: - Public Properties
     
-    @Published var canEdit = false
+    @Published private(set) var canEdit = false
     var confirmationTitle: String { actionRequiringConfirmation?.confirmationTitle ?? "" }
     @Published var confirmationRequired = false
     @Published var competition: Competition
@@ -24,7 +24,8 @@ final class CompetitionViewModel: ObservableObject {
     @Published var pendingParticipants = [CompetitionParticipantRow.Config]()
     @Published var actions = [CompetitionViewAction]()
     @Published var showInviteFriend = false
-    @Published var loading = false
+    @Published private(set) var showHistory = false
+    @Published private(set) var loading = false
     
     // MARK: - Private Properties
 
@@ -35,11 +36,13 @@ final class CompetitionViewModel: ObservableObject {
     }
     
     @Injected(Container.competitionsManager) private var competitionsManager
+    @Injected(Container.functions) private var functions
     @Injected(Container.userManager) private var userManager
 
     private let confirmActionSubject = PassthroughSubject<Void, Error>()
     private let performActionSubject = PassthroughSubject<CompetitionViewAction, Error>()
     private let saveEditsSubject = PassthroughSubject<Void, Error>()
+    private let recordHistorySubject = PassthroughSubject<Void, Never>()
     private var cancellables = Cancellables()
     
     // MARK: - Lifecycle
@@ -51,6 +54,11 @@ final class CompetitionViewModel: ObservableObject {
         userManager.userPublisher
             .map { $0.id == competition.owner }
             .assign(to: &$canEdit)
+        
+        competitionsManager.history(for: competition.id)
+            .map(\.isNotEmpty)
+            .ignoreFailure()
+            .assign(to: &$showHistory)
         
         $editing
             .map { $0  ? "Cancel" : "Edit" }
@@ -193,6 +201,16 @@ final class CompetitionViewModel: ObservableObject {
             }
             .sink()
             .store(in: &cancellables)
+        
+        recordHistorySubject
+            .flatMapLatest(withUnretained: self) { strongSelf in
+                strongSelf.functions.httpsCallable("recordHistoryManually")
+                    .call(["competitionID": competition.id])
+                    .mapToVoid()
+                    .ignoreFailure()
+            }
+            .sink()
+            .store(in: &cancellables)
     }
     
     // MARK: - Public Methods
@@ -218,5 +236,9 @@ final class CompetitionViewModel: ObservableObject {
     
     func perform(_ action: CompetitionViewAction) {
         performActionSubject.send(action)
+    }
+    
+    func recordHistoryTapped() {
+        recordHistorySubject.send()
     }
 }

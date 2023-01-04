@@ -1,11 +1,34 @@
-import SwiftUI
-
 enum CompetitionHistoryDataPoint: Identifiable {
-    case rank(Int)
-    case standings([Competition.Standing])
-    case points(Int)
     
-    var id: String { title }
+    struct Standing {
+        let rank: Int
+        let points: Int
+        let isHighlighted: Bool
+    }
+    
+    case rank(current: Int, previous: Int?)
+    case standings([Standing])
+    case points(current: Int, previous: Int?)
+    case activitySummaryBestDay(ActivitySummary?)
+    case activitySummaryCloseCount(current: Int, previous: Int?)
+    case workoutsBestDay(Workout?)
+    
+    var id: String {
+        switch self {
+        case let .rank(current, previous):
+            return "Rank \(current) \(previous ?? 0)"
+        case .standings:
+            return "Standings"
+        case let .points(current, previous):
+            return "Points \(current) \(previous ?? 0)"
+        case .activitySummaryBestDay:
+            return "Activity Summary Best Day"
+        case .activitySummaryCloseCount:
+            return "Activity Summary Close Count"
+        case .workoutsBestDay:
+            return "Workouts Best Day"
+        }
+    }
     
     var title: String {
         switch self {
@@ -15,30 +38,10 @@ enum CompetitionHistoryDataPoint: Identifiable {
             return "Standings"
         case .points:
             return "Points"
-        }
-    }
-    
-    @ViewBuilder
-    var view: some View {
-        switch self {
-        case .rank(let rank):
-            Text(rank.ordinalString!)
-                .font(.largeTitle)
-        case .standings(let standings):
-            VStack {
-                ForEach(standings) { standing in
-                    HStack {
-                        Text(standing.rank.ordinalString!)
-                            .lineLimit(1)
-                        Spacer()
-                        Text(standing.points)
-                            .lineLimit(1)
-                    }
-                }
-            }
-        case .points(let points):
-            Text(points)
-                .font(.largeTitle)
+        case .activitySummaryBestDay, .activitySummaryCloseCount:
+            return "Rings"
+        case .workoutsBestDay:
+            return "Workouts"
         }
     }
 }

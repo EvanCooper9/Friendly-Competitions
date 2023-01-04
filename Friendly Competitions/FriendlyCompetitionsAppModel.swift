@@ -6,14 +6,18 @@ final class FriendlyCompetitionsAppModel: ObservableObject {
     
     // MARK: - Public Properties
 
-    @Published var loggedIn = false
-    @Published var emailVerified = false
+    @Published private(set)var loggedIn = false
+    @Published private(set)var emailVerified = false
     @Published var hud: HUD?
+    @Published private(set) var environmentUUID = UUID()
     
     // MARK: - Private Properties
 
     @Injected(Container.appState) private var appState
     @Injected(Container.authenticationManager) private var authenticationManager
+    @Injected(Container.environmentManager) private var environmentManager
+    
+    private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Lifecycle
 
@@ -21,6 +25,10 @@ final class FriendlyCompetitionsAppModel: ObservableObject {
         authenticationManager.loggedIn.assign(to: &$loggedIn)
         authenticationManager.emailVerified.assign(to: &$emailVerified)
         appState.hud.assign(to: &$hud)
+        
+        environmentManager.firestoreEnvironmentDidChange
+            .mapToValue(UUID())
+            .assign(to: &$environmentUUID)
     }
     
     // MARK: - Public Methods
