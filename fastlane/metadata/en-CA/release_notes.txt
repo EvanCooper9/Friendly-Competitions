@@ -1,8 +1,7 @@
 New features: 
-• Create competitions based on workouts
+• View competition history
+• Opening notifications will take you to the right place
+• More reliable deep links
 
 Improvements:
-• Fixed an issue where a user's name could be blank when using Sign-in With Apple
-• Adding friends is more reliable
-• Background updates consume less battery
-• Performance Improvements
+• Performance
