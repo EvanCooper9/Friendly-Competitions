@@ -148,7 +148,6 @@
 		EDA035B829173F140091E7A6 /* ArrayBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA035B729173F140091E7A6 /* ArrayBuilder.swift */; };
 		EDA035BB2917FE190091E7A6 /* NotificationName+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA035BA2917FE190091E7A6 /* NotificationName+Extensions.swift */; };
 		EDA035BE2917FFF90091E7A6 /* Dictionary+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA035BD2917FFF90091E7A6 /* Dictionary+Extensions.swift */; };
-		EDA035C029180D8F0091E7A6 /* CompetitionHistorySection.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA035BF29180D8F0091E7A6 /* CompetitionHistorySection.swift */; };
 		EDA035CC291860090091E7A6 /* StoreKitManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA035CB291860090091E7A6 /* StoreKitManager.swift */; };
 		EDA035CE2918619C0091E7A6 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EDA035CD2918619C0091E7A6 /* StoreKit.framework */; };
 		EDA352902836EFB600390585 /* UserViewAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA3528F2836EFB600390585 /* UserViewAction.swift */; };
@@ -332,7 +331,6 @@
 		EDA035B729173F140091E7A6 /* ArrayBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrayBuilder.swift; sourceTree = "<group>"; };
 		EDA035BA2917FE190091E7A6 /* NotificationName+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NotificationName+Extensions.swift"; sourceTree = "<group>"; };
 		EDA035BD2917FFF90091E7A6 /* Dictionary+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Dictionary+Extensions.swift"; sourceTree = "<group>"; };
-		EDA035BF29180D8F0091E7A6 /* CompetitionHistorySection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionHistorySection.swift; sourceTree = "<group>"; };
 		EDA035CB291860090091E7A6 /* StoreKitManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StoreKitManager.swift; sourceTree = "<group>"; };
 		EDA035CD2918619C0091E7A6 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		EDA3528F2836EFB600390585 /* UserViewAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserViewAction.swift; sourceTree = "<group>"; };
@@ -1034,7 +1032,6 @@
 			isa = PBXGroup;
 			children = (
 				EDBEA16F281459D200058A47 /* EditCompetitionSection.swift */,
-				EDA035BF29180D8F0091E7A6 /* CompetitionHistorySection.swift */,
 				ED4878242826F43800AC1E2C /* CompetitionParticipantRow.swift */,
 			);
 			path = Components;
@@ -1398,7 +1395,6 @@
 				EDA035BE2917FFF90091E7A6 /* Dictionary+Extensions.swift in Sources */,
 				C123C9D427A88D3200375F73 /* UserInfoSection.swift in Sources */,
 				C132945627DF6D9E00117548 /* Binding+Extensions.swift in Sources */,
-				EDA035C029180D8F0091E7A6 /* CompetitionHistorySection.swift in Sources */,
 				ED039768295F5458003D4D80 /* CompetitionHistoryView.swift in Sources */,
 				EDE53019295F717000ECAD00 /* Future+Extensions.swift in Sources */,
 				ED8D05F9295F5DB8002B3B3A /* CompetitionHistoryDateRange.swift in Sources */,
