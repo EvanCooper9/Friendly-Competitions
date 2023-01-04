@@ -167,7 +167,6 @@
 		EDD894FD29633F92009636E6 /* EnvironmentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD894FC29633F92009636E6 /* EnvironmentManager.swift */; };
 		EDD8950029634043009636E6 /* FirestoreEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD894FF29634043009636E6 /* FirestoreEnvironment.swift */; };
 		EDDB923D2965D2B0006AEE72 /* CompetitionHistoryDataPoint+View.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDDB923C2965D2B0006AEE72 /* CompetitionHistoryDataPoint+View.swift */; };
-		EDDB92402965D87A006AEE72 /* ConfettiSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = EDDB923F2965D87A006AEE72 /* ConfettiSwiftUI */; };
 		EDDB92432966318E006AEE72 /* Publisher+CatchErrorJustReturn.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDDB92422966318E006AEE72 /* Publisher+CatchErrorJustReturn.swift */; };
 		EDDF77D828BA82E000BB8B97 /* HealthKitPermissionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDDF77D728BA82E000BB8B97 /* HealthKitPermissionType.swift */; };
 		EDE53019295F717000ECAD00 /* Future+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDE53018295F717000ECAD00 /* Future+Extensions.swift */; };
@@ -371,7 +370,6 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				EDDB92402965D87A006AEE72 /* ConfettiSwiftUI in Frameworks */,
 				ED0470C128FF2F4700A941AC /* FirebaseMessaging in Frameworks */,
 				EDA035CE2918619C0091E7A6 /* StoreKit.framework in Frameworks */,
 				ED0470B528FF2F4700A941AC /* FirebaseAnalyticsSwift in Frameworks */,
@@ -1137,7 +1135,6 @@
 				ED0470C028FF2F4700A941AC /* FirebaseMessaging */,
 				ED8C324B2911BFD300339988 /* ECKit */,
 				ED8C324D2911BFD300339988 /* ECKit+Firebase */,
-				EDDB923F2965D87A006AEE72 /* ConfettiSwiftUI */,
 			);
 			productName = CompyBoi;
 			productReference = C1691DC326D55FCF006FFA30 /* Friendly Competitions.app */;
@@ -1175,7 +1172,6 @@
 				ED71E2A128F70212001FED74 /* XCRemoteSwiftPackageReference "Files" */,
 				ED0470A928FF2DB200A941AC /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				ED74033A28FF7297005BD155 /* XCRemoteSwiftPackageReference "ECKit" */,
-				EDDB923E2965D87A006AEE72 /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */,
 			);
 			productRefGroup = C1691DC426D55FCF006FFA30 /* Products */;
 			projectDirPath = "";
@@ -1740,14 +1736,6 @@
 				kind = branch;
 			};
 		};
-		EDDB923E2965D87A006AEE72 /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/simibac/ConfettiSwiftUI";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -1800,11 +1788,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = ED74033A28FF7297005BD155 /* XCRemoteSwiftPackageReference "ECKit" */;
 			productName = "ECKit+Firebase";
-		};
-		EDDB923F2965D87A006AEE72 /* ConfettiSwiftUI */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = EDDB923E2965D87A006AEE72 /* XCRemoteSwiftPackageReference "ConfettiSwiftUI" */;
-			productName = ConfettiSwiftUI;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
