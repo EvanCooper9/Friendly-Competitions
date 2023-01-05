@@ -126,7 +126,7 @@ final class HomeViewModelTests: XCTestCase {
         let andrew = HomeViewModel.FriendRow(user: .andrew, activitySummary: nil, isInvitation: true)
 
         let viewModel = HomeViewModel()
-        viewModel.$friends
+        viewModel.$friendRows
             .expect([], [evan], [evanWithAC], [evanWithAC, andrew], expectation: expectation)
             .store(in: &cancellables)
 

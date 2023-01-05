@@ -35,16 +35,16 @@ enum DeepLink: Equatable {
         case .user(let id):
             return Constants.baseURL
                 .appendingPathComponent(Constants.user)
-                .appendingPathExtension(id)
+                .appendingPathComponent(id)
         case .competition(let id):
             return Constants.baseURL
                 .appendingPathComponent(Constants.competition)
-                .appendingPathExtension(id)
+                .appendingPathComponent(id)
         case .competitionHistory(let id):
             return Constants.baseURL
-                .appendingPathExtension(Constants.competition)
-                .appendingPathExtension(id)
-                .appendingPathExtension("history")
+                .appendingPathComponent(Constants.competition)
+                .appendingPathComponent(id)
+                .appendingPathComponent("history")
         }
     }
 }
