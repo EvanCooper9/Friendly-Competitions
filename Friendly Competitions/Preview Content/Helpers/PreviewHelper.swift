@@ -25,11 +25,13 @@ fileprivate enum Dependencies {
         Container.permissionsManager.register { permissionsManager }
         Container.storageManager.register { storageManager }
         Container.userManager.register { userManager }
+        Container.workoutManager.register { workoutManager }
     }
 
     static func baseSetupMocks() {
         activitySummaryManager.activitySummary = .just(nil)
         activitySummaryManager.updateReturnValue = .just(())
+        activitySummaryManager.activitySummariesInReturnValue = .just([])
 
         authenticationManager.emailVerified = .just(true)
         authenticationManager.loggedIn = .just(true)
@@ -42,6 +44,7 @@ fileprivate enum Dependencies {
         competitionsManager.appOwnedCompetitions = .just([.mockPublic])
         competitionsManager.searchReturnValue = .just([.mockPublic, .mock])
         competitionsManager.historyForReturnValue = .just([])
+        competitionsManager.standingsForEndingOnReturnValue = .just([])
         
         friendsManager.friends = .just([])
         friendsManager.friendActivitySummaries = .just([:])
@@ -54,6 +57,7 @@ fileprivate enum Dependencies {
         userManager.updateWithReturnValue = .just(())
         
         workoutManager.updateReturnValue = .just(())
+        workoutManager.workoutsOfWithInReturnValue = .just([])
     }
 }
 

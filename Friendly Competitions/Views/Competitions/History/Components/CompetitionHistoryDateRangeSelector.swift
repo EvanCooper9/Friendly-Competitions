@@ -14,6 +14,9 @@ struct CompetitionHistoryDateRangeSelector: View {
                     ForEach(ranges, id: \.start) { range in
                         Button {
                             select(range)
+                            withAnimation {
+                                proxy.scrollTo(range.title, anchor: .center)
+                            }
                         } label: {
                             HStack {
                                 if range.locked {
@@ -41,18 +44,6 @@ struct CompetitionHistoryDateRangeSelector: View {
                 }
                 .padding(.horizontal)
                 .padding(.vertical, 20)
-                .onChange(of: ranges) { ranges in
-                    guard let id = ranges.first(where: { $0.selected })?.id else { return }
-                    withAnimation {
-                        proxy.scrollTo(id, anchor: .center)
-                    }
-                }
-                .onAppear {
-                    guard let id = ranges.first(where: { $0.selected })?.id else { return }
-                    withAnimation {
-                        proxy.scrollTo(id, anchor: .center)
-                    }
-                }
             }
         }
         .padding(.vertical, -20)

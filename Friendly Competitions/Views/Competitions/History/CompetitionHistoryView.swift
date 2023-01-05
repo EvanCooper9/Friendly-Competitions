@@ -74,9 +74,6 @@ struct CompetitionHistoryView_Previews: PreviewProvider {
             .init(rank: 6, userId: "6", points: 100)
         ]
         competitionsManager.standingsForEndingOnReturnValue = .just(stats)
-        
-        activitySummaryManager.activitySummariesInReturnValue = .just([])
-        workoutManager.workoutsOfWithInReturnValue = .just([])
     }
     
     static var previews: some View {
