@@ -99,16 +99,6 @@ final class HomeViewModel: ObservableObject {
         userManager.userPublisher
             .map { $0.name.ifEmpty(Bundle.main.name) }
             .assign(to: &$title)
-        
-        $competitions
-            .map { (competitions: [Competition]) -> [NavigationDestination] in
-                guard let dailyBurn = competitions.first(where: { $0.name == "Daily Burn" }) else { return [] }
-                return [
-                    NavigationDestination.competition(dailyBurn),
-                    NavigationDestination.competitionHistory(dailyBurn)
-                ]
-            }
-            .assign(to: &$navigationDestinations)
     }
 }
 
