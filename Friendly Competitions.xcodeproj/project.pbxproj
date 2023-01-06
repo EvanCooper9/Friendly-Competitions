@@ -102,11 +102,15 @@
 		ED130764295FFA5C00E0AC87 /* CompetitionHistoryDataPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED130763295FFA5C00E0AC87 /* CompetitionHistoryDataPoint.swift */; };
 		ED19724C283803850018FDFF /* WorkoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED19724B283803850018FDFF /* WorkoutTests.swift */; };
 		ED19724E283803F60018FDFF /* WorkoutTypeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED19724D283803F60018FDFF /* WorkoutTypeTests.swift */; };
+		ED1B5CDD2968D00500122D7E /* View+FittedDetents.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1B5CDC2968D00500122D7E /* View+FittedDetents.swift */; };
 		ED1CFA9B2864AF1D00192E49 /* HomeViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1CFA9A2864AF1D00192E49 /* HomeViewModelTests.swift */; };
 		ED1CFA9D2864B92A00192E49 /* Publisher+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1CFA9C2864B92A00192E49 /* Publisher+Extensions.swift */; };
 		ED1CFA9F2864E58300192E49 /* PostDecoded.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1CFA9E2864E58300192E49 /* PostDecoded.swift */; };
 		ED1CFAA22864FF0000192E49 /* WorkoutMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1CFAA12864FF0000192E49 /* WorkoutMetric.swift */; };
 		ED1E08D728DF4C6600497E20 /* View+RemovingMargin.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1E08D628DF4C6600497E20 /* View+RemovingMargin.swift */; };
+		ED3868DE29677F8100522722 /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3868DC29677F8100522722 /* PaywallView.swift */; };
+		ED3868DF29677F8100522722 /* PaywallViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3868DD29677F8100522722 /* PaywallViewModel.swift */; };
+		ED3868E1296793C600522722 /* Friendly Competitions.storekit in Resources */ = {isa = PBXBuildFile; fileRef = EDD894FB2962B057009636E6 /* Friendly Competitions.storekit */; };
 		ED3C09E029626A1D00ED4ACC /* NavigationDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3C09DF29626A1D00ED4ACC /* NavigationDestination.swift */; };
 		ED3D5F30295E472500211E86 /* SignInViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3D5F2F295E472500211E86 /* SignInViewModelTests.swift */; };
 		ED3D85F7295F676800C3D152 /* CompetitionHistory.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3D85F6295F676800C3D152 /* CompetitionHistory.swift */; };
@@ -287,11 +291,14 @@
 		ED130763295FFA5C00E0AC87 /* CompetitionHistoryDataPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionHistoryDataPoint.swift; sourceTree = "<group>"; };
 		ED19724B283803850018FDFF /* WorkoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutTests.swift; sourceTree = "<group>"; };
 		ED19724D283803F60018FDFF /* WorkoutTypeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutTypeTests.swift; sourceTree = "<group>"; };
+		ED1B5CDC2968D00500122D7E /* View+FittedDetents.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+FittedDetents.swift"; sourceTree = "<group>"; };
 		ED1CFA9A2864AF1D00192E49 /* HomeViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeViewModelTests.swift; sourceTree = "<group>"; };
 		ED1CFA9C2864B92A00192E49 /* Publisher+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Publisher+Extensions.swift"; sourceTree = "<group>"; };
 		ED1CFA9E2864E58300192E49 /* PostDecoded.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostDecoded.swift; sourceTree = "<group>"; };
 		ED1CFAA12864FF0000192E49 /* WorkoutMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutMetric.swift; sourceTree = "<group>"; };
 		ED1E08D628DF4C6600497E20 /* View+RemovingMargin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+RemovingMargin.swift"; sourceTree = "<group>"; };
+		ED3868DC29677F8100522722 /* PaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
+		ED3868DD29677F8100522722 /* PaywallViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallViewModel.swift; sourceTree = "<group>"; };
 		ED3C09DF29626A1D00ED4ACC /* NavigationDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationDestination.swift; sourceTree = "<group>"; };
 		ED3D5F2F295E472500211E86 /* SignInViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInViewModelTests.swift; sourceTree = "<group>"; };
 		ED3D85F6295F676800C3D152 /* CompetitionHistory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionHistory.swift; sourceTree = "<group>"; };
@@ -464,6 +471,7 @@
 				ED438FF827F7C2B900D72F99 /* View+Analytics.swift */,
 				ED438FF627F7B3B600D72F99 /* View+ConfirmationDialog.swift */,
 				C132336C27BF0C0F00196D81 /* View+CornerRadius.swift */,
+				ED1B5CDC2968D00500122D7E /* View+FittedDetents.swift */,
 				EDC5FC3E27FA7C1B00F2882D /* View+HUD.swift */,
 				ED1E08D628DF4C6600497E20 /* View+RemovingMargin.swift */,
 			);
@@ -757,6 +765,7 @@
 				C19B7F2927BD8C5C00BCA4B9 /* Explore */,
 				C1F7DFF226D7F77900B46F91 /* Competitions */,
 				ED48782C282747B100AC1E2C /* Invite Friends */,
+				ED3868DB29677F6100522722 /* Paywall */,
 				C10E5544272B44B30053BBA6 /* Permissions */,
 				C12D640227A5EA8700259237 /* Sign In */,
 				C132335D27BEA96600196D81 /* Styles */,
@@ -869,6 +878,15 @@
 				ED3D5F2E295E471600211E86 /* Sign In */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		ED3868DB29677F6100522722 /* Paywall */ = {
+			isa = PBXGroup;
+			children = (
+				ED3868DC29677F8100522722 /* PaywallView.swift */,
+				ED3868DD29677F8100522722 /* PaywallViewModel.swift */,
+			);
+			path = Paywall;
 			sourceTree = "<group>";
 		};
 		ED3D5F2E295E471600211E86 /* Sign In */ = {
@@ -1189,6 +1207,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ED3868E1296793C600522722 /* Friendly Competitions.storekit in Resources */,
 				C1930E4D27C6730A00DB45C1 /* Colors.xcassets in Resources */,
 				C1691DCE26D55FCF006FFA30 /* Preview Assets.xcassets in Resources */,
 				C1691DCB26D55FCF006FFA30 /* Images.xcassets in Resources */,
@@ -1291,6 +1310,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ED3868DF29677F8100522722 /* PaywallViewModel.swift in Sources */,
 				EDDB923D2965D2B0006AEE72 /* CompetitionHistoryDataPoint+View.swift in Sources */,
 				ED1E08D728DF4C6600497E20 /* View+RemovingMargin.swift in Sources */,
 				EDA352902836EFB600390585 /* UserViewAction.swift in Sources */,
@@ -1308,6 +1328,7 @@
 				EDE5301B295F717400ECAD00 /* DocumentSnapshot+Extensions.swift in Sources */,
 				EDBEA170281459D200058A47 /* EditCompetitionSection.swift in Sources */,
 				EDA352932836F87600390585 /* CompetitionViewAction.swift in Sources */,
+				ED3868DE29677F8100522722 /* PaywallView.swift in Sources */,
 				C12D640727A5F2FC00259237 /* CompetitionsManager.swift in Sources */,
 				C1691DC726D55FCF006FFA30 /* FriendlyCompetitions.swift in Sources */,
 				C123C9C927A74F3500375F73 /* PermissionsManager.swift in Sources */,
@@ -1355,6 +1376,7 @@
 				C132336527BEB58B00196D81 /* AppIcon.swift in Sources */,
 				EDDF77D828BA82E000BB8B97 /* HealthKitPermissionType.swift in Sources */,
 				EDC7849828034CCD001FE005 /* WorkoutManager.swift in Sources */,
+				ED1B5CDD2968D00500122D7E /* View+FittedDetents.swift in Sources */,
 				C10E5541272B3BB70053BBA6 /* Permission.swift in Sources */,
 				ED3C09E029626A1D00ED4ACC /* NavigationDestination.swift in Sources */,
 				C123C9CF27A86E1200375F73 /* Stack.swift in Sources */,

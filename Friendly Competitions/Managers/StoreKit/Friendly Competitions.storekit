@@ -9,15 +9,15 @@
   "settings" : {
     "_applicationInternalID" : "1586333967",
     "_developerTeamID" : "HP22MNWU5C",
-    "_lastSynchronizedDate" : 694333532.117419
+    "_lastSynchronizedDate" : 694738914.27802205
   },
   "subscriptionGroups" : [
     {
-      "id" : "21111332",
+      "id" : "21127382",
       "localizations" : [
 
       ],
-      "name" : "Friendly Competitions Subscription Group",
+      "name" : "Friendly Competitions Premium",
       "subscriptions" : [
         {
           "adHocOffers" : [
@@ -26,22 +26,72 @@
           "codeOffers" : [
 
           ],
-          "displayPrice" : "1.99",
+          "displayPrice" : "12.99",
           "familyShareable" : false,
-          "groupNumber" : 1,
-          "internalID" : "6445274872",
+          "groupNumber" : 3,
+          "internalID" : "6445321415",
           "introductoryOffer" : null,
           "localizations" : [
             {
-              "description" : "Access even older competition history",
-              "displayName" : "Competition History",
+              "description" : "Access premium features for one year",
+              "displayName" : "Premium Annually",
               "locale" : "en_CA"
             }
           ],
-          "productID" : "com.evancooper.CompetitionHistory",
+          "productID" : "com.friendlyCompetitions.premium.annually",
+          "recurringSubscriptionPeriod" : "P1Y",
+          "referenceName" : "Premium Annually",
+          "subscriptionGroupID" : "21127382",
+          "type" : "RecurringSubscription"
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "0.99",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "6445321260",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Access premium features for one month",
+              "displayName" : "Monthly",
+              "locale" : "en_CA"
+            }
+          ],
+          "productID" : "com.friendlyCompetitions.premium.monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Premium Monthly",
+          "subscriptionGroupID" : "21127382",
+          "type" : "RecurringSubscription"
+        },
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "6.99",
+          "familyShareable" : false,
+          "groupNumber" : 2,
+          "internalID" : "6445321338",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "Access premium features for six months",
+              "displayName" : "Premium Semi-Annually",
+              "locale" : "en_CA"
+            }
+          ],
+          "productID" : "com.friendlyCompetitions.premium.semiAnnually",
           "recurringSubscriptionPeriod" : "P6M",
-          "referenceName" : "Competition History",
-          "subscriptionGroupID" : "21111332",
+          "referenceName" : "Premium Semi-Annually",
+          "subscriptionGroupID" : "21127382",
           "type" : "RecurringSubscription"
         }
       ]

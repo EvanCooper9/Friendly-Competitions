@@ -34,15 +34,16 @@ struct CompetitionHistoryView: View {
         }
         .background(Color.listBackground)
         .navigationTitle("History")
+        .sheet(isPresented: $viewModel.showPaywall, content: PaywallView.init)
         .registerScreenView(name: "History")
     }
     
     private var lockedView: some View {
         VStack(alignment: .leading, spacing: 15) {
-            Text("Looking further back is a premium feature.")
+            Text("Looking further back requires Friendly Competitions Premium")
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .font(.title)
-            Text("Please consider purchasing. All proceeds go towards running Friendly Competitions.")
+            Text("Please consider purchasing. All proceeds go towards the cost of running Friendly Competitions.")
                 .foregroundColor(.secondaryLabel)
             Button("Purchase", action: viewModel.purchaseTapped)
                 .buttonStyle(.borderedProminent)

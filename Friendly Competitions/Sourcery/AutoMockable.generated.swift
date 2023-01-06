@@ -887,6 +887,11 @@ class StorageManagingMock: StorageManaging {
 
 }
 class StoreKitManagingMock: StoreKitManaging {
+    var products: AnyPublisher<[FriendlyCompetitionsProduct], Never> {
+        get { return underlyingProducts }
+        set(value) { underlyingProducts = value }
+    }
+    var underlyingProducts: AnyPublisher<[FriendlyCompetitionsProduct], Never>!
     var purchases: AnyPublisher<[FriendlyCompetitionsProduct], Never> {
         get { return underlyingPurchases }
         set(value) { underlyingPurchases = value }

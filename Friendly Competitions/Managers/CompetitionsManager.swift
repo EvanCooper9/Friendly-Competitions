@@ -183,9 +183,12 @@ final class CompetitionsManager: CompetitionsManaging {
             .map(\.documents)
             .filterMany { document in
                 guard let searchResult = try? document.data(as: SearchResult.self) else { return false }
-                return searchResult.name.localizedCaseInsensitiveContains(searchText)
+                return searchResult.name
+                    .components(separatedBy: " ")
+                    .contains { $0.starts(with: searchText) }
+                    
             }
-            .compactMapMany { try? $0.data(as: Competition.self) }
+            .compactMapMany { try? $0.decoded(as: Competition.self) }
             .eraseToAnyPublisher()
     }
 

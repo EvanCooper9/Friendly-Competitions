@@ -12,6 +12,7 @@ final class CompetitionHistoryViewModel: ObservableObject {
     @Published private(set) var dataPoints = [CompetitionHistoryDataPoint]()
     @Published private(set) var locked = false
     @Published private(set) var loading = false
+    @Published var showPaywall = false
 
     // MARK: - Private Properties
     
@@ -24,24 +25,21 @@ final class CompetitionHistoryViewModel: ObservableObject {
     @Injected(Container.workoutManager) private var workoutManager
     
     private let selectedIndex = CurrentValueSubject<Int, Never>(0)
-    private let purchaseSubject = PassthroughSubject<Void, Never>()
-
-    private var cancellables = Cancellables()
-
+    
     // MARK: - Lifecycle
 
     init(competition: Competition) {
         self.competition = competition
-        
+                
         Publishers
             .CombineLatest3(
                 competitionsManager
                     .history(for: competition.id)
                     .catchErrorJustReturn([]),
-                storeKitManager.purchases,
+                storeKitManager.hasPremium,
                 selectedIndex
             )
-            .map { history, purchases, selectedIndex in
+            .map { history, hasPremium, selectedIndex in
                 history
                     .sorted(by: \.end)
                     .reversed()
@@ -51,7 +49,7 @@ final class CompetitionHistoryViewModel: ObservableObject {
                             start: event.start,
                             end: event.end,
                             selected: offset == selectedIndex,
-                            locked: offset == 0 ? false : !purchases.contains(.competitionHistory)
+                            locked: offset == 0 ? false : !hasPremium
                         )
                     }
             }
@@ -86,17 +84,6 @@ final class CompetitionHistoryViewModel: ObservableObject {
             }
             .receive(on: RunLoop.main)
             .assign(to: &$dataPoints)
-            
-        purchaseSubject
-            .flatMapLatest(withUnretained: self) { strongSelf in
-                strongSelf.storeKitManager
-                    .purchase(.competitionHistory)
-                    .isLoading { strongSelf.loading = $0 }
-                    .ignoreFailure()
-                    .eraseToAnyPublisher()
-            }
-            .sink()
-            .store(in: &cancellables)
     }
 
     // MARK: - Public Methods
@@ -107,7 +94,7 @@ final class CompetitionHistoryViewModel: ObservableObject {
     }
     
     func purchaseTapped() {
-        purchaseSubject.send()
+        showPaywall.toggle()
     }
     
     // MARK: - Private Methods

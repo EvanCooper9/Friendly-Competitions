@@ -2,6 +2,7 @@ import Foundation
 
 struct User: Codable, Equatable, Hashable, Identifiable {
     let id: String
+    var appStoreID: UUID?
     let email: String
     let name: String
     var friends = [String]()
