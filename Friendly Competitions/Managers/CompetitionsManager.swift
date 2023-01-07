@@ -28,7 +28,7 @@ protocol CompetitionsManaging {
     func search(_ searchText: String) -> AnyPublisher<[Competition], Error>
     func search(byID competitionID: Competition.ID) -> AnyPublisher<Competition?, Error>
     
-    func history(for competitionID: Competition.ID) -> AnyPublisher<[CompetitionHistory], Error>
+    func results(for competitionID: Competition.ID) -> AnyPublisher<[CompetitionResult], Error>
     func standings(for competitionID: Competition.ID, endingOn end: Date) -> AnyPublisher<[Competition.Standing], Error>
 }
 
@@ -69,8 +69,6 @@ final class CompetitionsManager: CompetitionsManaging {
     @Injected(Container.userManager) private var userManager
     @LazyInjected(Container.workoutManager) private var workoutManager
     
-    private var historyCache = [Competition.ID: [Competition.Standing]]()
-
     private var updateTask: Task<Void, Error>? {
         willSet { updateTask?.cancel() }
     }
@@ -207,20 +205,19 @@ final class CompetitionsManager: CompetitionsManaging {
         }
     }
     
-    func history(for competitionID: Competition.ID) -> AnyPublisher<[CompetitionHistory], Error> {
-        database.collection("competitions/\(competitionID)/history")
+    func results(for competitionID: Competition.ID) -> AnyPublisher<[CompetitionResult], Error> {
+        database.collection("competitions/\(competitionID)/results")
             .getDocuments()
-            .map { $0.documents.decoded(asArrayOf: CompetitionHistory.self) }
+            .map { $0.documents.decoded(asArrayOf: CompetitionResult.self) }
             .eraseToAnyPublisher()
     }
     
     func standings(for competitionID: Competition.ID, endingOn end: Date) -> AnyPublisher<[Competition.Standing], Error> {
-//        if let cachedResults = historyCache[competitionID] { return .just(cachedResults) }
+//        if let cachedResults = resultsCache[competitionID] { return .just(cachedResults) }
         let dateString = DateFormatter.dateDashed.string(from: end)
-        return database.collection("competitions/\(competitionID)/history/\(dateString)/standings")
+        return database.collection("competitions/\(competitionID)/results/\(dateString)/standings")
             .getDocuments()
             .map { $0.documents.compactMap { try? $0.data(as: Competition.Standing.self) } }
-            .handleEvents(withUnretained: self, receiveOutput: { $0.historyCache[competitionID] = $1 })
             .eraseToAnyPublisher()
     }
 

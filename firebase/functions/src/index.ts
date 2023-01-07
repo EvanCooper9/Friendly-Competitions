@@ -11,7 +11,6 @@ import { joinCompetition } from "./Handlers/competitions/joinCompetition";
 import { leaveCompetition } from "./Handlers/competitions/leaveCompetition";
 import { cleanActivitySummaries } from "./Handlers/jobs/cleanActivitySummaries";
 import { sendCompetitionCompleteNotifications } from "./Handlers/jobs/sendCompetitionCompleteNotifications";
-import { recordHistoryManually } from "./Handlers/debug/recordHistoryManually";
 
 admin.initializeApp();
 
@@ -99,10 +98,3 @@ exports.cleanStaleActivitySummaries = functions.pubsub.schedule("every day 02:00
 exports.sendCompetitionCompleteNotifications = functions.pubsub.schedule("every day 12:00")
     .timeZone("America/Toronto")
     .onRun(async () => sendCompetitionCompleteNotifications());
-
-// debug
-
-exports.recordHistoryManually = functions.https.onCall(async data => {
-    const competitionID = data.competitionID;
-    await recordHistoryManually(competitionID);
-});

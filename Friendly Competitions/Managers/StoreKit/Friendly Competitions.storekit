@@ -9,7 +9,7 @@
   "settings" : {
     "_applicationInternalID" : "1586333967",
     "_developerTeamID" : "HP22MNWU5C",
-    "_lastSynchronizedDate" : 694738914.27802205
+    "_lastSynchronizedDate" : 694751686.757725
   },
   "subscriptionGroups" : [
     {
@@ -28,13 +28,13 @@
           ],
           "displayPrice" : "12.99",
           "familyShareable" : false,
-          "groupNumber" : 3,
+          "groupNumber" : 1,
           "internalID" : "6445321415",
           "introductoryOffer" : null,
           "localizations" : [
             {
               "description" : "Access premium features for one year",
-              "displayName" : "Premium Annually",
+              "displayName" : "Annually",
               "locale" : "en_CA"
             }
           ],
@@ -53,7 +53,7 @@
           ],
           "displayPrice" : "0.99",
           "familyShareable" : false,
-          "groupNumber" : 1,
+          "groupNumber" : 3,
           "internalID" : "6445321260",
           "introductoryOffer" : null,
           "localizations" : [
@@ -84,7 +84,7 @@
           "localizations" : [
             {
               "description" : "Access premium features for six months",
-              "displayName" : "Premium Semi-Annually",
+              "displayName" : "Semi-Annually",
               "locale" : "en_CA"
             }
           ],

@@ -1,9 +1,9 @@
 import SwiftUI
 
-struct CompetitionHistoryDateRangeSelector: View {
+struct CompetitionResultsDateRangeSelector: View {
     
-    let ranges: [CompetitionHistoryDateRange]
-    let select: (CompetitionHistoryDateRange) -> Void
+    let ranges: [CompetitionResultsDateRange]
+    let select: (CompetitionResultsDateRange) -> Void
     
     @Environment(\.colorScheme) private var colorScheme
     

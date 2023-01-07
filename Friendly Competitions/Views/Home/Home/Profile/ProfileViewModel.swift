@@ -29,7 +29,6 @@ final class ProfileViewModel: ObservableObject {
             .flatMapLatest(withUnretained: self) { strongSelf, user in
                 strongSelf.userManager
                     .update(with: user)
-                    .print()
                     .ignoreFailure()
             }
             .sink()

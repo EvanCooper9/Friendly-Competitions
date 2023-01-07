@@ -13,7 +13,7 @@ struct PaywallView: View {
                 Text("Friendly Competitions Preimum")
                     .font(.title2)
                     .frame(maxWidth: .infinity, alignment: .leading)
-                Text("Access premium features like extended competition history.")
+                Text("Access premium features like viewing extended competition results. Viewing the latest results for each competition is free.")
                     .foregroundColor(.secondaryLabel)
             }
             .padding(.top)
@@ -31,9 +31,6 @@ struct PaywallView: View {
                             Text(offer.product.title)
                                 .bold()
                                 .font(.callout)
-                            Text(offer.product.description)
-                                .font(.callout)
-                                .foregroundColor(.secondaryLabel)
                             Text(offer.product.price)
                         }
                         Spacer()
@@ -55,16 +52,21 @@ struct PaywallView: View {
             }
             
             Divider()
-                .padding(.vertical, 2)
+                .padding(.vertical)
             
-            Button(action: viewModel.purchaseTapped) {
-                Text("Purchase")
-                    .padding(.vertical, .small)
-                    .maxWidth(.infinity)
+            VStack(spacing: 20) {
+                Button(action: viewModel.purchaseTapped) {
+                    Text("Purchase")
+                        .padding(.vertical, .small)
+                        .maxWidth(.infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .padding(.horizontal)
+                
+                Button("Restore Purchases", action: viewModel.restorePurchasesTapped)
             }
-            .buttonStyle(.borderedProminent)
-            .padding(.horizontal)
         }
+        .withLoadingOverlay(isLoading: viewModel.loading)
         .analyticsScreen(name: "Paywall")
         .onChange(of: viewModel.dismiss) { _ in dismiss() }
         .fittedDetents()
@@ -93,6 +95,7 @@ struct PaywallView_Previews: PreviewProvider {
         ]
         storeKitManager.products = .just(products)
         storeKitManager.purchaseReturnValue = .just(())
+        storeKitManager.refreshPurchasedProductsReturnValue = .just(())
     }
     
     static var previews: some View {
