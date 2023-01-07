@@ -41,6 +41,9 @@ struct PremiumBanner: View {
 struct PremiumBanner_Previews: PreviewProvider {
     static var previews: some View {
         PremiumBanner()
+            .cornerRadius(10)
+            .shadow(color: .gray.opacity(0.25), radius: 10)
+            .padding()
     }
 }
 #endif

@@ -10,7 +10,6 @@ struct HomeView: View {
     @State private var presentPermissions = false
     @State private var presentNewCompetition = false
     @State private var presentSearchFriendsSheet = false
-    @AppStorage("competitionsFiltered") var competitionsFiltered = false
     
     var body: some View {
         NavigationStack(path: $viewModel.navigationDestinations) {
@@ -77,7 +76,7 @@ struct HomeView: View {
     private var competitions: some View {
         Section {
             ForEach(viewModel.competitions + viewModel.invitedCompetitions) { competition in
-                if competitionsFiltered ? competition.isActive : true {
+                if viewModel.competitionsFiltered ? competition.isActive : true {
                     NavigationLink(value: NavigationDestination.competition(competition)) {
                         CompetitionDetails(competition: competition, showParticipantCount: false, isFeatured: false)
                     }
@@ -85,13 +84,13 @@ struct HomeView: View {
             }
         } header: {
             HStack {
-                let text = competitionsFiltered ? "Active competitions" : "Competitions"
+                let text = viewModel.competitionsFiltered ? "Active competitions" : "Competitions"
                 Text(text).font(.title3)
                 Spacer()
                 Button {
-                    withAnimation { competitionsFiltered.toggle() }
+                    withAnimation { viewModel.competitionsFiltered.toggle() }
                 } label: {
-                    Image(systemName: "line.3.horizontal.decrease.circle\(competitionsFiltered ? ".fill" : "")")
+                    Image(systemName: "line.3.horizontal.decrease.circle\(viewModel.competitionsFiltered ? ".fill" : "")")
                         .font(.title2)
                 }
                 .disabled(viewModel.competitions.isEmpty)

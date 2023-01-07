@@ -53,7 +53,19 @@ jobs:
 
     - name: Homebrew
       run: brew bundle
-
+    
+    # - name: Test
+    #   run: "xcodebuild \
+    #     CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++ \
+    #     -derivedDataPath ios/build -UseModernBuildSystem=YES \
+    #     -workspace Friendly\ Competitions.xcworkspace \
+    #     -scheme Friendly\ Competitions \
+    #     -sdk iphonesimulator \
+    #     -configuration Debug \
+    #     -destination 'platform=iOS Simulator,name=iPhone 14,OS=16.2' \
+    #     test \
+    #     CODE_SIGNING_ALLOWED=NO"
+    
     - name: Fastlane
       run: bundle exec fastlane test
       env:
