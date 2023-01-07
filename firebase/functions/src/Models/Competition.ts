@@ -159,9 +159,9 @@ class Competition {
     }
 
     /**
-     * Record current standings in history
+     * Record current standings in results
      */
-    async recordHistory(): Promise<void> {
+    async recordResults(): Promise<void> {
         const firestore = getFirestore();
         const standingsRef = await firestore.collection(`competitions/${this.id}/standings`).get();
         const standings = standingsRef.docs.map(doc => new Standing(doc));
@@ -169,16 +169,16 @@ class Competition {
         const batch = firestore.batch();
         
         const end = moment(this.end).format(dateFormat);
-        const historyRef = firestore.doc(`competitions/${this.id}/history/${end}`);
-        const historyObj = {
+        const resultsRef = firestore.doc(`competitions/${this.id}/results/${end}`);
+        const resultsObj = {
             id: end, 
             start: moment(this.start).format(dateFormat), 
             end: end
         };
-        batch.set(historyRef, historyObj);
+        batch.set(resultsRef, resultsObj);
 
         standings.forEach(standing => {
-            const ref = firestore.doc(`competitions/${this.id}/history/${end}/standings/${standing.userId}`);
+            const ref = firestore.doc(`competitions/${this.id}/results/${end}/standings/${standing.userId}`);
             const obj = Object.assign({}, standing);
             batch.set(ref, obj);
         });

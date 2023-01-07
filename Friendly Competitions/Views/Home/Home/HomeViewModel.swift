@@ -23,6 +23,9 @@ final class HomeViewModel: ObservableObject {
     @Published private(set) var title = Bundle.main.name
     @Published private(set) var showDeveloper = false
     
+    @Published private(set) var showPremiumBanner = false
+    @Published var showPaywall = false
+    
     // MARK: - Private Properties
     
     @Injected(Container.appState) private var appState
@@ -30,9 +33,11 @@ final class HomeViewModel: ObservableObject {
     @Injected(Container.competitionsManager) private var competitionsManager
     @Injected(Container.friendsManager) private var friendsManager
     @Injected(Container.permissionsManager) private var permissionsManager
+    @Injected(Container.storeKitManager) private var storeKitManager
     @Injected(Container.userManager) private var userManager
     
-    private var cancellables = Cancellables()
+    @UserDefault("competitionsFiltered") var competitionsFiltered = false
+    @UserDefault("dismissedPremiumBanner") private var dismissedPremiumBanner = false
     
     // MARK: - Lifecycle
 
@@ -61,10 +66,10 @@ final class HomeViewModel: ObservableObject {
                         .map { [.competition($0)] }
                         .ignoreFailure()
                         .eraseToAnyPublisher()
-                case .competitionHistory(let id):
+                case .competitionResults(let id):
                     return strongSelf.competitionsManager.search(byID: id)
                         .unwrap()
-                        .map { [.competition($0), .competitionHistory($0)] }
+                        .map { [.competition($0), .competitionResults($0)] }
                         .ignoreFailure()
                         .eraseToAnyPublisher()
                 case .none:
@@ -96,9 +101,23 @@ final class HomeViewModel: ObservableObject {
             .requiresPermission
             .assign(to: &$requiresPermissions)
         
+        Publishers
+            .CombineLatest($dismissedPremiumBanner, storeKitManager.hasPremium)
+            .map { !$1 && !$1 }
+            .receive(on: RunLoop.main)
+            .assign(to: &$showPremiumBanner)
+        
         userManager.userPublisher
             .map { $0.name.ifEmpty(Bundle.main.name) }
             .assign(to: &$title)
+    }
+    
+    func purchaseTapped() {
+        showPaywall.toggle()
+    }
+    
+    func dismissPremiumBannerTapped() {
+        dismissedPremiumBanner.toggle()
     }
 }
 

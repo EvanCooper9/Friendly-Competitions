@@ -42,7 +42,7 @@ async function sendCompetitionCompleteNotifications(): Promise<void> {
         return Promise
             .all(notificationPromises)
             .then(async () => {
-                await competition.recordHistory();
+                await competition.recordResults();
                 await competition.updateRepeatingCompetition();
                 await competition.updateStandings();
             });

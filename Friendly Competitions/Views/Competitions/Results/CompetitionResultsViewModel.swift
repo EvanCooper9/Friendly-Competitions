@@ -4,12 +4,12 @@ import ECKit
 import Factory
 import Foundation
 
-final class CompetitionHistoryViewModel: ObservableObject {
+final class CompetitionResultsViewModel: ObservableObject {
 
     // MARK: - Public Properties
     
-    @Published private(set) var ranges = [CompetitionHistoryDateRange]()
-    @Published private(set) var dataPoints = [CompetitionHistoryDataPoint]()
+    @Published private(set) var ranges = [CompetitionResultsDateRange]()
+    @Published private(set) var dataPoints = [CompetitionResultsDataPoint]()
     @Published private(set) var locked = false
     @Published private(set) var loading = false
     @Published var showPaywall = false
@@ -34,29 +34,30 @@ final class CompetitionHistoryViewModel: ObservableObject {
         Publishers
             .CombineLatest3(
                 competitionsManager
-                    .history(for: competition.id)
+                    .results(for: competition.id)
                     .catchErrorJustReturn([]),
                 storeKitManager.hasPremium,
                 selectedIndex
             )
-            .map { history, hasPremium, selectedIndex in
-                history
+            .map { results, hasPremium, selectedIndex in
+                results
                     .sorted(by: \.end)
                     .reversed()
                     .enumerated()
                     .map { offset, event in
-                        CompetitionHistoryDateRange(
+                        CompetitionResultsDateRange(
                             start: event.start,
                             end: event.end,
                             selected: offset == selectedIndex,
-                            locked: offset == 0 ? false : !hasPremium
+                            locked: offset == 0 ? true : true // !hasPremium
                         )
                     }
             }
+            .receive(on: RunLoop.main)
             .assign(to: &$ranges)
         
         let currentRanges = $ranges
-            .compactMap { ranges -> (CompetitionHistoryDateRange, CompetitionHistoryDateRange?)?  in
+            .compactMap { ranges -> (CompetitionResultsDateRange, CompetitionResultsDateRange?)?  in
                 guard let currentIndex = ranges.firstIndex(where: \.selected) else { return nil }
                 if let previousIndex = currentIndex <= ranges.count - 2 ? currentIndex + 1 : nil {
                     return (ranges[currentIndex], ranges[previousIndex])
@@ -88,7 +89,7 @@ final class CompetitionHistoryViewModel: ObservableObject {
 
     // MARK: - Public Methods
     
-    func select(_ dateRange: CompetitionHistoryDateRange) {
+    func select(_ dateRange: CompetitionResultsDateRange) {
         guard let index = ranges.firstIndex(of: dateRange) else { return }
         selectedIndex.send(index)
     }
@@ -99,7 +100,7 @@ final class CompetitionHistoryViewModel: ObservableObject {
     
     // MARK: - Private Methods
     
-    private func standingsDataPoints(currentRange: CompetitionHistoryDateRange, previousRange: CompetitionHistoryDateRange?) -> AnyPublisher<[CompetitionHistoryDataPoint], Never> {
+    private func standingsDataPoints(currentRange: CompetitionResultsDateRange, previousRange: CompetitionResultsDateRange?) -> AnyPublisher<[CompetitionResultsDataPoint], Never> {
         let previousStandings: AnyPublisher<[Competition.Standing]?, Never> = {
             guard let previousRange else { return .just(nil) }
             return competitionsManager
@@ -115,8 +116,8 @@ final class CompetitionHistoryViewModel: ObservableObject {
         
         return Publishers
             .CombineLatest3(currentStandings, previousStandings, userManager.userPublisher)
-            .map { currentStandings, previousStandings, user -> [CompetitionHistoryDataPoint] in
-                var dataPoints = [CompetitionHistoryDataPoint]()
+            .map { currentStandings, previousStandings, user -> [CompetitionResultsDataPoint] in
+                var dataPoints = [CompetitionResultsDataPoint]()
 
                 if let standing = currentStandings.first(where: { $0.userId == user.id }) {
                     let previous = previousStandings?.first(where: { $0.userId == user.id })
@@ -146,7 +147,7 @@ final class CompetitionHistoryViewModel: ObservableObject {
             .eraseToAnyPublisher()
     }
     
-    private func scoringDataPoints(currentRange: CompetitionHistoryDateRange, previousRange: CompetitionHistoryDateRange?) -> AnyPublisher<[CompetitionHistoryDataPoint], Never> {
+    private func scoringDataPoints(currentRange: CompetitionResultsDateRange, previousRange: CompetitionResultsDateRange?) -> AnyPublisher<[CompetitionResultsDataPoint], Never> {
         switch competition.scoringModel {
         case .rawNumbers, .percentOfGoals:
             let previousActivitySummaries: AnyPublisher<[ActivitySummary]?, Never> = {

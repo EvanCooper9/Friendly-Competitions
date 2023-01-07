@@ -10,7 +10,7 @@ enum DeepLink: Equatable {
     
     case user(id: User.ID)
     case competition(id: Competition.ID)
-    case competitionHistory(id: Competition.ID)
+    case competitionResults(id: Competition.ID)
 
     init?(from url: URL) {
         let path = url.path
@@ -19,8 +19,8 @@ enum DeepLink: Equatable {
             return
         } else if path.hasPrefix("/" + Constants.competition) {
             let competitionID = url.pathComponents[2]
-            if path.hasSuffix("history") {
-                self = .competitionHistory(id: competitionID)
+            if path.hasSuffix("results") {
+                self = .competitionResults(id: competitionID)
                 return
             } else {
                 self = .competition(id: competitionID)
@@ -40,11 +40,11 @@ enum DeepLink: Equatable {
             return Constants.baseURL
                 .appendingPathComponent(Constants.competition)
                 .appendingPathComponent(id)
-        case .competitionHistory(let id):
+        case .competitionResults(let id):
             return Constants.baseURL
                 .appendingPathComponent(Constants.competition)
                 .appendingPathComponent(id)
-                .appendingPathComponent("history")
+                .appendingPathComponent("results")
         }
     }
 }
@@ -58,7 +58,7 @@ extension DeepLink: Sharable {
             text = "Add me in Friendly Competitions!"
         case .competition:
             text = "Compete against me in Friendly Competitions!"
-        case .competitionHistory:
+        case .competitionResults:
             return []
         }
         return [text, url.absoluteString]

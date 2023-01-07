@@ -16,15 +16,9 @@ struct CompetitionView: View {
         List {
             standings
             
-            if viewModel.showHistory {
-                history
+            if viewModel.showResults {
+                results
             }
-            
-            #if DEBUG
-            Section {
-                Button("Record history manually", action: viewModel.recordHistoryTapped)
-            }
-            #endif
             
             if viewModel.pendingParticipants.isNotEmpty {
                 pendingInvites
@@ -99,9 +93,9 @@ struct CompetitionView: View {
         }
     }
     
-    private var history: some View {
+    private var results: some View {
         Section {
-            NavigationLink("History", value: NavigationDestination.competitionHistory(viewModel.competition))
+            NavigationLink("Results", value: NavigationDestination.competitionResults(viewModel.competition))
         }
     }
 

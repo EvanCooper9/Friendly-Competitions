@@ -45,7 +45,7 @@ fileprivate enum Dependencies {
         competitionsManager.pendingParticipants = .just([:])
         competitionsManager.appOwnedCompetitions = .just([.mockPublic])
         competitionsManager.searchReturnValue = .just([.mockPublic, .mock])
-        competitionsManager.historyForReturnValue = .just([])
+        competitionsManager.resultsForReturnValue = .just([])
         competitionsManager.standingsForEndingOnReturnValue = .just([])
         
         friendsManager.friends = .just([])
@@ -54,7 +54,15 @@ fileprivate enum Dependencies {
 
         storageManager.dataForReturnValue = .just(.init())
         
-        storeKitManager.products = .just([])
+        let products: [FriendlyCompetitionsProduct] = [
+            .init(id: "1", price: "$0.99/month", title: "Monthly", description: "Access premium features for one month"),
+            .init(id: "2", price: "$1.99/six months", title: "Semi-Annually", description: "Access premium features for six months"),
+            .init(id: "3", price: "$2.99/year", title: "Yearly", description: "Access premium features for one year")
+        ]
+        storeKitManager.products = .just(products)
+        storeKitManager.purchases = .just([])
+        storeKitManager.purchaseReturnValue = .just(())
+        storeKitManager.refreshPurchasedProductsReturnValue = .just(())
         
         userManager.user = .evan
         userManager.userPublisher = .just(.evan)

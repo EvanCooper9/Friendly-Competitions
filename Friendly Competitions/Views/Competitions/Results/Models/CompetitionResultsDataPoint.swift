@@ -1,4 +1,4 @@
-enum CompetitionHistoryDataPoint: Identifiable {
+enum CompetitionResultsDataPoint: Identifiable {
     
     struct Standing {
         let rank: Int

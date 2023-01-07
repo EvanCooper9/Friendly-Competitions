@@ -2,6 +2,7 @@ import Combine
 import CombineExt
 import ECKit
 import Factory
+import Foundation
 
 final class PaywallViewModel: ObservableObject {
     
@@ -15,6 +16,7 @@ final class PaywallViewModel: ObservableObject {
     // MARK: - Public Properties
     
     @Published private(set) var offers = [Offer]()
+    @Published private(set) var loading = false
     @Published private(set) var dismiss = false
 
     // MARK: - Private Properties
@@ -24,6 +26,7 @@ final class PaywallViewModel: ObservableObject {
     
     private let selectedIndex = CurrentValueSubject<Int, Never>(0)
     private let purchaseSubject = PassthroughSubject<Void, Never>()
+    private let restoreSubject = PassthroughSubject<Void, Never>()
 
     private var cancellables = Cancellables()
 
@@ -50,9 +53,25 @@ final class PaywallViewModel: ObservableObject {
             .flatMapLatest(withUnretained: self) { strongSelf, offer in
                 strongSelf.storeKitManager
                     .purchase(offer.product)
+                    .isLoading { strongSelf.loading = $0 }
                     .ignoreFailure()
             }
             .sink(withUnretained: self) { $0.dismiss = true }
+            .store(in: &cancellables)
+        
+        restoreSubject
+            .flatMapLatest(withUnretained: self) { strongSelf in
+                strongSelf.storeKitManager
+                    .refreshPurchasedProducts()
+                    .isLoading { strongSelf.loading = $0 }
+                    .ignoreFailure()
+            }
+            .flatMapLatest(withUnretained: self) { $0.storeKitManager.hasPremium }
+            .receive(on: RunLoop.main)
+            .sink(withUnretained: self) { strongSelf, hasPremium in
+                guard hasPremium else { return }
+                strongSelf.dismiss = true
+            }
             .store(in: &cancellables)
     }
 
@@ -66,5 +85,9 @@ final class PaywallViewModel: ObservableObject {
     
     func purchaseTapped() {
         purchaseSubject.send()
+    }
+    
+    func restorePurchasesTapped() {
+        restoreSubject.send()
     }
 }

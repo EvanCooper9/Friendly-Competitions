@@ -542,25 +542,25 @@ class CompetitionsManagingMock: CompetitionsManaging {
         }
     }
 
-    //MARK: - history
+    //MARK: - results
 
-    var historyForCallsCount = 0
-    var historyForCalled: Bool {
-        return historyForCallsCount > 0
+    var resultsForCallsCount = 0
+    var resultsForCalled: Bool {
+        return resultsForCallsCount > 0
     }
-    var historyForReceivedCompetitionID: Competition.ID?
-    var historyForReceivedInvocations: [Competition.ID] = []
-    var historyForReturnValue: AnyPublisher<[CompetitionHistory], Error>!
-    var historyForClosure: ((Competition.ID) -> AnyPublisher<[CompetitionHistory], Error>)?
+    var resultsForReceivedCompetitionID: Competition.ID?
+    var resultsForReceivedInvocations: [Competition.ID] = []
+    var resultsForReturnValue: AnyPublisher<[CompetitionResult], Error>!
+    var resultsForClosure: ((Competition.ID) -> AnyPublisher<[CompetitionResult], Error>)?
 
-    func history(for competitionID: Competition.ID) -> AnyPublisher<[CompetitionHistory], Error> {
-        historyForCallsCount += 1
-        historyForReceivedCompetitionID = competitionID
-        historyForReceivedInvocations.append(competitionID)
-        if let historyForClosure = historyForClosure {
-            return historyForClosure(competitionID)
+    func results(for competitionID: Competition.ID) -> AnyPublisher<[CompetitionResult], Error> {
+        resultsForCallsCount += 1
+        resultsForReceivedCompetitionID = competitionID
+        resultsForReceivedInvocations.append(competitionID)
+        if let resultsForClosure = resultsForClosure {
+            return resultsForClosure(competitionID)
         } else {
-            return historyForReturnValue
+            return resultsForReturnValue
         }
     }
 
@@ -917,6 +917,24 @@ class StoreKitManagingMock: StoreKitManaging {
             return purchaseClosure(product)
         } else {
             return purchaseReturnValue
+        }
+    }
+
+    //MARK: - refreshPurchasedProducts
+
+    var refreshPurchasedProductsCallsCount = 0
+    var refreshPurchasedProductsCalled: Bool {
+        return refreshPurchasedProductsCallsCount > 0
+    }
+    var refreshPurchasedProductsReturnValue: AnyPublisher<Void, Error>!
+    var refreshPurchasedProductsClosure: (() -> AnyPublisher<Void, Error>)?
+
+    func refreshPurchasedProducts() -> AnyPublisher<Void, Error> {
+        refreshPurchasedProductsCallsCount += 1
+        if let refreshPurchasedProductsClosure = refreshPurchasedProductsClosure {
+            return refreshPurchasedProductsClosure()
+        } else {
+            return refreshPurchasedProductsReturnValue
         }
     }
 

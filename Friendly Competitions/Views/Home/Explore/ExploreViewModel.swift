@@ -24,7 +24,6 @@ final class ExploreViewModel: ObservableObject {
             .flatMapLatest(withUnretained: self) { strongSelf, searchText -> AnyPublisher<[Competition], Never> in
                 guard !searchText.isEmpty else { return .just([]) }
                 return strongSelf.competitionsManager.search(searchText)
-                    .print()
                     .isLoading { strongSelf.loading = $0 }
                     .ignoreFailure()
             }

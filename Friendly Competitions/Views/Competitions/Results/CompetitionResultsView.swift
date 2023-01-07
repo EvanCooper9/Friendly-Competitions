@@ -2,9 +2,9 @@ import ECKit
 import SwiftUI
 import SwiftUIX
 
-struct CompetitionHistoryView: View {
+struct CompetitionResultsView: View {
 
-    @StateObject private var viewModel: CompetitionHistoryViewModel
+    @StateObject private var viewModel: CompetitionResultsViewModel
     
     init(competition: Competition) {
         _viewModel = .init(wrappedValue: .init(competition: competition))
@@ -12,7 +12,7 @@ struct CompetitionHistoryView: View {
     
     var body: some View {
         ScrollView {
-            CompetitionHistoryDateRangeSelector(
+            CompetitionResultsDateRangeSelector(
                 ranges: viewModel.ranges,
                 select: viewModel.select
             )
@@ -33,30 +33,30 @@ struct CompetitionHistoryView: View {
             }
         }
         .background(Color.listBackground)
-        .navigationTitle("History")
+        .navigationTitle("Results")
         .sheet(isPresented: $viewModel.showPaywall, content: PaywallView.init)
-        .registerScreenView(name: "History")
+        .registerScreenView(name: "Results")
     }
     
     private var lockedView: some View {
         VStack(alignment: .leading, spacing: 15) {
-            Text("Looking further back requires Friendly Competitions Premium")
+            Text("You need Friendly Competitions Premium to see older results")
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .font(.title)
-            Text("Please consider purchasing. All proceeds go towards the cost of running Friendly Competitions.")
+            Text("You still have access to the earliest results for every competition")
                 .foregroundColor(.secondaryLabel)
-            Button("Purchase", action: viewModel.purchaseTapped)
-                .buttonStyle(.borderedProminent)
+            PremiumBanner()
+                .cornerRadius(10)
         }
         .padding(.horizontal, 20)
     }
 }
 
 #if DEBUG
-struct CompetitionHistoryView_Previews: PreviewProvider {
+struct CompetitionResultsView_Previews: PreviewProvider {
     
     private static func setupMocks() {
-        let history: [CompetitionHistory] = [
+        let results: [CompetitionResult] = [
             .init(id: "1", start: .now.advanced(by: -7.days), end: .now),
             .init(id: "2", start: .now.advanced(by: -14.days), end: .now.advanced(by: -8.days)),
             .init(id: "3", start: .now.advanced(by: -21.days), end: .now.advanced(by: -15.days)),
@@ -64,7 +64,7 @@ struct CompetitionHistoryView_Previews: PreviewProvider {
             .init(id: "5", start: .now.advanced(by: -35.days), end: .now.advanced(by: -29.days)),
             .init(id: "5", start: .now.advanced(by: -42.days), end: .now.advanced(by: -43.days))
         ]
-        competitionsManager.historyForReturnValue = .just(history)
+        competitionsManager.resultsForReturnValue = .just(results)
         
         let stats: [Competition.Standing] = [
             .init(rank: 1, userId: User.evan.id, points: 300),
@@ -78,7 +78,7 @@ struct CompetitionHistoryView_Previews: PreviewProvider {
     }
     
     static var previews: some View {
-        CompetitionHistoryView(competition: .mock)
+        CompetitionResultsView(competition: .mock)
             .embeddedInNavigationView()
             .setupMocks(setupMocks)
     }

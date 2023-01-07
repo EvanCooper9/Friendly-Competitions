@@ -24,7 +24,7 @@ final class CompetitionViewModel: ObservableObject {
     @Published var pendingParticipants = [CompetitionParticipantRow.Config]()
     @Published var actions = [CompetitionViewAction]()
     @Published var showInviteFriend = false
-    @Published private(set) var showHistory = false
+    @Published private(set) var showResults = false
     @Published private(set) var loading = false
     
     // MARK: - Private Properties
@@ -42,7 +42,7 @@ final class CompetitionViewModel: ObservableObject {
     private let confirmActionSubject = PassthroughSubject<Void, Error>()
     private let performActionSubject = PassthroughSubject<CompetitionViewAction, Error>()
     private let saveEditsSubject = PassthroughSubject<Void, Error>()
-    private let recordHistorySubject = PassthroughSubject<Void, Never>()
+    private let recordResultsSubject = PassthroughSubject<Void, Never>()
     private var cancellables = Cancellables()
     
     // MARK: - Lifecycle
@@ -55,10 +55,10 @@ final class CompetitionViewModel: ObservableObject {
             .map { $0.id == competition.owner }
             .assign(to: &$canEdit)
         
-        competitionsManager.history(for: competition.id)
+        competitionsManager.results(for: competition.id)
             .map(\.isNotEmpty)
             .ignoreFailure()
-            .assign(to: &$showHistory)
+            .assign(to: &$showResults)
         
         $editing
             .map { $0  ? "Cancel" : "Edit" }
@@ -201,16 +201,6 @@ final class CompetitionViewModel: ObservableObject {
             }
             .sink()
             .store(in: &cancellables)
-        
-        recordHistorySubject
-            .flatMapLatest(withUnretained: self) { strongSelf in
-                strongSelf.functions.httpsCallable("recordHistoryManually")
-                    .call(["competitionID": competition.id])
-                    .mapToVoid()
-                    .ignoreFailure()
-            }
-            .sink()
-            .store(in: &cancellables)
     }
     
     // MARK: - Public Methods
@@ -236,9 +226,5 @@ final class CompetitionViewModel: ObservableObject {
     
     func perform(_ action: CompetitionViewAction) {
         performActionSubject.send(action)
-    }
-    
-    func recordHistoryTapped() {
-        recordHistorySubject.send()
     }
 }

@@ -12,6 +12,7 @@ protocol StoreKitManaging {
     var products: AnyPublisher<[FriendlyCompetitionsProduct], Never> { get }
     var purchases: AnyPublisher<[FriendlyCompetitionsProduct], Never> { get }
     func purchase(_ product: FriendlyCompetitionsProduct) -> AnyPublisher<Void, Error>
+    func refreshPurchasedProducts() -> AnyPublisher<Void, Error>
 }
 
 extension StoreKitManaging {
@@ -33,6 +34,8 @@ final class StoreKitManager: StoreKitManaging {
     
     // MARK: - Private Properties
     
+    private var storeKitProducts = Set<Product>()
+    
     @Injected(Container.analyticsManager) private var analyticsManager
     @Injected(Container.database) private var database
     @Injected(Container.userManager) private var userManager
@@ -53,15 +56,8 @@ final class StoreKitManager: StoreKitManaging {
         }
         listenForTransactions()
         
-        database.collection("products")
-            .getDocuments()
-            .map(\.documents)
-            .mapMany(\.documentID)
-            .sink(withUnretained: self) { strongSelf, productIDs in
-                Task {
-                    try await strongSelf.refreshProducts(with: productIDs)
-                }
-            }
+        refreshPurchasedProducts()
+            .sink()
             .store(in: &cancellables)
     }
     
@@ -89,9 +85,11 @@ final class StoreKitManager: StoreKitManaging {
             .flatMapAsync { [weak self] userAppStoreID in
                 guard let strongSelf = self else { return }
                 
-                let result = try await Product.products(for: [product.id])
-                    .first?
-                    .purchase(options: [.appAccountToken(userAppStoreID)])
+                var skProduct = strongSelf.storeKitProducts.first(where: { $0.id == product.id })
+                if skProduct == nil {
+                    skProduct = try await Product.products(for: [product.id]).first
+                }
+                let result = try await skProduct?.purchase(options: [.appAccountToken(userAppStoreID)])
                 
                 switch result {
                 case .success(let verificationResult):
@@ -121,15 +119,25 @@ final class StoreKitManager: StoreKitManaging {
             }
     }
     
+    func refreshPurchasedProducts() -> AnyPublisher<Void, Error> {
+        database.collection("products")
+            .getDocuments()
+            .flatMapAsync { [weak self] result in
+                let productIDs = result.documents.map(\.documentID)
+                try await self?.refreshProducts(with: productIDs)
+            }
+            .eraseToAnyPublisher()
+    }
+    
     // MARK: - Private Methods
     
     private func refreshProducts(with productIDs: [String]) async throws {
         let products = try await Product
             .products(for: productIDs)
             .sorted(by: \.price)
-            .map(FriendlyCompetitionsProduct.init)
         
-        productsSubject.send(products)
+        products.forEach { storeKitProducts.insert($0) }
+        productsSubject.send(products.map(FriendlyCompetitionsProduct.init))
     }
     
     private func refreshPurchasedProducts() async throws {
@@ -155,7 +163,7 @@ final class StoreKitManager: StoreKitManaging {
         }
     }
     
-    private func handle(updatedTransaction verificationResult: VerificationResult<Transaction>) {
+    private func handle(updatedTransaction verificationResult: VerificationResult<StoreKit.Transaction>) {
         // Ignore unverified transactions.
         guard case .verified(let transaction) = verificationResult,
               let product = productsSubject.value.first(where: { $0.id == transaction.productID })
@@ -177,7 +185,7 @@ final class StoreKitManager: StoreKitManaging {
         }
     }
     
-    private func logUnverifiedTransaction(_ unverifiedTransaction: Transaction, _ verificationError: Error) {
+    private func logUnverifiedTransaction(_ unverifiedTransaction: StoreKit.Transaction, _ verificationError: Error) {
         let crashlytics = Crashlytics.crashlytics()
         crashlytics.record(exceptionModel: .init(name: "Unverified transaction", reason: unverifiedTransaction.productID))
         crashlytics.record(error: verificationError)

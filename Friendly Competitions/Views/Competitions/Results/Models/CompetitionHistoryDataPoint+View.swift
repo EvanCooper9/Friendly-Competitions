@@ -1,7 +1,7 @@
 import ECKit
 import SwiftUI
 
-extension CompetitionHistoryDataPoint {
+extension CompetitionResultsDataPoint {
     
     @ViewBuilder
     var view: some View {
@@ -165,9 +165,9 @@ extension Int {
 }
 
 #if DEBUG
-struct CompetitionHistoryDataPoint_Previews: PreviewProvider {
+struct CompetitionResultsDataPoint_Previews: PreviewProvider {
     
-    private static let data: [CompetitionHistoryDataPoint] = [
+    private static let data: [CompetitionResultsDataPoint] = [
         .rank(current: 3, previous: 1),
 //        .rank(current: 5, previous: nil),
         .points(current: 500, previous: 447),

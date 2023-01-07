@@ -15,6 +15,9 @@ struct HomeView: View {
     var body: some View {
         NavigationStack(path: $viewModel.navigationDestinations) {
             List {
+                if viewModel.showPremiumBanner {
+                    premium
+                }
                 Group {
                     activitySummary
                     competitions
@@ -35,14 +38,28 @@ struct HomeView: View {
                     }
                 }
             }
-            .sheet(isPresented: $presentAbout) { About() }
+            .sheet(isPresented: $presentAbout, content: About.init)
             .sheet(isPresented: $presentSearchFriendsSheet) { InviteFriendsView(action: .addFriend) }
-            .sheet(isPresented: $presentNewCompetition) { NewCompetitionView() }
-            .sheet(isPresented: $viewModel.requiresPermissions) { PermissionsView() }
-            .sheet(isPresented: $presentDeveloper) { DeveloperView() }
+            .sheet(isPresented: $presentNewCompetition, content: NewCompetitionView.init)
+            .sheet(isPresented: $viewModel.requiresPermissions, content: PermissionsView.init)
+            .sheet(isPresented: $presentDeveloper, content: DeveloperView.init)
+            .sheet(isPresented: $viewModel.showPaywall, content: PaywallView.init)
             .navigationDestination(for: NavigationDestination.self) { $0.view }
             .registerScreenView(name: "Home")
         }
+    }
+    
+    private var premium: some View {
+        Section {
+            PremiumBanner().overlay {
+                Button(systemImage: .xmark, action: viewModel.dismissPremiumBannerTapped)
+                    .foregroundColor(.gray.opacity(0.5))
+                    .padding()
+                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
+                    .buttonStyle(.plain)
+            }
+        }
+        .listRowInsets(.zero)
     }
     
     private var activitySummary: some View {

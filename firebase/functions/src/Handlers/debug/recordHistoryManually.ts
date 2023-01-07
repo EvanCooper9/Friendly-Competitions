@@ -9,7 +9,7 @@ async function recordHistoryManually(competitionID: string): Promise<void> {
     const firestore = getFirestore();
     const competitionRef = await firestore.doc(`competitions/${competitionID}`).get();
     const competition = new Competition(competitionRef);
-    await competition.recordHistory();
+    await competition.recordResults();
 }
 
 export {
