@@ -92,18 +92,21 @@ function handleFriendRequest(callerID: string, requesteeID: string, action: Frie
         .then(result => {
             const caller = result[0];
             const requestee = result[1];
+            const url = `https://friendly-competitions.app/user/${caller.id}`;
             switch (action) {
             case FriendRequestAction.create:
                 return sendNotificationsToUser(
                     requestee,
                     "Friendly Competitions",
-                    `${caller.name} added you as a friend`
+                    `${caller.name} added you as a friend`,
+                    url
                 );
             case FriendRequestAction.accept:
                 return sendNotificationsToUser(
                     requestee,
                     "Friendly Competitions",
-                    `${caller.name} accepted your friend request`
+                    `${caller.name} accepted your friend request`,
+                    url
                 );
             case FriendRequestAction.decline:
                 return Promise.resolve();

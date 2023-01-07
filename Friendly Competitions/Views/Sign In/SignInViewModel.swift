@@ -56,14 +56,14 @@ final class SignInViewModel: ObservableObject {
             .store(in: &cancellables)
 
         signInSubject
-            .setFailureType(to: Error.self)
             .flatMapLatest(withUnretained: self) { strongSelf, signInMethod in
                 strongSelf.authenticationManager
                     .signIn(with: signInMethod)
                     .isLoading { strongSelf.loading = $0 }
+                    .mapToResult()
                     .eraseToAnyPublisher()
             }
-            .mapToResult()
+            .receive(on: RunLoop.main)
             .sink(withUnretained: self, receiveValue: { strongSelf, result in
                 switch result {
                 case .failure(let error):

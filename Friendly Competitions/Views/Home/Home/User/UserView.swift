@@ -17,8 +17,8 @@ struct UserView: View {
                 ActivitySummaryInfoView(activitySummary: viewModel.activitySummary)
             }
 
-            Section("Stats") {
-                StatisticsView(statistics: viewModel.statistics)
+            Section("Medals") {
+                MedalsView(statistics: viewModel.medals)
             }
 
             Section {

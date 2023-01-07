@@ -9,6 +9,25 @@ struct ActivitySummary: Codable, Equatable {
     let appleStandHoursGoal: Double
     let date: Date
     var userID: User.ID?
+    
+    var closed: Bool {
+        activeEnergyBurned >= activeEnergyBurnedGoal &&
+        appleExerciseTime >= appleExerciseTimeGoal &&
+        appleStandHours >= appleStandHoursGoal
+    }
+    
+    func points(from scoringModel: Competition.ScoringModel) -> Double {
+        switch scoringModel {
+        case .percentOfGoals:
+            return (activeEnergyBurned / activeEnergyBurnedGoal) +
+                (appleExerciseTime / appleStandHoursGoal) +
+                (appleStandHours / appleStandHoursGoal)
+        case .rawNumbers:
+            return activeEnergyBurned + appleExerciseTime + appleStandHours
+        case .workout:
+            return 0
+        }
+    }
 }
 
 extension ActivitySummary {

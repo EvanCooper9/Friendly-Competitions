@@ -1,6 +1,6 @@
 import HealthKit
 
-enum WorkoutMetric: String, CaseIterable, Codable {
+enum WorkoutMetric: String, CaseIterable, Codable, Hashable {
     case distance
     case heartRate
     case steps

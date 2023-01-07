@@ -12,7 +12,7 @@ struct CompetitionDetails: View {
     @StateObject private var viewModel: CompetitionDetailsViewModel
     
     init(competition: Competition, showParticipantCount: Bool, isFeatured: Bool) {
-        _viewModel = .init(wrappedValue: CompetitionDetailsViewModel(competition: competition))
+        _viewModel = .init(wrappedValue: .init(competition: competition))
         self.competition = competition
         self.showParticipantCount = showParticipantCount
         self.isFeatured = isFeatured
@@ -47,9 +47,6 @@ struct CompetitionDetails: View {
         }
         .padding(.vertical, 2)
         .contentShape(Rectangle())
-        .withNavigationLink {
-            CompetitionView(competition: competition)
-        }
     }
     
     private var subtitleColor: Color {
@@ -58,6 +55,7 @@ struct CompetitionDetails: View {
     }
 }
 
+#if DEBUG
 struct CompetitionDetails_Previews: PreviewProvider {
 
     private static func setupMocks() {
@@ -77,3 +75,4 @@ struct CompetitionDetails_Previews: PreviewProvider {
         .setupMocks(setupMocks)
     }
 }
+#endif

@@ -15,7 +15,6 @@ struct FeaturedCompetition: View {
                 }
             }
             .overlay {
-                // has navigation link already
                 CompetitionDetails(competition: competition, showParticipantCount: true, isFeatured: true)
                     .padding(.vertical, 8)
                     .padding(.horizontal)

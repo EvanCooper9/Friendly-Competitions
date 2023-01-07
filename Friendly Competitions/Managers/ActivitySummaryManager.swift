@@ -11,6 +11,8 @@ import HealthKit
 // sourcery: AutoMockable
 protocol ActivitySummaryManaging {
     var activitySummary: AnyPublisher<ActivitySummary?, Never> { get }
+    
+    func activitySummaries(in dateInterval: DateInterval) -> AnyPublisher<[ActivitySummary], Error>
     func update() -> AnyPublisher<Void, Error>
 }
 
@@ -80,6 +82,20 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
     }
 
     // MARK: - Public Methods
+    
+    func activitySummaries(in dateInterval: DateInterval) -> AnyPublisher<[ActivitySummary], Error> {
+        let subject = PassthroughSubject<[ActivitySummary], Error>()
+        let query = HKActivitySummaryQuery(predicate: dateInterval.activitySummaryPredicate) { query, hkActivitySummaries, error in
+            if let error {
+                subject.send(completion: .failure(error))
+                return
+            }
+            subject.send(hkActivitySummaries?.map(\.activitySummary) ?? [])
+            subject.send(completion: .finished)
+        }
+        self.healthKitManager.execute(query)
+        return subject.eraseToAnyPublisher()
+    }
 
     func update() -> AnyPublisher<Void, Error> {
         uploadFinished
@@ -94,20 +110,10 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
         competitionsManager.competitions
             .filterMany(\.isActive)
             .map(\.dateInterval)
-            .flatMap { [weak self] dateInterval -> AnyPublisher<[ActivitySummary], Error> in
-                guard let self = self else { return .never() }
-                let subject = PassthroughSubject<[ActivitySummary], Error>()
-                let query = HKActivitySummaryQuery(predicate: dateInterval.activitySummaryPredicate) { query, hkActivitySummaries, error in
-                    if let error {
-                        subject.send(completion: .failure(error))
-                        return
-                    }
-                    subject.send(hkActivitySummaries?.map(\.activitySummary) ?? [])
-                }
-                self.healthKitManager.execute(query)
-                return subject.eraseToAnyPublisher()
+            .flatMapLatest(withUnretained: self) { strongSelf, dateInterval in
+                strongSelf.activitySummaries(in: dateInterval)
+                    .catchErrorJustReturn([])
             }
-            .ignoreFailure()
             .eraseToAnyPublisher()
     }
 }

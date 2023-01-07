@@ -44,3 +44,7 @@ extension PostDecoded: Equatable where Value: Equatable {
         lhs.wrappedValue == rhs.wrappedValue
     }
 }
+
+// MARK: - Hashable
+
+extension PostDecoded: Hashable where Value: Hashable {}

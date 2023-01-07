@@ -1,14 +1,15 @@
 import Foundation
 
-struct User: Codable, Equatable, Identifiable {
+struct User: Codable, Equatable, Hashable, Identifiable {
     let id: String
+    var appStoreID: UUID?
     let email: String
     let name: String
     var friends = [String]()
     var incomingFriendRequests = [User.ID]()
     var outgoingFriendRequests = [User.ID]()
     var notificationTokens: [String]? = []
-    var statistics: Statistics? = .zero
+    var statistics: Medals? = .zero
 
     var searchable: Bool? = true
     var showRealName: Bool? = true

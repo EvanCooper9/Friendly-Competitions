@@ -8,7 +8,7 @@ final class UserViewModel: ObservableObject {
     @Published var title: String
     @Published var activitySummary: ActivitySummary?
     @Published var showDeleteConfirmation = false
-    @Published var statistics: User.Statistics
+    @Published var medals: User.Medals
     @Published var actions = [UserViewAction]()
     @Published var confirmationRequired = false
     @Published var loading = false
@@ -30,7 +30,7 @@ final class UserViewModel: ObservableObject {
     
     init(user: User) {
         title = user.name
-        statistics = user.statistics ?? .zero
+        medals = user.statistics ?? .zero
         
         friendsManager.friendActivitySummaries
             .compactMap { $0[user.id] }

@@ -4,7 +4,7 @@ import ECKit
 import Factory
 import Foundation
 
-final class DashboardViewModel: ObservableObject {
+final class HomeViewModel: ObservableObject {
     
     struct FriendRow: Equatable, Identifiable {
         var id: String { "\(user.id) - \(isInvitation)" }
@@ -13,21 +13,26 @@ final class DashboardViewModel: ObservableObject {
         let isInvitation: Bool
     }
     
+    @Published var navigationDestinations = [NavigationDestination]()
+    
     @Published private(set) var activitySummary: ActivitySummary?
     @Published private(set) var competitions = [Competition]()
-    @Published private(set) var friends = [FriendRow]()
+    @Published private(set) var friendRows = [FriendRow]()
     @Published private(set) var invitedCompetitions = [Competition]()
     @Published var requiresPermissions = false
     @Published private(set) var title = Bundle.main.name
     @Published private(set) var showDeveloper = false
     
     // MARK: - Private Properties
-     
+    
+    @Injected(Container.appState) private var appState
     @Injected(Container.activitySummaryManager) private var activitySummaryManager
     @Injected(Container.competitionsManager) private var competitionsManager
     @Injected(Container.friendsManager) private var friendsManager
     @Injected(Container.permissionsManager) private var permissionsManager
     @Injected(Container.userManager) private var userManager
+    
+    private var cancellables = Cancellables()
     
     // MARK: - Lifecycle
 
@@ -40,37 +45,52 @@ final class DashboardViewModel: ObservableObject {
             .map { ["evan.cooper@rogers.com", "evancmcooper@gmail.com"].contains($0.email) }
             .assign(to: &$showDeveloper)
         #endif
+        
+        appState.deepLink
+            .flatMapLatest(withUnretained: self) { strongSelf, deepLink -> AnyPublisher<[NavigationDestination], Never> in
+                switch deepLink {
+                case .user(let id):
+                    return strongSelf.friendsManager.user(withId: id)
+                        .unwrap()
+                        .map { [.user($0)] }
+                        .ignoreFailure()
+                        .eraseToAnyPublisher()
+                case .competition(let id):
+                    return strongSelf.competitionsManager.search(byID: id)
+                        .unwrap()
+                        .map { [.competition($0)] }
+                        .ignoreFailure()
+                        .eraseToAnyPublisher()
+                case .competitionHistory(let id):
+                    return strongSelf.competitionsManager.search(byID: id)
+                        .unwrap()
+                        .map { [.competition($0), .competitionHistory($0)] }
+                        .ignoreFailure()
+                        .eraseToAnyPublisher()
+                case .none:
+                    return .just([])
+                }
+            }
+            .assign(to: &$navigationDestinations)
 
         activitySummaryManager.activitySummary.assign(to: &$activitySummary)
         competitionsManager.competitions.assign(to: &$competitions)
         competitionsManager.invitedCompetitions.assign(to: &$invitedCompetitions)
         
-        let friendRequests = friendsManager.friendRequests
-            .map { friendRequests in
-                friendRequests.map { friendRequest in
-                    FriendRow(
-                        user: friendRequest,
-                        activitySummary: nil,
-                        isInvitation: true
-                    )
-                }
-            }
-
-        let friends = friendsManager.friends
+        Publishers
+            .CombineLatest(friendsManager.friends, friendsManager.friendRequests)
+            .map { $0.with(false) + $1.with(true) }
             .combineLatest(friendsManager.friendActivitySummaries)
-            .map { friends, activitySummaries in
-                friends.map { friend in
+            .map { models, activitySummaries in
+                models.map { friend, isInvitation in
                     FriendRow(
                         user: friend,
                         activitySummary: activitySummaries[friend.id],
-                        isInvitation: false
+                        isInvitation: isInvitation
                     )
                 }
             }
-        
-        Publishers.CombineLatest(friends, friendRequests)
-            .map { $0 + $1 }
-            .assign(to: &$friends)
+            .assign(to: &$friendRows)
 
         permissionsManager
             .requiresPermission
@@ -79,5 +99,11 @@ final class DashboardViewModel: ObservableObject {
         userManager.userPublisher
             .map { $0.name.ifEmpty(Bundle.main.name) }
             .assign(to: &$title)
+    }
+}
+
+private extension Array {
+    func with<T>(_ value: T) -> [(Element, T)] {
+        map { ($0, value) }
     }
 }

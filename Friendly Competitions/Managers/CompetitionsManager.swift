@@ -5,6 +5,7 @@ import Factory
 import Firebase
 import FirebaseFirestore
 import FirebaseFunctionsCombineSwift
+import Foundation
 import UIKit
 
 // sourcery: AutoMockable
@@ -26,6 +27,9 @@ protocol CompetitionsManaging {
     func update(_ competition: Competition) -> AnyPublisher<Void, Error>
     func search(_ searchText: String) -> AnyPublisher<[Competition], Error>
     func search(byID competitionID: Competition.ID) -> AnyPublisher<Competition?, Error>
+    
+    func history(for competitionID: Competition.ID) -> AnyPublisher<[CompetitionHistory], Error>
+    func standings(for competitionID: Competition.ID, endingOn end: Date) -> AnyPublisher<[Competition.Standing], Error>
 }
 
 final class CompetitionsManager: CompetitionsManaging {
@@ -64,6 +68,8 @@ final class CompetitionsManager: CompetitionsManaging {
     @Injected(Container.functions) private var functions
     @Injected(Container.userManager) private var userManager
     @LazyInjected(Container.workoutManager) private var workoutManager
+    
+    private var historyCache = [Competition.ID: [Competition.Standing]]()
 
     private var updateTask: Task<Void, Error>? {
         willSet { updateTask?.cancel() }
@@ -176,8 +182,11 @@ final class CompetitionsManager: CompetitionsManaging {
             .getDocuments()
             .map(\.documents)
             .filterMany { document in
-                guard let searchResult = try? document.decoded(as: SearchResult.self) else { return false }
-                return searchResult.name.localizedCaseInsensitiveContains(searchText)
+                guard let searchResult = try? document.data(as: SearchResult.self) else { return false }
+                return searchResult.name
+                    .components(separatedBy: " ")
+                    .contains { $0.starts(with: searchText) }
+                    
             }
             .compactMapMany { try? $0.decoded(as: Competition.self) }
             .eraseToAnyPublisher()
@@ -186,7 +195,8 @@ final class CompetitionsManager: CompetitionsManaging {
     func search(byID competitionID: Competition.ID) -> AnyPublisher<Competition?, Error> {
         database.document("competitions/\(competitionID)")
             .getDocument()
-            .decoded(as: Competition.self)
+            .tryMap { try $0.data(as: Competition.self) }
+            .eraseToAnyPublisher()
     }
     
     func update(_ competition: Competition) -> AnyPublisher<Void, Error> {
@@ -195,6 +205,23 @@ final class CompetitionsManager: CompetitionsManaging {
                 .document("competitions/\(competition.id)")
                 .updateDataEncodable(competition)
         }
+    }
+    
+    func history(for competitionID: Competition.ID) -> AnyPublisher<[CompetitionHistory], Error> {
+        database.collection("competitions/\(competitionID)/history")
+            .getDocuments()
+            .map { $0.documents.decoded(asArrayOf: CompetitionHistory.self) }
+            .eraseToAnyPublisher()
+    }
+    
+    func standings(for competitionID: Competition.ID, endingOn end: Date) -> AnyPublisher<[Competition.Standing], Error> {
+//        if let cachedResults = historyCache[competitionID] { return .just(cachedResults) }
+        let dateString = DateFormatter.dateDashed.string(from: end)
+        return database.collection("competitions/\(competitionID)/history/\(dateString)/standings")
+            .getDocuments()
+            .map { $0.documents.compactMap { try? $0.data(as: Competition.Standing.self) } }
+            .handleEvents(withUnretained: self, receiveOutput: { $0.historyCache[competitionID] = $1 })
+            .eraseToAnyPublisher()
     }
 
     // MARK: - Private Methods
@@ -274,7 +301,7 @@ final class CompetitionsManager: CompetitionsManaging {
                             .getDocuments()
                             .documents
                             .first?
-                            .decoded(as: Competition.Standing.self)
+                            .data(as: Competition.Standing.self)
 
                         if let standing { standings.append(standing) }
                     }

@@ -63,7 +63,9 @@ final class InviteFriendsViewModel: ObservableObject {
         $searchText
             .flatMapLatest(withUnretained: self) { strongSelf, searchText -> AnyPublisher<[User], Never> in
                 guard !searchText.isEmpty else { return .just([]) }
-                return strongSelf.friendsManager.search(with: searchText).ignoreFailure()
+                return strongSelf.friendsManager
+                    .search(with: searchText)
+                    .catchErrorJustReturn([])
             }
             .combineLatest(alreadyInvited, incomingRequests)
             .map { [weak self] users, alreadyInvited, incomingRequests -> [RowConfig] in
@@ -133,9 +135,9 @@ final class InviteFriendsViewModel: ObservableObject {
                 let deepLink: DeepLink?
                 switch action {
                 case .addFriend:
-                    deepLink = .friendReferral(id: strongSelf.userManager.user.id)
+                    deepLink = .user(id: strongSelf.userManager.user.id)
                 case .competitionInvite(let competition):
-                    deepLink = .competitionInvite(id: competition.id)
+                    deepLink = .competition(id: competition.id)
                 }
                 deepLink?.share()
             }

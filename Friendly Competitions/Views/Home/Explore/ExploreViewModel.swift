@@ -4,6 +4,8 @@ import Factory
 
 final class ExploreViewModel: ObservableObject {
     
+    @Published var navigationDestinations = [NavigationDestination]()
+    
     @Published var loading = false
     @Published var searchText = ""
     @Published var searchResults = [Competition]()
@@ -22,6 +24,7 @@ final class ExploreViewModel: ObservableObject {
             .flatMapLatest(withUnretained: self) { strongSelf, searchText -> AnyPublisher<[Competition], Never> in
                 guard !searchText.isEmpty else { return .just([]) }
                 return strongSelf.competitionsManager.search(searchText)
+                    .print()
                     .isLoading { strongSelf.loading = $0 }
                     .ignoreFailure()
             }

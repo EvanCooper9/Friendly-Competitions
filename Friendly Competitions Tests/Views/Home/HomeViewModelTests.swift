@@ -6,9 +6,10 @@ import XCTest
 
 @testable import Friendly_Competitions
 
-final class DashboardViewModelTests: XCTestCase {
+final class HomeViewModelTests: XCTestCase {
 
     private var activitySummaryManager: ActivitySummaryManagingMock!
+    private var appState: AppStateProvidingMock!
     private var competitionsManager: CompetitionsManagingMock!
     private var friendsManager: FriendsManagingMock!
     private var permissionsManager: PermissionsManagingMock!
@@ -18,6 +19,7 @@ final class DashboardViewModelTests: XCTestCase {
 
     override func setUp() {
         activitySummaryManager = .init()
+        appState = .init()
         competitionsManager = .init()
         friendsManager = .init()
         permissionsManager = .init()
@@ -25,6 +27,7 @@ final class DashboardViewModelTests: XCTestCase {
         cancellables = .init()
 
         activitySummaryManager.activitySummary = .never()
+        appState.deepLink = .never()
         competitionsManager.competitions = .never()
         competitionsManager.invitedCompetitions = .never()
         friendsManager.friends = .never()
@@ -34,6 +37,7 @@ final class DashboardViewModelTests: XCTestCase {
         userManager.userPublisher = .just(.evan)
         
         Container.activitySummaryManager.register { self.activitySummaryManager }
+        Container.appState.register { self.appState }
         Container.competitionsManager.register { self.competitionsManager }
         Container.friendsManager.register { self.friendsManager }
         Container.permissionsManager.register { self.permissionsManager }
@@ -60,7 +64,7 @@ final class DashboardViewModelTests: XCTestCase {
 
         let ac = ActivitySummary.mock
 
-        let viewModel = DashboardViewModel()
+        let viewModel = HomeViewModel()
         viewModel.$activitySummary
             .expect(nil, ac, nil, ac, expectation: expectation)
             .store(in: &cancellables)
@@ -80,7 +84,7 @@ final class DashboardViewModelTests: XCTestCase {
         let comp1 = Competition.mock
         let comp2 = Competition.mockOld
 
-        let viewModel = DashboardViewModel()
+        let viewModel = HomeViewModel()
         viewModel.$competitions
             .expect([], [comp1], [comp1, comp2], expectation: expectation)
             .store(in: &cancellables)
@@ -99,7 +103,7 @@ final class DashboardViewModelTests: XCTestCase {
         let comp1 = Competition.mock
         let comp2 = Competition.mockOld
 
-        let viewModel = DashboardViewModel()
+        let viewModel = HomeViewModel()
         viewModel.$invitedCompetitions
             .expect([], [comp1], [comp1, comp2], expectation: expectation)
             .store(in: &cancellables)
@@ -121,12 +125,12 @@ final class DashboardViewModelTests: XCTestCase {
 
         let activitySummary = ActivitySummary.mock
 
-        let evan = DashboardViewModel.FriendRow(user: .evan, activitySummary: nil, isInvitation: false)
-        let evanWithAC = DashboardViewModel.FriendRow(user: .evan, activitySummary: activitySummary, isInvitation: false)
-        let andrew = DashboardViewModel.FriendRow(user: .andrew, activitySummary: nil, isInvitation: true)
+        let evan = HomeViewModel.FriendRow(user: .evan, activitySummary: nil, isInvitation: false)
+        let evanWithAC = HomeViewModel.FriendRow(user: .evan, activitySummary: activitySummary, isInvitation: false)
+        let andrew = HomeViewModel.FriendRow(user: .andrew, activitySummary: nil, isInvitation: true)
 
-        let viewModel = DashboardViewModel()
-        viewModel.$friends
+        let viewModel = HomeViewModel()
+        viewModel.$friendRows
             .expect([], [evan], [evanWithAC], [evanWithAC, andrew], expectation: expectation)
             .store(in: &cancellables)
 
@@ -143,7 +147,7 @@ final class DashboardViewModelTests: XCTestCase {
         let subject = CurrentValueSubject<Bool, Never>(true)
         permissionsManager.requiresPermission = subject.eraseToAnyPublisher()
 
-        let viewModel = DashboardViewModel()
+        let viewModel = HomeViewModel()
         viewModel.$requiresPermissions
             .expect(true, false, true, false, expectation: expectation)
             .store(in: &cancellables)
@@ -160,7 +164,7 @@ final class DashboardViewModelTests: XCTestCase {
         let subject = CurrentValueSubject<User, Never>(.evan)
         userManager.userPublisher = subject.eraseToAnyPublisher()
 
-        let viewModel = DashboardViewModel()
+        let viewModel = HomeViewModel()
         viewModel.$title
             .expect(User.evan.name, Bundle.main.name, expectation: expectation)
             .store(in: &cancellables)

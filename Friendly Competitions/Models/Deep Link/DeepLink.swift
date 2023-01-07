@@ -3,30 +3,48 @@ import Foundation
 enum DeepLink: Equatable {
     
     private enum Constants {
-        static let baseURL = URL(string: "https://friendly-competitions.app/")!
-        static let friend = "friend/"
-        static let competition = "competition/"
+        static let baseURL = URL(string: "https://friendly-competitions.app")!
+        static let user = "user"
+        static let competition = "competition"
     }
     
-    case friendReferral(id: String)
-    case competitionInvite(id: String)
+    case user(id: User.ID)
+    case competition(id: Competition.ID)
+    case competitionHistory(id: Competition.ID)
 
     init?(from url: URL) {
-        if let inviteId = url.path.after(prefix: "/" + Constants.friend) {
-            self = .friendReferral(id: inviteId)
-        } else if let inviteId = url.path.after(prefix: "/" + Constants.competition) {
-            self = .competitionInvite(id: inviteId)
-        } else {
-            return nil
+        let path = url.path
+        if path.hasPrefix("/" + Constants.user) {
+            self = .user(id: url.lastPathComponent)
+            return
+        } else if path.hasPrefix("/" + Constants.competition) {
+            let competitionID = url.pathComponents[2]
+            if path.hasSuffix("history") {
+                self = .competitionHistory(id: competitionID)
+                return
+            } else {
+                self = .competition(id: competitionID)
+                return
+            }
         }
+        return nil
     }
     
     var url: URL {
         switch self {
-        case .friendReferral(let id):
-            return Constants.baseURL.appendingPathComponent(Constants.friend.appending(id))
-        case.competitionInvite(let id):
-            return Constants.baseURL.appendingPathComponent(Constants.competition.appending(id))
+        case .user(let id):
+            return Constants.baseURL
+                .appendingPathComponent(Constants.user)
+                .appendingPathComponent(id)
+        case .competition(let id):
+            return Constants.baseURL
+                .appendingPathComponent(Constants.competition)
+                .appendingPathComponent(id)
+        case .competitionHistory(let id):
+            return Constants.baseURL
+                .appendingPathComponent(Constants.competition)
+                .appendingPathComponent(id)
+                .appendingPathComponent("history")
         }
     }
 }
@@ -36,10 +54,12 @@ extension DeepLink: Sharable {
     var itemsForSharing: [Any] {
         let text: String
         switch self {
-        case .friendReferral:
+        case .user:
             text = "Add me in Friendly Competitions!"
-        case .competitionInvite:
+        case .competition:
             text = "Compete against me in Friendly Competitions!"
+        case .competitionHistory:
+            return []
         }
         return [text, url.absoluteString]
     }

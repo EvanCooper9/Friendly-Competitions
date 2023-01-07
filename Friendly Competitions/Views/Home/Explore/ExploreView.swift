@@ -7,46 +7,59 @@ struct ExploreView: View {
         static let horizontalPadding = 20.0
     }
 
-    @Environment(\.colorScheme) private var colorScheme
-
     @StateObject private var viewModel = ExploreViewModel()
     
     var body: some View {
-        List {
-            if viewModel.searchText.isEmpty {
-                Section {
-                    ForEach(viewModel.appOwnedCompetitions) { competition in
-                        FeaturedCompetition(competition: competition)
-                    }
-                }
-                .removingMargin()
-            } else {
-                Section {
-                    if viewModel.searchResults.isEmpty {
-                        Text("Nothing here")
-                            .padding()
-                            .background(.ultraThinMaterial)
-                            .cornerRadius(8)
-                            .foregroundColor(.gray)
-                            .frame(maxWidth: .infinity, alignment: .center)
-                    } else {
-                        ForEach(viewModel.searchResults.filter(\.appOwned)) { competition in
-                            FeaturedCompetition(competition: competition)
+        NavigationStack(path: $viewModel.navigationDestinations) {
+            List {
+                if viewModel.searchText.isEmpty {
+                    Section {
+                        ForEach(viewModel.appOwnedCompetitions) { competition in
+                            ZStack {
+                                NavigationLink(value: NavigationDestination.competition(competition)) { EmptyView() }
+                                    .opacity(0)
+                                FeaturedCompetition(competition: competition)
+                            }
                         }
-                        ForEach(viewModel.searchResults.filter(\.appOwned.not)) { competition in
-                            CompetitionDetails(competition: competition, showParticipantCount: true, isFeatured: false)
+                    }
+                    .removingMargin()
+                } else {
+                    Section {
+                        if viewModel.searchResults.isEmpty {
+                            Text("Nothing here")
                                 .padding()
-                                .background(.white)
-                                .cornerRadius(10)
+                                .background(.ultraThinMaterial)
+                                .cornerRadius(8)
+                                .foregroundColor(.gray)
+                                .frame(maxWidth: .infinity, alignment: .center)
+                        } else {
+                            ForEach(viewModel.searchResults.filter(\.appOwned)) { competition in
+                                ZStack {
+                                    NavigationLink(value: NavigationDestination.competition(competition)) { EmptyView() }
+                                        .opacity(0)
+                                    FeaturedCompetition(competition: competition)
+                                }
+                            }
+                            ForEach(viewModel.searchResults.filter(\.appOwned.not)) { competition in
+                                ZStack {
+                                    NavigationLink(value: NavigationDestination.competition(competition)) { EmptyView() }
+                                        .opacity(0)
+                                    CompetitionDetails(competition: competition, showParticipantCount: true, isFeatured: false)
+                                        .padding()
+                                        .background(.white)
+                                        .cornerRadius(10)
+                                }
+                            }
                         }
                     }
+                    .removingMargin()
                 }
-                .removingMargin()
             }
+            .searchable(text: $viewModel.searchText, placement: .navigationBarDrawer(displayMode: .always))
+            .navigationTitle("Explore")
+            .registerScreenView(name: "Explore")
+            .navigationDestination(for: NavigationDestination.self) { $0.view }
         }
-        .searchable(text: $viewModel.searchText, placement: .navigationBarDrawer(displayMode: .always))
-        .navigationTitle("Explore")
-        .registerScreenView(name: "Explore")
     }
 }
 

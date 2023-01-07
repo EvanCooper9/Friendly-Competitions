@@ -34,6 +34,28 @@ class ActivitySummaryManagingMock: ActivitySummaryManaging {
     }
     var underlyingActivitySummary: AnyPublisher<ActivitySummary?, Never>!
 
+    //MARK: - activitySummaries
+
+    var activitySummariesInCallsCount = 0
+    var activitySummariesInCalled: Bool {
+        return activitySummariesInCallsCount > 0
+    }
+    var activitySummariesInReceivedDateInterval: DateInterval?
+    var activitySummariesInReceivedInvocations: [DateInterval] = []
+    var activitySummariesInReturnValue: AnyPublisher<[ActivitySummary], Error>!
+    var activitySummariesInClosure: ((DateInterval) -> AnyPublisher<[ActivitySummary], Error>)?
+
+    func activitySummaries(in dateInterval: DateInterval) -> AnyPublisher<[ActivitySummary], Error> {
+        activitySummariesInCallsCount += 1
+        activitySummariesInReceivedDateInterval = dateInterval
+        activitySummariesInReceivedInvocations.append(dateInterval)
+        if let activitySummariesInClosure = activitySummariesInClosure {
+            return activitySummariesInClosure(dateInterval)
+        } else {
+            return activitySummariesInReturnValue
+        }
+    }
+
     //MARK: - update
 
     var updateCallsCount = 0
@@ -91,6 +113,11 @@ class AnalyticsManagingMock: AnalyticsManaging {
 
 }
 class AppStateProvidingMock: AppStateProviding {
+    var deepLink: AnyPublisher<DeepLink?, Never> {
+        get { return underlyingDeepLink }
+        set(value) { underlyingDeepLink = value }
+    }
+    var underlyingDeepLink: AnyPublisher<DeepLink?, Never>!
     var hud: AnyPublisher<HUD?, Never> {
         get { return underlyingHud }
         set(value) { underlyingHud = value }
@@ -117,6 +144,23 @@ class AppStateProvidingMock: AppStateProviding {
         pushHudReceivedHud = hud
         pushHudReceivedInvocations.append(hud)
         pushHudClosure?(hud)
+    }
+
+    //MARK: - push
+
+    var pushDeepLinkCallsCount = 0
+    var pushDeepLinkCalled: Bool {
+        return pushDeepLinkCallsCount > 0
+    }
+    var pushDeepLinkReceivedDeepLink: DeepLink?
+    var pushDeepLinkReceivedInvocations: [DeepLink] = []
+    var pushDeepLinkClosure: ((DeepLink) -> Void)?
+
+    func push(deepLink: DeepLink) {
+        pushDeepLinkCallsCount += 1
+        pushDeepLinkReceivedDeepLink = deepLink
+        pushDeepLinkReceivedInvocations.append(deepLink)
+        pushDeepLinkClosure?(deepLink)
     }
 
 }
@@ -498,6 +542,80 @@ class CompetitionsManagingMock: CompetitionsManaging {
         }
     }
 
+    //MARK: - history
+
+    var historyForCallsCount = 0
+    var historyForCalled: Bool {
+        return historyForCallsCount > 0
+    }
+    var historyForReceivedCompetitionID: Competition.ID?
+    var historyForReceivedInvocations: [Competition.ID] = []
+    var historyForReturnValue: AnyPublisher<[CompetitionHistory], Error>!
+    var historyForClosure: ((Competition.ID) -> AnyPublisher<[CompetitionHistory], Error>)?
+
+    func history(for competitionID: Competition.ID) -> AnyPublisher<[CompetitionHistory], Error> {
+        historyForCallsCount += 1
+        historyForReceivedCompetitionID = competitionID
+        historyForReceivedInvocations.append(competitionID)
+        if let historyForClosure = historyForClosure {
+            return historyForClosure(competitionID)
+        } else {
+            return historyForReturnValue
+        }
+    }
+
+    //MARK: - standings
+
+    var standingsForEndingOnCallsCount = 0
+    var standingsForEndingOnCalled: Bool {
+        return standingsForEndingOnCallsCount > 0
+    }
+    var standingsForEndingOnReceivedArguments: (competitionID: Competition.ID, end: Date)?
+    var standingsForEndingOnReceivedInvocations: [(competitionID: Competition.ID, end: Date)] = []
+    var standingsForEndingOnReturnValue: AnyPublisher<[Competition.Standing], Error>!
+    var standingsForEndingOnClosure: ((Competition.ID, Date) -> AnyPublisher<[Competition.Standing], Error>)?
+
+    func standings(for competitionID: Competition.ID, endingOn end: Date) -> AnyPublisher<[Competition.Standing], Error> {
+        standingsForEndingOnCallsCount += 1
+        standingsForEndingOnReceivedArguments = (competitionID: competitionID, end: end)
+        standingsForEndingOnReceivedInvocations.append((competitionID: competitionID, end: end))
+        if let standingsForEndingOnClosure = standingsForEndingOnClosure {
+            return standingsForEndingOnClosure(competitionID, end)
+        } else {
+            return standingsForEndingOnReturnValue
+        }
+    }
+
+}
+class EnvironmentManagingMock: EnvironmentManaging {
+    var firestoreEnvironment: FirestoreEnvironment {
+        get { return underlyingFirestoreEnvironment }
+        set(value) { underlyingFirestoreEnvironment = value }
+    }
+    var underlyingFirestoreEnvironment: FirestoreEnvironment!
+    var firestoreEnvironmentDidChange: AnyPublisher<Void, Never> {
+        get { return underlyingFirestoreEnvironmentDidChange }
+        set(value) { underlyingFirestoreEnvironmentDidChange = value }
+    }
+    var underlyingFirestoreEnvironmentDidChange: AnyPublisher<Void, Never>!
+
+    //MARK: - set
+
+    var setCallsCount = 0
+    var setCalled: Bool {
+        return setCallsCount > 0
+    }
+    var setReceivedEnvironment: FirestoreEnvironment?
+    var setReceivedInvocations: [FirestoreEnvironment] = []
+    var setClosure: ((FirestoreEnvironment) -> Void)?
+
+    func set(_ environment: FirestoreEnvironment) {
+        setCallsCount += 1
+        setReceivedEnvironment = environment
+        setReceivedInvocations.append(environment)
+        setClosure?(environment)
+    }
+
 }
 class FriendsManagingMock: FriendsManaging {
     var friends: AnyPublisher<[User], Never> {
@@ -768,6 +886,41 @@ class StorageManagingMock: StorageManaging {
     }
 
 }
+class StoreKitManagingMock: StoreKitManaging {
+    var products: AnyPublisher<[FriendlyCompetitionsProduct], Never> {
+        get { return underlyingProducts }
+        set(value) { underlyingProducts = value }
+    }
+    var underlyingProducts: AnyPublisher<[FriendlyCompetitionsProduct], Never>!
+    var purchases: AnyPublisher<[FriendlyCompetitionsProduct], Never> {
+        get { return underlyingPurchases }
+        set(value) { underlyingPurchases = value }
+    }
+    var underlyingPurchases: AnyPublisher<[FriendlyCompetitionsProduct], Never>!
+
+    //MARK: - purchase
+
+    var purchaseCallsCount = 0
+    var purchaseCalled: Bool {
+        return purchaseCallsCount > 0
+    }
+    var purchaseReceivedProduct: FriendlyCompetitionsProduct?
+    var purchaseReceivedInvocations: [FriendlyCompetitionsProduct] = []
+    var purchaseReturnValue: AnyPublisher<Void, Error>!
+    var purchaseClosure: ((FriendlyCompetitionsProduct) -> AnyPublisher<Void, Error>)?
+
+    func purchase(_ product: FriendlyCompetitionsProduct) -> AnyPublisher<Void, Error> {
+        purchaseCallsCount += 1
+        purchaseReceivedProduct = product
+        purchaseReceivedInvocations.append(product)
+        if let purchaseClosure = purchaseClosure {
+            return purchaseClosure(product)
+        } else {
+            return purchaseReturnValue
+        }
+    }
+
+}
 class UserManagingMock: UserManaging {
     var user: User {
         get { return underlyingUser }
@@ -838,6 +991,28 @@ class WorkoutManagingMock: WorkoutManaging {
             return updateClosure()
         } else {
             return updateReturnValue
+        }
+    }
+
+    //MARK: - workouts
+
+    var workoutsOfWithInCallsCount = 0
+    var workoutsOfWithInCalled: Bool {
+        return workoutsOfWithInCallsCount > 0
+    }
+    var workoutsOfWithInReceivedArguments: (type: WorkoutType, metrics: [WorkoutMetric], dateInterval: DateInterval)?
+    var workoutsOfWithInReceivedInvocations: [(type: WorkoutType, metrics: [WorkoutMetric], dateInterval: DateInterval)] = []
+    var workoutsOfWithInReturnValue: AnyPublisher<[Workout], Error>!
+    var workoutsOfWithInClosure: ((WorkoutType, [WorkoutMetric], DateInterval) -> AnyPublisher<[Workout], Error>)?
+
+    func workouts(of type: WorkoutType, with metrics: [WorkoutMetric], in dateInterval: DateInterval) -> AnyPublisher<[Workout], Error> {
+        workoutsOfWithInCallsCount += 1
+        workoutsOfWithInReceivedArguments = (type: type, metrics: metrics, dateInterval: dateInterval)
+        workoutsOfWithInReceivedInvocations.append((type: type, metrics: metrics, dateInterval: dateInterval))
+        if let workoutsOfWithInClosure = workoutsOfWithInClosure {
+            return workoutsOfWithInClosure(type, metrics, dateInterval)
+        } else {
+            return workoutsOfWithInReturnValue
         }
     }
 

@@ -38,17 +38,14 @@ function inviteUserToCompetition(competitionID: string, callerID: string, reques
 
             return firestore.doc(`competitions/${competitionID}`)
                 .update({ pendingParticipants: pendingParticipants })
-                .then(() => [caller, requestee]);
-        })
-        .then(result => {
-            const caller = result[0];
-            const requestee = result[1];
-
-            return sendNotificationsToUser(
-                requestee,
-                "Friendly Competitions",
-                `${caller.name} invited you to a competition`
-            );
+                .then(() => {
+                    return sendNotificationsToUser(
+                        requestee,
+                        "Friendly Competitions",
+                        `${caller.name} invited you to a competition`,
+                        `https://friendly-competitions.app/competition/${competition.id}`
+                    );
+                });
         });
 }
 

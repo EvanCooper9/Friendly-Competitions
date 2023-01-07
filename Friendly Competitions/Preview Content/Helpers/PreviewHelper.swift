@@ -11,6 +11,7 @@ fileprivate enum Dependencies {
     static let healthKitManager = HealthKitManagingMock()
     static let permissionsManager = PermissionsManagingMock()
     static let storageManager = StorageManagingMock()
+    static let storeKitManager = StoreKitManagingMock()
     static let userManager = UserManagingMock()
     static let workoutManager = WorkoutManagingMock()
     
@@ -24,12 +25,15 @@ fileprivate enum Dependencies {
         Container.healthKitManager.register { healthKitManager }
         Container.permissionsManager.register { permissionsManager }
         Container.storageManager.register { storageManager }
+        Container.storeKitManager.register { storeKitManager }
         Container.userManager.register { userManager }
+        Container.workoutManager.register { workoutManager }
     }
 
     static func baseSetupMocks() {
         activitySummaryManager.activitySummary = .just(nil)
         activitySummaryManager.updateReturnValue = .just(())
+        activitySummaryManager.activitySummariesInReturnValue = .just([])
 
         authenticationManager.emailVerified = .just(true)
         authenticationManager.loggedIn = .just(true)
@@ -41,6 +45,8 @@ fileprivate enum Dependencies {
         competitionsManager.pendingParticipants = .just([:])
         competitionsManager.appOwnedCompetitions = .just([.mockPublic])
         competitionsManager.searchReturnValue = .just([.mockPublic, .mock])
+        competitionsManager.historyForReturnValue = .just([])
+        competitionsManager.standingsForEndingOnReturnValue = .just([])
         
         friendsManager.friends = .just([])
         friendsManager.friendActivitySummaries = .just([:])
@@ -48,11 +54,14 @@ fileprivate enum Dependencies {
 
         storageManager.dataForReturnValue = .just(.init())
         
+        storeKitManager.products = .just([])
+        
         userManager.user = .evan
         userManager.userPublisher = .just(.evan)
         userManager.updateWithReturnValue = .just(())
         
         workoutManager.updateReturnValue = .just(())
+        workoutManager.workoutsOfWithInReturnValue = .just([])
     }
 }
 
@@ -66,7 +75,9 @@ extension PreviewProvider {
     static var healthKitManager: HealthKitManagingMock { Dependencies.healthKitManager }
     static var permissionsManager: PermissionsManagingMock { Dependencies.permissionsManager }
     static var storageManager: StorageManagingMock { Dependencies.storageManager }
+    static var storeKitManager: StoreKitManagingMock { Dependencies.storeKitManager }
     static var userManager: UserManagingMock { Dependencies.userManager }
+    static var workoutManager: WorkoutManagingMock { Dependencies.workoutManager }
 }
 
 extension View {

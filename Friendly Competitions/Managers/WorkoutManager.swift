@@ -11,6 +11,7 @@ import UIKit
 // sourcery: AutoMockable
 protocol WorkoutManaging {
     func update() -> AnyPublisher<Void, Error>
+    func workouts(of type: WorkoutType, with metrics: [WorkoutMetric], in dateInterval: DateInterval) -> AnyPublisher<[Workout], Error>
 }
 
 final class WorkoutManager: WorkoutManaging {
@@ -57,6 +58,30 @@ final class WorkoutManager: WorkoutManaging {
         uploadFinished
             .handleEvents(receiveSubscription: { [weak self] _ in self?.query.send() })
             .eraseToAnyPublisher()
+    }
+    
+    func workouts(of type: WorkoutType, with metrics: [WorkoutMetric], in dateInterval: DateInterval) -> AnyPublisher<[Workout], Error> {
+        .fromAsync { [weak self] in
+            guard let strongSelf = self else { return [] }
+            let points = try await strongSelf.requestWorkouts(ofType: type, metrics: metrics, during: dateInterval)
+            var workouts = [Workout]()
+            points.forEach { date, pointsBySampleType in
+                
+                let points = pointsBySampleType.compactMap { sampleType, points -> (WorkoutMetric, Int)? in
+                    guard let metric = WorkoutMetric(from: sampleType.identifier) else { return nil }
+                    return (metric, Int(points))
+                }
+                
+                let workout = Workout(
+                    type: type,
+                    date: date,
+                    points: Dictionary(uniqueKeysWithValues: points)
+                )
+                
+                workouts.append(workout)
+            }
+            return workouts
+        }
     }
     
     // MARK: - Private Methods

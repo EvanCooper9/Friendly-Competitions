@@ -15,6 +15,14 @@
         { "fieldPath": "date", "order": "ASCENDING" },
         { "fieldPath": "userID", "order": "ASCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "users",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "searchable", "order": "ASCENDING" },
+        { "fieldPath": "id", "order": "ASCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []

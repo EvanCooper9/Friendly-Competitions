@@ -2,7 +2,7 @@ import ECKit
 import Foundation
 import HealthKit
 
-struct Competition: Codable, Equatable, Identifiable {
+struct Competition: Codable, Equatable, Hashable, Identifiable {
     var id = UUID().uuidString
     var name: String
     var owner: String

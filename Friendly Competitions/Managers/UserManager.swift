@@ -71,7 +71,7 @@ final class UserManager: UserManaging {
     private func listenForUser() {
         database.document("users/\(user.id)")
             .addSnapshotListener { [weak self] snapshot, _ in
-                guard let self = self, let user = try? snapshot?.decoded(as: User.self) else { return }
+                guard let self = self, let user = try? snapshot?.data(as: User.self) else { return }
                 self.analyticsManager.set(userId: user.id)
                 DispatchQueue.main.async { [weak self] in
                     self?.userSubject.send(user)

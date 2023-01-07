@@ -12,6 +12,14 @@ enum AnalyticsEvent: Codable {
     // permissions
     case notificationPermissions(authorized: Bool)
     case healthKitPermissions(authorized: Bool)
+    
+    // premium
+    case premiumPaywallViewed
+    case premiumSelected(id: String)
+    case premiumPurchaseStarted(id: String)
+    case premiumPurchaseCancelled(id: String)
+    case premiumPurchasePending(id: String)
+    case premiumPurchased(id: String)
 
     // errors
     case decodingError(error: String)

@@ -208,7 +208,7 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
             try await database.document("users/\(user.id)").setDataEncodable(user)
         }
         
-        let user = try await self.database.document("users/\(firebaseUser.uid)").getDocument().decoded(as: User.self)
+        let user = try await self.database.document("users/\(firebaseUser.uid)").getDocument().data(as: User.self)
         DispatchQueue.main.async {
             self.currentUser = user
             self.emailVerifiedSubject.send(firebaseUser.isEmailVerified || firebaseUser.email == "review@apple.com")
