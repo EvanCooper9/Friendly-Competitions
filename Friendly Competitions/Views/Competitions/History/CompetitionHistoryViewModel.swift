@@ -133,7 +133,6 @@ final class CompetitionHistoryViewModel: ObservableObject {
                 dataPoints.append(.standings(
                     currentStandings
                         .sorted(by: \.rank)
-                        .reversed()
                         .map { standing in
                             .init(
                                 rank: standing.rank,
