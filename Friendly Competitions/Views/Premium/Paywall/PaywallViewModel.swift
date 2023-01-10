@@ -5,19 +5,13 @@ import Factory
 import Foundation
 
 final class PaywallViewModel: ObservableObject {
-    
-    struct Offer: Identifiable {
-        let product: FriendlyCompetitionsProduct
-        let selected: Bool
-        
-        var id: FriendlyCompetitionsProduct.ID { product.id }
-    }
 
     // MARK: - Public Properties
     
-    @Published private(set) var offers = [Offer]()
-    @Published private(set) var loading = false
+    @Published private(set) var step = PaywallStep.primer
+    @Published private(set) var offers = [PaywallOffer]()
     @Published private(set) var dismiss = false
+    @Published private(set) var loading = false
 
     // MARK: - Private Properties
     
@@ -27,19 +21,19 @@ final class PaywallViewModel: ObservableObject {
     private let selectedIndex = CurrentValueSubject<Int, Never>(0)
     private let purchaseSubject = PassthroughSubject<Void, Never>()
     private let restoreSubject = PassthroughSubject<Void, Never>()
-
+    
     private var cancellables = Cancellables()
 
     // MARK: - Lifecycle
 
     init() {
-        analyticsManager.log(event: .premiumPaywallViewed)
+        analyticsManager.log(event: .premiumPaywallPrimerViewed)
         
         Publishers
             .CombineLatest(storeKitManager.products, selectedIndex)
             .map { products, selectedIndex in
                 products.enumerated().map { offset, product in
-                    Offer(
+                    PaywallOffer(
                         product: product,
                         selected: offset == selectedIndex
                     )
@@ -50,6 +44,9 @@ final class PaywallViewModel: ObservableObject {
         purchaseSubject
             .withLatestFrom($offers)
             .compactMap { $0.first(where: \.selected) }
+            .handleEvents(withUnretained: self, receiveOutput: { strongSelf, offer in
+                
+            })
             .flatMapLatest(withUnretained: self) { strongSelf, offer in
                 strongSelf.storeKitManager
                     .purchase(offer.product)
@@ -62,11 +59,15 @@ final class PaywallViewModel: ObservableObject {
         restoreSubject
             .flatMapLatest(withUnretained: self) { strongSelf in
                 strongSelf.storeKitManager
-                    .refreshPurchasedProducts()
+                    .restorePurchases()
                     .isLoading { strongSelf.loading = $0 }
                     .ignoreFailure()
             }
-            .flatMapLatest(withUnretained: self) { $0.storeKitManager.hasPremium }
+            .flatMapLatest(withUnretained: self) { strongSelf in
+                strongSelf.storeKitManager.premium
+                    .map(\.isNil.not)
+                    .eraseToAnyPublisher()
+            }
             .receive(on: RunLoop.main)
             .sink(withUnretained: self) { strongSelf, hasPremium in
                 guard hasPremium else { return }
@@ -77,14 +78,20 @@ final class PaywallViewModel: ObservableObject {
 
     // MARK: - Public Methods
     
-    func select(_ offer: Offer) {
+    func selectOffer(_ offer: PaywallOffer) {
         analyticsManager.log(event: .premiumSelected(id: offer.id))
         guard let index = offers.firstIndex(where: { $0.product.id == offer.product.id }) else { return }
         selectedIndex.send(index)
     }
     
-    func purchaseTapped() {
-        purchaseSubject.send()
+    func nextTapped() {
+        switch step {
+        case .primer:
+            step = .purchase
+            analyticsManager.log(event: .premiumPaywallViewed)
+        case .purchase:
+            purchaseSubject.send()
+        }
     }
     
     func restorePurchasesTapped() {

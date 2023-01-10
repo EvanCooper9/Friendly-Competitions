@@ -30,14 +30,15 @@ final class HomeViewModel: ObservableObject {
     
     @Injected(Container.appState) private var appState
     @Injected(Container.activitySummaryManager) private var activitySummaryManager
+    @Injected(Container.analyticsManager) private var analyticsManager
     @Injected(Container.competitionsManager) private var competitionsManager
     @Injected(Container.friendsManager) private var friendsManager
     @Injected(Container.permissionsManager) private var permissionsManager
     @Injected(Container.storeKitManager) private var storeKitManager
     @Injected(Container.userManager) private var userManager
     
-    @UserDefault("competitionsFiltered") var competitionsFiltered = false
-    @UserDefault("dismissedPremiumBanner") private var dismissedPremiumBanner = false
+    @UserDefault("competitionsFiltered", defaultValue: false) var competitionsFiltered
+    @UserDefault("dismissedPremiumBanner", defaultValue: false) private var dismissedPremiumBanner
     
     // MARK: - Lifecycle
 
@@ -102,8 +103,17 @@ final class HomeViewModel: ObservableObject {
             .assign(to: &$requiresPermissions)
         
         Publishers
-            .CombineLatest($dismissedPremiumBanner, storeKitManager.hasPremium)
-            .map { !$1 && !$1 }
+            .CombineLatest(
+                $dismissedPremiumBanner,
+                storeKitManager.premium.map { $0 != nil }
+            )
+            .handleEvents(withUnretained: self, receiveOutput: { strongSelf, result in
+                let (_, premium) = result
+                guard premium else { return }
+                // show banner again when premium expires
+                strongSelf.dismissedPremiumBanner = false
+            })
+            .map { !$0 && !$1 }
             .receive(on: RunLoop.main)
             .assign(to: &$showPremiumBanner)
         
@@ -117,6 +127,7 @@ final class HomeViewModel: ObservableObject {
     }
     
     func dismissPremiumBannerTapped() {
+        analyticsManager.log(event: .premiumBannerDismissed)
         dismissedPremiumBanner.toggle()
     }
 }

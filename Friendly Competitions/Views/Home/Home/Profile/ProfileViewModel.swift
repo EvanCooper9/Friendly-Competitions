@@ -6,12 +6,14 @@ import Factory
 final class ProfileViewModel: ObservableObject {
 
     @Published var user: User!
+    @Published var premium: Premium?
     @Published var confirmationRequired = false
     @Published var loading = false
     
     // MARK: - Private Properties
     
     @Injected(Container.authenticationManager) private var authenticationManager
+    @Injected(Container.storeKitManager) private var storeKitManager
     @Injected(Container.userManager) private var userManager
 
     private let deleteAccountSubject = PassthroughSubject<Void, Never>()
@@ -38,6 +40,8 @@ final class ProfileViewModel: ObservableObject {
             .removeDuplicates()
             .map(User?.init)
             .assign(to: &$user)
+        
+        storeKitManager.premium.assign(to: &$premium)
 
         deleteAccountSubject
             .flatMapLatest(withUnretained: self) { strongSelf in
@@ -67,6 +71,10 @@ final class ProfileViewModel: ObservableObject {
     
     func shareInviteLinkTapped() {
         DeepLink.user(id: userManager.user.id).share()
+    }
+    
+    func manageSubscriptionTapped() {
+        storeKitManager.manageSubscription()
     }
     
     func signOutTapped() {

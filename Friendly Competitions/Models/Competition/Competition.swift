@@ -9,8 +9,8 @@ struct Competition: Codable, Equatable, Hashable, Identifiable {
     var participants: [String]
     var pendingParticipants: [String]
     var scoringModel: ScoringModel
-    @PostDecoded<DateToMidnight, Date> var start: Date
-    @PostDecoded<DateToMidnight, Date> var end: Date
+    @PostDecoded<DateToStartOfDay, Date> var start: Date
+    @PostDecoded<DateToEndOfDay, Date> var end: Date
     var repeats: Bool
     var isPublic: Bool
     let banner: String?

@@ -1,4 +1,5 @@
 import Combine
+import CombineExt
 import ECKit
 import Factory
 import Foundation
@@ -27,11 +28,10 @@ final class PermissionsManager: PermissionsManaging {
     // MARK: - Lifecycle
 
     init() {
-        let permissionStatusSubject = PassthroughSubject<[Permission: PermissionStatus], Never>()
+        let permissionStatusSubject = ReplaySubject<[Permission: PermissionStatus], Never>(bufferSize: 1)
         
         permissionStatus = permissionStatusSubject
             .receive(on: RunLoop.main)
-            .share(replay: 1)
             .eraseToAnyPublisher()
         
         requiresPermission = permissionStatus

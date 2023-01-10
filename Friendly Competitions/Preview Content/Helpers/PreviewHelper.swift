@@ -54,15 +54,15 @@ fileprivate enum Dependencies {
 
         storageManager.dataForReturnValue = .just(.init())
         
-        let products: [FriendlyCompetitionsProduct] = [
-            .init(id: "1", price: "$0.99/month", title: "Monthly", description: "Access premium features for one month"),
-            .init(id: "2", price: "$1.99/six months", title: "Semi-Annually", description: "Access premium features for six months"),
-            .init(id: "3", price: "$2.99/year", title: "Yearly", description: "Access premium features for one year")
+        let products: [Product] = [
+            .init(id: "1", price: "$0.99 / month", offer: "Free for 3 days", title: "Monthly", description: "Access premium features for one month"),
+            .init(id: "2", price: "$1.99 / six months", offer: nil, title: "Semi-Annually", description: "Access premium features for six months"),
+            .init(id: "3", price: "$2.99 / year", offer: nil, title: "Yearly", description: "Access premium features for one year")
         ]
+        storeKitManager.premium = .just(nil)
         storeKitManager.products = .just(products)
-        storeKitManager.purchases = .just([])
         storeKitManager.purchaseReturnValue = .just(())
-        storeKitManager.refreshPurchasedProductsReturnValue = .just(())
+//        storeKitManager.refreshPurchasedProductsReturnValue = .just(())
         
         userManager.user = .evan
         userManager.userPublisher = .just(.evan)
