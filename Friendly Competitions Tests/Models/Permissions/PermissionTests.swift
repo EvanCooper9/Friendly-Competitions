@@ -19,7 +19,7 @@ final class PermissionTests: XCTestCase {
     }
 
     func testThatImageNameIsCorrect() {
-        XCTAssertEqual(Permission.health.imageName, Asset.Images.health.name)
-        XCTAssertEqual(Permission.notifications.imageName, Asset.Images.notifications.name)
+        XCTAssertEqual(Permission.health.imageName, Asset.Images.Permissions.health.name)
+        XCTAssertEqual(Permission.notifications.imageName, Asset.Images.Permissions.notifications.name)
     }
 }

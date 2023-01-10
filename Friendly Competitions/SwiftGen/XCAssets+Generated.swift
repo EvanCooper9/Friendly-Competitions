@@ -36,10 +36,8 @@ internal enum Asset {
       internal static let health = ImageAsset(name: "health")
       internal static let notifications = ImageAsset(name: "notifications")
     }
-    internal enum Premium {
-      internal static let premium = ImageAsset(name: "premium")
-    }
     internal static let logo = ImageAsset(name: "logo")
+    internal static let premium = ImageAsset(name: "premium")
   }
 }
 // swiftlint:enable identifier_name line_length nesting type_body_length type_name

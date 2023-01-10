@@ -6,7 +6,7 @@ struct PaywallPrimerView: View {
             Color.systemFill
                 .aspectRatio(3/2, contentMode: .fit)
                 .overlay(alignment: .top) {
-                    Asset.Images.Premium.premium.swiftUIImage
+                    Asset.Images.premium.swiftUIImage
                         .resizable()
                         .scaledToFill()
                 }
