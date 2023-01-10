@@ -59,7 +59,6 @@ final class StoreKitManager: NSObject, StoreKitManaging {
         apiKey = "appl_PfCzNKLwrBPhZHDqVcrFOfigEHq"
         #endif
         
-//        Purchases.logLevel = .verbose
         Purchases.configure(with: .init(withAPIKey: apiKey).with(usesStoreKit2IfAvailable: true))
         
         login()
@@ -92,7 +91,7 @@ final class StoreKitManager: NSObject, StoreKitManaging {
         
         customerInfoTask = .init { [weak self] in
             guard let strongSelf = self else { return }
-            for try await customerInfo in Purchases.shared.customerInfoStream {
+            for try await _ in Purchases.shared.customerInfoStream {
                 strongSelf.restorePurchases()
                     .sink()
                     .store(in: &strongSelf.cancellables)
