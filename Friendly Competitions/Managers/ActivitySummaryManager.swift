@@ -93,8 +93,11 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
             subject.send(hkActivitySummaries?.map(\.activitySummary) ?? [])
             subject.send(completion: .finished)
         }
-        self.healthKitManager.execute(query)
-        return subject.eraseToAnyPublisher()
+        return subject
+            .handleEvents(withUnretained: self, receiveSubscription: { strongSelf, _ in
+                strongSelf.healthKitManager.execute(query)
+            })
+            .eraseToAnyPublisher()
     }
 
     func update() -> AnyPublisher<Void, Error> {

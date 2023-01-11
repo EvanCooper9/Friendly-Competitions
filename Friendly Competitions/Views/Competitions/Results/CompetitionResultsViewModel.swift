@@ -20,7 +20,7 @@ final class CompetitionResultsViewModel: ObservableObject {
     
     @Injected(Container.activitySummaryManager) private var activitySummaryManager
     @Injected(Container.competitionsManager) private var competitionsManager
-    @Injected(Container.storeKitManager) private var storeKitManager
+    @Injected(Container.premiumManager) private var premiumManager
     @Injected(Container.userManager) private var userManager
     @Injected(Container.workoutManager) private var workoutManager
     
@@ -33,10 +33,8 @@ final class CompetitionResultsViewModel: ObservableObject {
                 
         Publishers
             .CombineLatest3(
-                competitionsManager
-                    .results(for: competition.id)
-                    .catchErrorJustReturn([]),
-                storeKitManager.hasPremium,
+                competitionsManager.results(for: competition.id).catchErrorJustReturn([]),
+                premiumManager.premium.map(\.isNil.not),
                 selectedIndex
             )
             .map { results, hasPremium, selectedIndex in
@@ -49,7 +47,7 @@ final class CompetitionResultsViewModel: ObservableObject {
                             start: event.start,
                             end: event.end,
                             selected: offset == selectedIndex,
-                            locked: offset == 0 ? true : true // !hasPremium
+                            locked: offset == 0 ? false : !hasPremium
                         )
                     }
             }
@@ -106,13 +104,13 @@ final class CompetitionResultsViewModel: ObservableObject {
             return competitionsManager
                 .standings(for: competition.id, endingOn: previousRange.dateInterval.end)
                 .map { $0 as [Competition.Standing]? }
-                .catch { _ in AnyPublisher<[Competition.Standing]?, Never>.just(nil) }
+                .catchErrorJustReturn(nil)
                 .eraseToAnyPublisher()
         }()
         
         let currentStandings = competitionsManager
             .standings(for: competition.id, endingOn: currentRange.end)
-            .catch { _ in AnyPublisher<[Competition.Standing], Never>.just([]) }
+            .catchErrorJustReturn([])
         
         return Publishers
             .CombineLatest3(currentStandings, previousStandings, userManager.userPublisher)
@@ -155,20 +153,19 @@ final class CompetitionResultsViewModel: ObservableObject {
                 return activitySummaryManager
                     .activitySummaries(in: previousRange.dateInterval)
                     .map { $0 as [ActivitySummary]? }
-                    .catch { _ in AnyPublisher<[ActivitySummary]?, Never>.just(nil) }
+                    .catchErrorJustReturn(nil)
                     .eraseToAnyPublisher()
             }()
             
             let currentActivitySummaries = activitySummaryManager
                 .activitySummaries(in: currentRange.dateInterval)
-                .catch { _ in AnyPublisher<[ActivitySummary], Never>.just([]) }
+                .catchErrorJustReturn([])
 
             return Publishers
                 .CombineLatest(
                     currentActivitySummaries,
                     previousActivitySummaries
                 )
-                .ignoreFailure()
                 .map { [weak self] currentActivitySummaries, previousActivitySummaries in
                     guard let strongSelf = self else { return [] }
                     let scoringModel = strongSelf.competition.scoringModel

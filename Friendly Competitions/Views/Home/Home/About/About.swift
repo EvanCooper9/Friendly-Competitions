@@ -4,14 +4,6 @@ import SwiftUI
 import SwiftUIX
 
 struct About: View {
-
-    private enum Constants {
-        static let privacyPolicyURL = URL(string: "https://www.termsfeed.com/live/83fffe02-9426-43f1-94ca-aedea5df3d24")!
-        static let bugReportURL = URL(string: "https://www.reddit.com/r/friendlycompetitions/submit?title=Bug%20Report")!
-        static let featureRequestURL = URL(string: "https://www.reddit.com/r/friendlycompetitions/submit?title=Feature%20Request")!
-        static let developerURL = URL(string: "https://evancooper.tech")!
-    }
-
     var body: some View {
         List {
             Section {
@@ -23,13 +15,13 @@ struct About: View {
                     guard let windowScene = windowScene else { return }
                     SKStoreReviewController.requestReview(in: windowScene)
                 }
-                Link(destination: Constants.privacyPolicyURL) {
+                Link(destination: .privacyPolicy) {
                     Label("Privacy policy", systemImage: .handRaisedFill)
                 }
-                Link(destination: Constants.featureRequestURL) {
+                Link(destination: .featureRequest) {
                     Label("Feature request", systemImage: .lightbulbFill)
                 }
-                Link(destination: Constants.bugReportURL) {
+                Link(destination: .bugReport) {
                     Label("Report an issue", systemImage: "ladybug.fill")
                 }
             } header: {
@@ -43,7 +35,7 @@ struct About: View {
             .textCase(nil)
 
             Section("The Developer") {
-                Link(destination: Constants.developerURL) {
+                Link(destination: .developer) {
                     Label("Website", systemImage: .globeAmericasFill)
                 }
             }

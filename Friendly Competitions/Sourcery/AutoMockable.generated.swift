@@ -861,6 +861,72 @@ class PermissionsManagingMock: PermissionsManaging {
     }
 
 }
+class PremiumManagingMock: PremiumManaging {
+    var premium: AnyPublisher<Premium?, Never> {
+        get { return underlyingPremium }
+        set(value) { underlyingPremium = value }
+    }
+    var underlyingPremium: AnyPublisher<Premium?, Never>!
+    var products: AnyPublisher<[Product], Never> {
+        get { return underlyingProducts }
+        set(value) { underlyingProducts = value }
+    }
+    var underlyingProducts: AnyPublisher<[Product], Never>!
+
+    //MARK: - purchase
+
+    var purchaseCallsCount = 0
+    var purchaseCalled: Bool {
+        return purchaseCallsCount > 0
+    }
+    var purchaseReceivedProduct: Product?
+    var purchaseReceivedInvocations: [Product] = []
+    var purchaseReturnValue: AnyPublisher<Void, Error>!
+    var purchaseClosure: ((Product) -> AnyPublisher<Void, Error>)?
+
+    func purchase(_ product: Product) -> AnyPublisher<Void, Error> {
+        purchaseCallsCount += 1
+        purchaseReceivedProduct = product
+        purchaseReceivedInvocations.append(product)
+        if let purchaseClosure = purchaseClosure {
+            return purchaseClosure(product)
+        } else {
+            return purchaseReturnValue
+        }
+    }
+
+    //MARK: - restorePurchases
+
+    var restorePurchasesCallsCount = 0
+    var restorePurchasesCalled: Bool {
+        return restorePurchasesCallsCount > 0
+    }
+    var restorePurchasesReturnValue: AnyPublisher<Void, Error>!
+    var restorePurchasesClosure: (() -> AnyPublisher<Void, Error>)?
+
+    func restorePurchases() -> AnyPublisher<Void, Error> {
+        restorePurchasesCallsCount += 1
+        if let restorePurchasesClosure = restorePurchasesClosure {
+            return restorePurchasesClosure()
+        } else {
+            return restorePurchasesReturnValue
+        }
+    }
+
+    //MARK: - manageSubscription
+
+    var manageSubscriptionCallsCount = 0
+    var manageSubscriptionCalled: Bool {
+        return manageSubscriptionCallsCount > 0
+    }
+    var manageSubscriptionClosure: (() -> Void)?
+
+    func manageSubscription() {
+        manageSubscriptionCallsCount += 1
+        manageSubscriptionClosure?()
+    }
+
+}
 class StorageManagingMock: StorageManaging {
 
     //MARK: - data
@@ -882,59 +948,6 @@ class StorageManagingMock: StorageManaging {
             return dataForClosure(storagePath)
         } else {
             return dataForReturnValue
-        }
-    }
-
-}
-class StoreKitManagingMock: StoreKitManaging {
-    var products: AnyPublisher<[FriendlyCompetitionsProduct], Never> {
-        get { return underlyingProducts }
-        set(value) { underlyingProducts = value }
-    }
-    var underlyingProducts: AnyPublisher<[FriendlyCompetitionsProduct], Never>!
-    var purchases: AnyPublisher<[FriendlyCompetitionsProduct], Never> {
-        get { return underlyingPurchases }
-        set(value) { underlyingPurchases = value }
-    }
-    var underlyingPurchases: AnyPublisher<[FriendlyCompetitionsProduct], Never>!
-
-    //MARK: - purchase
-
-    var purchaseCallsCount = 0
-    var purchaseCalled: Bool {
-        return purchaseCallsCount > 0
-    }
-    var purchaseReceivedProduct: FriendlyCompetitionsProduct?
-    var purchaseReceivedInvocations: [FriendlyCompetitionsProduct] = []
-    var purchaseReturnValue: AnyPublisher<Void, Error>!
-    var purchaseClosure: ((FriendlyCompetitionsProduct) -> AnyPublisher<Void, Error>)?
-
-    func purchase(_ product: FriendlyCompetitionsProduct) -> AnyPublisher<Void, Error> {
-        purchaseCallsCount += 1
-        purchaseReceivedProduct = product
-        purchaseReceivedInvocations.append(product)
-        if let purchaseClosure = purchaseClosure {
-            return purchaseClosure(product)
-        } else {
-            return purchaseReturnValue
-        }
-    }
-
-    //MARK: - refreshPurchasedProducts
-
-    var refreshPurchasedProductsCallsCount = 0
-    var refreshPurchasedProductsCalled: Bool {
-        return refreshPurchasedProductsCallsCount > 0
-    }
-    var refreshPurchasedProductsReturnValue: AnyPublisher<Void, Error>!
-    var refreshPurchasedProductsClosure: (() -> AnyPublisher<Void, Error>)?
-
-    func refreshPurchasedProducts() -> AnyPublisher<Void, Error> {
-        refreshPurchasedProductsCallsCount += 1
-        if let refreshPurchasedProductsClosure = refreshPurchasedProductsClosure {
-            return refreshPurchasedProductsClosure()
-        } else {
-            return refreshPurchasedProductsReturnValue
         }
     }
 

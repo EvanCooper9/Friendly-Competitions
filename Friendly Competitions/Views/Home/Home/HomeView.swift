@@ -16,7 +16,7 @@ struct HomeView: View {
         NavigationStack(path: $viewModel.navigationDestinations) {
             List {
                 if viewModel.showPremiumBanner {
-                    premium
+                    premiumBanner
                 }
                 Group {
                     activitySummary
@@ -49,12 +49,11 @@ struct HomeView: View {
         }
     }
     
-    private var premium: some View {
+    private var premiumBanner: some View {
         Section {
             PremiumBanner().overlay {
                 Button(systemImage: .xmark, action: viewModel.dismissPremiumBannerTapped)
-                    .foregroundColor(.gray.opacity(0.5))
-                    .padding()
+                    .padding(14)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
                     .buttonStyle(.plain)
             }

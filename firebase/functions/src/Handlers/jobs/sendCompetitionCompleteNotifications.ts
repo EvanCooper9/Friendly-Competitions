@@ -33,7 +33,7 @@ async function sendCompetitionCompleteNotifications(): Promise<void> {
                 .sendNotificationsToUser(
                     user,
                     "Competition complete!",
-                    `You placed ${rank}${ordinal} in ${competition.name}!`,
+                    `You placed ${rank}${ordinal} in ${competition.name}. Tap to see your results.`,
                     `https://friendly-competitions.app/competition/${competition.id}/history`
                 )
                 .then(() => user.updateStatisticsWithNewRank(rank));

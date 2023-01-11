@@ -14,6 +14,29 @@ struct ProfileView: View {
                 MedalsView(statistics: viewModel.user.statistics ?? .zero)
             }
             
+            if let premium = viewModel.premium {
+                Section("Friendly Competitions Preimum") {
+                    VStack(alignment: .leading) {
+                        HStack {
+                            Text(premium.title)
+                            Spacer()
+                            Text(premium.price)
+                                .foregroundColor(.secondaryLabel)
+                        }
+                        if let expiry = premium.expiry {
+                            Text("\(premium.renews ? "Renews" : "Expires") on \(expiry.formatted(date: .long, time: .complete))")
+                                .foregroundColor(.secondaryLabel)
+                                .font(.caption)
+                        }
+                    }
+                    .padding(.vertical, .extraSmall)
+                    Button("Manage", action: viewModel.manageSubscriptionTapped)
+                }
+            } else {
+                Section(content: PremiumBanner.init)
+                    .listRowInsets(.zero)
+            }
+            
             Section {
                 Toggle("Searchable", isOn: $viewModel.user.searchable ?? true)
             } header: {

@@ -11,7 +11,7 @@ fileprivate enum Dependencies {
     static let healthKitManager = HealthKitManagingMock()
     static let permissionsManager = PermissionsManagingMock()
     static let storageManager = StorageManagingMock()
-    static let storeKitManager = StoreKitManagingMock()
+    static let premiumManager = PremiumManagingMock()
     static let userManager = UserManagingMock()
     static let workoutManager = WorkoutManagingMock()
     
@@ -25,7 +25,7 @@ fileprivate enum Dependencies {
         Container.healthKitManager.register { healthKitManager }
         Container.permissionsManager.register { permissionsManager }
         Container.storageManager.register { storageManager }
-        Container.storeKitManager.register { storeKitManager }
+        Container.premiumManager.register { premiumManager }
         Container.userManager.register { userManager }
         Container.workoutManager.register { workoutManager }
     }
@@ -54,15 +54,15 @@ fileprivate enum Dependencies {
 
         storageManager.dataForReturnValue = .just(.init())
         
-        let products: [FriendlyCompetitionsProduct] = [
-            .init(id: "1", price: "$0.99/month", title: "Monthly", description: "Access premium features for one month"),
-            .init(id: "2", price: "$1.99/six months", title: "Semi-Annually", description: "Access premium features for six months"),
-            .init(id: "3", price: "$2.99/year", title: "Yearly", description: "Access premium features for one year")
+        let products: [Product] = [
+            .init(id: "1", price: "$0.99 / month", offer: "Free for 3 days", title: "Monthly", description: "Access premium features for one month"),
+            .init(id: "2", price: "$1.99 / six months", offer: nil, title: "Semi-Annually", description: "Access premium features for six months"),
+            .init(id: "3", price: "$2.99 / year", offer: nil, title: "Yearly", description: "Access premium features for one year")
         ]
-        storeKitManager.products = .just(products)
-        storeKitManager.purchases = .just([])
-        storeKitManager.purchaseReturnValue = .just(())
-        storeKitManager.refreshPurchasedProductsReturnValue = .just(())
+        premiumManager.premium = .just(nil)
+        premiumManager.products = .just(products)
+        premiumManager.purchaseReturnValue = .just(())
+//        premiumManager.refreshPurchasedProductsReturnValue = .just(())
         
         userManager.user = .evan
         userManager.userPublisher = .just(.evan)
@@ -83,7 +83,7 @@ extension PreviewProvider {
     static var healthKitManager: HealthKitManagingMock { Dependencies.healthKitManager }
     static var permissionsManager: PermissionsManagingMock { Dependencies.permissionsManager }
     static var storageManager: StorageManagingMock { Dependencies.storageManager }
-    static var storeKitManager: StoreKitManagingMock { Dependencies.storeKitManager }
+    static var premiumManager: PremiumManagingMock { Dependencies.premiumManager }
     static var userManager: UserManagingMock { Dependencies.userManager }
     static var workoutManager: WorkoutManagingMock { Dependencies.workoutManager }
 }
