@@ -36,6 +36,7 @@ final class HomeViewModelTests: XCTestCase {
         friendsManager.friendRequests = .never()
         friendsManager.friendActivitySummaries = .never()
         permissionsManager.requiresPermission = .never()
+        premiumManager.premium = .never()
         userManager.userPublisher = .just(.evan)
         
         Container.activitySummaryManager.register { self.activitySummaryManager }
