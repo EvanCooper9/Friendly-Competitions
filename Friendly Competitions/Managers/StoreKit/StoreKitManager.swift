@@ -54,7 +54,7 @@ final class StoreKitManager: NSObject, StoreKitManaging {
         
         let apiKey: String
         #if DEBUG
-        apiKey = "appl_cayvcjbGxSDqyHWOBVVhmQddgkp"
+        apiKey = "appl_REFBiyXbqcpKtUtawSUJezooOfQ"
         #else
         apiKey = "appl_PfCzNKLwrBPhZHDqVcrFOfigEHq"
         #endif
