@@ -45,8 +45,9 @@ struct ExploreView: View {
                                     NavigationLink(value: NavigationDestination.competition(competition)) { EmptyView() }
                                         .opacity(0)
                                     CompetitionDetails(competition: competition, showParticipantCount: true, isFeatured: false)
-                                        .padding()
-                                        .background(.white)
+                                        .padding(.vertical, .small)
+                                        .padding(.horizontal)
+                                        .background(.systemFill)
                                         .cornerRadius(10)
                                 }
                             }

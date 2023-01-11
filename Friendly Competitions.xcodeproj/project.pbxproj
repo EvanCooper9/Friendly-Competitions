@@ -945,8 +945,8 @@
 		ED48782C282747B100AC1E2C /* Invite Friends */ = {
 			isa = PBXGroup;
 			children = (
-				ED48782D282747BD00AC1E2C /* InviteFriendsView.swift */,
 				ED48783128295A2100AC1E2C /* InviteFriendsAction.swift */,
+				ED48782D282747BD00AC1E2C /* InviteFriendsView.swift */,
 				ED48782F282747CE00AC1E2C /* InviteFriendsViewModel.swift */,
 			);
 			path = "Invite Friends";

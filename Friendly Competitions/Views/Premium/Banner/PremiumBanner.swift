@@ -16,7 +16,7 @@ struct PremiumBanner: View {
                 .font(.footnote)
             
             if showPurchaseButton {
-                Button("Purchase", action: viewModel.purchaseTapped)
+                Button("Learn more", action: viewModel.purchaseTapped)
                     .padding(.vertical, .small)
                     .padding(.horizontal)
                     .background(.ultraThinMaterial)

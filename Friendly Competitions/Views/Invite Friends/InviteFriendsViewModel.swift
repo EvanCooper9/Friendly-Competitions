@@ -64,7 +64,7 @@ final class InviteFriendsViewModel: ObservableObject {
             .flatMapLatest(withUnretained: self) { strongSelf, searchText -> AnyPublisher<[User], Never> in
                 guard !searchText.isEmpty else { return .just([]) }
                 return strongSelf.friendsManager
-                    .search(with: searchText)
+                    .search(with: searchText, showNotSearchable: true)
                     .catchErrorJustReturn([])
             }
             .combineLatest(alreadyInvited, incomingRequests)
