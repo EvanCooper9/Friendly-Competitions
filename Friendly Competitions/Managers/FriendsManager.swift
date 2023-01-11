@@ -19,7 +19,13 @@ protocol FriendsManaging {
     func decline(friendRequest: User) -> AnyPublisher<Void, Error>
     func delete(friend: User) -> AnyPublisher<Void, Error>
     func user(withId id: String) -> AnyPublisher<User?, Error>
-    func search(with text: String) -> AnyPublisher<[User], Error>
+    func search(with text: String, showNotSearchable: Bool) -> AnyPublisher<[User], Error>
+}
+
+extension FriendsManaging {
+    func search(with text: String) -> AnyPublisher<[User], Error> {
+        search(with: text, showNotSearchable: false)
+    }
 }
 
 final class FriendsManager: FriendsManaging {
@@ -27,6 +33,7 @@ final class FriendsManager: FriendsManaging {
     /// Used for searching, so we don't decode dates and other expensive properties
     private struct SearchResult: Decodable {
         let name: String
+        let searchable: Bool
     }
 
     // MARK: - Public Properties
@@ -143,14 +150,16 @@ final class FriendsManager: FriendsManaging {
             .eraseToAnyPublisher()
     }
 
-    func search(with text: String) -> AnyPublisher<[User], Error> {
+    func search(with text: String, showNotSearchable: Bool) -> AnyPublisher<[User], Error> {
         database.collection("users")
             .whereField("id", isNotEqualTo: userManager.user.id)
-            .whereField("searchable", isEqualTo: true)
             .getDocuments()
             .map(\.documents)
             .filterMany { document in
-                guard let searchResult = try? document.data(as: SearchResult.self) else { return false }
+                guard let searchResult = try? document.data(as: SearchResult.self),
+                      searchResult.searchable || showNotSearchable
+                else { return false }
+                
                 return searchResult.name
                     .split(separator: " ")
                     .contains { $0.localizedLowercase.starts(with: text.localizedLowercase) }

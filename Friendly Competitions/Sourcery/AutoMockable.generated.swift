@@ -746,23 +746,23 @@ class FriendsManagingMock: FriendsManaging {
 
     //MARK: - search
 
-    var searchWithCallsCount = 0
-    var searchWithCalled: Bool {
-        return searchWithCallsCount > 0
+    var searchWithShowNotSearchableCallsCount = 0
+    var searchWithShowNotSearchableCalled: Bool {
+        return searchWithShowNotSearchableCallsCount > 0
     }
-    var searchWithReceivedText: String?
-    var searchWithReceivedInvocations: [String] = []
-    var searchWithReturnValue: AnyPublisher<[User], Error>!
-    var searchWithClosure: ((String) -> AnyPublisher<[User], Error>)?
+    var searchWithShowNotSearchableReceivedArguments: (text: String, showNotSearchable: Bool)?
+    var searchWithShowNotSearchableReceivedInvocations: [(text: String, showNotSearchable: Bool)] = []
+    var searchWithShowNotSearchableReturnValue: AnyPublisher<[User], Error>!
+    var searchWithShowNotSearchableClosure: ((String, Bool) -> AnyPublisher<[User], Error>)?
 
-    func search(with text: String) -> AnyPublisher<[User], Error> {
-        searchWithCallsCount += 1
-        searchWithReceivedText = text
-        searchWithReceivedInvocations.append(text)
-        if let searchWithClosure = searchWithClosure {
-            return searchWithClosure(text)
+    func search(with text: String, showNotSearchable: Bool) -> AnyPublisher<[User], Error> {
+        searchWithShowNotSearchableCallsCount += 1
+        searchWithShowNotSearchableReceivedArguments = (text: text, showNotSearchable: showNotSearchable)
+        searchWithShowNotSearchableReceivedInvocations.append((text: text, showNotSearchable: showNotSearchable))
+        if let searchWithShowNotSearchableClosure = searchWithShowNotSearchableClosure {
+            return searchWithShowNotSearchableClosure(text, showNotSearchable)
         } else {
-            return searchWithReturnValue
+            return searchWithShowNotSearchableReturnValue
         }
     }
 

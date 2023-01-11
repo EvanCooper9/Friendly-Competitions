@@ -242,8 +242,8 @@ final class PremiumManager: NSObject, PremiumManaging {
 
 private extension Package {
     var localizedPriceWithUnit: String {
-        guard let unit = storeProduct.subscriptionPeriod?.unit else { return localizedPriceString }
-        return "\(localizedPriceString) / \(unit.localizedDescription)"
+        guard let subscriptionPeriod = storeProduct.subscriptionPeriod else { return localizedPriceString }
+        return "\(localizedPriceString) / \(subscriptionPeriod.value) \(subscriptionPeriod.unit.localizedDescription)\(subscriptionPeriod.value != 1 ? "s" : "")"
     }
 }
 
