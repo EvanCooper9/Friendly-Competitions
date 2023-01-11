@@ -34,7 +34,7 @@ final class HomeViewModel: ObservableObject {
     @Injected(Container.competitionsManager) private var competitionsManager
     @Injected(Container.friendsManager) private var friendsManager
     @Injected(Container.permissionsManager) private var permissionsManager
-    @Injected(Container.storeKitManager) private var storeKitManager
+    @Injected(Container.premiumManager) private var premiumManager
     @Injected(Container.userManager) private var userManager
     
     @UserDefault("competitionsFiltered", defaultValue: false) var competitionsFiltered
@@ -105,7 +105,7 @@ final class HomeViewModel: ObservableObject {
         Publishers
             .CombineLatest(
                 $dismissedPremiumBanner,
-                storeKitManager.premium.map { $0 != nil }
+                premiumManager.premium.map { $0 != nil }
             )
             .handleEvents(withUnretained: self, receiveOutput: { strongSelf, result in
                 let (_, premium) = result

@@ -13,7 +13,7 @@ final class ProfileViewModel: ObservableObject {
     // MARK: - Private Properties
     
     @Injected(Container.authenticationManager) private var authenticationManager
-    @Injected(Container.storeKitManager) private var storeKitManager
+    @Injected(Container.premiumManager) private var premiumManager
     @Injected(Container.userManager) private var userManager
 
     private let deleteAccountSubject = PassthroughSubject<Void, Never>()
@@ -41,7 +41,7 @@ final class ProfileViewModel: ObservableObject {
             .map(User?.init)
             .assign(to: &$user)
         
-        storeKitManager.premium.assign(to: &$premium)
+        premiumManager.premium.assign(to: &$premium)
 
         deleteAccountSubject
             .flatMapLatest(withUnretained: self) { strongSelf in
@@ -74,7 +74,7 @@ final class ProfileViewModel: ObservableObject {
     }
     
     func manageSubscriptionTapped() {
-        storeKitManager.manageSubscription()
+        premiumManager.manageSubscription()
     }
     
     func signOutTapped() {

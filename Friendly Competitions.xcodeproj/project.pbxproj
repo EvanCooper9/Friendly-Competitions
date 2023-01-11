@@ -813,7 +813,7 @@
 				ED7881A92850F6B400C7F6CB /* Authentication */,
 				EDD894FE29634038009636E6 /* Environment */,
 				ED6CB45A28BA829000436BBD /* HealthKit */,
-				EDD894F829628CE4009636E6 /* StoreKit */,
+				EDD894F829628CE4009636E6 /* Premium */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -1100,14 +1100,14 @@
 			path = Workouts;
 			sourceTree = "<group>";
 		};
-		EDD894F829628CE4009636E6 /* StoreKit */ = {
+		EDD894F829628CE4009636E6 /* Premium */ = {
 			isa = PBXGroup;
 			children = (
 				ED1B5CF2296C7A4F00122D7E /* Premium.swift */,
 				EDD894F92962A0E2009636E6 /* Product.swift */,
 				EDA035CB291860090091E7A6 /* StoreKitManager.swift */,
 			);
-			path = StoreKit;
+			path = Premium;
 			sourceTree = "<group>";
 		};
 		EDD894FE29634038009636E6 /* Environment */ = {

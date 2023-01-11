@@ -20,7 +20,7 @@ final class CompetitionResultsViewModel: ObservableObject {
     
     @Injected(Container.activitySummaryManager) private var activitySummaryManager
     @Injected(Container.competitionsManager) private var competitionsManager
-    @Injected(Container.storeKitManager) private var storeKitManager
+    @Injected(Container.premiumManager) private var premiumManager
     @Injected(Container.userManager) private var userManager
     @Injected(Container.workoutManager) private var workoutManager
     
@@ -34,7 +34,7 @@ final class CompetitionResultsViewModel: ObservableObject {
         Publishers
             .CombineLatest3(
                 competitionsManager.results(for: competition.id).catchErrorJustReturn([]),
-                storeKitManager.premium.map(\.isNil.not),
+                premiumManager.premium.map(\.isNil.not),
                 selectedIndex
             )
             .map { results, hasPremium, selectedIndex in

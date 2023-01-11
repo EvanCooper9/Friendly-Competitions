@@ -10,7 +10,7 @@ import StoreKit
 import UIKit
 
 // sourcery: AutoMockable
-protocol StoreKitManaging {
+protocol PremiumManaging {
     var premium: AnyPublisher<Premium?, Never> { get }
     var products: AnyPublisher<[Product], Never> { get }
     
@@ -19,7 +19,7 @@ protocol StoreKitManaging {
     func manageSubscription()
 }
 
-final class StoreKitManager: NSObject, StoreKitManaging {
+final class PremiumManager: NSObject, PremiumManaging {
     
     enum PurchaseError: Error {
         case cancelled

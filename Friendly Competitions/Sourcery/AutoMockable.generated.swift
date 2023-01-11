@@ -861,32 +861,7 @@ class PermissionsManagingMock: PermissionsManaging {
     }
 
 }
-class StorageManagingMock: StorageManaging {
-
-    //MARK: - data
-
-    var dataForCallsCount = 0
-    var dataForCalled: Bool {
-        return dataForCallsCount > 0
-    }
-    var dataForReceivedStoragePath: String?
-    var dataForReceivedInvocations: [String] = []
-    var dataForReturnValue: AnyPublisher<Data, Error>!
-    var dataForClosure: ((String) -> AnyPublisher<Data, Error>)?
-
-    func data(for storagePath: String) -> AnyPublisher<Data, Error> {
-        dataForCallsCount += 1
-        dataForReceivedStoragePath = storagePath
-        dataForReceivedInvocations.append(storagePath)
-        if let dataForClosure = dataForClosure {
-            return dataForClosure(storagePath)
-        } else {
-            return dataForReturnValue
-        }
-    }
-
-}
-class StoreKitManagingMock: StoreKitManaging {
+class PremiumManagingMock: PremiumManaging {
     var premium: AnyPublisher<Premium?, Never> {
         get { return underlyingPremium }
         set(value) { underlyingPremium = value }
@@ -949,6 +924,31 @@ class StoreKitManagingMock: StoreKitManaging {
     func manageSubscription() {
         manageSubscriptionCallsCount += 1
         manageSubscriptionClosure?()
+    }
+
+}
+class StorageManagingMock: StorageManaging {
+
+    //MARK: - data
+
+    var dataForCallsCount = 0
+    var dataForCalled: Bool {
+        return dataForCallsCount > 0
+    }
+    var dataForReceivedStoragePath: String?
+    var dataForReceivedInvocations: [String] = []
+    var dataForReturnValue: AnyPublisher<Data, Error>!
+    var dataForClosure: ((String) -> AnyPublisher<Data, Error>)?
+
+    func data(for storagePath: String) -> AnyPublisher<Data, Error> {
+        dataForCallsCount += 1
+        dataForReceivedStoragePath = storagePath
+        dataForReceivedInvocations.append(storagePath)
+        if let dataForClosure = dataForClosure {
+            return dataForClosure(storagePath)
+        } else {
+            return dataForReturnValue
+        }
     }
 
 }

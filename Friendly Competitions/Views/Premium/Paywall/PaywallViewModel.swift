@@ -16,7 +16,7 @@ final class PaywallViewModel: ObservableObject {
     // MARK: - Private Properties
     
     @Injected(Container.analyticsManager) private var analyticsManager
-    @Injected(Container.storeKitManager) private var storeKitManager
+    @Injected(Container.premiumManager) private var premiumManager
     
     private let selectedIndex = CurrentValueSubject<Int, Never>(0)
     private let purchaseSubject = PassthroughSubject<Void, Never>()
@@ -30,7 +30,7 @@ final class PaywallViewModel: ObservableObject {
         analyticsManager.log(event: .premiumPaywallPrimerViewed)
         
         Publishers
-            .CombineLatest(storeKitManager.products, selectedIndex)
+            .CombineLatest(premiumManager.products, selectedIndex)
             .map { products, selectedIndex in
                 products.enumerated().map { offset, product in
                     PaywallOffer(
@@ -48,7 +48,7 @@ final class PaywallViewModel: ObservableObject {
                 
             })
             .flatMapLatest(withUnretained: self) { strongSelf, offer in
-                strongSelf.storeKitManager
+                strongSelf.premiumManager
                     .purchase(offer.product)
                     .isLoading { strongSelf.loading = $0 }
                     .ignoreFailure()
@@ -58,13 +58,13 @@ final class PaywallViewModel: ObservableObject {
         
         restoreSubject
             .flatMapLatest(withUnretained: self) { strongSelf in
-                strongSelf.storeKitManager
+                strongSelf.premiumManager
                     .restorePurchases()
                     .isLoading { strongSelf.loading = $0 }
                     .ignoreFailure()
             }
             .flatMapLatest(withUnretained: self) { strongSelf in
-                strongSelf.storeKitManager.premium
+                strongSelf.premiumManager.premium
                     .map(\.isNil.not)
                     .eraseToAnyPublisher()
             }

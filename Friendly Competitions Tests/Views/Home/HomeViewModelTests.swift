@@ -13,6 +13,7 @@ final class HomeViewModelTests: XCTestCase {
     private var competitionsManager: CompetitionsManagingMock!
     private var friendsManager: FriendsManagingMock!
     private var permissionsManager: PermissionsManagingMock!
+    private var premiumManager: PremiumManagingMock!
     private var userManager: UserManagingMock!
 
     private var cancellables: Cancellables!
@@ -23,6 +24,7 @@ final class HomeViewModelTests: XCTestCase {
         competitionsManager = .init()
         friendsManager = .init()
         permissionsManager = .init()
+        premiumManager = .init()
         userManager = .init()
         cancellables = .init()
 
@@ -41,6 +43,7 @@ final class HomeViewModelTests: XCTestCase {
         Container.competitionsManager.register { self.competitionsManager }
         Container.friendsManager.register { self.friendsManager }
         Container.permissionsManager.register { self.permissionsManager }
+        Container.premiumManager.register { self.premiumManager }
         Container.userManager.register { self.userManager }
 
         super.setUp()
