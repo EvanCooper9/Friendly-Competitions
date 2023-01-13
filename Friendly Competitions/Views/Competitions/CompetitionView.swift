@@ -20,10 +20,6 @@ struct CompetitionView: View {
                 results
             }
             
-            if viewModel.pendingParticipants.isNotEmpty {
-                pendingInvites
-            }
-            
             if viewModel.editing {
                 EditCompetitionSection(
                     name: $viewModel.competition.name,
@@ -81,8 +77,15 @@ struct CompetitionView: View {
 
     private var standings: some View {
         Section {
-            ForEach(viewModel.standings) {
-                CompetitionParticipantRow(config: $0)
+            if viewModel.loadingStandings {
+                ProgressView()
+            } else {
+                ForEach(viewModel.standings) {
+                    CompetitionParticipantRow(config: $0)
+                }
+                if viewModel.showShowMoreButton {
+                    Button("Show more", action: viewModel.showMoreTapped)
+                }
             }
         } header: {
             Text("Standings")
@@ -96,14 +99,6 @@ struct CompetitionView: View {
     private var results: some View {
         Section {
             NavigationLink("Results", value: NavigationDestination.competitionResults(viewModel.competition))
-        }
-    }
-
-    private var pendingInvites: some View {
-        Section("Pending invites") {
-            ForEach(viewModel.pendingParticipants) {
-                CompetitionParticipantRow(config: $0)
-            }
         }
     }
 
@@ -138,26 +133,18 @@ struct CompetitionView_Previews: PreviewProvider {
     private static func setupMocks() {
         let evan = User.evan
         let gabby = User.gabby
-        let standings: [Competition.ID: [Competition.Standing]] = [
-            competition.id: [
-                .init(rank: 1, userId: "Somebody", points: 100),
-                .init(rank: 2, userId: "Rick", points: 75),
-                .init(rank: 3, userId: "Bob", points: 60),
-                .init(rank: 4, userId: gabby.id, points: 50),
-                .init(rank: 5, userId: evan.id, points: 20),
-                .init(rank: 6, userId: "Joe", points: 9),
-            ]
+        let standings: [Competition.Standing] = [
+            .init(rank: 1, userId: "Somebody", points: 100),
+            .init(rank: 2, userId: "Rick", points: 75),
+            .init(rank: 3, userId: "Bob", points: 60),
+            .init(rank: 4, userId: gabby.id, points: 50),
+            .init(rank: 5, userId: evan.id, points: 20),
+            .init(rank: 6, userId: "Joe", points: 9),
         ]
-        let participants: [Competition.ID: [User]] = [
-            competition.id: [evan, gabby]
-        ]
-        let pendingParticipants: [Competition.ID: [User]] = [
-            competition.id: [gabby]
-        ]
+        let participants = [evan, gabby]
         competitionsManager.competitions = .just([competition])
-        competitionsManager.standings = .just(standings)
-        competitionsManager.participants = .just(participants)
-        competitionsManager.pendingParticipants = .just(pendingParticipants)
+        competitionsManager.standingsForReturnValue = .just(standings)
+        competitionsManager.participantsForReturnValue = .just(participants)
     }
 
     static var previews: some View {

@@ -147,16 +147,9 @@ struct HomeView_Previews: PreviewProvider {
     private static func setupMocks() {
         activitySummaryManager.activitySummary = .just(.mock)
         
-        let competitions: [Competition] = [.mock, .mockInvited, .mockOld, .mockPublic]
-        let participants = competitions.reduce(into: [Competition.ID: [User]]()) { partialResult, competition in
-            partialResult[competition.id] = [.evan]
-        }
-        let standings = competitions.reduce(into: [Competition.ID: [Competition.Standing]]()) { partialResult, competition in
-            partialResult[competition.id] = [.mock(for: .evan)]
-        }
-        competitionsManager.competitions = .just(competitions)
-        competitionsManager.participants = .just(participants)
-        competitionsManager.standings = .just(standings)
+        competitionsManager.competitions = .just([.mock, .mockInvited, .mockOld, .mockPublic])
+        competitionsManager.participantsForReturnValue = .just([.evan])
+        competitionsManager.standingsForReturnValue = .just([.mock(for: .evan)])
 
         friendsManager.friends = .just([.gabby])
         friendsManager.friendRequests = .just([.andrew])

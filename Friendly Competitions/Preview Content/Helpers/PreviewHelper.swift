@@ -40,13 +40,12 @@ fileprivate enum Dependencies {
 
         competitionsManager.competitions = .just([.mock])
         competitionsManager.invitedCompetitions = .just([])
-        competitionsManager.standings = .just([:])
-        competitionsManager.participants = .just([:])
-        competitionsManager.pendingParticipants = .just([:])
+        competitionsManager.standingsForReturnValue = .just([])
+        competitionsManager.standingsForResultIDReturnValue = .just([])
+        competitionsManager.participantsForReturnValue = .just([])
         competitionsManager.appOwnedCompetitions = .just([.mockPublic])
         competitionsManager.searchReturnValue = .just([.mockPublic, .mock])
         competitionsManager.resultsForReturnValue = .just([])
-        competitionsManager.standingsForEndingOnReturnValue = .just([])
         
         friendsManager.friends = .just([])
         friendsManager.friendActivitySummaries = .just([:])

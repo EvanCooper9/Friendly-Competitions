@@ -74,7 +74,7 @@ struct CompetitionResultsView_Previews: PreviewProvider {
             .init(rank: 5, userId: "5", points: 100),
             .init(rank: 6, userId: "6", points: 100)
         ]
-        competitionsManager.standingsForEndingOnReturnValue = .just(stats)
+        competitionsManager.standingsForResultIDReturnValue = .just(stats)
     }
     
     static var previews: some View {
