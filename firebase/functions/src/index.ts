@@ -11,6 +11,7 @@ import { joinCompetition } from "./Handlers/competitions/joinCompetition";
 import { leaveCompetition } from "./Handlers/competitions/leaveCompetition";
 import { cleanActivitySummaries } from "./Handlers/jobs/cleanActivitySummaries";
 import { sendCompetitionCompleteNotifications } from "./Handlers/jobs/sendCompetitionCompleteNotifications";
+import { sendNewCompetitionInvites } from "./Handlers/competitions/sendNewCompetitionInvites";
 
 admin.initializeApp();
 
@@ -64,6 +65,13 @@ exports.leaveCompetition = functions.https.onCall((data, context) => {
     if (userID == null) return Promise.resolve();
     return leaveCompetition(competitionID, userID);
 });
+
+exports.sendNewCompetitionInvites = functions.firestore
+    .document("competitions/{competitionID}")
+    .onCreate((snapshot, context) => {
+        const competitionID: string = context.params.competitionID;
+        return sendNewCompetitionInvites(competitionID);
+    });
 
 // Friends
 

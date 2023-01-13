@@ -17,8 +17,11 @@ function joinCompetition(competitionID: string, userID: string): Promise<void> {
             const index = competition.pendingParticipants.indexOf(userID, 0);
             if (index > -1) competition.pendingParticipants.splice(index, 1);
             competition.participants.push(userID);
-            const obj = Object.assign({}, competition);
-            return firestore.doc(`competitions/${competitionID}`).set(obj);
+            return firestore.doc(`competitions/${competitionID}`)
+                .update({ 
+                    participants: competition.participants,
+                    pendingParticipants: competition.pendingParticipants
+                });
         })
         .then();
 }

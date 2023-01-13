@@ -18,8 +18,12 @@ function respondToCompetitionInvite(competitionID: string, callerID: string, acc
             const index = competition.pendingParticipants.indexOf(callerID, 0);
             if (index > -1) competition.pendingParticipants.splice(index, 1);
             if (accept) competition.participants.push(callerID);
-            const obj = Object.assign({}, competition);
-            return firestore.doc(`competitions/${competitionID}`).set(obj);
+            return firestore
+                .doc(`competitions/${competitionID}`)
+                .update({
+                    pendingParticipants: competition.pendingParticipants,
+                    participants: competition.participants
+                });
         })
         .then();
 }
