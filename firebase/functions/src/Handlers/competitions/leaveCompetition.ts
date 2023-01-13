@@ -16,8 +16,9 @@ function leaveCompetition(competitionID: string, userID: string): Promise<void> 
         .then(competition => {
             const index = competition.participants.indexOf(userID, 0);
             if (index > -1) competition.participants.splice(index, 1);
-            const obj = Object.assign({}, competition);
-            return firestore.doc(`competitions/${competitionID}`).set(obj);
+            return firestore
+                .doc(`competitions/${competitionID}`)
+                .update({ participants: competition.participants });
         })
         .then(() => {
             return firestore.doc(`competitions/${competitionID}/standings/${userID}`).delete();
