@@ -43,8 +43,6 @@ struct CompetitionResultsView: View {
             Text("You need Friendly Competitions Premium to see older results")
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .font(.title)
-            Text("You still have access to the earliest results for every competition")
-                .foregroundColor(.secondaryLabel)
             PremiumBanner()
                 .cornerRadius(10)
         }
