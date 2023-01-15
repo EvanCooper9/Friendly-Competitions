@@ -68,6 +68,7 @@ final class CompetitionResultsViewModel: ObservableObject {
                 }
                 return (results[selectedIndex], nil)
             }
+            .handleEvents(withUnretained: self, receiveSubscription: { strongSelf, _ in strongSelf.loading = true })
         
         Publishers
             .CombineLatest(currentResults, $locked)

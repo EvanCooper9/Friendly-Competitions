@@ -18,9 +18,8 @@ struct Home_Previews: PreviewProvider {
     private static func setupMocks() {
         activitySummaryManager.activitySummary = .just(.mock)
 
-        let competitions: [Competition] = [.mock, .mockInvited, .mockOld]
         competitionsManager.appOwnedCompetitions = .just([.mockPublic, .mockPublic])
-        competitionsManager.competitions = .just(competitions)
+        competitionsManager.competitions = .just([.mock, .mockInvited, .mockOld])
         competitionsManager.participantsForReturnValue = .just([.evan])
         competitionsManager.standingsForReturnValue = .just([.mock(for: .evan)])
 
