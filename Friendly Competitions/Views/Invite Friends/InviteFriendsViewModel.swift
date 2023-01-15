@@ -47,16 +47,11 @@ final class InviteFriendsViewModel: ObservableObject {
                 .map(\.incomingFriendRequests)
                 .eraseToAnyPublisher()
         case .competitionInvite(let competition):
-            alreadyInvited = Publishers
-                .CombineLatest(competitionsManager.participants, competitionsManager.pendingParticipants)
-                .map { participants, pendingParticipants in
-                    let participants = participants[competition.id] ?? []
-                    let pendingParticipants = pendingParticipants[competition.id] ?? []
-                    return (participants + pendingParticipants).map(\.id)
-                }
+            alreadyInvited = competitionsManager.competitionPublisher(for: competition.id)
+                .map { $0.participants + $0.pendingParticipants }
+                .catchErrorJustReturn([])
                 .share(replay: 1)
                 .eraseToAnyPublisher()
-
             incomingRequests = .just([])
         }
 
@@ -78,18 +73,16 @@ final class InviteFriendsViewModel: ObservableObject {
                         buttonTitle: hasIncomingInvite ? "Accept" : (alreadyInvited.contains(friend.id) ? "Invited" : "Invite"),
                         buttonDisabled: alreadyInvited.contains(friend.id),
                         buttonAction: { [weak self, friend] in
-                            guard let self = self, let index = self.rows.firstIndex(where: { $0.id == friend.id }) else { return }
-                            self.rows[index].buttonDisabled.toggle()
-                            self.rows[index].buttonTitle = self.rows[index].buttonDisabled ? "Invited" : "Invite"
+                            guard let strongSelf = self else { return }
                             switch action {
                             case .addFriend:
                                 if hasIncomingInvite {
-                                    self.acceptSubject.send(friend)
+                                    strongSelf.acceptSubject.send(friend)
                                 } else {
-                                    self.inviteSubject.send(friend)
+                                    strongSelf.inviteSubject.send(friend)
                                 }
                             case .competitionInvite:
-                                self.inviteSubject.send(friend)
+                                strongSelf.inviteSubject.send(friend)
                             }
                         }
                     )

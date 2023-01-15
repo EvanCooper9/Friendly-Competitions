@@ -21,8 +21,8 @@ struct Home_Previews: PreviewProvider {
         let competitions: [Competition] = [.mock, .mockInvited, .mockOld]
         competitionsManager.appOwnedCompetitions = .just([.mockPublic, .mockPublic])
         competitionsManager.competitions = .just(competitions)
-        competitionsManager.participants = .just(competitions.reduce(into: [:]) { $0[$1.id] = [.evan] })
-        competitionsManager.standings = .just(competitions.reduce(into: [:]) { $0[$1.id] = [.mock(for: .evan)] })
+        competitionsManager.participantsForReturnValue = .just([.evan])
+        competitionsManager.standingsForReturnValue = .just([.mock(for: .evan)])
 
         let friend = User.gabby
         friendsManager.friends = .just([friend])
