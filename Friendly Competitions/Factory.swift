@@ -28,8 +28,6 @@ extension Container {
         let environment = Container.environmentManager.callAsFunction().firestoreEnvironment
         let firestore = Firestore.firestore()
         let settings = firestore.settings
-        settings.isPersistenceEnabled = false
-        settings.cacheSizeBytes = 1_048_576 // 1 MB
 
         switch environment.type {
         case .prod:
