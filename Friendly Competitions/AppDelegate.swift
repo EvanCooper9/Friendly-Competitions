@@ -2,6 +2,7 @@ import ECKit_Firebase
 import Factory
 import Firebase
 import FirebaseFirestore
+import FirebaseFirestoreSwift
 import FirebaseMessaging
 import UIKit
 
@@ -31,8 +32,8 @@ extension AppDelegate: MessagingDelegate {
                 .data(as: User.self)
 
             guard user.notificationTokens?.contains(fcmToken) == false else { return }
-            user.notificationTokens = user.notificationTokens?.appending(fcmToken) ?? [fcmToken]
-            try await database.document("users/\(userId)").updateDataEncodable(user)
+            let tokens = user.notificationTokens?.appending(fcmToken) ?? [fcmToken]
+            try await database.document("users/\(userId)").updateData(["notificationTokens": tokens])
         }
     }
 }

@@ -107,7 +107,6 @@ final class HomeViewModel: ObservableObject {
                 $dismissedPremiumBanner,
                 premiumManager.premium.map { $0 != nil }
             )
-            .print("inputs")
             .handleEvents(withUnretained: self, receiveOutput: { strongSelf, result in
                 let (_, premium) = result
                 guard premium else { return }
