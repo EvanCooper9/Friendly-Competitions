@@ -84,7 +84,6 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
         case .email(let email, let password):
             return Auth.auth()
                 .signIn(withEmail: email, password: password)
-                .print("sign in with email")
                 .mapToVoid()
                 .eraseToAnyPublisher()
         }
@@ -162,7 +161,6 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
     private func listenForAuth() {
         Auth.auth()
             .authStateDidChangePublisher()
-            .print("auth state did change")
             .sinkAsync { [weak self] firebaseUser in
                 guard let firebaseUser = firebaseUser else {
                     self?.currentUser = nil
