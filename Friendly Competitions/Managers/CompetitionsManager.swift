@@ -215,25 +215,16 @@ final class CompetitionsManager: CompetitionsManaging {
     
     func standings(for competitionID: Competition.ID, resultID: CompetitionResult.ID) -> AnyPublisher<[Competition.Standing], Error> {
         database.collection("competitions/\(competitionID)/results/\(resultID)/standings")
-            .getDocuments(source: .cache)
-            .catch { [weak self] error -> AnyPublisher<QuerySnapshot, any Error> in
-                guard let strongSelf = self else { return .never() }
-                return strongSelf.database
-                    .collection("competitions/\(competitionID)/results/\(resultID)/standings")
-                    .getDocuments(source: .server)
-                    .eraseToAnyPublisher()
-            }
+            .getDocumentsPreferCache()
             .map { $0.documents.compactMap { try? $0.data(as: Competition.Standing.self) } }
             .eraseToAnyPublisher()
     }
     
     func standings(for competitionID: Competition.ID) -> AnyPublisher<[Competition.Standing], Error> {
-        functions.httpsCallable("updateCompetitionStandings")
-            .call()
-            .mapToVoid()
+        updateCompetitionStandingsIfRequired(for: competitionID)
             .flatMapLatest(withUnretained: self) { strongSelf in
                 strongSelf.database.collection("competitions/\(competitionID)/standings")
-                    .getDocuments()
+                    .getDocumentsPreferCache()
                     .map { $0.documents.compactMap { try? $0.data(as: Competition.Standing.self) } }
                     .eraseToAnyPublisher()
             }
@@ -258,6 +249,18 @@ final class CompetitionsManager: CompetitionsManaging {
     }
 
     // MARK: - Private Methods
+    
+    private var lastCompetitionStandingsUpdate = [Competition.ID: Date]()
+    private func updateCompetitionStandingsIfRequired(for competitionID: Competition.ID) -> AnyPublisher<Void, Error> {
+        if abs(lastCompetitionStandingsUpdate[competitionID]?.timeIntervalSinceNow ?? .infinity) < 5.minutes {
+            return .just(())
+        }
+        return functions.httpsCallable("updateCompetitionStandings")
+            .call(["competitionID": competitionID])
+            .mapToVoid()
+            .handleEvents(withUnretained: self, receiveOutput: { $0.lastCompetitionStandingsUpdate[competitionID] = .now })
+            .eraseToAnyPublisher()
+    }
 
     private func listenForCompetitions() {
         database.collection("competitions")
@@ -293,5 +296,15 @@ final class CompetitionsManager: CompetitionsManaging {
 private extension Dictionary where Key == Competition.ID {
     func removeOldCompetitions(current competitions: [Competition]) -> Self {
         filter { competitionId, _ in competitions.contains(where: { $0.id == competitionId }) }
+    }
+}
+
+extension Query {
+    func getDocumentsPreferCache() -> AnyPublisher<QuerySnapshot, Error> {
+        getDocuments(source: .cache)
+            .catch { [weak self] _ -> AnyPublisher<QuerySnapshot, Error> in
+                self?.getDocuments(source: .server).eraseToAnyPublisher() ?? .never()
+            }
+            .eraseToAnyPublisher()
     }
 }

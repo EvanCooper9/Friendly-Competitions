@@ -7,7 +7,7 @@ final class RootViewModel: ObservableObject {
     
     // MARK: - Public Properties
     
-    @Published private(set)var tab = RootTab.home
+    @Published var tab = RootTab.home
     
     // MARK: - Private Properties
     
@@ -18,6 +18,7 @@ final class RootViewModel: ObservableObject {
     init() {
         appState.deepLink
             .unwrap()
+            .removeDuplicates()
             .mapToValue(.home)
             .assign(to: &$tab)
     }

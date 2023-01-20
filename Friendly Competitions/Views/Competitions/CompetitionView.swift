@@ -90,7 +90,7 @@ struct CompetitionView: View {
         } header: {
             Text("Standings")
         } footer: {
-            if viewModel.standings.isEmpty {
+            if viewModel.standings.isEmpty && !viewModel.loadingStandings {
                 Text("Nothing here, yet.")
             }
         }

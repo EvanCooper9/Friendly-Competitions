@@ -11,9 +11,7 @@ import { leaveCompetition } from "./Handlers/competitions/leaveCompetition";
 import { cleanActivitySummaries } from "./Handlers/jobs/cleanActivitySummaries";
 import { sendCompetitionCompleteNotifications } from "./Handlers/jobs/sendCompetitionCompleteNotifications";
 import { sendNewCompetitionInvites } from "./Handlers/competitions/sendNewCompetitionInvites";
-import { updateActivitySummaryScores } from "./Handlers/jobs/updateActivitySummaryScores";
-import { updateCompetitionStandings } from "./Handlers/competitions/updateCompetitionStandings";
-import { updateWorkoutScores } from "./Handlers/jobs/updateWorkoutScores";
+import { updateCompetitionStandings, updateUserCompetitionStandings } from "./Handlers/competitions/updateCompetitionStandings";
 
 admin.initializeApp();
 
@@ -48,10 +46,15 @@ exports.respondToCompetitionInvite = functions.https.onCall((data, context) => {
     return respondToCompetitionInvite(competitionID, caller, accept);
 });
 
-exports.updateCompetitionStandings = functions.https.onCall((_data, context) => {
-    const userID = context.auth?.uid;
-    if (userID == null) return Promise.resolve();
-    return updateCompetitionStandings(userID);
+exports.updateCompetitionStandings = functions.https.onCall((data, context) => {
+    const competitionID = data.competitionID;
+    if (competitionID == undefined) {
+        const userID = context.auth?.uid;
+        if (userID == null) return Promise.resolve();
+        return updateUserCompetitionStandings(userID);
+    } else {
+        return updateCompetitionStandings(competitionID)
+    }
 });
 
 exports.joinCompetition = functions.https.onCall((data, context) => {
@@ -108,21 +111,3 @@ exports.cleanActivitySummaries = functions.pubsub.schedule("every sunday 02:00")
 exports.sendCompetitionCompleteNotifications = functions.pubsub.schedule("every day 12:00")
     .timeZone("America/Toronto")
     .onRun(async () => sendCompetitionCompleteNotifications());
-
-// exports.updateActivitySummaryScores = functions
-//     .firestore
-//     .document("users/{userID}/activitySummaries/{activitySummaryID}")
-//     .onWrite(async (change, context) => {
-//         const userID: string = context.params.userID;
-//         if (userID != "LqfhMHfQ97b0s9vaQdWyf8jqvSa2") return;
-//         await updateActivitySummaryScores(userID, change.before, change.after);
-//     });
-
-// exports.updateWorkoutScores = functions
-//     .firestore
-//     .document("users/{userID}/workouts/{workoutID}")
-//     .onWrite(async (change, context) => {
-//         const userID: string = context.params.userID;
-//         if (userID != "LqfhMHfQ97b0s9vaQdWyf8jqvSa2") return;
-//         await updateWorkoutScores(userID, change.before, change.after);
-//     });
