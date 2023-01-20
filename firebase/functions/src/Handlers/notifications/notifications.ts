@@ -1,5 +1,5 @@
 import * as admin from "firebase-admin";
-import { User } from "./Models/User";
+import { User } from "../../Models/User";
 
 /**
  * Sends a notification to all of a user's notification tokens

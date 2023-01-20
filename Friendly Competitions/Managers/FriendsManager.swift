@@ -44,6 +44,7 @@ final class FriendsManager: FriendsManaging {
 
     // MARK: - Private Properties
 
+    @Injected(Container.appState) private var appState
     @Injected(Container.database) private var database
     @Injected(Container.functions) private var functions
     @Injected(Container.userManager) private var userManager
@@ -61,49 +62,10 @@ final class FriendsManager: FriendsManaging {
         friendActivitySummaries = friendActivitySummariesSubject.eraseToAnyPublisher()
         friendRequests = friendRequestsSubject.eraseToAnyPublisher()
         
-        let allFriends = userManager.userPublisher
-            .flatMapAsync { [weak self] user -> [User] in
-                guard let strongSelf = self else { return [] }                
-                return try await strongSelf.database.collection("users")
-                    .whereFieldWithChunking("id", in: user.friends + user.incomingFriendRequests)
-                    .decoded(asArrayOf: User.self)
-                    .sorted(by: \.name)
-            }
-            .share(replay: 1)
-
-        Publishers
-            .CombineLatest(userManager.userPublisher, allFriends)
-            .map { user, allFriends in
-                allFriends.filter { user.friends.contains($0.id) }
-            }
-            .sink(withUnretained: self) { $0.friendsSubject.send($1) }
-            .store(in: &cancellables)
-
-        Publishers
-            .CombineLatest(userManager.userPublisher, allFriends)
-            .map { user, allFriends in
-                allFriends.filter { user.incomingFriendRequests.contains($0.id) }
-            }
-            .sink(withUnretained: self) { $0.friendRequestsSubject.send($1) }
-            .store(in: &cancellables)
-
-        allFriends
-            .flatMapAsync { [weak self] (friends: [User]) in
-                guard let strongSelf = self else { return [:] }
-                
-                let activitySummaries = try await strongSelf.database.collectionGroup("activitySummaries")
-                    .whereField("date", isEqualTo: DateFormatter.dateDashed.string(from: .now))
-                    .whereFieldWithChunking("userID", in: friends.map(\.id))
-                    .decoded(asArrayOf: ActivitySummary.self)
-                
-                let pairs = activitySummaries.compactMap { activitySummary -> (User.ID, ActivitySummary)? in
-                    guard let userID = activitySummary.userID else { return nil }
-                    return (userID, activitySummary)
-                }
-                
-                return Dictionary(uniqueKeysWithValues: pairs)
-            }
-            .sink(withUnretained: self) { $0.friendActivitySummariesSubject.send($1) }
+        appState.didBecomeActive
+            .filter { $0 }
+            .mapToVoid()
+            .sink(withUnretained: self) { $0.listenForFriends() }
             .store(in: &cancellables)
     }
 
@@ -167,5 +129,54 @@ final class FriendsManager: FriendsManaging {
             .compactMapMany { try? $0.data(as: User.self) }
             .map { $0.sorted(by: \.name) }
             .eraseToAnyPublisher()
+    }
+    
+    // MARK: - Private Methods
+    
+    private func listenForFriends() {
+        let allFriends = userManager.userPublisher
+            .flatMapAsync { [weak self] user -> [User] in
+                guard let strongSelf = self else { return [] }
+                return try await strongSelf.database.collection("users")
+                    .whereFieldWithChunking("id", in: user.friends + user.incomingFriendRequests)
+                    .decoded(asArrayOf: User.self)
+                    .sorted(by: \.name)
+            }
+            .share(replay: 1)
+
+        Publishers
+            .CombineLatest(userManager.userPublisher, allFriends)
+            .map { user, allFriends in
+                allFriends.filter { user.friends.contains($0.id) }
+            }
+            .sink(withUnretained: self) { $0.friendsSubject.send($1) }
+            .store(in: &cancellables)
+
+        Publishers
+            .CombineLatest(userManager.userPublisher, allFriends)
+            .map { user, allFriends in
+                allFriends.filter { user.incomingFriendRequests.contains($0.id) }
+            }
+            .sink(withUnretained: self) { $0.friendRequestsSubject.send($1) }
+            .store(in: &cancellables)
+
+        allFriends
+            .flatMapAsync { [weak self] (friends: [User]) in
+                guard let strongSelf = self else { return [:] }
+                
+                let activitySummaries = try await strongSelf.database.collectionGroup("activitySummaries")
+                    .whereField("date", isEqualTo: DateFormatter.dateDashed.string(from: .now))
+                    .whereFieldWithChunking("userID", in: friends.map(\.id))
+                    .decoded(asArrayOf: ActivitySummary.self)
+                
+                let pairs = activitySummaries.compactMap { activitySummary -> (User.ID, ActivitySummary)? in
+                    guard let userID = activitySummary.userID else { return nil }
+                    return (userID, activitySummary)
+                }
+                
+                return Dictionary(uniqueKeysWithValues: pairs)
+            }
+            .sink(withUnretained: self) { $0.friendActivitySummariesSubject.send($1) }
+            .store(in: &cancellables)
     }
 }

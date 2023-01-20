@@ -13,6 +13,7 @@ protocol CompetitionsManaging {
     var competitions: AnyPublisher<[Competition], Never>! { get }
     var invitedCompetitions: AnyPublisher<[Competition], Never>! { get }
     var appOwnedCompetitions: AnyPublisher<[Competition], Never>! { get }
+    var competitionsDateInterval: DateInterval { get }
 
     func accept(_ competition: Competition) -> AnyPublisher<Void, Error>
     func create(_ competition: Competition) -> AnyPublisher<Void, Error>
@@ -40,6 +41,7 @@ final class CompetitionsManager: CompetitionsManaging {
     
     private enum Constants {
         static let maxParticipantsToFetch = 10
+        static var competitionsDateIntervalKey: String { #function }
     }
     
     // MARK: - Public Properties
@@ -47,6 +49,8 @@ final class CompetitionsManager: CompetitionsManaging {
     private(set) var competitions: AnyPublisher<[Competition], Never>!
     private(set) var invitedCompetitions: AnyPublisher<[Competition], Never>!
     private(set) var appOwnedCompetitions: AnyPublisher<[Competition], Never>!
+    
+    private(set) var competitionsDateInterval: DateInterval
 
     // MARK: - Private Properties
     
@@ -55,12 +59,10 @@ final class CompetitionsManager: CompetitionsManaging {
     private let appOwnedCompetitionsSubject = CurrentValueSubject<[Competition], Never>([])
 
     @Injected(Container.appState) private var appState
-    @LazyInjected(Container.activitySummaryManager) private var activitySummaryManager
     @Injected(Container.analyticsManager) private var analyticsManager
     @Injected(Container.database) private var database
     @Injected(Container.functions) private var functions
     @Injected(Container.userManager) private var userManager
-    @LazyInjected(Container.workoutManager) private var workoutManager
     
     private var updateTask: Task<Void, Error>? {
         willSet { updateTask?.cancel() }
@@ -68,6 +70,18 @@ final class CompetitionsManager: CompetitionsManaging {
 
     private var cancellables = Cancellables()
     private var listenerBag = ListenerBag()
+    
+    private lazy var firestoreEncoder: Firestore.Encoder = {
+        let encoder = Firestore.Encoder()
+        encoder.dateEncodingStrategy = .formatted(.dateDashed)
+        return encoder
+    }()
+    
+    private lazy var firestoreDecoder: Firestore.Decoder = {
+        let decoder = Firestore.Decoder()
+        decoder.dateDecodingStrategy = .formatted(.dateDashed)
+        return decoder
+    }()
 
     // MARK: - Lifecycle
 
@@ -75,23 +89,23 @@ final class CompetitionsManager: CompetitionsManaging {
         competitions = competitionsSubject.share(replay: 1).eraseToAnyPublisher()
         invitedCompetitions = invitedCompetitionsSubject.share(replay: 1).eraseToAnyPublisher()
         appOwnedCompetitions = appOwnedCompetitionsSubject.share(replay: 1).eraseToAnyPublisher()
+        
+        let dateInterval = UserDefaults.standard.decode(DateInterval.self, forKey: Constants.competitionsDateIntervalKey) ?? .init()
+        competitionsDateInterval = dateInterval
+        competitions
+            .dropFirst()
+            .filterMany(\.isActive)
+            .map(\.dateInterval)
+            .sink(withUnretained: self) { strongSelf, dateInterval in
+                strongSelf.competitionsDateInterval = dateInterval
+                UserDefaults.standard.encode(dateInterval, forKey: Constants.competitionsDateIntervalKey)
+            }
+            .store(in: &cancellables)
 
         appState.didBecomeActive
             .filter { $0 }
             .mapToVoid()
             .sink(withUnretained: self) { $0.listenForCompetitions() }
-            .store(in: &cancellables)
-
-        Publishers
-            .CombineLatest3(competitions, appOwnedCompetitions, invitedCompetitions)
-            .map { $0 + $1 + $2 }
-            .removeDuplicates()
-            .mapToVoid()
-            .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
-            .eraseToAnyPublisher()
-            .setFailureType(to: Error.self)
-            .flatMapLatest(withUnretained: self) { $0.updateStandings() }
-            .sink()
             .store(in: &cancellables)
     }
 
@@ -201,16 +215,19 @@ final class CompetitionsManager: CompetitionsManaging {
     
     func standings(for competitionID: Competition.ID, resultID: CompetitionResult.ID) -> AnyPublisher<[Competition.Standing], Error> {
         database.collection("competitions/\(competitionID)/results/\(resultID)/standings")
-            .getDocuments()
+            .getDocumentsPreferCache()
             .map { $0.documents.compactMap { try? $0.data(as: Competition.Standing.self) } }
             .eraseToAnyPublisher()
     }
     
     func standings(for competitionID: Competition.ID) -> AnyPublisher<[Competition.Standing], Error> {
-        database.collection("competitions/\(competitionID)/standings")
-            .getDocuments()
-            .map { $0.documents.compactMap { try? $0.data(as: Competition.Standing.self) } }
-            .eraseToAnyPublisher()
+        updateCompetitionStandingsIfRequired(for: competitionID)
+            .flatMapLatest(withUnretained: self) { strongSelf in
+                strongSelf.database.collection("competitions/\(competitionID)/standings")
+                    .getDocumentsPreferCache()
+                    .map { $0.documents.compactMap { try? $0.data(as: Competition.Standing.self) } }
+                    .eraseToAnyPublisher()
+            }
     }
     
     func participants(for competitionsID: Competition.ID) -> AnyPublisher<[User], Error> {
@@ -233,10 +250,15 @@ final class CompetitionsManager: CompetitionsManaging {
 
     // MARK: - Private Methods
     
-    private func updateStandings() -> AnyPublisher<Void, Error> {
-        functions.httpsCallable("updateCompetitionStandings")
-            .call()
+    private var lastCompetitionStandingsUpdate = [Competition.ID: Date]()
+    private func updateCompetitionStandingsIfRequired(for competitionID: Competition.ID) -> AnyPublisher<Void, Error> {
+        if abs(lastCompetitionStandingsUpdate[competitionID]?.timeIntervalSinceNow ?? .infinity) < 5.minutes {
+            return .just(())
+        }
+        return functions.httpsCallable("updateCompetitionStandings")
+            .call(["competitionID": competitionID])
             .mapToVoid()
+            .handleEvents(withUnretained: self, receiveOutput: { $0.lastCompetitionStandingsUpdate[competitionID] = .now })
             .eraseToAnyPublisher()
     }
 
@@ -258,7 +280,7 @@ final class CompetitionsManager: CompetitionsManaging {
                 self.invitedCompetitionsSubject.send(competitions)
             }
             .store(in: listenerBag)
-
+            
         database.collection("competitions")
             .whereField("isPublic", isEqualTo: true)
             .whereField("owner", isEqualTo: Bundle.main.id)
@@ -274,5 +296,15 @@ final class CompetitionsManager: CompetitionsManaging {
 private extension Dictionary where Key == Competition.ID {
     func removeOldCompetitions(current competitions: [Competition]) -> Self {
         filter { competitionId, _ in competitions.contains(where: { $0.id == competitionId }) }
+    }
+}
+
+extension Query {
+    func getDocumentsPreferCache() -> AnyPublisher<QuerySnapshot, Error> {
+        getDocuments(source: .cache)
+            .catch { [weak self] _ -> AnyPublisher<QuerySnapshot, Error> in
+                self?.getDocuments(source: .server).eraseToAnyPublisher() ?? .never()
+            }
+            .eraseToAnyPublisher()
     }
 }

@@ -13,10 +13,13 @@ protocol EnvironmentManaging {
 
 final class EnvironmentManager: EnvironmentManaging {
     
+    private enum Constants {
+        static var environmentKey: String { #file + #function }
+    }
+    
     // MARK: - Public Properties
     
     var firestoreEnvironment: FirestoreEnvironment { firestoreEnvironmentSubject.value }
-    
     let firestoreEnvironmentDidChange: AnyPublisher<Void, Never>
     
     // MARK: - Private Properties
@@ -28,10 +31,10 @@ final class EnvironmentManager: EnvironmentManaging {
     // MARK: - Lifecycle
     
     init() {
-        if let environment = UserDefaults.standard.decode(FirestoreEnvironment.self, forKey: "environment") {
+        if let environment = UserDefaults.standard.decode(FirestoreEnvironment.self, forKey: Constants.environmentKey) {
             firestoreEnvironmentSubject = .init(environment)
         } else {
-            firestoreEnvironmentSubject = .init(.defaultEnvionment)
+            firestoreEnvironmentSubject = .init(.default)
         }
         
         firestoreEnvironmentDidChange = firestoreEnvironmentSubject
@@ -39,7 +42,7 @@ final class EnvironmentManager: EnvironmentManaging {
             .eraseToAnyPublisher()
         
         firestoreEnvironmentSubject
-            .sink { UserDefaults.standard.encode($0, forKey: "environment") }
+            .sink { UserDefaults.standard.encode($0, forKey: Constants.environmentKey) }
             .store(in: &cancellables)
     }
     

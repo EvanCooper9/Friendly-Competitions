@@ -21,7 +21,4 @@ enum AnalyticsEvent: Codable {
     case premiumPurchaseCancelled(id: String)
     case premiumPurchased(id: String)
     case premiumBannerDismissed
-
-    // errors
-    case decodingError(error: String)
 }

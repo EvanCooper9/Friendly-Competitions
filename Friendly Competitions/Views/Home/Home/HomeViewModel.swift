@@ -40,6 +40,8 @@ final class HomeViewModel: ObservableObject {
     @UserDefault("competitionsFiltered", defaultValue: false) var competitionsFiltered
     @UserDefault("dismissedPremiumBanner", defaultValue: false) private var dismissedPremiumBanner
     
+    private var cancellables = Cancellables()
+    
     // MARK: - Lifecycle
 
     init() {
@@ -84,6 +86,30 @@ final class HomeViewModel: ObservableObject {
         competitionsManager.invitedCompetitions.assign(to: &$invitedCompetitions)
         
         Publishers
+            .CombineLatest4($competitions, $invitedCompetitions, $friendRows, appState.deepLink)
+            .sink(withUnretained: self) { strongSelf, result in
+                let (competitions, invitedCompetitions, friendRows, deepLink) = result
+                let homeScreenCompetitionIDs = Set(competitions.map(\.id) + invitedCompetitions.map(\.id))
+                let homeScreenFriendIDs = Set(friendRows.map(\.user.id))
+                
+                // remove stale navigation destinations (ex: leaving a competition, declining a friend invite)
+                strongSelf.navigationDestinations = strongSelf.navigationDestinations.filter { navigationDestination in
+                    // accont for deep link to ensure that if comp/friend lists updates, then the deep link isn't dismissed
+                    switch (navigationDestination, deepLink) {
+                    case (.competition(let competition), .competition(id: let deepLinkedCompeititonID)):
+                        return homeScreenCompetitionIDs.contains(competition.id) || deepLinkedCompeititonID == competition.id
+                    case (.competitionResults(let competition), .competitionResults(id: let deepLinkedCompeititonID)):
+                        return homeScreenCompetitionIDs.contains(competition.id) || deepLinkedCompeititonID == competition.id
+                    case (.user(let user), .user(id: let deepLinkedUserID)):
+                        return homeScreenFriendIDs.contains(user.id) || deepLinkedUserID == user.id
+                    default:
+                        return true
+                    }
+                }
+            }
+            .store(in: &cancellables)
+        
+        Publishers
             .CombineLatest(friendsManager.friends, friendsManager.friendRequests)
             .map { $0.with(false) + $1.with(true) }
             .combineLatest(friendsManager.friendActivitySummaries)
@@ -107,7 +133,6 @@ final class HomeViewModel: ObservableObject {
                 $dismissedPremiumBanner,
                 premiumManager.premium.map { $0 != nil }
             )
-            .print("inputs")
             .handleEvents(withUnretained: self, receiveOutput: { strongSelf, result in
                 let (_, premium) = result
                 guard premium else { return }
@@ -121,10 +146,6 @@ final class HomeViewModel: ObservableObject {
         userManager.userPublisher
             .map { $0.name.ifEmpty(Bundle.main.name) }
             .assign(to: &$title)
-    }
-    
-    func purchaseTapped() {
-        showPaywall.toggle()
     }
     
     func dismissPremiumBannerTapped() {

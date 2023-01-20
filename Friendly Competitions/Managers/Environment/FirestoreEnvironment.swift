@@ -6,9 +6,7 @@ struct FirestoreEnvironment: Codable {
     let emulationType: EmulationType
     let emulationDestination: String?
 
-    static var defaultEnvionment: Self {
-        .init(type: .prod, emulationType: .localhost, emulationDestination: "localhost")
-    }
+    static let `default` = Self.init(type: .prod, emulationType: .localhost, emulationDestination: "localhost")
 
     enum EnvironmentType: String, CaseIterable, Codable, Hashable, Identifiable {
         case prod

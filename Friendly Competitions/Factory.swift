@@ -22,14 +22,12 @@ extension Container {
     static let workoutManager = Factory(scope: .shared) { WorkoutManager() as WorkoutManaging }
     
     // Global state
-    static let appState = Factory(scope: .singleton) { AppState() as AppStateProviding }
+    static let appState = Factory(scope: .shared) { AppState() as AppStateProviding }
     
     static let database = Factory(scope: .shared) {
         let environment = Container.environmentManager.callAsFunction().firestoreEnvironment
         let firestore = Firestore.firestore()
         let settings = firestore.settings
-        settings.isPersistenceEnabled = false
-        settings.cacheSizeBytes = 1_048_576 // 1 MB
 
         switch environment.type {
         case .prod:
