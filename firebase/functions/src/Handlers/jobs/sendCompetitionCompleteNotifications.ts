@@ -3,7 +3,7 @@ import { Competition } from "../../Models/Competition";
 import { Standing } from "../../Models/Standing";
 import { User } from "../../Models/User";
 import { getFirestore } from "../../Utilities/firstore";
-import * as notifications from "../../notifications";
+import * as notifications from "../notifications/notifications";
 
 /**
  * Sends notifications to competition participants, updates history, and resets repeating competitions.
@@ -44,7 +44,7 @@ async function sendCompetitionCompleteNotifications(): Promise<void> {
             .then(async () => {
                 await competition.recordResults();
                 await competition.updateRepeatingCompetition();
-                await competition.updateStandings();
+                await competition.resetStandings();
             });
     });
 

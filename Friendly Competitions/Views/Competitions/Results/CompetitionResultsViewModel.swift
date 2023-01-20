@@ -44,10 +44,10 @@ final class CompetitionResultsViewModel: ObservableObject {
                     .sorted(by: \.end)
                     .reversed()
                     .enumerated()
-                    .map { offset, event in
+                    .map { offset, result in
                         CompetitionResultsDateRange(
-                            start: event.start,
-                            end: event.end,
+                            start: result.start,
+                            end: result.end,
                             selected: offset == selectedIndex,
                             locked: offset == 0 ? false : !hasPremium
                         )
@@ -60,7 +60,7 @@ final class CompetitionResultsViewModel: ObservableObject {
             .map { $0.first(where: \.selected)?.locked ?? true }
             .assign(to: &$locked)
         
-        let currentResults = Publishers
+        let currentSelection = Publishers
             .CombineLatest(results, selectedIndex)
             .compactMap { results, selectedIndex -> (CompetitionResult, CompetitionResult?)? in
                 if let previousIndex = selectedIndex <= results.count - 2 ? selectedIndex + 1 : nil {
@@ -71,14 +71,14 @@ final class CompetitionResultsViewModel: ObservableObject {
             .handleEvents(withUnretained: self, receiveSubscription: { strongSelf, _ in strongSelf.loading = true })
         
         Publishers
-            .CombineLatest(currentResults, $locked)
+            .CombineLatest(currentSelection, $locked)
             .flatMapLatest(withUnretained: self, { strongSelf, input in
-                let (results, locked) = input
+                let (currentSelection, locked) = input
                 guard !locked else { return .just([]) }
                 return Publishers
                     .CombineLatest(
-                        strongSelf.standingsDataPoints(currentResult: results.0, previousResult: results.1),
-                        strongSelf.scoringDataPoints(currentResult: results.0, previousResult: results.1)
+                        strongSelf.standingsDataPoints(currentResult: currentSelection.0, previousResult: currentSelection.1),
+                        strongSelf.scoringDataPoints(currentResult: currentSelection.0, previousResult: currentSelection.1)
                     )
                     .first()
                     .map(+)

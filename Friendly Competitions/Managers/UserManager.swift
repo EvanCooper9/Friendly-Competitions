@@ -40,6 +40,7 @@ final class UserManager: UserManaging {
     init(user: User) {
         userSubject = .init(user)
         userPublisher = userSubject
+            .removeDuplicates()
             .share(replay: 1)
             .eraseToAnyPublisher()
         

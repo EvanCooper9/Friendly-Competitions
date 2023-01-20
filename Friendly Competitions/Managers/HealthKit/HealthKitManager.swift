@@ -1,5 +1,6 @@
 import Combine
 import CombineExt
+import ECKit
 import Factory
 import HealthKit
 
@@ -8,6 +9,7 @@ protocol HealthKitManaging {
     var backgroundDeliveryReceived: AnyPublisher<Void, Never> { get }
     var permissionStatus: AnyPublisher<PermissionStatus, Never> { get }
     func execute(_ query: HKQuery)
+    func registerBackgroundDeliveryTask(_ publisher: AnyPublisher<Void, Never>)
     func requestPermissions()
 }
 
@@ -15,22 +17,24 @@ final class HealthKitManager: HealthKitManaging {
 
     // MARK: - Public Properties
 
-    var backgroundDeliveryReceived: AnyPublisher<Void, Never> { _backgroundDeliveryReceived.eraseToAnyPublisher() }
+    var backgroundDeliveryReceived: AnyPublisher<Void, Never> { backgroundDeliveryReceivedSubject.eraseToAnyPublisher() }
     let permissionStatus: AnyPublisher<PermissionStatus, Never>
 
     // MARK: - Private Properties
     
     @Injected(Container.analyticsManager) private var analyticsManager
+    
+    private var cancellables = Cancellables()
 
     private let healthStore = HKHealthStore()
-    private let _backgroundDeliveryReceived = PassthroughSubject<Void, Never>()
-    private let _permissionStatus: CurrentValueSubject<[HealthKitPermissionType: PermissionStatus], Never>
+    private let backgroundDeliveryReceivedSubject = PassthroughSubject<Void, Never>()
+    private let permissionStatusSubject: CurrentValueSubject<[HealthKitPermissionType: PermissionStatus], Never>
 
     // MARK: - Initializers
 
     init() {
-        _permissionStatus = .init(UserDefaults.standard.decode([HealthKitPermissionType: PermissionStatus].self, forKey: "health_kit_permissions") ?? [:])
-        permissionStatus = _permissionStatus
+        permissionStatusSubject = .init(UserDefaults.standard.decode([HealthKitPermissionType: PermissionStatus].self, forKey: "health_kit_permissions") ?? [:])
+        permissionStatus = permissionStatusSubject
             .handleEvents(receiveOutput: { UserDefaults.standard.encode($0, forKey: "health_kit_permissions") })
             .map { permissionStatuses in
                 let hasUndetermined = HealthKitPermissionType.allCases
@@ -60,7 +64,7 @@ final class HealthKitManager: HealthKitManaging {
 
     func requestPermissions() {
         let permissionsToRequest = HealthKitPermissionType.allCases
-            .filter { _permissionStatus.value[$0] != .authorized }
+            .filter { permissionStatusSubject.value[$0] != .authorized }
 
         healthStore.requestAuthorization(
             toShare: nil,
@@ -69,29 +73,68 @@ final class HealthKitManager: HealthKitManaging {
                 guard let strongSelf = self else { return }
                 let permissionStatus: PermissionStatus = authorized ? .authorized : .denied
                 strongSelf.analyticsManager.log(event: .healthKitPermissions(authorized: authorized))
-                var currentPermissions = strongSelf._permissionStatus.value
+                var currentPermissions = strongSelf.permissionStatusSubject.value
                 permissionsToRequest.forEach { currentPermissions[$0] = permissionStatus }
-                strongSelf._permissionStatus.send(currentPermissions)
+                strongSelf.permissionStatusSubject.send(currentPermissions)
                 strongSelf.registerForBackgroundDelivery()
             }
         )
+    }
+    
+    private var backgroundDeliveryPublishers = [AnyPublisher<Void, Never>]()
+    func registerBackgroundDeliveryTask(_ publisher: AnyPublisher<Void, Never>) {
+        backgroundDeliveryPublishers.append(publisher)
     }
 
     // MARK: - Private Methods
 
     private func registerForBackgroundDelivery() {
         let backgroundDeliveryTypes = HealthKitPermissionType.allCases
-            .filter { _permissionStatus.value[$0] == .authorized }
+            .filter { permissionStatusSubject.value[$0] == .authorized }
             .compactMap { $0.objectType as? HKSampleType }
 
         for sampleType in backgroundDeliveryTypes {
-            let query = HKObserverQuery(sampleType: sampleType, predicate: nil) { [weak self] query, completion, _ in
-                guard let self = self else { return }
-                self._backgroundDeliveryReceived.send()
-                completion()
+            let query = HKObserverQuery(sampleType: sampleType, predicate: nil) { [weak self] _, completion, _ in
+                guard let strongSelf = self else { return }
+                Publishers
+                    .ZipMany(strongSelf.backgroundDeliveryPublishers)
+                    .mapToVoid()
+                    .sink(receiveValue: {
+                        print("trigger bg delivery finished")
+                        completion()
+                    })
+                    .store(in: &strongSelf.cancellables)
             }
             healthStore.execute(query)
             healthStore.enableBackgroundDelivery(for: sampleType, frequency: .hourly) { _, _ in }
+        }
+    }
+}
+
+extension Publishers {
+    struct ZipMany<Element, F: Error>: Publisher {
+        typealias Output = [Element]
+        typealias Failure = F
+
+        private let upstreams: [AnyPublisher<Element, F>]
+
+        init(_ upstreams: [AnyPublisher<Element, F>]) {
+            self.upstreams = upstreams
+        }
+
+        func receive<S: Subscriber>(subscriber: S) where Self.Failure == S.Failure, Self.Output == S.Input {
+            let initial = Just<[Element]>([])
+                .setFailureType(to: F.self)
+                .eraseToAnyPublisher()
+
+            let zipped = upstreams.reduce(into: initial) { result, upstream in
+                result = result.zip(upstream) { elements, element in
+                    elements + [element]
+                }
+                .eraseToAnyPublisher()
+            }
+
+            zipped.subscribe(subscriber)
         }
     }
 }

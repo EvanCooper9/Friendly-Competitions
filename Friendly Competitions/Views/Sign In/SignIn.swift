@@ -34,7 +34,7 @@ struct SignIn: View {
                 )
                 Spacer()
             } else {
-                Image("logo")
+                Asset.Images.logo.swiftUIImage
                     .resizable()
                     .aspectRatio(contentMode: .fit)
                     .padding()
@@ -44,6 +44,13 @@ struct SignIn: View {
                     }
                 
                 Spacer()
+                
+                #if DEBUG
+                Button(systemImage: .hammer) {
+                    
+                }
+                #endif
+                
                 VStack {
                     Button(action: viewModel.submit) {
                         Label("Sign in with Apple", systemImage: "applelogo")

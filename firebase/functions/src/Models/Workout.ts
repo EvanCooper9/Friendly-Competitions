@@ -33,6 +33,12 @@ class Workout {
     isIncludedInCompetition(competition: Competition): boolean {
         return this.date >= competition.start && this.date <= competition.end;
     }
+
+    pointsForMetrics(workoutMetrics: WorkoutMetric[]): number {
+        let total = 0;
+        workoutMetrics.forEach(workoutMetric => this.points[workoutMetric]);
+        return total;
+    }
 }
 
 export {

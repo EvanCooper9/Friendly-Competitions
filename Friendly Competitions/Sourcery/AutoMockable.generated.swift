@@ -56,24 +56,6 @@ class ActivitySummaryManagingMock: ActivitySummaryManaging {
         }
     }
 
-    //MARK: - update
-
-    var updateCallsCount = 0
-    var updateCalled: Bool {
-        return updateCallsCount > 0
-    }
-    var updateReturnValue: AnyPublisher<Void, Error>!
-    var updateClosure: (() -> AnyPublisher<Void, Error>)?
-
-    func update() -> AnyPublisher<Void, Error> {
-        updateCallsCount += 1
-        if let updateClosure = updateClosure {
-            return updateClosure()
-        } else {
-            return updateReturnValue
-        }
-    }
-
 }
 class AnalyticsManagingMock: AnalyticsManaging {
 
@@ -318,6 +300,11 @@ class CompetitionsManagingMock: CompetitionsManaging {
     var competitions: AnyPublisher<[Competition], Never>!
     var invitedCompetitions: AnyPublisher<[Competition], Never>!
     var appOwnedCompetitions: AnyPublisher<[Competition], Never>!
+    var competitionsDateInterval: DateInterval {
+        get { return underlyingCompetitionsDateInterval }
+        set(value) { underlyingCompetitionsDateInterval = value }
+    }
+    var underlyingCompetitionsDateInterval: DateInterval!
 
     //MARK: - accept
 
@@ -859,6 +846,23 @@ class HealthKitManagingMock: HealthKitManaging {
         executeClosure?(query)
     }
 
+    //MARK: - registerBackgroundDeliveryTask
+
+    var registerBackgroundDeliveryTaskCallsCount = 0
+    var registerBackgroundDeliveryTaskCalled: Bool {
+        return registerBackgroundDeliveryTaskCallsCount > 0
+    }
+    var registerBackgroundDeliveryTaskReceivedPublisher: AnyPublisher<Void, Never>?
+    var registerBackgroundDeliveryTaskReceivedInvocations: [AnyPublisher<Void, Never>] = []
+    var registerBackgroundDeliveryTaskClosure: ((AnyPublisher<Void, Never>) -> Void)?
+
+    func registerBackgroundDeliveryTask(_ publisher: AnyPublisher<Void, Never>) {
+        registerBackgroundDeliveryTaskCallsCount += 1
+        registerBackgroundDeliveryTaskReceivedPublisher = publisher
+        registerBackgroundDeliveryTaskReceivedInvocations.append(publisher)
+        registerBackgroundDeliveryTaskClosure?(publisher)
+    }
+
     //MARK: - requestPermissions
 
     var requestPermissionsCallsCount = 0
@@ -1069,24 +1073,6 @@ class UserManagingMock: UserManaging {
 
 }
 class WorkoutManagingMock: WorkoutManaging {
-
-    //MARK: - update
-
-    var updateCallsCount = 0
-    var updateCalled: Bool {
-        return updateCallsCount > 0
-    }
-    var updateReturnValue: AnyPublisher<Void, Error>!
-    var updateClosure: (() -> AnyPublisher<Void, Error>)?
-
-    func update() -> AnyPublisher<Void, Error> {
-        updateCallsCount += 1
-        if let updateClosure = updateClosure {
-            return updateClosure()
-        } else {
-            return updateReturnValue
-        }
-    }
 
     //MARK: - workouts
 

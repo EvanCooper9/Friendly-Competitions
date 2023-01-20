@@ -4,7 +4,6 @@ import { deleteAccount } from "./Handlers/account/deleteAccount";
 import { deleteCompetition } from "./Handlers/competitions/deleteCompetition";
 import { respondToCompetitionInvite } from "./Handlers/competitions/respondToCompetitionInvite";
 import { inviteUserToCompetition } from "./Handlers/competitions/inviteUserToCompetition";
-import { updateCompetitionStandings } from "./Handlers/competitions/updateCompetitionStandings";
 import { deleteFriend } from "./Handlers/friends/deleteFriend";
 import { FriendRequestAction, handleFriendRequest } from "./Handlers/friends/handleFriendRequest";
 import { joinCompetition } from "./Handlers/competitions/joinCompetition";
@@ -12,6 +11,9 @@ import { leaveCompetition } from "./Handlers/competitions/leaveCompetition";
 import { cleanActivitySummaries } from "./Handlers/jobs/cleanActivitySummaries";
 import { sendCompetitionCompleteNotifications } from "./Handlers/jobs/sendCompetitionCompleteNotifications";
 import { sendNewCompetitionInvites } from "./Handlers/competitions/sendNewCompetitionInvites";
+import { updateActivitySummaryScores } from "./Handlers/jobs/updateActivitySummaryScores";
+import { updateCompetitionStandings } from "./Handlers/competitions/updateCompetitionStandings";
+import { updateWorkoutScores } from "./Handlers/jobs/updateWorkoutScores";
 
 admin.initializeApp();
 
@@ -40,7 +42,7 @@ exports.inviteUserToCompetition = functions.https.onCall((data, context) => {
 
 exports.respondToCompetitionInvite = functions.https.onCall((data, context) => {
     const caller = context.auth?.uid;
-    const competitionID = data.competitionID;
+    const competitionID: string = data.competitionID;
     const accept = data.accept;
     if (caller == null) return Promise.resolve();
     return respondToCompetitionInvite(competitionID, caller, accept);
@@ -54,7 +56,7 @@ exports.updateCompetitionStandings = functions.https.onCall((_data, context) => 
 
 exports.joinCompetition = functions.https.onCall((data, context) => {
     const competitionID = data.competitionID;
-    const userID = context.auth?.uid;
+    const userID: string | undefined = context.auth?.uid;
     if (userID == null) return Promise.resolve();
     return joinCompetition(competitionID, userID);
 });
@@ -99,10 +101,28 @@ exports.deleteFriend = functions.https.onCall((data, context) => {
 
 // Jobs
 
-exports.cleanStaleActivitySummaries = functions.pubsub.schedule("every day 02:00")
+exports.cleanActivitySummaries = functions.pubsub.schedule("every sunday 02:00")
     .timeZone("America/Toronto")
     .onRun(async () => cleanActivitySummaries());
 
 exports.sendCompetitionCompleteNotifications = functions.pubsub.schedule("every day 12:00")
     .timeZone("America/Toronto")
     .onRun(async () => sendCompetitionCompleteNotifications());
+
+// exports.updateActivitySummaryScores = functions
+//     .firestore
+//     .document("users/{userID}/activitySummaries/{activitySummaryID}")
+//     .onWrite(async (change, context) => {
+//         const userID: string = context.params.userID;
+//         if (userID != "LqfhMHfQ97b0s9vaQdWyf8jqvSa2") return;
+//         await updateActivitySummaryScores(userID, change.before, change.after);
+//     });
+
+// exports.updateWorkoutScores = functions
+//     .firestore
+//     .document("users/{userID}/workouts/{workoutID}")
+//     .onWrite(async (change, context) => {
+//         const userID: string = context.params.userID;
+//         if (userID != "LqfhMHfQ97b0s9vaQdWyf8jqvSa2") return;
+//         await updateWorkoutScores(userID, change.before, change.after);
+//     });

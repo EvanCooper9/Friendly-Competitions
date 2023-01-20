@@ -19,7 +19,7 @@ protocol PremiumManaging {
     func manageSubscription()
 }
 
-final class PremiumManager: NSObject, PremiumManaging {
+final class PremiumManager: PremiumManaging {
     
     enum PurchaseError: Error {
         case cancelled
@@ -46,20 +46,9 @@ final class PremiumManager: NSObject, PremiumManaging {
     
     // MARK: - Lifecycle
     
-    override init() {
+    init() {
         premium = premiumSubject.eraseToAnyPublisher()
         products = productsSubject.eraseToAnyPublisher()
-        
-        super.init()
-        
-        let apiKey: String
-        #if DEBUG
-        apiKey = "appl_REFBiyXbqcpKtUtawSUJezooOfQ"
-        #else
-        apiKey = "appl_PfCzNKLwrBPhZHDqVcrFOfigEHq"
-        #endif
-        
-        Purchases.configure(with: .init(withAPIKey: apiKey).with(usesStoreKit2IfAvailable: true))
         
         login()
             .subscribe(on: DispatchQueue.global(qos: .background))
@@ -89,14 +78,14 @@ final class PremiumManager: NSObject, PremiumManaging {
             .sink()
             .store(in: &cancellables)
         
-        customerInfoTask = .init { [weak self] in
-            guard let strongSelf = self else { return }
-            for try await _ in Purchases.shared.customerInfoStream {
-                strongSelf.restorePurchases()
-                    .sink()
-                    .store(in: &strongSelf.cancellables)
-            }
-        }
+//        customerInfoTask = .init { [weak self] in
+//            for try await _ in Purchases.shared.customerInfoStream { [weak self] in
+//                guard let strongSelf = self else { return }
+//                strongSelf.restorePurchases()
+//                    .sink()
+//                    .store(in: &strongSelf.cancellables)
+//            }
+//        }
     }
     
     // MARK: - Public Methods

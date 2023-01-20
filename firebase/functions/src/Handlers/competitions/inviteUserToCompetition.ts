@@ -1,6 +1,6 @@
 import { Competition } from "../../Models/Competition";
 import { User } from "../../Models/User";
-import { sendNotificationsToUser } from "../../notifications";
+import { sendNotificationsToUser } from "../notifications/notifications";
 import { getFirestore } from "../../Utilities/firstore";
 
 /**

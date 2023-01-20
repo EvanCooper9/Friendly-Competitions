@@ -1,25 +1,19 @@
 import SwiftUI
 
-struct RootView: View {
-    
-    @StateObject private var viewModel = RootViewModel()
-    
+struct HomeContainerView: View {
     var body: some View {
-        TabView(selection: $viewModel.tab) {
+        TabView {
             HomeView()
                 .tabItem { Label("Home", systemImage: .houseFill) }
-                .tag(RootTab.home)
         
             ExploreView()
                 .tabItem { Label("Explore", systemImage: .sparkleMagnifyingglass) }
-                .tag(RootTab.explore)
         }
     }
 }
 
 #if DEBUG
-struct Home_Previews: PreviewProvider {
-
+struct HomeContainerView_Previews: PreviewProvider {
     private static func setupMocks() {
         activitySummaryManager.activitySummary = .just(.mock)
 
@@ -41,7 +35,7 @@ struct Home_Previews: PreviewProvider {
     }
 
     static var previews: some View {
-        RootView()
+        HomeContainerView()
             .setupMocks(setupMocks)
     }
 }

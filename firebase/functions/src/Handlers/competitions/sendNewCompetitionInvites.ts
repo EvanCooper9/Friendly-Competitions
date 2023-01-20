@@ -1,7 +1,7 @@
 import { getFirestore } from "firebase-admin/firestore";
 import { Competition } from "../../Models/Competition";
 import { User } from "../../Models/User";
-import { sendNotificationsToUser } from "../../notifications";
+import { sendNotificationsToUser } from "../notifications/notifications";
 
 /**
  * Send invite notifications to all pending participants for a competition

@@ -13,7 +13,7 @@ function updateCompetitionStandings(userID: string): Promise<void> {
         .where("participants", "array-contains", userID)
         .get()
         .then(query => query.docs.map(doc => new Competition(doc)))
-        .then(competitions => Promise.all(competitions.map(competition => competition.updateStandings())))
+        .then(competitions => Promise.all(competitions.map(competition => competition.updateStandingRanks())))
         .then();
 }
 

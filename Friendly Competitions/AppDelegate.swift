@@ -2,8 +2,8 @@ import ECKit_Firebase
 import Factory
 import Firebase
 import FirebaseFirestore
-import FirebaseFirestoreSwift
 import FirebaseMessaging
+import RevenueCat
 import UIKit
 
 final class AppDelegate: NSObject, UIApplicationDelegate {
@@ -14,6 +14,16 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
         FirebaseApp.configure()
         Messaging.messaging().delegate = self
+        
+        let apiKey: String
+        #if DEBUG
+        apiKey = "appl_REFBiyXbqcpKtUtawSUJezooOfQ"
+        #else
+        apiKey = "appl_PfCzNKLwrBPhZHDqVcrFOfigEHq"
+        #endif
+        Purchases.logLevel = .warn
+        Purchases.configure(with: .init(withAPIKey: apiKey).with(usesStoreKit2IfAvailable: true))
+        
         return true
     }
 
@@ -27,13 +37,16 @@ extension AppDelegate: MessagingDelegate {
         guard let fcmToken = fcmToken, let userId = Auth.auth().currentUser?.uid else { return }
 
         Task {
-            var user = try await database.document("users/\(userId)")
-                .getDocument()
+            let tokens = try await database.document("users/\(userId)")
+                .getDocument(source: .cache) // can fetch from cache because tokens shouldn't be out of date
                 .data(as: User.self)
+                .notificationTokens ?? []
 
-            guard user.notificationTokens?.contains(fcmToken) == false else { return }
-            let tokens = user.notificationTokens?.appending(fcmToken) ?? [fcmToken]
-            try await database.document("users/\(userId)").updateData(["notificationTokens": tokens])
+            guard !tokens.contains(fcmToken) else { return }
+            try await database.document("users/\(userId)")
+                .updateData([
+                    "notificationTokens": tokens.appending(fcmToken)
+                ])
         }
     }
 }

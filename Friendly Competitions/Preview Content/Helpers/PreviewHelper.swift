@@ -32,7 +32,6 @@ fileprivate enum Dependencies {
 
     static func baseSetupMocks() {
         activitySummaryManager.activitySummary = .just(nil)
-        activitySummaryManager.updateReturnValue = .just(())
         activitySummaryManager.activitySummariesInReturnValue = .just([])
 
         authenticationManager.emailVerified = .just(true)
@@ -67,7 +66,6 @@ fileprivate enum Dependencies {
         userManager.userPublisher = .just(.evan)
         userManager.updateWithReturnValue = .just(())
         
-        workoutManager.updateReturnValue = .just(())
         workoutManager.workoutsOfWithInReturnValue = .just([])
     }
 }
