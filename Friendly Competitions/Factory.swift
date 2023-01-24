@@ -33,6 +33,7 @@ extension Container {
         case .prod:
             break
         case .debug:
+            settings.isPersistenceEnabled = false
             settings.isSSLEnabled = false
             switch environment.emulationType {
             case .localhost:

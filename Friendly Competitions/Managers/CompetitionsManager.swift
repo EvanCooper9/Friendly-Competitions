@@ -165,6 +165,7 @@ final class CompetitionsManager: CompetitionsManaging {
         functions.httpsCallable("joinCompetition")
             .call(["competitionID": competition.id])
             .mapToVoid()
+            .handleEvents(withUnretained: self, receiveOutput: { $0.lastCompetitionStandingsUpdate[competition.id] = nil })
             .eraseToAnyPublisher()
     }
 
@@ -172,6 +173,7 @@ final class CompetitionsManager: CompetitionsManaging {
         functions.httpsCallable("leaveCompetition")
             .call(["competitionID": competition.id])
             .mapToVoid()
+            .handleEvents(withUnretained: self, receiveOutput: { $0.lastCompetitionStandingsUpdate[competition.id] = nil })
             .eraseToAnyPublisher()
     }
 
@@ -300,10 +302,18 @@ private extension Dictionary where Key == Competition.ID {
 }
 
 extension Query {
+    
+    /// Attempts to get documents from the cache. If that fails, it will get documents from the server.
+    /// - Returns: A publisher emitting a QuerySnapshot instance.
     func getDocumentsPreferCache() -> AnyPublisher<QuerySnapshot, Error> {
-        getDocuments(source: .cache)
-            .catch { [weak self] _ -> AnyPublisher<QuerySnapshot, Error> in
-                self?.getDocuments(source: .server).eraseToAnyPublisher() ?? .never()
+        let serverQuery = self // after query is ran, it's gone. Can't use `self` in escaping closures below
+        return getDocuments(source: .cache)
+            .catch { [serverQuery] _ -> AnyPublisher<QuerySnapshot, Error> in
+                serverQuery.getDocuments(source: .server).eraseToAnyPublisher()
+            }
+            .flatMapLatest { [serverQuery] snapshot -> AnyPublisher<QuerySnapshot, Error> in
+                guard snapshot.isEmpty else { return .just(snapshot) }
+                return serverQuery.getDocuments(source: .server).eraseToAnyPublisher()
             }
             .eraseToAnyPublisher()
     }

@@ -89,16 +89,17 @@ final class CompetitionViewModel: ObservableObject {
             }
             .assign(to: &$actions)
         
-        competitionsManager.competitions
-            .compactMap { $0.first { $0.id == competition.id } }
-            .receive(on: RunLoop.main)
-            .assign(to: &$competition)
-        
-        Publishers
-            .CombineLatest(
-                competitionsManager.standings(for: competition.id).catchErrorJustReturn([]),
-                competitionsManager.participants(for: competition.id).catchErrorJustReturn([])
-            )
+        let fetchStandingsAndParticipants = PassthroughSubject<Void, Never>()
+        fetchStandingsAndParticipants
+            .prepend(())
+            .flatMapLatest(withUnretained: self) { strongSelf in
+                Publishers
+                    .CombineLatest(
+                        strongSelf.competitionsManager.standings(for: competition.id).catchErrorJustReturn([]),
+                        strongSelf.competitionsManager.participants(for: competition.id).catchErrorJustReturn([])
+                    )
+                    .eraseToAnyPublisher()
+            }
             .handleEvents(
                 withUnretained: self,
                 receiveSubscription: { strongSelf, _ in strongSelf.loadingStandings = true },
@@ -132,6 +133,11 @@ final class CompetitionViewModel: ObservableObject {
             }
             .assign(to: &$standings)
         
+        competitionsManager.competitionPublisher(for: competition.id)
+            .ignoreFailure()
+            .handleEvents(receiveOutput: { _ in fetchStandingsAndParticipants.send() })
+            .assign(to: &$competition)
+        
         Publishers.CombineLatest($standings, $currentStandingsMaximum)
             .map { $0.count >= $1 }
             .assign(to: &$showShowMoreButton)
@@ -150,6 +156,7 @@ final class CompetitionViewModel: ObservableObject {
                 case .leave:
                     return strongSelf.competitionsManager
                         .leave(competition)
+                        .handleEvents(receiveOutput: { fetchStandingsAndParticipants.send() })
                         .isLoading { strongSelf.loading = $0 }
                         .eraseToAnyPublisher()
                 default:
@@ -177,6 +184,7 @@ final class CompetitionViewModel: ObservableObject {
                 case .acceptInvite:
                     return strongSelf.competitionsManager
                         .accept(competition)
+                        .handleEvents(receiveOutput: { fetchStandingsAndParticipants.send() })
                         .isLoading { strongSelf.loading = $0 }
                         .eraseToAnyPublisher()
                 case .declineInvite:
@@ -196,6 +204,7 @@ final class CompetitionViewModel: ObservableObject {
                 case .join:
                     return strongSelf.competitionsManager
                         .join(competition)
+                        .handleEvents(receiveOutput: { fetchStandingsAndParticipants.send() })
                         .isLoading { strongSelf.loading = $0 }
                         .eraseToAnyPublisher()
                 }

@@ -14,7 +14,7 @@ protocol EnvironmentManaging {
 final class EnvironmentManager: EnvironmentManaging {
     
     private enum Constants {
-        static var environmentKey: String { #file + #function }
+        static var environmentKey: String { #function }
     }
     
     // MARK: - Public Properties

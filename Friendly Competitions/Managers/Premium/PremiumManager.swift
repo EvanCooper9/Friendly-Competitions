@@ -78,14 +78,14 @@ final class PremiumManager: PremiumManaging {
             .sink()
             .store(in: &cancellables)
         
-//        customerInfoTask = .init { [weak self] in
-//            for try await _ in Purchases.shared.customerInfoStream { [weak self] in
-//                guard let strongSelf = self else { return }
-//                strongSelf.restorePurchases()
-//                    .sink()
-//                    .store(in: &strongSelf.cancellables)
-//            }
-//        }
+        customerInfoTask = .init { [weak self] in
+            for try await _ in Purchases.shared.customerInfoStream {
+                guard let strongSelf = self else { return }
+                strongSelf.restorePurchases()
+                    .sink()
+                    .store(in: &strongSelf.cancellables)
+            }
+        }
     }
     
     // MARK: - Public Methods
