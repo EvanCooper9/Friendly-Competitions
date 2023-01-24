@@ -89,11 +89,6 @@ final class CompetitionViewModel: ObservableObject {
             }
             .assign(to: &$actions)
         
-        competitionsManager.competitions
-            .compactMap { $0.first { $0.id == competition.id } }
-            .receive(on: RunLoop.main)
-            .assign(to: &$competition)
-        
         let fetchStandingsAndParticipants = PassthroughSubject<Void, Never>()
         fetchStandingsAndParticipants
             .prepend(())
@@ -137,6 +132,11 @@ final class CompetitionViewModel: ObservableObject {
                 return rows
             }
             .assign(to: &$standings)
+        
+        competitionsManager.competitionPublisher(for: competition.id)
+            .ignoreFailure()
+            .handleEvents(receiveOutput: { _ in fetchStandingsAndParticipants.send() })
+            .assign(to: &$competition)
         
         Publishers.CombineLatest($standings, $currentStandingsMaximum)
             .map { $0.count >= $1 }

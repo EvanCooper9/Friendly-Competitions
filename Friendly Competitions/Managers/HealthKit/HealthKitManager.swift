@@ -99,10 +99,7 @@ final class HealthKitManager: HealthKitManaging {
                 Publishers
                     .ZipMany(strongSelf.backgroundDeliveryPublishers)
                     .mapToVoid()
-                    .sink(receiveValue: {
-                        print("trigger bg delivery finished")
-                        completion()
-                    })
+                    .sink(receiveValue: completion)
                     .store(in: &strongSelf.cancellables)
             }
             healthStore.execute(query)

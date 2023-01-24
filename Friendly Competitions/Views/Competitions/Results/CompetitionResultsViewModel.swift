@@ -31,7 +31,9 @@ final class CompetitionResultsViewModel: ObservableObject {
     init(competition: Competition) {
         self.competition = competition
         
-        let results = competitionsManager.results(for: competition.id).catchErrorJustReturn([])
+        let results = competitionsManager
+            .results(for: competition.id)
+            .catchErrorJustReturn([])
                 
         Publishers
             .CombineLatest3(
