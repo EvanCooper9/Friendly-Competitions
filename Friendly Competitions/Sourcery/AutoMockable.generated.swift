@@ -818,11 +818,6 @@ class FriendsManagingMock: FriendsManaging {
 
 }
 class HealthKitManagingMock: HealthKitManaging {
-    var backgroundDeliveryReceived: AnyPublisher<Void, Never> {
-        get { return underlyingBackgroundDeliveryReceived }
-        set(value) { underlyingBackgroundDeliveryReceived = value }
-    }
-    var underlyingBackgroundDeliveryReceived: AnyPublisher<Void, Never>!
     var permissionStatus: AnyPublisher<PermissionStatus, Never> {
         get { return underlyingPermissionStatus }
         set(value) { underlyingPermissionStatus = value }

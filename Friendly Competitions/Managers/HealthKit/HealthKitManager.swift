@@ -6,7 +6,6 @@ import HealthKit
 
 // sourcery: AutoMockable
 protocol HealthKitManaging {
-    var backgroundDeliveryReceived: AnyPublisher<Void, Never> { get }
     var permissionStatus: AnyPublisher<PermissionStatus, Never> { get }
     func execute(_ query: HKQuery)
     func registerBackgroundDeliveryTask(_ publisher: AnyPublisher<Void, Never>)
@@ -17,7 +16,6 @@ final class HealthKitManager: HealthKitManaging {
 
     // MARK: - Public Properties
 
-    var backgroundDeliveryReceived: AnyPublisher<Void, Never> { backgroundDeliveryReceivedSubject.eraseToAnyPublisher() }
     let permissionStatus: AnyPublisher<PermissionStatus, Never>
 
     // MARK: - Private Properties
