@@ -210,7 +210,7 @@ final class CompetitionsManager: CompetitionsManaging {
     
     func results(for competitionID: Competition.ID) -> AnyPublisher<[CompetitionResult], Error> {
         database.collection("competitions/\(competitionID)/results")
-            .getDocuments()
+            .getDocumentsPreferCache()
             .map { $0.documents.decoded(asArrayOf: CompetitionResult.self) }
             .eraseToAnyPublisher()
     }
@@ -226,7 +226,7 @@ final class CompetitionsManager: CompetitionsManaging {
         updateCompetitionStandingsIfRequired(for: competitionID)
             .flatMapLatest(withUnretained: self) { strongSelf in
                 strongSelf.database.collection("competitions/\(competitionID)/standings")
-                    .getDocumentsPreferCache()
+                    .getDocuments()
                     .map { $0.documents.compactMap { try? $0.data(as: Competition.Standing.self) } }
                     .eraseToAnyPublisher()
             }
