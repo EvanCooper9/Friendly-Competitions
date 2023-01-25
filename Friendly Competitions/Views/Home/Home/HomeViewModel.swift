@@ -22,7 +22,7 @@ final class HomeViewModel: ObservableObject {
     @Published var requiresPermissions = false
     @Published private(set) var title = Bundle.main.name
     @Published private(set) var showDeveloper = false
-    
+    @Published private(set) var loadingDeepLink = false
     @Published private(set) var showPremiumBanner = false
     @Published var showPaywall = false
     
@@ -59,18 +59,21 @@ final class HomeViewModel: ObservableObject {
                 switch deepLink {
                 case .user(let id):
                     return strongSelf.friendsManager.user(withId: id)
+                        .isLoading { strongSelf.loadingDeepLink = $0 }
                         .unwrap()
                         .map { [.user($0)] }
                         .ignoreFailure()
                         .eraseToAnyPublisher()
                 case .competition(let id):
                     return strongSelf.competitionsManager.search(byID: id)
+                        .isLoading { strongSelf.loadingDeepLink = $0 }
                         .unwrap()
                         .map { [.competition($0)] }
                         .ignoreFailure()
                         .eraseToAnyPublisher()
                 case .competitionResults(let id):
                     return strongSelf.competitionsManager.search(byID: id)
+                        .isLoading { strongSelf.loadingDeepLink = $0 }
                         .unwrap()
                         .map { [.competition($0), .competitionResults($0)] }
                         .ignoreFailure()
