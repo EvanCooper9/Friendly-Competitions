@@ -7,7 +7,44 @@ struct ProfileView: View {
         
     var body: some View {
         Form {
-            UserInfoSection(user: viewModel.user)
+            Section {
+                HStack {
+                    Label("Name", systemImage: .personFill)
+                    Spacer()
+                    if viewModel.editing {
+                        TextField(text: $viewModel.nameForEdititng)
+                            .multilineTextAlignment(.trailing)
+                    } else {
+                        Text(viewModel.user.name)
+                            .foregroundColor(.secondaryLabel)
+                        IDPill(id: viewModel.user.hashId)
+                    }
+                }
+                HStack {
+                    Label("Email", systemImage: .envelopeFill)
+                    Spacer()
+                    if viewModel.editing {
+                        TextField(text: $viewModel.emailForEditing)
+                            .multilineTextAlignment(.trailing)
+                    } else {
+                        Text(viewModel.user.email)
+                            .foregroundColor(.secondaryLabel)
+                    }
+                }
+            } header: {
+                HStack(spacing: 20) {
+                    Text("Profile")
+                    Spacer()
+                    if viewModel.editing {
+                        Button("Cancel", role: .destructive, action: viewModel.cancelTapped)
+                        Button("Save", action: viewModel.saveTapped)
+                    } else {
+                        Button("Edit", action: viewModel.editTapped)
+                    }
+                }
+                .font(.caption)
+            }
+            
             Button("Share invite link", systemImage: .personCropCircleBadgePlus, action: viewModel.shareInviteLinkTapped)
             
             Section("Medals") {
@@ -68,6 +105,7 @@ struct ProfileView: View {
             Button("Yes", role: .destructive, action: viewModel.confirmTapped)
             Button("Cancel", role: .cancel) {}
         }
+        .withLoadingOverlay(isLoading: viewModel.loading)
         .registerScreenView(name: "Profile")
     }
 }

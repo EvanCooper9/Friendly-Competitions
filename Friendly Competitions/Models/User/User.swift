@@ -3,8 +3,8 @@ import Foundation
 struct User: Codable, Equatable, Hashable, Identifiable {
     let id: String
     var appStoreID: UUID?
-    let email: String
-    let name: String
+    var email: String
+    var name: String
     var friends = [String]()
     var incomingFriendRequests = [User.ID]()
     var outgoingFriendRequests = [User.ID]()

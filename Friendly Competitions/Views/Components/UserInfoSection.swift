@@ -17,6 +17,8 @@ struct UserInfoSection: View {
 
 struct UserInfoSection_Previews: PreviewProvider {
     static var previews: some View {
-        UserInfoSection(user: .evan)
+        List {
+            UserInfoSection(user: .evan)
+        }
     }
 }
