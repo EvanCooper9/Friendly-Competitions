@@ -67,3 +67,4 @@ node_modules/
 
 # dev data
 exported-dev-data
+firebase-export*

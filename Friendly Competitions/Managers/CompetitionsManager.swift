@@ -165,7 +165,10 @@ final class CompetitionsManager: CompetitionsManaging {
         functions.httpsCallable("joinCompetition")
             .call(["competitionID": competition.id])
             .mapToVoid()
-            .handleEvents(withUnretained: self, receiveOutput: { $0.lastCompetitionStandingsUpdate[competition.id] = nil })
+            .handleEvents(withUnretained: self, receiveOutput: { strongSelf in
+                strongSelf.lastStandingsFetch.removeValue(forKey: competition.id)
+                strongSelf.lastStandingsUpdate.removeValue(forKey: competition.id)
+            })
             .eraseToAnyPublisher()
     }
 
@@ -173,7 +176,10 @@ final class CompetitionsManager: CompetitionsManaging {
         functions.httpsCallable("leaveCompetition")
             .call(["competitionID": competition.id])
             .mapToVoid()
-            .handleEvents(withUnretained: self, receiveOutput: { $0.lastCompetitionStandingsUpdate[competition.id] = nil })
+            .handleEvents(withUnretained: self, receiveOutput: { strongSelf in
+                strongSelf.lastStandingsFetch.removeValue(forKey: competition.id)
+                strongSelf.lastStandingsUpdate.removeValue(forKey: competition.id)
+            })
             .eraseToAnyPublisher()
     }
 
@@ -210,7 +216,7 @@ final class CompetitionsManager: CompetitionsManaging {
     
     func results(for competitionID: Competition.ID) -> AnyPublisher<[CompetitionResult], Error> {
         database.collection("competitions/\(competitionID)/results")
-            .getDocumentsPreferCache()
+            .getDocuments()
             .map { $0.documents.decoded(asArrayOf: CompetitionResult.self) }
             .eraseToAnyPublisher()
     }
@@ -222,11 +228,23 @@ final class CompetitionsManager: CompetitionsManaging {
             .eraseToAnyPublisher()
     }
     
+    private var lastStandingsFetch = [Competition.ID: Date]()
     func standings(for competitionID: Competition.ID) -> AnyPublisher<[Competition.Standing], Error> {
         updateCompetitionStandingsIfRequired(for: competitionID)
             .flatMapLatest(withUnretained: self) { strongSelf in
-                strongSelf.database.collection("competitions/\(competitionID)/standings")
-                    .getDocuments()
+                let ref = strongSelf.database.collection("competitions/\(competitionID)/standings")
+                let query: AnyPublisher<QuerySnapshot, Error>
+                if abs(strongSelf.lastStandingsFetch[competitionID]?.timeIntervalSinceNow ?? .infinity) < 5.minutes {
+                    query = ref.getDocumentsPreferCache()
+                } else {
+                    query = ref
+                        .getDocuments()
+                        .handleEvents(withUnretained: self, receiveOutput: { strongSelf, _ in
+                            strongSelf.lastStandingsFetch[competitionID] = .now
+                        })
+                        .eraseToAnyPublisher()
+                }
+                return query
                     .map { $0.documents.compactMap { try? $0.data(as: Competition.Standing.self) } }
                     .eraseToAnyPublisher()
             }
@@ -252,15 +270,15 @@ final class CompetitionsManager: CompetitionsManaging {
 
     // MARK: - Private Methods
     
-    private var lastCompetitionStandingsUpdate = [Competition.ID: Date]()
+    private var lastStandingsUpdate = [Competition.ID: Date]()
     private func updateCompetitionStandingsIfRequired(for competitionID: Competition.ID) -> AnyPublisher<Void, Error> {
-        if abs(lastCompetitionStandingsUpdate[competitionID]?.timeIntervalSinceNow ?? .infinity) < 5.minutes {
+        if abs(lastStandingsUpdate[competitionID]?.timeIntervalSinceNow ?? .infinity) < 5.minutes {
             return .just(())
         }
         return functions.httpsCallable("updateCompetitionStandings")
             .call(["competitionID": competitionID])
             .mapToVoid()
-            .handleEvents(withUnretained: self, receiveOutput: { $0.lastCompetitionStandingsUpdate[competitionID] = .now })
+            .handleEvents(withUnretained: self, receiveOutput: { $0.lastStandingsUpdate[competitionID] = .now })
             .eraseToAnyPublisher()
     }
 
