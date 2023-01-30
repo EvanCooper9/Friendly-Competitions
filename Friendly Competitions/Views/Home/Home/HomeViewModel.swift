@@ -75,7 +75,7 @@ final class HomeViewModel: ObservableObject {
                     return strongSelf.competitionsManager.search(byID: id)
                         .isLoading { strongSelf.loadingDeepLink = $0 }
                         .unwrap()
-                        .map { [.competition($0), .competitionResults($0)] }
+                        .map { [.competitionResults($0)] }
                         .ignoreFailure()
                         .eraseToAnyPublisher()
                 case .none:
