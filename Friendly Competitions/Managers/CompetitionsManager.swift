@@ -118,6 +118,7 @@ final class CompetitionsManager: CompetitionsManaging {
                 "accept": true
             ])
             .mapToVoid()
+            .handleEvents(withUnretained: self, receiveOutput: { $0.resetCacheTimestamps(for: competition.id) })
             .eraseToAnyPublisher()
     }
 
@@ -165,10 +166,7 @@ final class CompetitionsManager: CompetitionsManaging {
         functions.httpsCallable("joinCompetition")
             .call(["competitionID": competition.id])
             .mapToVoid()
-            .handleEvents(withUnretained: self, receiveOutput: { strongSelf in
-                strongSelf.lastStandingsFetch.removeValue(forKey: competition.id)
-                strongSelf.lastStandingsUpdate.removeValue(forKey: competition.id)
-            })
+            .handleEvents(withUnretained: self, receiveOutput: { $0.resetCacheTimestamps(for: competition.id) })
             .eraseToAnyPublisher()
     }
 
@@ -176,10 +174,7 @@ final class CompetitionsManager: CompetitionsManaging {
         functions.httpsCallable("leaveCompetition")
             .call(["competitionID": competition.id])
             .mapToVoid()
-            .handleEvents(withUnretained: self, receiveOutput: { strongSelf in
-                strongSelf.lastStandingsFetch.removeValue(forKey: competition.id)
-                strongSelf.lastStandingsUpdate.removeValue(forKey: competition.id)
-            })
+            .handleEvents(withUnretained: self, receiveOutput: { $0.resetCacheTimestamps(for: competition.id) })
             .eraseToAnyPublisher()
     }
 
@@ -193,7 +188,6 @@ final class CompetitionsManager: CompetitionsManaging {
                 return searchResult.name
                     .components(separatedBy: " ")
                     .contains { $0.starts(with: searchText) }
-                    
             }
             .compactMapMany { try? $0.decoded(as: Competition.self) }
             .eraseToAnyPublisher()
@@ -269,6 +263,11 @@ final class CompetitionsManager: CompetitionsManaging {
     }
 
     // MARK: - Private Methods
+    
+    private func resetCacheTimestamps(for competitionID: Competition.ID) {
+        lastStandingsFetch.removeValue(forKey: competitionID)
+        lastStandingsUpdate.removeValue(forKey: competitionID)
+    }
     
     private var lastStandingsUpdate = [Competition.ID: Date]()
     private func updateCompetitionStandingsIfRequired(for competitionID: Competition.ID) -> AnyPublisher<Void, Error> {
