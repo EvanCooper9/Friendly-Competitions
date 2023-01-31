@@ -102,8 +102,7 @@ final class CompetitionViewModel: ObservableObject {
             }
             .handleEvents(
                 withUnretained: self,
-                receiveSubscription: { strongSelf, _ in strongSelf.loadingStandings = true },
-                receiveOutput: { strongSelf, _ in strongSelf.loadingStandings = false }
+                receiveSubscription: { strongSelf, _ in strongSelf.loadingStandings = true }
             )
             .combineLatest($currentStandingsMaximum)
             .map { [weak self] standingsAndParticipants, limit in
@@ -131,6 +130,10 @@ final class CompetitionViewModel: ObservableObject {
 
                 return rows
             }
+            .handleEvents(
+                withUnretained: self,
+                receiveOutput: { strongSelf, _ in strongSelf.loadingStandings = false }
+            )
             .assign(to: &$standings)
         
         competitionsManager.competitionPublisher(for: competition.id)

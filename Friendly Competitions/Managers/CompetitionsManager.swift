@@ -23,7 +23,6 @@ protocol CompetitionsManaging {
     func join(_ competition: Competition) -> AnyPublisher<Void, Error>
     func leave(_ competition: Competition) -> AnyPublisher<Void, Error>
     func update(_ competition: Competition) -> AnyPublisher<Void, Error>
-    func search(_ searchText: String) -> AnyPublisher<[Competition], Error>
     func search(byID competitionID: Competition.ID) -> AnyPublisher<Competition?, Error>
     func results(for competitionID: Competition.ID) -> AnyPublisher<[CompetitionResult], Error>
     func standings(for competitionID: Competition.ID, resultID: CompetitionResult.ID) -> AnyPublisher<[Competition.Standing], Error>
@@ -33,11 +32,6 @@ protocol CompetitionsManaging {
 }
 
 final class CompetitionsManager: CompetitionsManaging {
-
-    /// Used for searching, so we don't decode dates and other expensive properties
-    private struct SearchResult: Decodable {
-        let name: String
-    }
     
     private enum Constants {
         static let maxParticipantsToFetch = 10
@@ -178,21 +172,6 @@ final class CompetitionsManager: CompetitionsManaging {
             .eraseToAnyPublisher()
     }
 
-    func search(_ searchText: String) -> AnyPublisher<[Competition], Error> {
-        database.collection("competitions")
-            .whereField("isPublic", isEqualTo: true)
-            .getDocuments()
-            .map(\.documents)
-            .filterMany { document in
-                guard let searchResult = try? document.data(as: SearchResult.self) else { return false }
-                return searchResult.name
-                    .components(separatedBy: " ")
-                    .contains { $0.starts(with: searchText) }
-            }
-            .compactMapMany { try? $0.decoded(as: Competition.self) }
-            .eraseToAnyPublisher()
-    }
-
     func search(byID competitionID: Competition.ID) -> AnyPublisher<Competition?, Error> {
         database.document("competitions/\(competitionID)")
             .getDocument()
@@ -244,14 +223,27 @@ final class CompetitionsManager: CompetitionsManaging {
             }
     }
     
+    private var fetchedParticipants = [User]()
     func participants(for competitionsID: Competition.ID) -> AnyPublisher<[User], Error> {
         search(byID: competitionsID)
             .map { $0?.participants ?? [] }
-            .flatMapAsync { [weak self] participants in
+            .flatMapAsync { [weak self] participantIDs in
                 guard let strongSelf = self else { return [] }
-                return try await strongSelf.database.collection("users")
-                    .whereFieldWithChunking("id", in: participants)
+                var cached = [User]()
+                var participantIDsToFetch = [String]()
+                participantIDs.forEach { participantID in
+                    if let user = strongSelf.fetchedParticipants.first(where: { $0.id == participantID }) {
+                        cached.append(user)
+                    } else {
+                        participantIDsToFetch.append(participantID)
+                    }
+                }
+                guard participantIDsToFetch.isNotEmpty else { return cached }
+                let fetched = try await strongSelf.database.collection("users")
+                    .whereFieldWithChunking("id", in: participantIDsToFetch)
                     .decoded(asArrayOf: User.self)
+                strongSelf.fetchedParticipants.append(contentsOf: fetched)
+                return cached + fetched
             }
     }
     

@@ -2,6 +2,7 @@ import Combine
 import CombineExt
 import ECKit
 import Factory
+import Foundation
 
 final class InviteFriendsViewModel: ObservableObject {
     
@@ -25,6 +26,7 @@ final class InviteFriendsViewModel: ObservableObject {
     
     @Injected(Container.competitionsManager) private var competitionsManager
     @Injected(Container.friendsManager) private var friendsManager
+    @Injected(Container.searchManager) private var searchManager
     @Injected(Container.userManager) private var userManager
 
     private let acceptSubject = PassthroughSubject<User, Never>()
@@ -56,10 +58,12 @@ final class InviteFriendsViewModel: ObservableObject {
         }
 
         $searchText
+            .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
             .flatMapLatest(withUnretained: self) { strongSelf, searchText -> AnyPublisher<[User], Never> in
                 guard !searchText.isEmpty else { return .just([]) }
-                return strongSelf.friendsManager
-                    .search(with: searchText, showNotSearchable: true)
+                return strongSelf.searchManager
+                    .searchForUsers(byName: searchText)
+                    .isLoading { strongSelf.loading = $0 }
                     .catchErrorJustReturn([])
             }
             .combineLatest(alreadyInvited, incomingRequests)
@@ -76,11 +80,9 @@ final class InviteFriendsViewModel: ObservableObject {
                             guard let strongSelf = self else { return }
                             switch action {
                             case .addFriend:
-                                if hasIncomingInvite {
-                                    strongSelf.acceptSubject.send(friend)
-                                } else {
+                                hasIncomingInvite ?
+                                    strongSelf.acceptSubject.send(friend) :
                                     strongSelf.inviteSubject.send(friend)
-                                }
                             case .competitionInvite:
                                 strongSelf.inviteSubject.send(friend)
                             }

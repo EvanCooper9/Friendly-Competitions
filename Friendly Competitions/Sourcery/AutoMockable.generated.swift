@@ -484,28 +484,6 @@ class CompetitionsManagingMock: CompetitionsManaging {
 
     //MARK: - search
 
-    var searchCallsCount = 0
-    var searchCalled: Bool {
-        return searchCallsCount > 0
-    }
-    var searchReceivedSearchText: String?
-    var searchReceivedInvocations: [String] = []
-    var searchReturnValue: AnyPublisher<[Competition], Error>!
-    var searchClosure: ((String) -> AnyPublisher<[Competition], Error>)?
-
-    func search(_ searchText: String) -> AnyPublisher<[Competition], Error> {
-        searchCallsCount += 1
-        searchReceivedSearchText = searchText
-        searchReceivedInvocations.append(searchText)
-        if let searchClosure = searchClosure {
-            return searchClosure(searchText)
-        } else {
-            return searchReturnValue
-        }
-    }
-
-    //MARK: - search
-
     var searchByIDCallsCount = 0
     var searchByIDCalled: Bool {
         return searchByIDCallsCount > 0
@@ -794,28 +772,6 @@ class FriendsManagingMock: FriendsManaging {
         }
     }
 
-    //MARK: - search
-
-    var searchWithShowNotSearchableCallsCount = 0
-    var searchWithShowNotSearchableCalled: Bool {
-        return searchWithShowNotSearchableCallsCount > 0
-    }
-    var searchWithShowNotSearchableReceivedArguments: (text: String, showNotSearchable: Bool)?
-    var searchWithShowNotSearchableReceivedInvocations: [(text: String, showNotSearchable: Bool)] = []
-    var searchWithShowNotSearchableReturnValue: AnyPublisher<[User], Error>!
-    var searchWithShowNotSearchableClosure: ((String, Bool) -> AnyPublisher<[User], Error>)?
-
-    func search(with text: String, showNotSearchable: Bool) -> AnyPublisher<[User], Error> {
-        searchWithShowNotSearchableCallsCount += 1
-        searchWithShowNotSearchableReceivedArguments = (text: text, showNotSearchable: showNotSearchable)
-        searchWithShowNotSearchableReceivedInvocations.append((text: text, showNotSearchable: showNotSearchable))
-        if let searchWithShowNotSearchableClosure = searchWithShowNotSearchableClosure {
-            return searchWithShowNotSearchableClosure(text, showNotSearchable)
-        } else {
-            return searchWithShowNotSearchableReturnValue
-        }
-    }
-
 }
 class HealthKitManagingMock: HealthKitManaging {
     var permissionStatus: AnyPublisher<PermissionStatus, Never> {
@@ -986,6 +942,53 @@ class PremiumManagingMock: PremiumManaging {
     func manageSubscription() {
         manageSubscriptionCallsCount += 1
         manageSubscriptionClosure?()
+    }
+
+}
+class SearchManagingMock: SearchManaging {
+
+    //MARK: - searchForCompetitions
+
+    var searchForCompetitionsByNameCallsCount = 0
+    var searchForCompetitionsByNameCalled: Bool {
+        return searchForCompetitionsByNameCallsCount > 0
+    }
+    var searchForCompetitionsByNameReceivedName: String?
+    var searchForCompetitionsByNameReceivedInvocations: [String] = []
+    var searchForCompetitionsByNameReturnValue: AnyPublisher<[Competition], Error>!
+    var searchForCompetitionsByNameClosure: ((String) -> AnyPublisher<[Competition], Error>)?
+
+    func searchForCompetitions(byName name: String) -> AnyPublisher<[Competition], Error> {
+        searchForCompetitionsByNameCallsCount += 1
+        searchForCompetitionsByNameReceivedName = name
+        searchForCompetitionsByNameReceivedInvocations.append(name)
+        if let searchForCompetitionsByNameClosure = searchForCompetitionsByNameClosure {
+            return searchForCompetitionsByNameClosure(name)
+        } else {
+            return searchForCompetitionsByNameReturnValue
+        }
+    }
+
+    //MARK: - searchForUsers
+
+    var searchForUsersByNameCallsCount = 0
+    var searchForUsersByNameCalled: Bool {
+        return searchForUsersByNameCallsCount > 0
+    }
+    var searchForUsersByNameReceivedName: String?
+    var searchForUsersByNameReceivedInvocations: [String] = []
+    var searchForUsersByNameReturnValue: AnyPublisher<[User], Error>!
+    var searchForUsersByNameClosure: ((String) -> AnyPublisher<[User], Error>)?
+
+    func searchForUsers(byName name: String) -> AnyPublisher<[User], Error> {
+        searchForUsersByNameCallsCount += 1
+        searchForUsersByNameReceivedName = name
+        searchForUsersByNameReceivedInvocations.append(name)
+        if let searchForUsersByNameClosure = searchForUsersByNameClosure {
+            return searchForUsersByNameClosure(name)
+        } else {
+            return searchForUsersByNameReturnValue
+        }
     }
 
 }

@@ -43,7 +43,6 @@ fileprivate enum Dependencies {
         competitionsManager.standingsForResultIDReturnValue = .just([])
         competitionsManager.participantsForReturnValue = .just([])
         competitionsManager.appOwnedCompetitions = .just([.mockPublic])
-        competitionsManager.searchReturnValue = .just([.mockPublic, .mock])
         competitionsManager.resultsForReturnValue = .just([])
         
         friendsManager.friends = .just([])

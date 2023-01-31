@@ -14,6 +14,7 @@ final class ExploreViewModel: ObservableObject {
     // MARK: - Private Properties
     
     @Injected(Container.competitionsManager) private var competitionsManager
+    @Injected(Container.searchManager) private var searchManager
     
     // MARK: - Lifecycle
 
@@ -23,7 +24,8 @@ final class ExploreViewModel: ObservableObject {
         $searchText
             .flatMapLatest(withUnretained: self) { strongSelf, searchText -> AnyPublisher<[Competition], Never> in
                 guard !searchText.isEmpty else { return .just([]) }
-                return strongSelf.competitionsManager.search(searchText)
+                return strongSelf.searchManager
+                    .searchForCompetitions(byName: searchText)
                     .isLoading { strongSelf.loading = $0 }
                     .ignoreFailure()
             }
