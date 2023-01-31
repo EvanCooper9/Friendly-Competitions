@@ -4,6 +4,7 @@ import CombineExt
 import ECKit
 import ECKit_Firebase
 import Factory
+import Foundation
 
 // sourcery: AutoMockable
 protocol SearchManaging {
@@ -13,19 +14,8 @@ protocol SearchManaging {
 
 final class SearchManager: SearchManaging {
     
-    private struct NameSearchResult: Decodable {
-        let objectID: String
-    }
-    
-    private struct NameSearchUpload: Codable {
-        let objectID: String
-        let name: String
-    }
-    
     // MARK: - Private Properties
-    
-    @Injected(Container.database) private var database
-    
+        
     private let searchClient: SearchClient
     private let competitionsIndex: Index
     private let userIndex: Index
@@ -34,52 +24,36 @@ final class SearchManager: SearchManaging {
     
     init() {
         searchClient = .init(appID: "WSNLKJEWQD", apiKey: "4b2d2f9f53bcd6bb53eba3e3176490e1")
-        competitionsIndex = searchClient.index(withName: "competition-name")
-        userIndex = searchClient.index(withName: "user-name")
+        competitionsIndex = searchClient.index(withName: "competitions")
+        userIndex = searchClient.index(withName: "users")
     }
     
     // MARK: - Public Methods
     
     func searchForCompetitions(byName name: String) -> AnyPublisher<[Competition], Error> {
         search(index: competitionsIndex, byName: name)
-            .flatMapAsync { [weak self] searchResults in
-                guard let strongSelf = self else { return [] }
-                return try await strongSelf.database
-                    .collection("competitions")
-                    .whereFieldWithChunking("id", in: searchResults)
-                    .compactMap { try? $0.decoded(as: Competition.self) }
-                    .filter(\.isPublic)
-            }
-            .first()
-            .eraseToAnyPublisher()
+            .filterMany(\.isPublic)
     }
     
     func searchForUsers(byName name: String) -> AnyPublisher<[User], Error> {
         search(index: userIndex, byName: name)
-            .flatMapAsync { [weak self] searchResults in
-                guard let strongSelf = self else { return [] }
-                return try await strongSelf.database
-                    .collection("users")
-                    .whereFieldWithChunking("id", in: searchResults)
-                    .compactMap { try? $0.decoded(as: User.self) }
-                    .filter { $0.searchable ?? false }
-            }
-            .first()
-            .eraseToAnyPublisher()
+            .filterMany { $0.searchable ?? false }
     }
     
     // MARK: - Private Methods
     
-    private func search(index: Index, byName name: String) -> AnyPublisher<[String], Error> {
-        let subject = PassthroughSubject<[String], Error>()
+    private func search<ResultType: Decodable>(index: Index, byName name: String) -> AnyPublisher<[ResultType], Error> {
+        let subject = PassthroughSubject<[ResultType], Error>()
         let searchTask = index.search(query: .init(name)) { result in
             switch result {
             case .failure(let error):
                 subject.send(completion: .failure(error))
             case .success(let response):
                 do {
-                    let searchResults: [NameSearchResult] = try response.extractHits()
-                    subject.send(searchResults.map(\.objectID))
+                    let hits = response.hits.map(\.object).compactMap { $0["object"] }
+                    let data = try JSONEncoder().encode(hits)
+                    let searchResults = try JSONDecoder().decode([ResultType].self, from: data)
+                    subject.send(searchResults)
                     subject.send(completion: .finished)
                 } catch {
                     subject.send(completion: .failure(error))

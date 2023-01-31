@@ -90,6 +90,7 @@ final class InviteFriendsViewModel: ObservableObject {
                     )
                 }
             }
+            .receive(on: RunLoop.main)
             .assign(to: &$rows)
 
         acceptSubject
