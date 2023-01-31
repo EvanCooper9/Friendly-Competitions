@@ -43,22 +43,21 @@ class ActivitySummary {
      * @param {ScoringModel} scoringModel the scoring model for a given competition
      * @return {number} the amount of points
      */
-    pointsFor(scoringModel: ScoringModel): number {
+    pointsForScoringModel(scoringModel: ScoringModel): number {
         switch (scoringModel.type) {
-            case RawScoringModel.percentOfGoals: {
-                const energy = (this.activeEnergyBurned / this.activeEnergyBurnedGoal) * 100;
-                const exercise = (this.appleExerciseTime / this.appleExerciseTimeGoal) * 100;
-                const stand = (this.appleStandHours / this.appleStandHoursGoal) * 100;
-                return energy + exercise + stand;
-            }
-            case RawScoringModel.rawNumbers: {
-                return this.activeEnergyBurned + this.appleExerciseTime + this.appleStandHours;
-            }
-            case RawScoringModel.workout: {
-                return 0
-            }
+        case RawScoringModel.percentOfGoals: {
+            const energy = (this.activeEnergyBurned / this.activeEnergyBurnedGoal) * 100;
+            const exercise = (this.appleExerciseTime / this.appleExerciseTimeGoal) * 100;
+            const stand = (this.appleStandHours / this.appleStandHoursGoal) * 100;
+            return energy + exercise + stand;
         }
-
+        case RawScoringModel.rawNumbers: {
+            return this.activeEnergyBurned + this.appleExerciseTime + this.appleStandHours;
+        }
+        case RawScoringModel.workout: {
+            return 0;
+        }
+        }
     }
 }
 

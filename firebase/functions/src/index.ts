@@ -11,7 +11,9 @@ import { leaveCompetition } from "./Handlers/competitions/leaveCompetition";
 import { cleanActivitySummaries } from "./Handlers/jobs/cleanActivitySummaries";
 import { sendCompetitionCompleteNotifications } from "./Handlers/jobs/sendCompetitionCompleteNotifications";
 import { sendNewCompetitionInvites } from "./Handlers/competitions/sendNewCompetitionInvites";
-import { updateCompetitionStandings, updateUserCompetitionStandings } from "./Handlers/competitions/updateCompetitionStandings";
+import { updateCompetitionRanks } from "./Handlers/competitions/updateCompetitionRanks";
+import { updateActivitySummaryScores } from "./Handlers/jobs/updateActivitySummaryScores";
+import { updateWorkoutScores } from "./Handlers/jobs/updateWorkoutScores";
 
 admin.initializeApp();
 
@@ -31,7 +33,7 @@ exports.deleteCompetition = functions.https.onCall(data => {
 });
 
 exports.inviteUserToCompetition = functions.https.onCall((data, context) => {
-    const caller = context.auth?.uid;
+    const caller: string | undefined = context.auth?.uid;
     const competitionID = data.competitionID;
     const userID: string = data.userID;
     if (caller == null) return Promise.resolve();
@@ -46,15 +48,10 @@ exports.respondToCompetitionInvite = functions.https.onCall((data, context) => {
     return respondToCompetitionInvite(competitionID, caller, accept);
 });
 
-exports.updateCompetitionStandings = functions.https.onCall((data, context) => {
+exports.updateCompetitionStandingsRanks = functions.https.onCall(data => {
     const competitionID = data.competitionID;
-    if (competitionID == undefined) {
-        const userID = context.auth?.uid;
-        if (userID == null) return Promise.resolve();
-        return updateUserCompetitionStandings(userID);
-    } else {
-        return updateCompetitionStandings(competitionID)
-    }
+    if (competitionID == null) return Promise.resolve();
+    return updateCompetitionRanks(competitionID);
 });
 
 exports.joinCompetition = functions.https.onCall((data, context) => {
@@ -102,9 +99,29 @@ exports.deleteFriend = functions.https.onCall((data, context) => {
     return deleteFriend(userID, friendID);
 });
 
+// Points
+
+exports.updateActivitySummaryScores = functions.firestore
+    .document("users/{userID}/activitySummaries/{activitySummaryID}")
+    .onWrite((snapshot, context) => {
+        const userID = context.params.userID;
+        const before = snapshot.before;
+        const after = snapshot.after;
+        return updateActivitySummaryScores(userID, before, after);
+    });
+
+exports.updateWorkoutScores = functions.firestore
+    .document("users/{userID}/workouts/{workoutID}")
+    .onWrite((snapshot, context) => {
+        const userID = context.params.userID;
+        const before = snapshot.before;
+        const after = snapshot.after;
+        return updateWorkoutScores(userID, before, after);
+    });
+
 // Jobs
 
-exports.cleanActivitySummaries = functions.pubsub.schedule("every sunday 02:00")
+exports.cleanActivitySummaries = functions.pubsub.schedule("every Sunday 02:00")
     .timeZone("America/Toronto")
     .onRun(async () => cleanActivitySummaries());
 

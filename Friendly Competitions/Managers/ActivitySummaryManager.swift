@@ -100,6 +100,9 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
             .handleEvents(withUnretained: self, receiveSubscription: { strongSelf, _ in
                 strongSelf.healthKitManager.execute(query)
             })
+            .map { _ in
+                return [.mock]
+            }
             .eraseToAnyPublisher()
     }
 

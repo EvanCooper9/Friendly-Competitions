@@ -23,7 +23,7 @@ final class SearchManager: SearchManaging {
     // MARK: - Lifecycle
     
     init() {
-        searchClient = .init(appID: "WSNLKJEWQD", apiKey: "4b2d2f9f53bcd6bb53eba3e3176490e1")
+        searchClient = .init(appID: "WSNLKJEWQD", apiKey: "4b2d2f9f53bcd6bb53eba3e3176490e1") // public API key, ok to be in source
         competitionsIndex = searchClient.index(withName: "competitions")
         userIndex = searchClient.index(withName: "users")
     }

@@ -19,29 +19,27 @@ async function sendCompetitionCompleteNotifications(): Promise<void> {
 
     const competitionPromises = competitionsRef.docs.map(async doc => {
         const competition = new Competition(doc);
-        return competition.updateStandings()
-            .then(async () => {
-                const standingsRef = await firestore.collection(`competitions/${competition.id}/standings`).get();
-                const standings = standingsRef.docs.map(doc => new Standing(doc));
-                const notificationPromises = competition.participants.map(async participantId => {
-                    const userRef = await firestore.doc(`users/${participantId}`).get();
-                    const user = new User(userRef);
-                    const standing = standings.find(standing => standing.userId == user.id);
-                    if (standing == null) return null;
-        
-                    const rank = standing.rank;
-                    const ordinal = ["st", "nd", "rd"][((rank+90)%100-10)%10-1] || "th";
-                    return notifications
-                        .sendNotificationsToUser(
-                            user,
-                            "Competition complete!",
-                            `You placed ${rank}${ordinal} in ${competition.name}. Tap to see your results.`,
-                            `https://friendly-competitions.app/competition/${competition.id}/history`
-                        )
-                        .then(() => user.updateStatisticsWithNewRank(rank));
-                });
-                return Promise.all(notificationPromises);
-            })
+        const standingsRef = await firestore.collection(`competitions/${competition.id}/standings`).get();
+        const standings = standingsRef.docs.map(doc => new Standing(doc));
+        const notificationPromises = competition.participants.map(async participantId => {
+            const userRef = await firestore.doc(`users/${participantId}`).get();
+            const user = new User(userRef);
+            const standing = standings.find(standing => standing.userId == user.id);
+            if (standing == null) return Promise.resolve();
+
+            const rank = standing.rank;
+            const ordinal = ["st", "nd", "rd"][((rank+90)%100-10)%10-1] || "th";
+            return notifications
+                .sendNotificationsToUser(
+                    user,
+                    "Competition complete!",
+                    `You placed ${rank}${ordinal} in ${competition.name}. Tap to see your results.`,
+                    `https://friendly-competitions.app/competition/${competition.id}/history`
+                )
+                .then(() => user.updateStatisticsWithNewRank(rank));
+        });
+
+        return Promise.all(notificationPromises)
             .then(async () => {
                 await competition.recordResults();
                 await competition.updateRepeatingCompetition();

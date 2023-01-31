@@ -1,10 +1,8 @@
 import { Competition } from "./Competition";
+import { EnumDictionary } from "./Helpers/EnumDictionary";
+import { RawScoringModel, ScoringModel } from "./ScoringModel";
 import { WorkoutMetric } from "./WorkoutMetric";
 import { WorkoutType } from "./WorkoutType";
-
-type EnumDictionary<T extends string | symbol | number, U> = {
-    [K in T]: U;
-};
 
 /**
  * Workout
@@ -34,10 +32,36 @@ class Workout {
         return this.date >= competition.start && this.date <= competition.end;
     }
 
+    /**
+     * Calculate how many points are earned based on metrics from a scoring model
+     * @param {WorkoutMetric[]} workoutMetrics The metrics to filter points by
+     * @return {number} Total points based on metrics
+     */
     pointsForMetrics(workoutMetrics: WorkoutMetric[]): number {
-        let total = 0;
+        const total = 0;
         workoutMetrics.forEach(workoutMetric => this.points[workoutMetric]);
         return total;
+    }
+
+    /**
+     * Calculate how many points are earned based on a scoring model
+     * @param {ScoringModel} scoringModel the scoring model for a given competition
+     * @return {number} the amount of points
+     */
+    pointsForScoringModel(scoringModel: ScoringModel): number {
+        switch (scoringModel.type) {
+        case RawScoringModel.percentOfGoals: {
+            return 0;
+        }
+        case RawScoringModel.rawNumbers: {
+            return 0;
+        }
+        case RawScoringModel.workout: {
+            const total = 0;
+            scoringModel.workoutMetrics?.forEach(workoutMetric => this.points[workoutMetric]);
+            return total;
+        }
+        }
     }
 }
 

@@ -1,3 +1,5 @@
+import { StringKeyDictionary } from "./Helpers/EnumDictionary";
+
 /**
  * Standing
  */
@@ -6,6 +8,7 @@ class Standing {
     rank: number;
     userId: string;
     date?: string;
+    pointsBreakdown?: StringKeyDictionary<string, number>;
 
     /**
      * Builds a standing record from a firestore document
@@ -16,6 +19,7 @@ class Standing {
         this.rank = document.get("rank");
         this.userId = document.get("userId");
         this.date = document.get("date");
+        this.pointsBreakdown = document.get("pointsBreakdown");
     }
 
     /**
