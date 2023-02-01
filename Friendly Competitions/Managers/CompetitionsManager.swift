@@ -26,7 +26,6 @@ protocol CompetitionsManaging {
     func search(byID competitionID: Competition.ID) -> AnyPublisher<Competition?, Error>
     func results(for competitionID: Competition.ID) -> AnyPublisher<[CompetitionResult], Error>
     func standings(for competitionID: Competition.ID, resultID: CompetitionResult.ID) -> AnyPublisher<[Competition.Standing], Error>
-//    func standings(for competitionID: Competition.ID) -> AnyPublisher<[Competition.Standing], Error>
     func participants(for competitionsID: Competition.ID) -> AnyPublisher<[User], Error>
     
     func competitionPublisher(for competitionID: Competition.ID) -> AnyPublisher<Competition, Error>
