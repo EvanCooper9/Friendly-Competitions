@@ -26,9 +26,11 @@ protocol CompetitionsManaging {
     func search(byID competitionID: Competition.ID) -> AnyPublisher<Competition?, Error>
     func results(for competitionID: Competition.ID) -> AnyPublisher<[CompetitionResult], Error>
     func standings(for competitionID: Competition.ID, resultID: CompetitionResult.ID) -> AnyPublisher<[Competition.Standing], Error>
-    func standings(for competitionID: Competition.ID) -> AnyPublisher<[Competition.Standing], Error>
+//    func standings(for competitionID: Competition.ID) -> AnyPublisher<[Competition.Standing], Error>
     func participants(for competitionsID: Competition.ID) -> AnyPublisher<[User], Error>
+    
     func competitionPublisher(for competitionID: Competition.ID) -> AnyPublisher<Competition, Error>
+    func standingsPublisher(for competitionID: Competition.ID) -> AnyPublisher<[Competition.Standing], Error>
 }
 
 final class CompetitionsManager: CompetitionsManaging {
@@ -94,7 +96,6 @@ final class CompetitionsManager: CompetitionsManaging {
                 "accept": true
             ])
             .mapToVoid()
-            .handleEvents(withUnretained: self, receiveOutput: { $0.resetCacheTimestamps(for: competition.id) })
             .eraseToAnyPublisher()
     }
 
@@ -142,7 +143,6 @@ final class CompetitionsManager: CompetitionsManaging {
         functions.httpsCallable("joinCompetition")
             .call(["competitionID": competition.id])
             .mapToVoid()
-            .handleEvents(withUnretained: self, receiveOutput: { $0.resetCacheTimestamps(for: competition.id) })
             .eraseToAnyPublisher()
     }
 
@@ -150,7 +150,6 @@ final class CompetitionsManager: CompetitionsManaging {
         functions.httpsCallable("leaveCompetition")
             .call(["competitionID": competition.id])
             .mapToVoid()
-            .handleEvents(withUnretained: self, receiveOutput: { $0.resetCacheTimestamps(for: competition.id) })
             .eraseToAnyPublisher()
     }
 
@@ -179,18 +178,6 @@ final class CompetitionsManager: CompetitionsManaging {
     func standings(for competitionID: Competition.ID, resultID: CompetitionResult.ID) -> AnyPublisher<[Competition.Standing], Error> {
         database.collection("competitions/\(competitionID)/results/\(resultID)/standings")
             .getDocumentsPreferCache()
-            .map { $0.documents.compactMap { try? $0.data(as: Competition.Standing.self) } }
-            .eraseToAnyPublisher()
-    }
-    
-    private var lastStandingsFetch = [Competition.ID: Date]()
-    func standings(for competitionID: Competition.ID) -> AnyPublisher<[Competition.Standing], Error> {
-        let fromCache = abs(lastStandingsFetch[competitionID]?.timeIntervalSinceNow ?? .infinity) < 5.minutes
-        return database.collection("competitions/\(competitionID)/standings")
-            .getDocuments(source: fromCache ? .cache : .server)
-            .handleEvents(withUnretained: self, receiveOutput: { strongSelf, _ in
-                strongSelf.lastStandingsFetch[competitionID] = .now
-            })
             .map { $0.documents.compactMap { try? $0.data(as: Competition.Standing.self) } }
             .eraseToAnyPublisher()
     }
@@ -225,12 +212,15 @@ final class CompetitionsManager: CompetitionsManaging {
             .tryMap { try $0.decoded(as: Competition.self) }
             .eraseToAnyPublisher()
     }
+    
+    func standingsPublisher(for competitionID: Competition.ID) -> AnyPublisher<[Competition.Standing], Error> {
+        database.collection("competitions/\(competitionID)/standings")
+            .snapshotPublisher()
+            .map { $0.documents.decoded(asArrayOf: Competition.Standing.self) }
+            .eraseToAnyPublisher()
+    }
 
     // MARK: - Private Methods
-    
-    private func resetCacheTimestamps(for competitionID: Competition.ID) {
-        lastStandingsFetch.removeValue(forKey: competitionID)
-    }
 
     private func listenForCompetitions() {
         database.collection("competitions")

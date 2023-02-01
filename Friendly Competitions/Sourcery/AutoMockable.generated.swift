@@ -548,28 +548,6 @@ class CompetitionsManagingMock: CompetitionsManaging {
         }
     }
 
-    //MARK: - standings
-
-    var standingsForCallsCount = 0
-    var standingsForCalled: Bool {
-        return standingsForCallsCount > 0
-    }
-    var standingsForReceivedCompetitionID: Competition.ID?
-    var standingsForReceivedInvocations: [Competition.ID] = []
-    var standingsForReturnValue: AnyPublisher<[Competition.Standing], Error>!
-    var standingsForClosure: ((Competition.ID) -> AnyPublisher<[Competition.Standing], Error>)?
-
-    func standings(for competitionID: Competition.ID) -> AnyPublisher<[Competition.Standing], Error> {
-        standingsForCallsCount += 1
-        standingsForReceivedCompetitionID = competitionID
-        standingsForReceivedInvocations.append(competitionID)
-        if let standingsForClosure = standingsForClosure {
-            return standingsForClosure(competitionID)
-        } else {
-            return standingsForReturnValue
-        }
-    }
-
     //MARK: - participants
 
     var participantsForCallsCount = 0
@@ -611,6 +589,28 @@ class CompetitionsManagingMock: CompetitionsManaging {
             return competitionPublisherForClosure(competitionID)
         } else {
             return competitionPublisherForReturnValue
+        }
+    }
+
+    //MARK: - standingsPublisher
+
+    var standingsPublisherForCallsCount = 0
+    var standingsPublisherForCalled: Bool {
+        return standingsPublisherForCallsCount > 0
+    }
+    var standingsPublisherForReceivedCompetitionID: Competition.ID?
+    var standingsPublisherForReceivedInvocations: [Competition.ID] = []
+    var standingsPublisherForReturnValue: AnyPublisher<[Competition.Standing], Error>!
+    var standingsPublisherForClosure: ((Competition.ID) -> AnyPublisher<[Competition.Standing], Error>)?
+
+    func standingsPublisher(for competitionID: Competition.ID) -> AnyPublisher<[Competition.Standing], Error> {
+        standingsPublisherForCallsCount += 1
+        standingsPublisherForReceivedCompetitionID = competitionID
+        standingsPublisherForReceivedInvocations.append(competitionID)
+        if let standingsPublisherForClosure = standingsPublisherForClosure {
+            return standingsPublisherForClosure(competitionID)
+        } else {
+            return standingsPublisherForReturnValue
         }
     }
 

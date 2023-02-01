@@ -14,6 +14,7 @@ import { sendNewCompetitionInvites } from "./Handlers/competitions/sendNewCompet
 import { updateCompetitionRanks } from "./Handlers/competitions/updateCompetitionRanks";
 import { updateActivitySummaryScores } from "./Handlers/jobs/updateActivitySummaryScores";
 import { updateWorkoutScores } from "./Handlers/jobs/updateWorkoutScores";
+import { updateCompetitionStandings } from "./Handlers/jobs/updateCompetitionStandings";
 
 admin.initializeApp();
 
@@ -117,6 +118,14 @@ exports.updateWorkoutScores = functions.firestore
         const before = snapshot.before;
         const after = snapshot.after;
         return updateWorkoutScores(userID, before, after);
+    });
+
+exports.updateCompetitionStandings = functions.firestore
+    .document("competitions/{competitionID}")
+    .onUpdate(snapshot => {
+        const before = snapshot.before;
+        const after = snapshot.after;
+        return updateCompetitionStandings(before, after);
     });
 
 // Jobs

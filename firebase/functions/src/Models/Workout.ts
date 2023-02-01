@@ -59,7 +59,7 @@ class Workout {
         case RawScoringModel.workout: {
             const total = 0;
             scoringModel.workoutMetrics?.forEach(workoutMetric => this.points[workoutMetric]);
-            return total;
+            return Math.round(total);
         }
         }
     }

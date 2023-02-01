@@ -15,6 +15,8 @@ protocol SearchManaging {
 final class SearchManager: SearchManaging {
     
     // MARK: - Private Properties
+    
+    @Injected(Container.userManager) private var userManager
         
     private let searchClient: SearchClient
     private let competitionsIndex: Index
@@ -37,7 +39,11 @@ final class SearchManager: SearchManaging {
     
     func searchForUsers(byName name: String) -> AnyPublisher<[User], Error> {
         search(index: userIndex, byName: name)
-            .filterMany { $0.searchable ?? false }
+            .filterMany { [weak self] user in
+                guard let strongSelf = self else { return false }
+                guard user.id != strongSelf.userManager.user.id else { return false }
+                return user.searchable ?? false
+            }
     }
     
     // MARK: - Private Methods

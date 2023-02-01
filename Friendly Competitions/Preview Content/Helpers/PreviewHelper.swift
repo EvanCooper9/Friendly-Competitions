@@ -10,6 +10,7 @@ fileprivate enum Dependencies {
     static let friendsManager = FriendsManagingMock()
     static let healthKitManager = HealthKitManagingMock()
     static let permissionsManager = PermissionsManagingMock()
+    static let searchManager = SearchManagingMock()
     static let storageManager = StorageManagingMock()
     static let premiumManager = PremiumManagingMock()
     static let userManager = UserManagingMock()
@@ -24,6 +25,7 @@ fileprivate enum Dependencies {
         Container.friendsManager.register { friendsManager }
         Container.healthKitManager.register { healthKitManager }
         Container.permissionsManager.register { permissionsManager }
+        Container.searchManager.register { searchManager }
         Container.storageManager.register { storageManager }
         Container.premiumManager.register { premiumManager }
         Container.userManager.register { userManager }
@@ -39,7 +41,7 @@ fileprivate enum Dependencies {
 
         competitionsManager.competitions = .just([.mock])
         competitionsManager.invitedCompetitions = .just([])
-        competitionsManager.standingsForReturnValue = .just([])
+        competitionsManager.standingsPublisherForReturnValue = .just([])
         competitionsManager.standingsForResultIDReturnValue = .just([])
         competitionsManager.participantsForReturnValue = .just([])
         competitionsManager.appOwnedCompetitions = .just([.mockPublic])
@@ -49,6 +51,9 @@ fileprivate enum Dependencies {
         friendsManager.friendActivitySummaries = .just([:])
         friendsManager.friendRequests = .just([])
 
+        searchManager.searchForCompetitionsByNameReturnValue = .just([])
+        searchManager.searchForUsersByNameReturnValue = .just([])
+        
         storageManager.dataForReturnValue = .just(.init())
         
         let products: [Product] = [

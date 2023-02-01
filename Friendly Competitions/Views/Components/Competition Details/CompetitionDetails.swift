@@ -60,7 +60,6 @@ struct CompetitionDetails_Previews: PreviewProvider {
 
     private static func setupMocks() {
         competitionsManager.competitions = .just([])
-        competitionsManager.standingsForReturnValue = .just([])
         competitionsManager.participantsForReturnValue = .just([])
     }
 

@@ -16,12 +16,12 @@ const dateFormat = "YYYY-MM-DD";
  */
 async function updateActivitySummaryScores(userID: string, before?: DocumentSnapshot, after?: DocumentSnapshot): Promise<void> {
     const firestore = getFirestore();
-    const competitionsRef = await firestore.collection("competitions")
+    const competitions = await firestore.collection("competitions")
         .where("participants", "array-contains", userID)
-        .get();
-    const competitions = competitionsRef.docs.map(doc => new Competition(doc));
+        .get()
+        .then(query => query.docs.map(doc => new Competition(doc)));
 
-    await competitions.forEach(async competition => {
+    await Promise.all(competitions.map(async competition => {
         if (!competition.isActive()) return;
 
         const standingDoc = firestore.doc(`competitions/${competition.id}/standings/${userID}`);
@@ -53,7 +53,7 @@ async function updateActivitySummaryScores(userID: string, before?: DocumentSnap
 
         await standingDoc.set(prepareForFirestore(standing));
         await competition.updateStandingRanks();
-    });
+    }));
 }
 
 export {

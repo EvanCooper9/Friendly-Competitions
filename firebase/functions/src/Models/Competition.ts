@@ -5,6 +5,7 @@ import { prepareForFirestore } from "../Utilities/prepareForFirestore";
 import { ActivitySummary } from "./ActivitySummary";
 import { ScoringModel } from "./ScoringModel";
 import { Standing } from "./Standing";
+import { Workout } from "./Workout";
 
 const dateFormat = "YYYY-MM-DD";
 
@@ -142,14 +143,26 @@ class Competition {
 
     /**
      * Fetch activity summaries for a user that fall within the bounds of this competition's start & end
-     * @param {string} userId The ID of the user to fetch activity summaries for
+     * @param {string} userID The ID of the user to fetch activity summaries for
      * @return {Promise<ActivitySummary[]>} A promise of activity summaries
      */
-    async activitySummaries(userId: string): Promise<ActivitySummary[]> {
-        const activitySummariesPromise = await admin.firestore().collection(`users/${userId}/activitySummaries`).get();
-        return activitySummariesPromise.docs
-            .map(doc => new ActivitySummary(doc))
-            .filter(activitySummary => activitySummary.isIncludedInCompetition(this));
+    async activitySummaries(userID: string): Promise<ActivitySummary[]> {
+        return await admin.firestore().collection(`users/${userID}/activitySummaries`)
+            .get()
+            .then(query => query.docs.map(doc => new ActivitySummary(doc)))
+            .then(activitySummaries => activitySummaries.filter(x => x.isIncludedInCompetition(this)));
+    }
+
+    /**
+     * Fetch workouts for a user that fall within the bounds of this competition's start & end
+     * @param {string} userID The ID of the user to fetch workouts for
+     * @return {Promise<ActivitySummary[]>} A promise of workouts
+     */
+    async workouts(userID: string): Promise<Workout[]> {
+        return await admin.firestore().collection(`users/${userID}/workouts`)
+            .get()
+            .then(query => query.docs.map(doc => new Workout(doc)))
+            .then(workouts => workouts.filter(x => x.isIncludedInCompetition(this)));
     }
 }
 
