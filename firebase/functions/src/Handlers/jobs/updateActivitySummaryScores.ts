@@ -1,4 +1,5 @@
 import { DocumentSnapshot } from "firebase-admin/firestore";
+import moment = require("moment");
 import { ActivitySummary } from "../../Models/ActivitySummary";
 import { Competition } from "../../Models/Competition";
 import { Standing } from "../../Models/Standing";
@@ -35,8 +36,9 @@ async function updateActivitySummaryScores(userID: string, before: DocumentSnaps
             if (Object.keys(pointsBreakdown).length == 0) {
                 const activitySummaries = await competition.activitySummaries(userID);
                 activitySummaries.forEach(activitySummary => {
+                    const id = moment(activitySummary.date).format("YYYY-MM-DD");
                     const points = activitySummary.pointsForScoringModel(competition.scoringModel);
-                    pointsBreakdown[after.id] = points;
+                    pointsBreakdown[id] = points;
                 });
             } else {
                 if (after.exists) { // created or updated
