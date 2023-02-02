@@ -40,20 +40,23 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
     init() {
         let storedActivitySummary = UserDefaults.standard.decode(ActivitySummary.self, forKey: Constants.activitySummaryKey)
         activitySummarySubject = .init(storedActivitySummary?.date.isToday == true ? storedActivitySummary : nil)
+        activitySummarySubject
+            .dropFirst()
+            .sink { UserDefaults.standard.encode($0, forKey: Constants.activitySummaryKey) }
+            .store(in: &cancellables)
 
         activitySummary = activitySummarySubject
             .removeDuplicates()
-            .handleEvents(receiveOutput: { UserDefaults.standard.encode($0, forKey: Constants.activitySummaryKey) })
             .receive(on: RunLoop.main)
             .share(replay: 1)
             .eraseToAnyPublisher()
         
-        let fetchAndUpload = PassthroughSubject<Void, Error>()
+        let fetchAndUpload = PassthroughSubject<DateInterval, Error>()
         let fetchAndUploadFinished = PassthroughSubject<Void, Never>()
         
         fetchAndUpload
             .debounce(for: .seconds(1), scheduler: RunLoop.main)
-            .flatMapLatest(withUnretained: self) { $0.activitySummaries(in: $0.competitionsManager.competitionsDateInterval) }
+            .flatMapLatest(withUnretained: self) { $0.activitySummaries(in: $1) }
             .handleEvents(withUnretained: self, receiveOutput: { strongSelf, activitySummaries in
                 if let activitySummary = activitySummaries.last, activitySummary.date.isToday {
                     strongSelf.activitySummarySubject.send(activitySummary)
@@ -66,8 +69,8 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
             .store(in: &cancellables)
         
         let backgroundDeliveryTrigger = Just(())
-            .handleEvents(receiveSubscription: { _ in
-                fetchAndUpload.send()
+            .handleEvents(withUnretained: self, receiveSubscription: { strongSelf, _ in
+                fetchAndUpload.send(strongSelf.competitionsManager.competitionsDateInterval)
             })
             .flatMapLatest { fetchAndUploadFinished }
             .eraseToAnyPublisher()
@@ -75,18 +78,23 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
         healthKitManager.registerBackgroundDeliveryTask(backgroundDeliveryTrigger)
         
         Publishers
-            .CombineLatest(
-                UIApplication.willEnterForegroundNotification.publisher,
+            .Merge(
+                UIApplication.willEnterForegroundNotification.publisher
+                    .map { [weak self] _ in self?.competitionsManager.competitionsDateInterval }
+                    .unwrap(),
                 competitionsManager.competitions
+                    .filterMany(\.isActive)
+                    .map(\.dateInterval)
             )
             .debounce(for: .seconds(1), scheduler: RunLoop.main)
-            .sink(receiveCompletion: { _ in }, receiveValue: { _ in fetchAndUpload.send() })
+            .sink(receiveValue: { fetchAndUpload.send($0) })
             .store(in: &cancellables)
     }
 
     // MARK: - Public Methods
     
     func activitySummaries(in dateInterval: DateInterval) -> AnyPublisher<[ActivitySummary], Error> {
+        print("fetching ACs in interval \(dateInterval)")
         let subject = PassthroughSubject<[ActivitySummary], Error>()
         let query = HKActivitySummaryQuery(predicate: dateInterval.activitySummaryPredicate) { query, hkActivitySummaries, error in
             if let error {
@@ -113,8 +121,7 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
             try activitySummaries.forEach { activitySummary in
                 var activitySummary = activitySummary
                 activitySummary.userID = userID
-                let documentID = DateFormatter.dateDashed.string(from: activitySummary.date)
-                let document = strongSelf.database.document("users/\(userID)/activitySummaries/\(documentID)")
+                let document = strongSelf.database.document("users/\(userID)/activitySummaries/\(activitySummary.id)")
                 let _ = try batch.setDataEncodable(activitySummary, forDocument: document)
             }
             try await batch.commit()

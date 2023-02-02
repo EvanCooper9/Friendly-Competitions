@@ -13,8 +13,8 @@ import { sendCompetitionCompleteNotifications } from "./Handlers/jobs/sendCompet
 import { sendNewCompetitionInvites } from "./Handlers/competitions/sendNewCompetitionInvites";
 import { updateCompetitionRanks } from "./Handlers/competitions/updateCompetitionRanks";
 import { updateActivitySummaryScores } from "./Handlers/jobs/updateActivitySummaryScores";
-import { updateWorkoutScores } from "./Handlers/jobs/updateWorkoutScores";
 import { updateCompetitionStandings } from "./Handlers/jobs/updateCompetitionStandings";
+import { updateWorkoutScores } from "./Handlers/jobs/updateWorkoutScores";
 
 admin.initializeApp();
 
@@ -56,7 +56,7 @@ exports.updateCompetitionStandingsRanks = functions.https.onCall(data => {
 });
 
 exports.joinCompetition = functions.https.onCall((data, context) => {
-    const competitionID = data.competitionID;
+    const competitionID: string = data.competitionID;
     const userID: string | undefined = context.auth?.uid;
     if (userID == null) return Promise.resolve();
     return joinCompetition(competitionID, userID);
@@ -64,8 +64,8 @@ exports.joinCompetition = functions.https.onCall((data, context) => {
 
 exports.leaveCompetition = functions.https.onCall((data, context) => {
     const competitionID = data.competitionID;
-    const userID = context.auth?.uid;
-    if (userID == null) return Promise.resolve();
+    const userID: string | undefined = context.auth?.uid;
+    if (userID == undefined) return Promise.resolve();
     return leaveCompetition(competitionID, userID);
 });
 
@@ -104,20 +104,22 @@ exports.deleteFriend = functions.https.onCall((data, context) => {
 
 exports.updateActivitySummaryScores = functions.firestore
     .document("users/{userID}/activitySummaries/{activitySummaryID}")
-    .onWrite((snapshot, context) => {
+    .onWrite(async (snapshot, context) => {
         const userID = context.params.userID;
         const before = snapshot.before;
         const after = snapshot.after;
-        return updateActivitySummaryScores(userID, before, after);
+        await updateActivitySummaryScores(userID, before, after);
     });
 
-exports.updateWorkoutScores = functions.firestore
+exports.updateWorkoutScores = functions
+    .runWith({ timeoutSeconds: 540 })
+    .firestore
     .document("users/{userID}/workouts/{workoutID}")
-    .onWrite((snapshot, context) => {
+    .onWrite(async (snapshot, context) => {
         const userID = context.params.userID;
         const before = snapshot.before;
         const after = snapshot.after;
-        return updateWorkoutScores(userID, before, after);
+        await updateWorkoutScores(userID, before, after);
     });
 
 exports.updateCompetitionStandings = functions.firestore

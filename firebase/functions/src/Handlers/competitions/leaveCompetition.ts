@@ -14,6 +14,7 @@ async function leaveCompetition(competitionID: string, userID: string): Promise<
     if (index > -1) competition.participants.splice(index, 1);
     await firestore.doc(`competitions/${competitionID}`).update({ participants: competition.participants });
     await firestore.doc(`competitions/${competitionID}/standings/${userID}`).delete();
+    await competition.updateStandingRanks();
 }
 
 export {

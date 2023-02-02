@@ -1,4 +1,5 @@
 import Combine
+import CombineExt
 import ECKit
 import ECKit_Firebase
 import Factory
@@ -48,9 +49,9 @@ final class CompetitionsManager: CompetitionsManaging {
 
     // MARK: - Private Properties
     
-    private let competitionsSubject = CurrentValueSubject<[Competition], Never>([])
-    private let invitedCompetitionsSubject = CurrentValueSubject<[Competition], Never>([])
-    private let appOwnedCompetitionsSubject = CurrentValueSubject<[Competition], Never>([])
+    private let competitionsSubject = ReplaySubject<[Competition], Never>(bufferSize: 1)
+    private let invitedCompetitionsSubject = ReplaySubject<[Competition], Never>(bufferSize: 1)
+    private let appOwnedCompetitionsSubject = ReplaySubject<[Competition], Never>(bufferSize: 1)
 
     @Injected(Container.appState) private var appState
     @Injected(Container.analyticsManager) private var analyticsManager

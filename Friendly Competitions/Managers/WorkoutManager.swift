@@ -70,8 +70,9 @@ final class WorkoutManager: WorkoutManaging {
                 UIApplication.willEnterForegroundNotification.publisher,
                 competitionsManager.competitions
             )
+            .mapToVoid()
             .debounce(for: .seconds(1), scheduler: RunLoop.main)
-            .sink(receiveCompletion: { _ in }, receiveValue: { _ in fetchAndUpload.send() })
+            .sink(receiveValue: { fetchAndUpload.send() })
             .store(in: &cancellables)
     }
     
