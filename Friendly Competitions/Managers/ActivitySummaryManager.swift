@@ -94,7 +94,6 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
     // MARK: - Public Methods
     
     func activitySummaries(in dateInterval: DateInterval) -> AnyPublisher<[ActivitySummary], Error> {
-        print("fetching ACs in interval \(dateInterval)")
         let subject = PassthroughSubject<[ActivitySummary], Error>()
         let query = HKActivitySummaryQuery(predicate: dateInterval.activitySummaryPredicate) { query, hkActivitySummaries, error in
             if let error {
