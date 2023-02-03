@@ -117,6 +117,9 @@
 		ED1CFA9F2864E58300192E49 /* PostDecoded.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1CFA9E2864E58300192E49 /* PostDecoded.swift */; };
 		ED1CFAA22864FF0000192E49 /* WorkoutMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1CFAA12864FF0000192E49 /* WorkoutMetric.swift */; };
 		ED1E08D728DF4C6600497E20 /* View+RemovingMargin.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1E08D628DF4C6600497E20 /* View+RemovingMargin.swift */; };
+		ED318262298C43500091EE8C /* ProfanityRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED318261298C43500091EE8C /* ProfanityRequest.swift */; };
+		ED318267298C9D4E0091EE8C /* ProfanityManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED318266298C9D4E0091EE8C /* ProfanityManager.swift */; };
+		ED31826A298CA3300091EE8C /* ECNetworking in Frameworks */ = {isa = PBXBuildFile; productRef = ED318269298CA3300091EE8C /* ECNetworking */; };
 		ED3868DE29677F8100522722 /* PaywallPurchaseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3868DC29677F8100522722 /* PaywallPurchaseView.swift */; };
 		ED3C09E029626A1D00ED4ACC /* NavigationDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3C09DF29626A1D00ED4ACC /* NavigationDestination.swift */; };
 		ED3D5F30295E472500211E86 /* SignInViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3D5F2F295E472500211E86 /* SignInViewModelTests.swift */; };
@@ -315,6 +318,8 @@
 		ED1CFA9E2864E58300192E49 /* PostDecoded.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PostDecoded.swift; sourceTree = "<group>"; };
 		ED1CFAA12864FF0000192E49 /* WorkoutMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutMetric.swift; sourceTree = "<group>"; };
 		ED1E08D628DF4C6600497E20 /* View+RemovingMargin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+RemovingMargin.swift"; sourceTree = "<group>"; };
+		ED318261298C43500091EE8C /* ProfanityRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfanityRequest.swift; sourceTree = "<group>"; };
+		ED318266298C9D4E0091EE8C /* ProfanityManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfanityManager.swift; sourceTree = "<group>"; };
 		ED3868DC29677F8100522722 /* PaywallPurchaseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallPurchaseView.swift; sourceTree = "<group>"; };
 		ED3C09DF29626A1D00ED4ACC /* NavigationDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationDestination.swift; sourceTree = "<group>"; };
 		ED3D5F2F295E472500211E86 /* SignInViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInViewModelTests.swift; sourceTree = "<group>"; };
@@ -395,6 +400,7 @@
 			files = (
 				ED0470C128FF2F4700A941AC /* FirebaseMessaging in Frameworks */,
 				EDA035CE2918619C0091E7A6 /* StoreKit.framework in Frameworks */,
+				ED31826A298CA3300091EE8C /* ECNetworking in Frameworks */,
 				ED0470B528FF2F4700A941AC /* FirebaseAnalyticsSwift in Frameworks */,
 				ED71E2A328F70212001FED74 /* Files in Frameworks */,
 				C1C8B24726F3FB9C008D6B1B /* HealthKit.framework in Frameworks */,
@@ -823,6 +829,7 @@
 				EDD894FE29634038009636E6 /* Environment */,
 				ED6CB45A28BA829000436BBD /* HealthKit */,
 				EDD894F829628CE4009636E6 /* Premium */,
+				ED318265298C9D420091EE8C /* Profanity */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -920,6 +927,23 @@
 				ED3D5F2E295E471600211E86 /* Sign In */,
 			);
 			path = Views;
+			sourceTree = "<group>";
+		};
+		ED318260298C43490091EE8C /* Requests */ = {
+			isa = PBXGroup;
+			children = (
+				ED318261298C43500091EE8C /* ProfanityRequest.swift */,
+			);
+			path = Requests;
+			sourceTree = "<group>";
+		};
+		ED318265298C9D420091EE8C /* Profanity */ = {
+			isa = PBXGroup;
+			children = (
+				ED318266298C9D4E0091EE8C /* ProfanityManager.swift */,
+				ED318260298C43490091EE8C /* Requests */,
+			);
+			path = Profanity;
 			sourceTree = "<group>";
 		};
 		ED3868DB29677F6100522722 /* Paywall */ = {
@@ -1196,6 +1220,7 @@
 				ED8C324D2911BFD300339988 /* ECKit+Firebase */,
 				ED1B5CEE296B574B00122D7E /* ReceiptParser */,
 				ED1B5CF0296B574B00122D7E /* RevenueCat */,
+				ED318269298CA3300091EE8C /* ECNetworking */,
 			);
 			productName = CompyBoi;
 			productReference = C1691DC326D55FCF006FFA30 /* Friendly Competitions.app */;
@@ -1234,6 +1259,7 @@
 				ED0470A928FF2DB200A941AC /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				ED74033A28FF7297005BD155 /* XCRemoteSwiftPackageReference "ECKit" */,
 				ED1B5CED296B574B00122D7E /* XCRemoteSwiftPackageReference "purchases-ios" */,
+				ED318268298CA3300091EE8C /* XCRemoteSwiftPackageReference "ECNetworking" */,
 			);
 			productRefGroup = C1691DC426D55FCF006FFA30 /* Products */;
 			projectDirPath = "";
@@ -1401,6 +1427,7 @@
 				ED438FF727F7B3B600D72F99 /* View+ConfirmationDialog.swift in Sources */,
 				ED438FFB27F7D18600D72F99 /* AnalyticsManager.swift in Sources */,
 				C1884E4826D5894000C21014 /* HomeView.swift in Sources */,
+				ED318262298C43500091EE8C /* ProfanityRequest.swift in Sources */,
 				ED1B5CFF296DBD2400122D7E /* PaywallViewModel.swift in Sources */,
 				C155229C26E793B300FE0DA7 /* User+Mock.swift in Sources */,
 				ED901B452802426800FE619E /* HomeViewModel.swift in Sources */,
@@ -1494,6 +1521,7 @@
 				C16CC40627A7332800C26208 /* UserView.swift in Sources */,
 				ED438FF927F7C2B900D72F99 /* View+Analytics.swift in Sources */,
 				C1884E4E26D59E3100C21014 /* User.swift in Sources */,
+				ED318267298C9D4E0091EE8C /* ProfanityManager.swift in Sources */,
 				ED1B5CE42969358100122D7E /* PremiumBanner.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -1816,6 +1844,14 @@
 				minimumVersion = 4.0.0;
 			};
 		};
+		ED318268298CA3300091EE8C /* XCRemoteSwiftPackageReference "ECNetworking" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/EvanCooper9/ECNetworking";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.0;
+			};
+		};
 		ED71E2A128F70212001FED74 /* XCRemoteSwiftPackageReference "Files" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/JohnSundell/Files";
@@ -1879,6 +1915,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = ED1B5CED296B574B00122D7E /* XCRemoteSwiftPackageReference "purchases-ios" */;
 			productName = RevenueCat;
+		};
+		ED318269298CA3300091EE8C /* ECNetworking */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ED318268298CA3300091EE8C /* XCRemoteSwiftPackageReference "ECNetworking" */;
+			productName = ECNetworking;
 		};
 		ED71E2A228F70212001FED74 /* Files */ = {
 			isa = XCSwiftPackageProductDependency;

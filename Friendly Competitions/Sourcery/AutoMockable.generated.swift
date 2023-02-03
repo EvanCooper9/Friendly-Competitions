@@ -989,6 +989,31 @@ class PremiumManagingMock: PremiumManaging {
     }
 
 }
+class ProfanityManagingMock: ProfanityManaging {
+
+    //MARK: - filter
+
+    var filterCallsCount = 0
+    var filterCalled: Bool {
+        return filterCallsCount > 0
+    }
+    var filterReceivedInput: String?
+    var filterReceivedInvocations: [String] = []
+    var filterReturnValue: AnyPublisher<String, Error>!
+    var filterClosure: ((String) -> AnyPublisher<String, Error>)?
+
+    func filter(_ input: String) -> AnyPublisher<String, Error> {
+        filterCallsCount += 1
+        filterReceivedInput = input
+        filterReceivedInvocations.append(input)
+        if let filterClosure = filterClosure {
+            return filterClosure(input)
+        } else {
+            return filterReturnValue
+        }
+    }
+
+}
 class StorageManagingMock: StorageManaging {
 
     //MARK: - data
