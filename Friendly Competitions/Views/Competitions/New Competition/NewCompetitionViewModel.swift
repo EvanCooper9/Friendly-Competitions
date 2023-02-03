@@ -26,7 +26,7 @@ final class NewCompetitionViewModel: ObservableObject {
     @Published var scoringModel: Competition.ScoringModel = .percentOfGoals
     @Published var start: Date = .now.advanced(by: 1.days)
     @Published var end: Date = .now.advanced(by: 8.days)
-    @Published var repeats = false
+    @Published var repeats = true
     @Published var isPublic = false
     @Published var friendRows = [InviteFriendsRow]()
     @Published private(set) var createDisabled = true
@@ -75,7 +75,7 @@ final class NewCompetitionViewModel: ObservableObject {
                 if name.isEmpty {
                     return "Please enter a name"
                 } else if !isPublic && friendRows.filter(\.invited).isEmpty {
-                    return "Please invite at least 1 friend"
+                    return "Please invite at least 1 friend, or make the competition public"
                 }
                 return nil
             }

@@ -1,6 +1,8 @@
 import HealthKit
 
-struct ActivitySummary: Codable, Equatable {
+struct ActivitySummary: Identifiable, Codable, Equatable {
+    var id: String { date.encodedToString(with: .dateDashed) }
+    
     let activeEnergyBurned: Double
     let appleExerciseTime: Double
     let appleStandHours: Double

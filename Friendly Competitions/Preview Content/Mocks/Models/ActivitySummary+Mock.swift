@@ -1,3 +1,4 @@
+#if DEBUG
 extension ActivitySummary {
     static var mock: ActivitySummary {
         .init(
@@ -11,3 +12,4 @@ extension ActivitySummary {
         )
     }
 }
+#endif
