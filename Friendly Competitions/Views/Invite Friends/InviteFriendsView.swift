@@ -29,9 +29,9 @@ struct InviteFriendsView: View {
                         Text(footerText)
                     }
                     HStack {
-                        Text("Having trouble?")
+                        Text(L10n.InviteFriends.havingTrouble)
                             .font(.body)
-                        Button("Send an invite link", action: viewModel.sendInviteLink)
+                        Button(L10n.InviteFriends.sendAnInviteLink, action: viewModel.sendInviteLink)
                             .font(.body)
                     }
                 }
@@ -39,7 +39,7 @@ struct InviteFriendsView: View {
         }
         .listStyle(.insetGrouped)
         .searchable(text: $viewModel.searchText, placement: .navigationBarDrawer(displayMode: .always))
-        .navigationTitle("Invite a friend")
+        .navigationTitle(L10n.InviteFriends.title)
         .embeddedInNavigationView()
         .withLoadingOverlay(isLoading: viewModel.loading)
     }

@@ -15,30 +15,28 @@ extension CompetitionViewAction {
     var buttonTitle: String {
         switch self {
         case .acceptInvite:
-            return "Accept invite"
+            return L10n.Competition.Action.AcceptInvite.buttonTitle
         case .declineInvite:
-            return "Decline invite"
+            return L10n.Competition.Action.DeclineInvite.buttonTitle
         case .delete:
-            return "Delete competition"
+            return L10n.Competition.Action.Delete.buttonTitle
         case .edit:
-            return "Edit"
+            return L10n.Competition.Action.Edit.buttonTitle
         case .invite:
-            return "Invite a friend"
+            return L10n.Competition.Action.Invite.buttonTitle
         case .join:
-            return "Join competition"
+            return L10n.Competition.Action.Join.buttonTitle
         case .leave:
-            return "Leave competition"
+            return L10n.Competition.Action.Leave.buttonTitle
         }
     }
     
     var confirmationTitle: String? {
         switch self {
         case .delete:
-            return "Are you sure you want to delete?"
-        case .edit:
-            return "Are you sure? Editing competition dates will re-calculate scores."
+            return L10n.Competition.Action.Delete.confirmationTitle
         case .leave:
-            return "Are you sure you want to leave?"
+            return L10n.Competition.Action.Leave.confirmationTitle
         default:
             return nil
         }

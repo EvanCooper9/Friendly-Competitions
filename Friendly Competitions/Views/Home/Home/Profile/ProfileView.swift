@@ -8,14 +8,14 @@ struct ProfileView: View {
     var body: some View {
         Form {
             UserInfoSection(user: viewModel.user)
-            Button("Share invite link", systemImage: .personCropCircleBadgePlus, action: viewModel.shareInviteLinkTapped)
+            Button(L10n.Profile.shareInviteLink, systemImage: .personCropCircleBadgePlus, action: viewModel.shareInviteLinkTapped)
             
-            Section("Medals") {
+            Section(L10n.Profile.Medals.title) {
                 MedalsView(statistics: viewModel.user.statistics ?? .zero)
             }
             
             if let premium = viewModel.premium {
-                Section("Friendly Competitions Preimum") {
+                Section(L10n.Profile.Premium.title) {
                     VStack(alignment: .leading) {
                         HStack {
                             Text(premium.title)
@@ -24,13 +24,17 @@ struct ProfileView: View {
                                 .foregroundColor(.secondaryLabel)
                         }
                         if let expiry = premium.expiry {
-                            Text("\(premium.renews ? "Renews" : "Expires") on \(expiry.formatted(date: .long, time: .complete))")
+                            let expiry = expiry.formatted(date: .long, time: .omitted)
+                            let title = premium.renews ?
+                                L10n.Profile.Premium.renewsOn(expiry) :
+                                L10n.Profile.Premium.expiresOn(expiry)
+                            Text(title)
                                 .foregroundColor(.secondaryLabel)
                                 .font(.caption)
                         }
                     }
                     .padding(.vertical, .extraSmall)
-                    Button("Manage", action: viewModel.manageSubscriptionTapped)
+                    Button(L10n.Profile.Premium.manage, action: viewModel.manageSubscriptionTapped)
                 }
             } else {
                 Section(content: PremiumBanner.init)
@@ -38,35 +42,35 @@ struct ProfileView: View {
             }
             
             Section {
-                Toggle("Searchable", isOn: $viewModel.user.searchable ?? true)
+                Toggle(L10n.Profile.Privacy.Searchable.title, isOn: $viewModel.user.searchable ?? true)
             } header: {
-                Text("Privacy")
+                Text(L10n.Profile.Privacy.title)
             } footer: {
-                Text("Turn this off to prevent your account from showing up in search. Other people will not be able to add you as a friend.")
+                Text(L10n.Profile.Privacy.Searchable.description)
             }
             
             Section {
-                Toggle("Show real name", isOn: $viewModel.user.showRealName ?? true)
+                Toggle(L10n.Profile.Privacy.HideName.title, isOn: $viewModel.user.showRealName ?? true)
             } footer: {
-                Text("Turn this off to hide your name in competitions that you join. You will still earn medals, and friends will still see your real name.")
+                Text(L10n.Profile.Privacy.HideName.description)
             }
             
-            Section("Session") {
-                Button("Sign out", systemImage: .personCropCircleBadgeMinus, action: viewModel.signOutTapped)
+            Section(L10n.Profile.Session.title) {
+                Button(L10n.Profile.Session.signOut, systemImage: .personCropCircleBadgeMinus, action: viewModel.signOutTapped)
                 Button(action: viewModel.deleteAccountTapped) {
-                    Label("Delete account", systemImage: .trash)
+                    Label(L10n.Profile.Session.deleteAccount, systemImage: .trash)
                         .foregroundColor(.red)
                 }
             }
         }
-        .navigationTitle("Profile")
+        .navigationTitle(L10n.Profile.title)
         .confirmationDialog(
-            "Are you sure? This cannot be undone.",
+            L10n.Confirmation.areYouSureCannotBeUndone,
             isPresented: $viewModel.confirmationRequired,
             titleVisibility: .visible
         ) {
-            Button("Yes", role: .destructive, action: viewModel.confirmTapped)
-            Button("Cancel", role: .cancel) {}
+            Button(L10n.Generics.yes, role: .destructive, action: viewModel.confirmTapped)
+            Button(L10n.Generics.cancel, role: .cancel) {}
         }
         .registerScreenView(name: "Profile")
     }

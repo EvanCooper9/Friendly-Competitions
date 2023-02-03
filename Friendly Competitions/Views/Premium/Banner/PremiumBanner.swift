@@ -8,15 +8,15 @@ struct PremiumBanner: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            Text("Friendly Competitions Premium")
+            Text(L10n.Premium.Banner.title)
                 .bold()
                 .frame(maxWidth: .infinity, alignment: .leading)
             
-            Text("Get instant access to all of your competition results. The latest results for all competitions are always free.")
+            Text(L10n.Premium.Banner.message)
                 .font(.footnote)
             
             if showPurchaseButton {
-                Button("Learn more", action: viewModel.purchaseTapped)
+                Button(L10n.Premium.Banner.learnMore, action: viewModel.purchaseTapped)
                     .padding(.vertical, .small)
                     .padding(.horizontal)
                     .background(.ultraThinMaterial)

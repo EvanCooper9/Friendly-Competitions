@@ -27,7 +27,7 @@ struct PaywallView: View {
             VStack(spacing: 15) {
                 Button(action: viewModel.nextTapped) {
                     HStack {
-                        Text("Continue")
+                        Text(L10n.Generics.continue)
                         Image(systemName: .chevronRight)
                     }
                     .padding(.vertical, .small)
@@ -37,12 +37,12 @@ struct PaywallView: View {
                     .clipShape(Capsule())
                 }
                 
-                Button("Restore Purchases", action: viewModel.restorePurchasesTapped)
+                Button(L10n.Premium.Paywall.restore, action: viewModel.restorePurchasesTapped)
                 
                 HStack(spacing: 4) {
-                    Link("Terms of Service", destination: .termsOfService)
-                    Text("&").foregroundColor(.secondaryLabel)
-                    Link("Privacy Policy", destination: .privacyPolicy)
+                    Link(L10n.Premium.Paywall.tos, destination: .termsOfService)
+                    Text(L10n.Generics.Symbols.apersand).foregroundColor(.secondaryLabel)
+                    Link(L10n.Premium.Paywall.pp, destination: .privacyPolicy)
                 }
                 .font(.caption)
             }

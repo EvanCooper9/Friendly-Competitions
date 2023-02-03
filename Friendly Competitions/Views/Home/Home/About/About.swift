@@ -7,7 +7,7 @@ struct About: View {
     var body: some View {
         List {
             Section {
-                Button("Rate", systemImage: .heartFill) {
+                Button(L10n.About.App.rate, systemImage: .heartFill) {
                     let windowScene = UIApplication.shared.connectedScenes
                         .filter { $0.activationState == .foregroundActive }
                         .compactMap { $0 as? UIWindowScene }
@@ -16,28 +16,30 @@ struct About: View {
                     SKStoreReviewController.requestReview(in: windowScene)
                 }
                 Link(destination: .privacyPolicy) {
-                    Label("Privacy policy", systemImage: .handRaisedFill)
+                    Label(L10n.About.App.privacyPolicy, systemImage: .handRaisedFill)
                 }
                 Link(destination: .featureRequest) {
-                    Label("Feature request", systemImage: .lightbulbFill)
+                    Label(L10n.About.App.featureRequest, systemImage: .lightbulbFill)
                 }
                 Link(destination: .bugReport) {
-                    Label("Report an issue", systemImage: "ladybug.fill")
+                    Label(L10n.About.App.reportIssue, systemImage: "ladybug.fill")
                 }
             } header: {
                 VStack {
                     AppIcon().shadow(radius: 10)
-                    Text("by Evan Cooper")
+                    Text(L10n.About.App.authoredBy)
                 }
                 .frame(maxWidth: .infinity)
-                Text("The App")
+                Text(L10n.About.App.title)
             }
             .textCase(nil)
 
-            Section("The Developer") {
+            Section {
                 Link(destination: .developer) {
-                    Label("Website", systemImage: .globeAmericasFill)
+                    Label(L10n.About.Developer.website, systemImage: .globeAmericasFill)
                 }
+            } header: {
+                Text(L10n.About.Developer.title)
             }
             .textCase(nil)
         }

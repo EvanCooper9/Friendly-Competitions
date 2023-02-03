@@ -5,7 +5,7 @@ struct UserInfoSection: View {
     let user: User
     
     var body: some View {
-        Section("Profile") {
+        Section(L10n.Profile.title) {
             HStack {
                 ImmutableListItemView(value: user.name, valueType: .name)
                 IDPill(id: user.hashId)

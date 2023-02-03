@@ -13,12 +13,16 @@ struct UserView: View {
     
     var body: some View {
         List {
-            Section("Today's activity") {
+            Section {
                 ActivitySummaryInfoView(activitySummary: viewModel.activitySummary)
+            } header: {
+                Text(L10n.User.Activity.title)
             }
 
-            Section("Medals") {
+            Section {
                 MedalsView(statistics: viewModel.medals)
+            } header: {
+                Text(L10n.User.Medals.title)
             }
 
             Section {
@@ -35,9 +39,9 @@ struct UserView: View {
             }
         }
         .navigationTitle(viewModel.title)
-        .confirmationDialog("Are you sure?", isPresented: $viewModel.confirmationRequired, titleVisibility: .visible) {
-            Button("Yes", role: .destructive, action: viewModel.confirm)
-            Button("Cancel", role: .cancel) {}
+        .confirmationDialog(L10n.Confirmation.areYouSure, isPresented: $viewModel.confirmationRequired, titleVisibility: .visible) {
+            Button(L10n.Generics.yes, role: .destructive, action: viewModel.confirm)
+            Button(L10n.Generics.cancel, role: .cancel) {}
         }
         .withLoadingOverlay(isLoading: viewModel.loading)
         .registerScreenView(name: "User")

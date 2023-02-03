@@ -73,9 +73,9 @@ final class NewCompetitionViewModel: ObservableObject {
         let disabledReason = inputs
             .map { name, scoringModel, start, end, repeats, isPublic, friendRows, user -> String? in
                 if name.isEmpty {
-                    return "Please enter a name"
+                    return L10n.NewCompetition.Disabled.name
                 } else if !isPublic && friendRows.filter(\.invited).isEmpty {
-                    return "Please invite at least 1 friend, or make the competition public"
+                    return L10n.NewCompetition.Disabled.inviteFriend
                 }
                 return nil
             }
