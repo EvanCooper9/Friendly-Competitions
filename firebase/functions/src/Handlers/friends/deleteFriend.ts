@@ -10,32 +10,20 @@ import { getFirestore } from "../../Utilities/firstore";
 async function deleteFriend(userID: string, friendID: string): Promise<void> {
     const firestore = getFirestore();
     
-    const user = firestore.doc(`users/${userID}`)
-        .get()
-        .then(doc => new User(doc));
+    const user = await firestore.doc(`users/${userID}`).get().then(doc => new User(doc));
+    const friend = await firestore.doc(`users/${friendID}`).get().then(doc => new User(doc));
 
-    const friend = firestore.doc(`users/${friendID}`)
-        .get()
-        .then(doc => new User(doc));
+    const userFriends = user.friends;
+    const userIndex = userFriends.indexOf(friendID);
+    if (userIndex > -1) userFriends.splice(userIndex, 1);
+    const friendFriends = friend.friends;
+    const friendIndex = friendFriends.indexOf(userID);
+    if (friendIndex > -1) friendFriends.splice(friendIndex, 1);
 
-    return Promise.all([user, friend])
-        .then(result => {
-            const user = result[0];
-            const friend = result[1];
-
-            const userFriends = user.friends;
-            const userIndex = userFriends.indexOf(friendID);
-            if (userIndex > -1) userFriends.splice(userIndex, 1);
-            const friendFriends = friend.friends;
-            const friendIndex = friendFriends.indexOf(userID);
-            if (friendIndex > -1) friendFriends.splice(friendIndex, 1);
-
-            const batch = firestore.batch();
-            batch.update(firestore.doc(`users/${userID}`), {friends: userFriends});
-            batch.update(firestore.doc(`users/${friendID}`), {friends: friendFriends});
-            return batch.commit();
-        })
-        .then();
+    const batch = firestore.batch();
+    batch.update(firestore.doc(`users/${userID}`), {friends: userFriends});
+    batch.update(firestore.doc(`users/${friendID}`), {friends: friendFriends});
+    await batch.commit();
 }
 
 export {
