@@ -150,7 +150,7 @@ struct HomeView_Previews: PreviewProvider {
         
         competitionsManager.competitions = .just([.mock, .mockInvited, .mockOld, .mockPublic])
         competitionsManager.participantsForReturnValue = .just([.evan])
-        competitionsManager.standingsForReturnValue = .just([.mock(for: .evan)])
+        competitionsManager.standingsPublisherForReturnValue = .just([.mock(for: .evan)])
 
         friendsManager.friends = .just([.gabby])
         friendsManager.friendRequests = .just([.andrew])

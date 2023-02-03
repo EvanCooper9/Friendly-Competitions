@@ -80,8 +80,8 @@ struct CompetitionView: View {
             if viewModel.loadingStandings {
                 ProgressView()
             } else {
-                ForEach(viewModel.standings) {
-                    CompetitionParticipantRow(config: $0)
+                ForEach(viewModel.standings) { config in
+                    CompetitionParticipantRow(config: config)
                 }
                 if viewModel.showShowMoreButton {
                     Button("Show more", action: viewModel.showMoreTapped)
@@ -143,7 +143,7 @@ struct CompetitionView_Previews: PreviewProvider {
         ]
         let participants = [evan, gabby]
         competitionsManager.competitions = .just([competition])
-        competitionsManager.standingsForReturnValue = .just(standings)
+        competitionsManager.standingsPublisherForReturnValue = .just(standings)
         competitionsManager.participantsForReturnValue = .just(participants)
     }
 

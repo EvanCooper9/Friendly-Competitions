@@ -10,6 +10,15 @@
       }
     },
     {
+      "identity" : "algoliasearch-client-swift",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/algolia/algoliasearch-client-swift",
+      "state" : {
+        "revision" : "d507e54c2f5e11134ee066727fda976d921f1c10",
+        "version" : "8.16.0"
+      }
+    },
+    {
       "identity" : "boringssl-swiftpm",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/firebase/boringssl-SwiftPM.git",
@@ -178,6 +187,15 @@
       "state" : {
         "revision" : "b14b7f4c528c942f121c8b860b9410b2bf57825e",
         "version" : "1.0.0"
+      }
+    },
+    {
+      "identity" : "swift-log",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/apple/swift-log.git",
+      "state" : {
+        "revision" : "32e8d724467f8fe623624570367e3d50c5638e46",
+        "version" : "1.5.2"
       }
     },
     {

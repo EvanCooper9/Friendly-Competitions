@@ -1,4 +1,5 @@
 import { getFirestore } from "firebase-admin/firestore";
+import moment = require("moment");
 import { ActivitySummary } from "../../Models/ActivitySummary";
 import { Competition } from "../../Models/Competition";
 import { User } from "../../Models/User";
@@ -9,23 +10,27 @@ import { User } from "../../Models/User";
  */
 async function cleanActivitySummaries(): Promise<void> {
     const firestore = getFirestore();
-    const users = (await firestore.collection("users").get()).docs.map(doc => new User(doc));
-    const competitions = (await firestore.collection("competitions").get()).docs.map(doc => new Competition(doc));
-    const cleanUsers = users.map(async user => {
+    const users = await firestore.collection("users").get().then(query => query.docs.map(doc => new User(doc)));
+    const competitions = await firestore.collection("competitions").get().then(query => query.docs.map(doc => new Competition(doc)));
+
+    const batch = firestore.batch();
+    await Promise.all(users.map(async user => {
         const participatingCompetitions = competitions.filter(competition => competition.participants.includes(user.id));
-        const activitySummariesToDelete = (await firestore.collection(`users/${user.id}/activitySummaries`).get())
-            .docs
-            .filter(doc => {
-                const activitySummary = new ActivitySummary(doc);
+        const activitySummaries = await firestore.collection(`users/${user.id}/activitySummaries`).get()
+            .then(query => query.docs.map(doc => new ActivitySummary(doc)));
+        
+        activitySummaries
+            .filter(activitySummary => {
                 const matchingCompetition = participatingCompetitions.find(competition => activitySummary.isIncludedInCompetition(competition));
                 return matchingCompetition == null || matchingCompetition == undefined;
             })
-            .map(doc => firestore.doc(`users/${user.id}/activitySummaries/${doc.id}`).delete());
-
-        return Promise.all(activitySummariesToDelete);
-    });
-
-    return Promise.all(cleanUsers).then();
+            .forEach(activitySummary => {
+                const id = moment(activitySummary.date).format("YYYY-MM-DD");
+                const ref = firestore.doc(`users/${user.id}/activitySummaries/${id}`);
+                batch.delete(ref);
+            });
+    }));
+    await batch.commit();
 }
 
 export {

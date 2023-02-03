@@ -1,4 +1,5 @@
 import Combine
+import CombineExt
 import ECKit
 import ECKit_Firebase
 import Factory
@@ -23,21 +24,16 @@ protocol CompetitionsManaging {
     func join(_ competition: Competition) -> AnyPublisher<Void, Error>
     func leave(_ competition: Competition) -> AnyPublisher<Void, Error>
     func update(_ competition: Competition) -> AnyPublisher<Void, Error>
-    func search(_ searchText: String) -> AnyPublisher<[Competition], Error>
     func search(byID competitionID: Competition.ID) -> AnyPublisher<Competition?, Error>
     func results(for competitionID: Competition.ID) -> AnyPublisher<[CompetitionResult], Error>
     func standings(for competitionID: Competition.ID, resultID: CompetitionResult.ID) -> AnyPublisher<[Competition.Standing], Error>
-    func standings(for competitionID: Competition.ID) -> AnyPublisher<[Competition.Standing], Error>
     func participants(for competitionsID: Competition.ID) -> AnyPublisher<[User], Error>
+    
     func competitionPublisher(for competitionID: Competition.ID) -> AnyPublisher<Competition, Error>
+    func standingsPublisher(for competitionID: Competition.ID) -> AnyPublisher<[Competition.Standing], Error>
 }
 
 final class CompetitionsManager: CompetitionsManaging {
-
-    /// Used for searching, so we don't decode dates and other expensive properties
-    private struct SearchResult: Decodable {
-        let name: String
-    }
     
     private enum Constants {
         static let maxParticipantsToFetch = 10
@@ -49,39 +45,21 @@ final class CompetitionsManager: CompetitionsManaging {
     private(set) var competitions: AnyPublisher<[Competition], Never>!
     private(set) var invitedCompetitions: AnyPublisher<[Competition], Never>!
     private(set) var appOwnedCompetitions: AnyPublisher<[Competition], Never>!
-    
     private(set) var competitionsDateInterval: DateInterval
 
     // MARK: - Private Properties
     
-    private let competitionsSubject = CurrentValueSubject<[Competition], Never>([])
-    private let invitedCompetitionsSubject = CurrentValueSubject<[Competition], Never>([])
-    private let appOwnedCompetitionsSubject = CurrentValueSubject<[Competition], Never>([])
+    private let competitionsSubject = ReplaySubject<[Competition], Never>(bufferSize: 1)
+    private let invitedCompetitionsSubject = ReplaySubject<[Competition], Never>(bufferSize: 1)
+    private let appOwnedCompetitionsSubject = ReplaySubject<[Competition], Never>(bufferSize: 1)
 
     @Injected(Container.appState) private var appState
     @Injected(Container.analyticsManager) private var analyticsManager
     @Injected(Container.database) private var database
     @Injected(Container.functions) private var functions
     @Injected(Container.userManager) private var userManager
-    
-    private var updateTask: Task<Void, Error>? {
-        willSet { updateTask?.cancel() }
-    }
 
     private var cancellables = Cancellables()
-    private var listenerBag = ListenerBag()
-    
-    private lazy var firestoreEncoder: Firestore.Encoder = {
-        let encoder = Firestore.Encoder()
-        encoder.dateEncodingStrategy = .formatted(.dateDashed)
-        return encoder
-    }()
-    
-    private lazy var firestoreDecoder: Firestore.Decoder = {
-        let decoder = Firestore.Decoder()
-        decoder.dateDecodingStrategy = .formatted(.dateDashed)
-        return decoder
-    }()
 
     // MARK: - Lifecycle
 
@@ -118,7 +96,6 @@ final class CompetitionsManager: CompetitionsManaging {
                 "accept": true
             ])
             .mapToVoid()
-            .handleEvents(withUnretained: self, receiveOutput: { $0.resetCacheTimestamps(for: competition.id) })
             .eraseToAnyPublisher()
     }
 
@@ -166,7 +143,6 @@ final class CompetitionsManager: CompetitionsManaging {
         functions.httpsCallable("joinCompetition")
             .call(["competitionID": competition.id])
             .mapToVoid()
-            .handleEvents(withUnretained: self, receiveOutput: { $0.resetCacheTimestamps(for: competition.id) })
             .eraseToAnyPublisher()
     }
 
@@ -174,22 +150,6 @@ final class CompetitionsManager: CompetitionsManaging {
         functions.httpsCallable("leaveCompetition")
             .call(["competitionID": competition.id])
             .mapToVoid()
-            .handleEvents(withUnretained: self, receiveOutput: { $0.resetCacheTimestamps(for: competition.id) })
-            .eraseToAnyPublisher()
-    }
-
-    func search(_ searchText: String) -> AnyPublisher<[Competition], Error> {
-        database.collection("competitions")
-            .whereField("isPublic", isEqualTo: true)
-            .getDocuments()
-            .map(\.documents)
-            .filterMany { document in
-                guard let searchResult = try? document.data(as: SearchResult.self) else { return false }
-                return searchResult.name
-                    .components(separatedBy: " ")
-                    .contains { $0.starts(with: searchText) }
-            }
-            .compactMapMany { try? $0.decoded(as: Competition.self) }
             .eraseToAnyPublisher()
     }
 
@@ -222,36 +182,27 @@ final class CompetitionsManager: CompetitionsManaging {
             .eraseToAnyPublisher()
     }
     
-    private var lastStandingsFetch = [Competition.ID: Date]()
-    func standings(for competitionID: Competition.ID) -> AnyPublisher<[Competition.Standing], Error> {
-        updateCompetitionStandingsIfRequired(for: competitionID)
-            .flatMapLatest(withUnretained: self) { strongSelf in
-                let ref = strongSelf.database.collection("competitions/\(competitionID)/standings")
-                let query: AnyPublisher<QuerySnapshot, Error>
-                if abs(strongSelf.lastStandingsFetch[competitionID]?.timeIntervalSinceNow ?? .infinity) < 5.minutes {
-                    query = ref.getDocumentsPreferCache()
-                } else {
-                    query = ref
-                        .getDocuments()
-                        .handleEvents(withUnretained: self, receiveOutput: { strongSelf, _ in
-                            strongSelf.lastStandingsFetch[competitionID] = .now
-                        })
-                        .eraseToAnyPublisher()
-                }
-                return query
-                    .map { $0.documents.compactMap { try? $0.data(as: Competition.Standing.self) } }
-                    .eraseToAnyPublisher()
-            }
-    }
-    
+    private var fetchedParticipants = [User]()
     func participants(for competitionsID: Competition.ID) -> AnyPublisher<[User], Error> {
         search(byID: competitionsID)
             .map { $0?.participants ?? [] }
-            .flatMapAsync { [weak self] participants in
+            .flatMapAsync { [weak self] participantIDs in
                 guard let strongSelf = self else { return [] }
-                return try await strongSelf.database.collection("users")
-                    .whereFieldWithChunking("id", in: participants)
+                var cached = [User]()
+                var participantIDsToFetch = [String]()
+                participantIDs.forEach { participantID in
+                    if let user = strongSelf.fetchedParticipants.first(where: { $0.id == participantID }) {
+                        cached.append(user)
+                    } else {
+                        participantIDsToFetch.append(participantID)
+                    }
+                }
+                guard participantIDsToFetch.isNotEmpty else { return cached }
+                let fetched = try await strongSelf.database.collection("users")
+                    .whereFieldWithChunking("id", in: participantIDsToFetch)
                     .decoded(asArrayOf: User.self)
+                strongSelf.fetchedParticipants.append(contentsOf: fetched)
+                return cached + fetched
             }
     }
     
@@ -261,54 +212,38 @@ final class CompetitionsManager: CompetitionsManaging {
             .tryMap { try $0.decoded(as: Competition.self) }
             .eraseToAnyPublisher()
     }
-
-    // MARK: - Private Methods
     
-    private func resetCacheTimestamps(for competitionID: Competition.ID) {
-        lastStandingsFetch.removeValue(forKey: competitionID)
-        lastStandingsUpdate.removeValue(forKey: competitionID)
-    }
-    
-    private var lastStandingsUpdate = [Competition.ID: Date]()
-    private func updateCompetitionStandingsIfRequired(for competitionID: Competition.ID) -> AnyPublisher<Void, Error> {
-        if abs(lastStandingsUpdate[competitionID]?.timeIntervalSinceNow ?? .infinity) < 5.minutes {
-            return .just(())
-        }
-        return functions.httpsCallable("updateCompetitionStandings")
-            .call(["competitionID": competitionID])
-            .mapToVoid()
-            .handleEvents(withUnretained: self, receiveOutput: { $0.lastStandingsUpdate[competitionID] = .now })
+    func standingsPublisher(for competitionID: Competition.ID) -> AnyPublisher<[Competition.Standing], Error> {
+        database.collection("competitions/\(competitionID)/standings")
+            .snapshotPublisher()
+            .map { $0.documents.decoded(asArrayOf: Competition.Standing.self) }
             .eraseToAnyPublisher()
     }
+
+    // MARK: - Private Methods
 
     private func listenForCompetitions() {
         database.collection("competitions")
             .whereField("participants", arrayContains: userManager.user.id)
-            .addSnapshotListener { [weak self] snapshot, error in
-                guard let self = self, let snapshot = snapshot else { return }
-                let competitions = snapshot.documents.decoded(asArrayOf: Competition.self)
-                self.competitionsSubject.send(competitions)
-            }
-            .store(in: listenerBag)
+            .snapshotPublisher()
+            .map { $0.documents.decoded(asArrayOf: Competition.self) }
+            .sink(withUnretained: self) { $0.competitionsSubject.send($1) }
+            .store(in: &cancellables)
 
         database.collection("competitions")
             .whereField("pendingParticipants", arrayContains: userManager.user.id)
-            .addSnapshotListener { [weak self] snapshot, error in
-                guard let self = self, let snapshot = snapshot else { return }
-                let competitions = snapshot.documents.decoded(asArrayOf: Competition.self)
-                self.invitedCompetitionsSubject.send(competitions)
-            }
-            .store(in: listenerBag)
+            .snapshotPublisher()
+            .map { $0.documents.decoded(asArrayOf: Competition.self) }
+            .sink(withUnretained: self) { $0.invitedCompetitionsSubject.send($1) }
+            .store(in: &cancellables)
             
         database.collection("competitions")
             .whereField("isPublic", isEqualTo: true)
             .whereField("owner", isEqualTo: Bundle.main.id)
-            .addSnapshotListener { [weak self] snapshot, error in
-                guard let self = self, let snapshot = snapshot else { return }
-                let competitions = snapshot.documents.decoded(asArrayOf: Competition.self)
-                self.appOwnedCompetitionsSubject.send(competitions)
-            }
-            .store(in: listenerBag)
+            .snapshotPublisher()
+            .map { $0.documents.decoded(asArrayOf: Competition.self) }
+            .sink(withUnretained: self) { $0.appOwnedCompetitionsSubject.send($1) }
+            .store(in: &cancellables)
     }
 }
 
@@ -318,8 +253,7 @@ private extension Dictionary where Key == Competition.ID {
     }
 }
 
-extension Query {
-    
+private extension Query {
     /// Attempts to get documents from the cache. If that fails, it will get documents from the server.
     /// - Returns: A publisher emitting a QuerySnapshot instance.
     func getDocumentsPreferCache() -> AnyPublisher<QuerySnapshot, Error> {
