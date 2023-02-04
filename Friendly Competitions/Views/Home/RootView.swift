@@ -7,11 +7,11 @@ struct RootView: View {
     var body: some View {
         TabView(selection: $viewModel.tab) {
             HomeView()
-                .tabItem { Label("Home", systemImage: .houseFill) }
+                .tabItem { Label(L10n.Root.home, systemImage: .houseFill) }
                 .tag(RootTab.home)
         
             ExploreView()
-                .tabItem { Label("Explore", systemImage: .sparkleMagnifyingglass) }
+                .tabItem { Label(L10n.Root.explore, systemImage: .sparkleMagnifyingglass) }
                 .tag(RootTab.explore)
         }
     }

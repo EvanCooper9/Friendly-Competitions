@@ -14,12 +14,12 @@ struct PaywallPrimerView: View {
                 .cornerRadius(15)
             
             VStack(spacing: 8) {
-                Text("Premium")
+                Text(L10n.Premium.Primer.title)
                     .font(.title)
                     .bold()
                     .maxWidth(.infinity)
                 
-                Text("Get instant access to all of your competition results. The latest results for all competitions are always free.")
+                Text(L10n.Premium.Primer.message)
                     .foregroundColor(.secondaryLabel)
                     .multilineTextAlignment(.center)
             }

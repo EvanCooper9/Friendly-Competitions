@@ -70,14 +70,14 @@ extension CompetitionResultsDataPoint {
             }
         case .activitySummaryBestDay(let activitySummary):
             VStack {
-                Text("Your best day")
+                Text(L10n.Results.ActivitySummaries.BestDay.message)
                 ActivityRingView(activitySummary: activitySummary?.hkActivitySummary)
                     .aspectRatio(1, contentMode: .fit)
             }
         case let .activitySummaryCloseCount(current, previous):
             ZStack {
                 VStack {
-                    Text("Rings closed")
+                    Text(L10n.Results.ActivitySummaries.RingsClosed.message)
                     Text(current)
                         .font(.largeTitle)
                 }
@@ -86,7 +86,7 @@ extension CompetitionResultsDataPoint {
             }
         case .workoutsBestDay(let workout):
             VStack(alignment: .leading) {
-                Text("Your best day")
+                Text(L10n.Results.Workouts.BestDay.message)
                 if let workout {
                     VStack {
                         ForEach(Array(workout.points.keys)) { key in
@@ -103,7 +103,7 @@ extension CompetitionResultsDataPoint {
                         Spacer()
                     }
                 } else {
-                    Text("Nothing here")
+                    Text(L10n.Results.Workouts.BestDay.nothingHere)
                         .foregroundColor(.secondaryLabel)
                 }
             }

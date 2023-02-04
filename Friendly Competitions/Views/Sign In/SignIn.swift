@@ -11,10 +11,10 @@ struct SignIn: View {
         VStack(spacing: 30) {
             
             VStack {
-                Text("Friendly Competitions")
+                Text(L10n.SignIn.title)
                     .font(.largeTitle)
                     .fontWeight(.light)
-                Text("Compete against groups of friends in fitness.")
+                Text(L10n.SignIn.subTitle)
                     .fontWeight(.light)
                     .multilineTextAlignment(.center)
             }
@@ -45,15 +45,9 @@ struct SignIn: View {
                 
                 Spacer()
                 
-                #if DEBUG
-                Button(systemImage: .hammer) {
-                    
-                }
-                #endif
-                
                 VStack {
                     Button(action: viewModel.submit) {
-                        Label("Sign in with Apple", systemImage: "applelogo")
+                        Label(L10n.SignIn.apple, systemImage: "applelogo")
                             .font(.title2.weight(.semibold))
                             .padding(8)
                             .frame(maxWidth: .infinity)
@@ -64,7 +58,7 @@ struct SignIn: View {
                     .disabled(viewModel.loading)
 
                     Button(toggling: $viewModel.signingInWithEmail) {
-                        Label(viewModel.signingInWithEmail ? "Sign in" : "Sign in with Email", systemImage: "envelope.fill")
+                        Label(viewModel.signingInWithEmail ? L10n.VerifyEmail.signIn : L10n.SignIn.email, systemImage: .envelopeFill)
                             .font(.title2.weight(.semibold))
                             .padding(8)
                             .frame(maxWidth: .infinity)

@@ -18,7 +18,7 @@ final class CompetitionViewModel: ObservableObject {
     var confirmationTitle: String { actionRequiringConfirmation?.confirmationTitle ?? "" }
     @Published var confirmationRequired = false
     @Published var competition: Competition
-    @Published var editButtonTitle = "Edit"
+    @Published var editButtonTitle = L10n.Competition.Action.Edit.buttonTitle
     @Published var editing = false
     @Published var standings = [CompetitionParticipantRow.Config]()
     @Published var pendingParticipants = [CompetitionParticipantRow.Config]()
@@ -28,6 +28,27 @@ final class CompetitionViewModel: ObservableObject {
     @Published private(set) var loading = false
     @Published private(set) var loadingStandings = false
     @Published private(set) var showShowMoreButton = false
+    
+    var details: [(value: String, valueType: ImmutableListItemView.ValueType)] {
+        [
+            (
+                value: competition.start.formatted(date: .abbreviated, time: .omitted),
+                valueType: .date(description: competition.started ? "Started" : "Starts")
+            ),
+            (
+                value: competition.end.formatted(date: .abbreviated, time: .omitted),
+                valueType: .date(description: competition.ended ? "Ended" : "Ends")
+            ),
+            (
+                value: competition.scoringModel.displayName,
+                valueType: .other(systemImage: .plusminusCircle, description: "Scoring model")
+            ),
+            (
+                value: competition.repeats ? L10n.Generics.yes : L10n.Generics.no,
+                valueType: .other(systemImage: .repeatCircle, description: "Restarts")
+            )
+        ]
+    }
     
     // MARK: - Private Properties
 
@@ -64,7 +85,7 @@ final class CompetitionViewModel: ObservableObject {
             .assign(to: &$showResults)
         
         $editing
-            .map { $0  ? "Cancel" : "Edit" }
+            .map { $0  ? L10n.Generics.cancel : L10n.Competition.Action.Edit.buttonTitle }
             .assign(to: &$editButtonTitle)
         
         $competition

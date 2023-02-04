@@ -1,0 +1,176 @@
+// Root
+"Root.home" = "Home";
+"Root.explore" = "Explore";
+
+// Home
+"Home.Section.Activity.title" = "Activity";
+"Home.Section.Activity.missing" = "Have you worn your watch today? We can't find any activity summaries yet. If this is a mistake, please make sure that permissions are enabled in the Health app.";
+"Home.Section.Competitions.title" = "Competitions";
+"Home.Section.Competitions.createPrompt" = "Start a competition against your friends!";
+"Home.Section.Friends.title" = "Friends";
+"Home.Section.Friends.addPrompt" = "Add friends to get started!";
+"Home.Section.Friends.invited" = "Invited";
+
+// Activity Summary Info
+"ActivitySummaryInfo.move" = "Move";
+"ActivitySummaryInfo.exercise" = "Exercise";
+"ActivitySummaryInfo.stand" = "Stand";
+"ActivitySummaryInfo.Value.empty" = "-";
+
+// About
+"About.App.authoredBy" = "by Evan Cooper";
+"About.App.title" = "The App";
+"About.App.rate" = "Rate";
+"About.App.privacyPolicy" = "Privacy Policy";
+"About.App.featureRequest" = "Feature Request";
+"About.App.reportIssue" = "Report an Issue";
+"About.Developer.title" = "The Developer";
+"About.Developer.website" = "Website";
+
+// Developer
+"Developer.title" = "Developer";
+"Developer.Environment.title" = "Firebase Environment";
+"Developer.Environment.environmentType" = "Environment type";
+"Developer.Environment.Emulation.type" = "Emulation type";
+"Developer.Environment.Emulation.destination" = "Emulation destination";
+
+// Profile
+"Profile.title" = "Profile";
+"Profile.shareInviteLink" = "Share invite link";
+"Profile.Medals.title" = "Medals";
+"Profile.Premium.title" = "Friendly Competitions Premium";
+"Profile.Premium.renewsOn" = "Renews on %@";
+"Profile.Premium.expiresOn" = "Expires on %@";
+"Profile.Premium.manage" = "Manage";
+"Profile.Privacy.title" = "Privacy";
+"Profile.Privacy.Searchable.title" = "Searchable";
+"Profile.Privacy.Searchable.description" = "Turn this off to prevent your account from showing up in search. Other people will not be able to add you as a friend.";
+"Profile.Privacy.HideName.title" = "Hide name";
+"Profile.Privacy.HideName.description" = "Turn this off to hide your name in competitions that you join. You will still earn medals, and friends will still see your real name.";
+"Profile.Session.title" = "Session";
+"Profile.Session.signOut" = "Sign out";
+"Profile.Session.deleteAccount" = "Delete account";
+
+// User
+"User.Activity.title" = "Today's activity";
+"User.Medals.title" = "Medals";
+
+// Explore
+"Explore.title" = "Explore";
+"Explore.Search.nothingHere" = "Nothing here";
+
+// Competition
+"Competition.Details.started" = "Started";
+"Competition.Details.starts" = "Starts";
+"Competition.Details.ended" = "Ended";
+"Competition.Details.ends" = "Ends";
+"Competition.Details.scoringModel" = "Scoring model";
+"Competition.Details.repeats" = "Repeats";
+"Competition.Standings.title" = "Standings";
+"Competition.Standings.showMore" = "Show more";
+"Competition.Standings.empty" = "Nothing here, yet.";
+"Competition.Results.results" = "Results";
+
+"Competition.Action.AcceptInvite.buttonTitle" = "Accept invite";
+"Competition.Action.DeclineInvite.buttonTitle" = "Decline invite";
+"Competition.Action.Delete.buttonTitle" = "Delete competition";
+"Competition.Action.Delete.confirmationTitle" = "Are you sure you want to delete the competition?";
+"Competition.Action.Edit.buttonTitle" = "Edit";
+"Competition.Action.Invite.buttonTitle" = "Invite a friend";
+"Competition.Action.Join.buttonTitle" = "Join competition";
+"Competition.Action.Leave.buttonTitle" = "Leave competition";
+"Competition.Action.Leave.confirmationTitle" = "Are you sure you want to leave?";
+
+"Competition.Edit.title" = "Details";
+"Competition.Edit.name" = "Name";
+"Competition.Edit.starts" = "Starts";
+"Competition.Edit.ends" = "Ends";
+"Competition.Edit.scoringModel" = "Scoring Model";
+"Competition.Edit.workoutType" = "Workout Type";
+"Competition.Edit.workoutMetrics" = "Workout metrics";
+"Competition.Edit.repeats" = "Repeats";
+"Competition.Edit.public" = "Public";
+"Competition.Edit.Repeats.disclaimer" = "This competition will restart the next day after it ends.";
+"Competition.Edit.Public.disclaimer" = "Heads up! Anyone can join public competitions from the explore page.";
+
+// Results
+"Results.title" = "Results";
+"Results.premiumRequred" = "You need Friendly Competitions Premium to see older results";
+"Results.Rank.title" = "Rank";
+"Results.Standings.title" = "Standings";
+"Results.Points.title" = "Points";
+"Results.ActivitySummaries.title" = "Rings";
+"Results.ActivitySummaries.BestDay.message" = "Your best day";
+"Results.ActivitySummaries.RingsClosed.message" = "Rings closed";
+"Results.Workouts.title" = "Workouts";
+"Results.Workouts.BestDay.message" = "Your best day";
+"Results.Workouts.BestDay.nothingHere" = "Nothing here";
+
+// New Competition
+"NewCompetition.titile" = "New Competition";
+"NewCompetition.Friends.title" = "Invite friends";
+"NewCompetition.Friends.nothingHere" = "Nothing here, yet!";
+"NewCompetition.Friends.addFriends" = "Add friends";
+"NewCompetition.create" = "Create";
+"NewCompetition.Disabled.name" = "Please enter a name";
+"NewCompetition.Disabled.inviteFriend" = "Please invite at least 1 friend, or make the competition public";
+
+// Invite Friends
+"InviteFriends.title" = "Invite friends";
+"InviteFriends.havingTrouble" = "Having trouble?";
+"InviteFriends.sendAnInviteLink" = "Send an invite link";
+"InviteFriends.accept" = "Accept";
+"InviteFriends.invited" = "Invited";
+"InviteFriends.invite" = "Invite";
+
+// Confirmation Dialog
+"Confirmation.areYouSure" = "Are you sure?";
+"Confirmation.areYouSureCannotBeUndone" = "Are you sure? This cannot be undone.";
+
+// Premium
+"Premium.Banner.title" = "Friendly Competitions Premium";
+"Premium.Banner.message" = "Get instant access to all of your competition results. The latest results for all competitions are always free.";
+"Premium.Banner.learnMore" = "Learn more";
+"Premium.Primer.title" = "Preimum";
+"Premium.Primer.message" = "Get instant access to all of your competition results. The latest results for all competitions are always free.";
+"Premium.Paywall.restore" = "Restore Purchases";
+"Premium.Paywall.tos" = "Terms of Service";
+"Premium.Paywall.pp" = "Privacy Policy";
+
+// Permissions
+"Permissions.title" = "Permissions needed";
+"Permissions.header" = "To get the best experience in Friendly Competitions, we need access to a few things.";
+"Permissions.footer" = "You can always change your responses in the settings app.";
+
+"Permission.Health.title" = "Health";
+"Permission.Health.description" = "So we can count score";
+"Permission.Notifications.titile" = "Notifications";
+"Permission.Notifications.desciption" = "So you can stay up to date";
+"Permission.Status.allowed" = "Allowed";
+"Permission.Status.allow" = "Allow";
+"Permission.Status.denied" = "Denied";
+"Permission.Status.done" = "Done";
+
+// Sign in
+"SignIn.title" = "Friendly Compeittions";
+"SignIn.subTitle" = "Compete against groups of friends in fitness";
+"SignIn.apple" = "Sign in with Apple";
+"SignIn.email" = "Sign in with Email";
+
+// Verify Email
+"VerifyEmail.signIn" = "Sign in";
+"VerifyEmail.title" = "Verify your account";
+"VerifyEmail.instructions" = "Follow the instructions sent to %@ to complete your account";
+"VerifyEmail.sendAgain" = "Send again";
+
+// List Item
+"ListItem.Name.description" = "Name";
+"ListItem.Email.description" = "Email";
+
+// Generics
+"Generics.yes" = "Yes";
+"Generics.no" = "No";
+"Generics.cancel" = "Cancel";
+"Generics.continue" = "Continue";
+"Generics.save" = "Save";
+"Generics.Symbols.apersand" = "&";

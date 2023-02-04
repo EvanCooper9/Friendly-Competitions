@@ -9,13 +9,13 @@ enum PermissionStatus: String, Codable {
     var buttonTitle: String {
         switch self {
         case .authorized:
-            return "Allowed"
+            return L10n.Permission.Status.allowed
         case .denied:
-            return "Denied"
+            return L10n.Permission.Status.denied
         case .notDetermined:
-            return "Allow"
+            return L10n.Permission.Status.allow
         case .done:
-            return "Done"
+            return L10n.Permission.Status.done
         }
     }
 

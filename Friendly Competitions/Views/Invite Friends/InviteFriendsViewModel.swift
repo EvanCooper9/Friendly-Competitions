@@ -74,7 +74,9 @@ final class InviteFriendsViewModel: ObservableObject {
                         id: friend.id,
                         name: friend.name,
                         pillId: friend.hashId,
-                        buttonTitle: hasIncomingInvite ? "Accept" : (alreadyInvited.contains(friend.id) ? "Invited" : "Invite"),
+                        buttonTitle: hasIncomingInvite ?
+                            L10n.InviteFriends.accept :
+                            (alreadyInvited.contains(friend.id) ? L10n.InviteFriends.invited : L10n.InviteFriends.invite),
                         buttonDisabled: alreadyInvited.contains(friend.id),
                         buttonAction: { [weak self, friend] in
                             guard let strongSelf = self else { return }
