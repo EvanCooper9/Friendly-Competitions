@@ -4,8 +4,6 @@ import ECKit
 import ECKit_Firebase
 import Factory
 import FirebaseFirestore
-import FirebaseFirestoreCombineSwift
-import FirebaseFunctionsCombineSwift
 import SwiftUI
 
 // sourcery: AutoMockable
@@ -95,7 +93,7 @@ final class FriendsManager: FriendsManaging {
     func user(withId id: String) -> AnyPublisher<User?, Error> {
         database.document("users/\(id)")
             .getDocument()
-            .map { try? $0.data(as: User.self) }
+            .tryMap { try $0.decoded(as: User.self) }
             .eraseToAnyPublisher()
     }
     
