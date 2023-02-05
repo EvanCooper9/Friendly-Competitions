@@ -12,9 +12,10 @@ import { cleanActivitySummaries } from "./Handlers/jobs/cleanActivitySummaries";
 import { sendCompetitionCompleteNotifications } from "./Handlers/jobs/sendCompetitionCompleteNotifications";
 import { sendNewCompetitionInvites } from "./Handlers/competitions/sendNewCompetitionInvites";
 import { updateCompetitionRanks } from "./Handlers/competitions/updateCompetitionRanks";
+import { updateUserCompetitionStandingsLEGACY, updateCompetitionStandingsLEGACY } from "./Handlers/competitions/updateCompetitionStandingsLEGACY";
 import { updateActivitySummaryScores } from "./Handlers/jobs/updateActivitySummaryScores";
-import { updateCompetitionStandings } from "./Handlers/jobs/updateCompetitionStandings";
 import { updateWorkoutScores } from "./Handlers/jobs/updateWorkoutScores";
+import { updateCompetitionStandings } from "./Handlers/jobs/updateCompetitionStandings";
 
 admin.initializeApp();
 
@@ -28,76 +29,87 @@ exports.deleteAccount = functions.https.onCall(async (_data, context) => {
 
 // Competitions 
 
-exports.deleteCompetition = functions.https.onCall(data => {
+exports.deleteCompetition = functions.https.onCall(async data => {
     const competitionID = data.competitionID;
-    return deleteCompetition(competitionID);
+    await deleteCompetition(competitionID);
 });
 
-exports.inviteUserToCompetition = functions.https.onCall((data, context) => {
+exports.inviteUserToCompetition = functions.https.onCall(async (data, context) => {
     const caller: string | undefined = context.auth?.uid;
     const competitionID = data.competitionID;
     const userID: string = data.userID;
-    if (caller == null) return Promise.resolve();
-    return inviteUserToCompetition(competitionID, caller, userID);
+    if (caller == null) return;
+    await inviteUserToCompetition(competitionID, caller, userID);
 });
 
-exports.respondToCompetitionInvite = functions.https.onCall((data, context) => {
+exports.respondToCompetitionInvite = functions.https.onCall(async (data, context) => {
     const caller = context.auth?.uid;
     const competitionID: string = data.competitionID;
     const accept = data.accept;
-    if (caller == null) return Promise.resolve();
-    return respondToCompetitionInvite(competitionID, caller, accept);
+    if (caller == null) return;
+    await respondToCompetitionInvite(competitionID, caller, accept);
 });
 
-exports.updateCompetitionStandingsRanks = functions.https.onCall(data => {
+exports.updateCompetitionStandingsRanks = functions.https.onCall(async data => {
     const competitionID = data.competitionID;
-    if (competitionID == null) return Promise.resolve();
-    return updateCompetitionRanks(competitionID);
+    if (competitionID == null) return;
+    await updateCompetitionRanks(competitionID);
 });
 
-exports.joinCompetition = functions.https.onCall((data, context) => {
+exports.updateCompetitionStandings = functions.https.onCall(async (data, context) => {
+    const competitionID = data.competitionID;
+    if (competitionID == undefined) {
+        const userID = context.auth?.uid;
+        if (userID == null) return Promise.resolve();
+        await updateUserCompetitionStandingsLEGACY(userID);
+    } else {
+        await updateCompetitionStandingsLEGACY(competitionID);
+    }
+});
+
+exports.joinCompetition = functions.https.onCall(async (data, context) => {
     const competitionID: string = data.competitionID;
     const userID: string | undefined = context.auth?.uid;
-    if (userID == null) return Promise.resolve();
-    return joinCompetition(competitionID, userID);
+    if (userID == null) return;
+    await joinCompetition(competitionID, userID);
 });
 
-exports.leaveCompetition = functions.https.onCall((data, context) => {
+exports.leaveCompetition = functions.https.onCall(async (data, context) => {
     const competitionID = data.competitionID;
     const userID: string | undefined = context.auth?.uid;
-    if (userID == undefined) return Promise.resolve();
-    return leaveCompetition(competitionID, userID);
+    if (userID == undefined) return;
+    await leaveCompetition(competitionID, userID);
 });
 
 exports.sendNewCompetitionInvites = functions.firestore
     .document("competitions/{competitionID}")
-    .onCreate((snapshot, context) => {
+    .onCreate(async (_snapshot, context) => {
         const competitionID: string = context.params.competitionID;
-        return sendNewCompetitionInvites(competitionID);
+        await sendNewCompetitionInvites(competitionID);
     });
 
 // Friends
 
-exports.sendFriendRequest = functions.https.onCall((data, context) => {
+exports.sendFriendRequest = functions.https.onCall(async (data, context) => {
     const requesterID = context.auth?.uid;
     const requesteeID = data.userID;
-    if (requesterID == null) return Promise.resolve();
-    return handleFriendRequest(requesterID, requesteeID, FriendRequestAction.create);
+    if (requesterID == null) return;
+    await handleFriendRequest(requesterID, requesteeID, FriendRequestAction.create);
 });
 
-exports.respondToFriendRequest = functions.https.onCall((data, context) => {
+exports.respondToFriendRequest = functions.https.onCall(async (data, context) => {
     const requesterID = context.auth?.uid;
     const requesteeID = data.userID;
     const accept = data.accept;
-    if (requesterID == null) return Promise.resolve();
-    return handleFriendRequest(requesterID, requesteeID, accept ? FriendRequestAction.accept : FriendRequestAction.decline);
+    if (requesterID == null) return;
+    await handleFriendRequest(requesterID, requesteeID, accept ? FriendRequestAction.accept : FriendRequestAction.decline);
 });
 
-exports.deleteFriend = functions.https.onCall((data, context) => {
+exports.deleteFriend = functions.https.onCall(async (data, context) => {
     const userID = context.auth?.uid;
     const friendID = data.userID;
-    if (userID == null) return Promise.resolve();
-    return deleteFriend(userID, friendID);
+    if (userID == null) return;
+    await deleteFriend(userID, friendID);
 });
 
 // Points
@@ -124,18 +136,18 @@ exports.updateWorkoutScores = functions
 
 exports.updateCompetitionStandings = functions.firestore
     .document("competitions/{competitionID}")
-    .onUpdate(snapshot => {
+    .onUpdate(async snapshot => {
         const before = snapshot.before;
         const after = snapshot.after;
-        return updateCompetitionStandings(before, after);
+        await updateCompetitionStandings(before, after);
     });
 
 // Jobs
 
 exports.cleanActivitySummaries = functions.pubsub.schedule("every Sunday 02:00")
     .timeZone("America/Toronto")
-    .onRun(async () => cleanActivitySummaries());
+    .onRun(async () => await cleanActivitySummaries());
 
 exports.sendCompetitionCompleteNotifications = functions.pubsub.schedule("every day 12:00")
     .timeZone("America/Toronto")
-    .onRun(async () => sendCompetitionCompleteNotifications());
+    .onRun(async () => await sendCompetitionCompleteNotifications());

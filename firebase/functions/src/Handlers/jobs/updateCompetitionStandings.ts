@@ -22,7 +22,10 @@ interface Scoring {
 async function updateCompetitionStandings(before: DocumentSnapshot, after: DocumentSnapshot): Promise<void> {
     const competition = new Competition(after);
     const competitionBefore = new Competition(before);
-    if (competition.scoringModel == competitionBefore.scoringModel) return;
+    
+    if (competition.scoringModel == competitionBefore.scoringModel && 
+        competition.start == competitionBefore.start && 
+        competition.end == competitionBefore.end) return;
 
     const firestore = getFirestore();
     const batch = firestore.batch();
