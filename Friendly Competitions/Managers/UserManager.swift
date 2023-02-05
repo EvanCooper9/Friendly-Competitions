@@ -35,11 +35,11 @@ final class UserManager: UserManaging {
     private let userSubject: CurrentValueSubject<User, Never>
 
     private var cancellables = Cancellables()
-    private var listenerBag = ListenerBag()
 
     init(user: User) {
         userSubject = .init(user)
         userPublisher = userSubject
+            .removeDuplicates()
             .share(replay: 1)
             .eraseToAnyPublisher()
         
@@ -70,13 +70,13 @@ final class UserManager: UserManaging {
 
     private func listenForUser() {
         database.document("users/\(user.id)")
-            .addSnapshotListener { [weak self] snapshot, _ in
-                guard let self = self, let user = try? snapshot?.data(as: User.self) else { return }
-                self.analyticsManager.set(userId: user.id)
-                DispatchQueue.main.async { [weak self] in
-                    self?.userSubject.send(user)
-                }
+            .snapshotPublisher()
+            .tryMap { try $0.decoded(as: User.self) }
+            .receive(on: RunLoop.main)
+            .sink(withUnretained: self) { strongSelf, user in
+                strongSelf.analyticsManager.set(userId: user.id)
+                strongSelf.userSubject.send(user)
             }
-            .store(in: listenerBag)
+            .store(in: &cancellables)
     }
 }

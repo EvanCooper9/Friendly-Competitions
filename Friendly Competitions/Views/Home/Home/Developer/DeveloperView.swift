@@ -8,9 +8,9 @@ struct DeveloperView: View {
 
     var body: some View {
         List {
-            Section("Firebase Environment") {
+            Section(L10n.Developer.Environment.title) {
                 HStack {
-                    Text("Environment type")
+                    Text(L10n.Developer.Environment.environmentType)
                     Spacer()
                     Picker("", selection: $viewModel.environmentType) {
                         ForEach(FirestoreEnvironment.EnvironmentType.allCases) { environment in
@@ -20,7 +20,7 @@ struct DeveloperView: View {
                 }
                 if viewModel.environmentType == .debug {
                     HStack {
-                        Text("Emulation type")
+                        Text(L10n.Developer.Environment.Emulation.type)
                         Spacer()
                         Picker("", selection: $viewModel.environmentEmulationType) {
                             ForEach(FirestoreEnvironment.EmulationType.allCases) { emulation in
@@ -30,17 +30,17 @@ struct DeveloperView: View {
                     }
                     if viewModel.environmentEmulationType == .custom {
                         HStack {
-                            Text("Emulation destination")
-                            TextField("Emulation destination", text: $viewModel.emulationDestination)
+                            Text(L10n.Developer.Environment.Emulation.destination)
+                            TextField("", text: $viewModel.emulationDestination)
                                 .multilineTextAlignment(.trailing)
                         }
                     }
                 }
                 
-                Button("Save", action: viewModel.saveTapped)
+                Button(L10n.Generics.save, action: viewModel.saveTapped)
             }
         }
-        .navigationBarTitle("Developer")
+        .navigationBarTitle(L10n.Developer.title)
         .embeddedInNavigationView()
     }
 }

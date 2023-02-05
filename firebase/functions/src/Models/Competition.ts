@@ -1,8 +1,9 @@
 import * as admin from "firebase-admin";
 import { getFirestore } from "firebase-admin/firestore";
 import * as moment from "moment";
+import { prepareForFirestore } from "../Utilities/prepareForFirestore";
 import { ActivitySummary } from "./ActivitySummary";
-import { RawScoringModel, ScoringModel } from "./ScoringModel";
+import { ScoringModel } from "./ScoringModel";
 import { Standing } from "./Standing";
 import { Workout } from "./Workout";
 
@@ -48,90 +49,35 @@ class Competition {
     }
 
     /**
-     * Updates the points and standings
+     * Reset the scores of standings to 0
      */
-    async updateStandings(): Promise<void> {
-        const standingPromises = this.participants.map(async userId => {
-            let totalPoints = 0;
-
-            switch (this.scoringModel.type) {
-            case RawScoringModel.percentOfGoals: {
-                const activitySummaries = await this.activitySummaries(userId);
-                activitySummaries.forEach(activitySummary => {
-                    const energy = (activitySummary.activeEnergyBurned / activitySummary.activeEnergyBurnedGoal) * 100;
-                    const exercise = (activitySummary.appleExerciseTime / activitySummary.appleExerciseTimeGoal) * 100;
-                    const stand = (activitySummary.appleStandHours / activitySummary.appleStandHoursGoal) * 100;
-                    const points = energy + exercise + stand;
-                    totalPoints += parseInt(`${points}`);
-                });
-                break;
-            }
-            case RawScoringModel.rawNumbers: {
-                const activitySummaries = await this.activitySummaries(userId);
-                activitySummaries.forEach(activitySummary => {
-                    const energy = activitySummary.activeEnergyBurned;
-                    const exercise = activitySummary.appleExerciseTime;
-                    const stand = activitySummary.appleStandHours;
-                    const points = energy + exercise + stand;
-                    totalPoints += parseInt(`${points}`);
-                });
-                break;
-            }
-            case RawScoringModel.workout: {
-                const workoutType = this.scoringModel.workoutType;
-                const workoutMetrics = this.scoringModel.workoutMetrics;
-                if (workoutType != undefined && workoutMetrics != undefined) {
-                    const workoutsPromise = await admin.firestore().collection(`users/${userId}/workouts`).get();
-                    workoutsPromise.docs
-                        .map(doc => new Workout(doc))
-                        .filter(workout => workout.type == workoutType && workout.isIncludedInCompetition(this))
-                        .forEach(workout => {
-                            workoutMetrics.forEach(metric => {
-                                totalPoints += workout.points[metric];
-                            });
-                        });
-                }
-                break;
-            }
-            }
-
-            if (isNaN(totalPoints)) {
-                totalPoints = 0;
-                console.error(`Encountered NaN when setting total points
-                    competition: ${this.id}
-                    user: ${userId}
-                `);
-            }
-            return Promise.resolve(Standing.new(totalPoints, userId));
+    async resetStandings(): Promise<void> { 
+        const standingsRef = await admin.firestore().collection(`competitions/${this.id}/standings`).get();
+        const standings = standingsRef.docs.map(doc => new Standing(doc));
+        const batch = admin.firestore().batch();
+        standings.forEach(standing => {
+            standing.points = 0;
+            const ref = admin.firestore().doc(`competitions/${this.id}/standings/${standing.userId}`);
+            batch.set(ref, prepareForFirestore(standing));
         });
-
-        return Promise.all(standingPromises)
-            .then(standings => {
-                const batch = admin.firestore().batch();
-                standings
-                    .sort((a, b) => a.points > b.points ? 1 : -1)
-                    .reverse()
-                    .forEach((standing, index) => {
-                        standing.rank = index + 1;
-                        const obj = Object.assign({}, standing);
-                        const ref = admin.firestore().doc(`competitions/${this.id}/standings/${standing.userId}`);
-                        batch.set(ref, obj);
-                    });
-                return batch.commit();
-            })
-            .then();
+        await batch.commit();
     }
 
     /**
-     * Fetch activity summaries for a user that fall within the bounds of this competition's start & end
-     * @param {string} userId The ID of the user to fetch activity summaries for
-     * @return {Promise<ActivitySummary[]>} A promise of activity summaries
+     * Updates the points and standings
      */
-    async activitySummaries(userId: string): Promise<ActivitySummary[]> {
-        const activitySummariesPromise = await admin.firestore().collection(`users/${userId}/activitySummaries`).get();
-        return activitySummariesPromise.docs
-            .map(doc => new ActivitySummary(doc))
-            .filter(activitySummary => activitySummary.isIncludedInCompetition(this));
+    async updateStandingRanks(): Promise<void> {
+        const standingsRef = await admin.firestore().collection(`competitions/${this.id}/standings`).get();
+        const standings = standingsRef.docs.map(doc => new Standing(doc));
+        const batch = admin.firestore().batch();
+        standings
+            .sort((a, b) => a.points - b.points)
+            .forEach((standing, index) => {
+                standing.rank = standings.length - index;
+                const ref = admin.firestore().doc(`competitions/${this.id}/standings/${standing.userId}`);
+                batch.set(ref, prepareForFirestore(standing));
+            });
+        await batch.commit();
     }
 
     /**
@@ -179,10 +125,44 @@ class Competition {
 
         standings.forEach(standing => {
             const ref = firestore.doc(`competitions/${this.id}/results/${end}/standings/${standing.userId}`);
-            const obj = Object.assign({}, standing);
-            batch.set(ref, obj);
+            batch.set(ref, prepareForFirestore(standing));
         });
         await batch.commit();
+    }
+
+    /**
+     * Return a bool that indicates if the competition is currently active
+     * @return {boolean} true if the competition is currently active
+     */
+    isActive(): boolean {
+        const competitionStart = moment(this.start);
+        const competitionEnd = moment(this.end).set("hour", 23).set("minute", 59);
+        const now = moment();
+        return now >= competitionStart && now <= competitionEnd;
+    }
+
+    /**
+     * Fetch activity summaries for a user that fall within the bounds of this competition's start & end
+     * @param {string} userID The ID of the user to fetch activity summaries for
+     * @return {Promise<ActivitySummary[]>} A promise of activity summaries
+     */
+    async activitySummaries(userID: string): Promise<ActivitySummary[]> {
+        return await admin.firestore().collection(`users/${userID}/activitySummaries`)
+            .get()
+            .then(query => query.docs.map(doc => new ActivitySummary(doc)))
+            .then(activitySummaries => activitySummaries.filter(x => x.isIncludedInCompetition(this)));
+    }
+
+    /**
+     * Fetch workouts for a user that fall within the bounds of this competition's start & end
+     * @param {string} userID The ID of the user to fetch workouts for
+     * @return {Promise<ActivitySummary[]>} A promise of workouts
+     */
+    async workouts(userID: string): Promise<Workout[]> {
+        return await admin.firestore().collection(`users/${userID}/workouts`)
+            .get()
+            .then(query => query.docs.map(doc => new Workout(doc)))
+            .then(workouts => workouts.filter(x => x.isIncludedInCompetition(this)));
     }
 }
 

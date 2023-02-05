@@ -35,7 +35,7 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
 
     @LazyInjected(Container.database) private var database
 
-    @UserDefault("current_user") private var currentUser: User? = nil
+    @UserDefault("current_user") private var currentUser: User?
 
     private var emailVerifiedSubject: CurrentValueSubject<Bool, Never>!
     private var loggedInSubject: CurrentValueSubject<Bool, Never>!

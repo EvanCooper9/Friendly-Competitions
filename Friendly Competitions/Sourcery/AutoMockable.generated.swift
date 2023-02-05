@@ -56,24 +56,6 @@ class ActivitySummaryManagingMock: ActivitySummaryManaging {
         }
     }
 
-    //MARK: - update
-
-    var updateCallsCount = 0
-    var updateCalled: Bool {
-        return updateCallsCount > 0
-    }
-    var updateReturnValue: AnyPublisher<Void, Error>!
-    var updateClosure: (() -> AnyPublisher<Void, Error>)?
-
-    func update() -> AnyPublisher<Void, Error> {
-        updateCallsCount += 1
-        if let updateClosure = updateClosure {
-            return updateClosure()
-        } else {
-            return updateReturnValue
-        }
-    }
-
 }
 class AnalyticsManagingMock: AnalyticsManaging {
 
@@ -317,10 +299,12 @@ class AuthenticationManagingMock: AuthenticationManaging {
 class CompetitionsManagingMock: CompetitionsManaging {
     var competitions: AnyPublisher<[Competition], Never>!
     var invitedCompetitions: AnyPublisher<[Competition], Never>!
-    var standings: AnyPublisher<[Competition.ID : [Competition.Standing]], Never>!
-    var participants: AnyPublisher<[Competition.ID: [User]], Never>!
-    var pendingParticipants: AnyPublisher<[Competition.ID: [User]], Never>!
     var appOwnedCompetitions: AnyPublisher<[Competition], Never>!
+    var competitionsDateInterval: DateInterval {
+        get { return underlyingCompetitionsDateInterval }
+        set(value) { underlyingCompetitionsDateInterval = value }
+    }
+    var underlyingCompetitionsDateInterval: DateInterval!
 
     //MARK: - accept
 
@@ -500,28 +484,6 @@ class CompetitionsManagingMock: CompetitionsManaging {
 
     //MARK: - search
 
-    var searchCallsCount = 0
-    var searchCalled: Bool {
-        return searchCallsCount > 0
-    }
-    var searchReceivedSearchText: String?
-    var searchReceivedInvocations: [String] = []
-    var searchReturnValue: AnyPublisher<[Competition], Error>!
-    var searchClosure: ((String) -> AnyPublisher<[Competition], Error>)?
-
-    func search(_ searchText: String) -> AnyPublisher<[Competition], Error> {
-        searchCallsCount += 1
-        searchReceivedSearchText = searchText
-        searchReceivedInvocations.append(searchText)
-        if let searchClosure = searchClosure {
-            return searchClosure(searchText)
-        } else {
-            return searchReturnValue
-        }
-    }
-
-    //MARK: - search
-
     var searchByIDCallsCount = 0
     var searchByIDCalled: Bool {
         return searchByIDCallsCount > 0
@@ -566,23 +528,89 @@ class CompetitionsManagingMock: CompetitionsManaging {
 
     //MARK: - standings
 
-    var standingsForEndingOnCallsCount = 0
-    var standingsForEndingOnCalled: Bool {
-        return standingsForEndingOnCallsCount > 0
+    var standingsForResultIDCallsCount = 0
+    var standingsForResultIDCalled: Bool {
+        return standingsForResultIDCallsCount > 0
     }
-    var standingsForEndingOnReceivedArguments: (competitionID: Competition.ID, end: Date)?
-    var standingsForEndingOnReceivedInvocations: [(competitionID: Competition.ID, end: Date)] = []
-    var standingsForEndingOnReturnValue: AnyPublisher<[Competition.Standing], Error>!
-    var standingsForEndingOnClosure: ((Competition.ID, Date) -> AnyPublisher<[Competition.Standing], Error>)?
+    var standingsForResultIDReceivedArguments: (competitionID: Competition.ID, resultID: CompetitionResult.ID)?
+    var standingsForResultIDReceivedInvocations: [(competitionID: Competition.ID, resultID: CompetitionResult.ID)] = []
+    var standingsForResultIDReturnValue: AnyPublisher<[Competition.Standing], Error>!
+    var standingsForResultIDClosure: ((Competition.ID, CompetitionResult.ID) -> AnyPublisher<[Competition.Standing], Error>)?
 
-    func standings(for competitionID: Competition.ID, endingOn end: Date) -> AnyPublisher<[Competition.Standing], Error> {
-        standingsForEndingOnCallsCount += 1
-        standingsForEndingOnReceivedArguments = (competitionID: competitionID, end: end)
-        standingsForEndingOnReceivedInvocations.append((competitionID: competitionID, end: end))
-        if let standingsForEndingOnClosure = standingsForEndingOnClosure {
-            return standingsForEndingOnClosure(competitionID, end)
+    func standings(for competitionID: Competition.ID, resultID: CompetitionResult.ID) -> AnyPublisher<[Competition.Standing], Error> {
+        standingsForResultIDCallsCount += 1
+        standingsForResultIDReceivedArguments = (competitionID: competitionID, resultID: resultID)
+        standingsForResultIDReceivedInvocations.append((competitionID: competitionID, resultID: resultID))
+        if let standingsForResultIDClosure = standingsForResultIDClosure {
+            return standingsForResultIDClosure(competitionID, resultID)
         } else {
-            return standingsForEndingOnReturnValue
+            return standingsForResultIDReturnValue
+        }
+    }
+
+    //MARK: - participants
+
+    var participantsForCallsCount = 0
+    var participantsForCalled: Bool {
+        return participantsForCallsCount > 0
+    }
+    var participantsForReceivedCompetitionsID: Competition.ID?
+    var participantsForReceivedInvocations: [Competition.ID] = []
+    var participantsForReturnValue: AnyPublisher<[User], Error>!
+    var participantsForClosure: ((Competition.ID) -> AnyPublisher<[User], Error>)?
+
+    func participants(for competitionsID: Competition.ID) -> AnyPublisher<[User], Error> {
+        participantsForCallsCount += 1
+        participantsForReceivedCompetitionsID = competitionsID
+        participantsForReceivedInvocations.append(competitionsID)
+        if let participantsForClosure = participantsForClosure {
+            return participantsForClosure(competitionsID)
+        } else {
+            return participantsForReturnValue
+        }
+    }
+
+    //MARK: - competitionPublisher
+
+    var competitionPublisherForCallsCount = 0
+    var competitionPublisherForCalled: Bool {
+        return competitionPublisherForCallsCount > 0
+    }
+    var competitionPublisherForReceivedCompetitionID: Competition.ID?
+    var competitionPublisherForReceivedInvocations: [Competition.ID] = []
+    var competitionPublisherForReturnValue: AnyPublisher<Competition, Error>!
+    var competitionPublisherForClosure: ((Competition.ID) -> AnyPublisher<Competition, Error>)?
+
+    func competitionPublisher(for competitionID: Competition.ID) -> AnyPublisher<Competition, Error> {
+        competitionPublisherForCallsCount += 1
+        competitionPublisherForReceivedCompetitionID = competitionID
+        competitionPublisherForReceivedInvocations.append(competitionID)
+        if let competitionPublisherForClosure = competitionPublisherForClosure {
+            return competitionPublisherForClosure(competitionID)
+        } else {
+            return competitionPublisherForReturnValue
+        }
+    }
+
+    //MARK: - standingsPublisher
+
+    var standingsPublisherForCallsCount = 0
+    var standingsPublisherForCalled: Bool {
+        return standingsPublisherForCallsCount > 0
+    }
+    var standingsPublisherForReceivedCompetitionID: Competition.ID?
+    var standingsPublisherForReceivedInvocations: [Competition.ID] = []
+    var standingsPublisherForReturnValue: AnyPublisher<[Competition.Standing], Error>!
+    var standingsPublisherForClosure: ((Competition.ID) -> AnyPublisher<[Competition.Standing], Error>)?
+
+    func standingsPublisher(for competitionID: Competition.ID) -> AnyPublisher<[Competition.Standing], Error> {
+        standingsPublisherForCallsCount += 1
+        standingsPublisherForReceivedCompetitionID = competitionID
+        standingsPublisherForReceivedInvocations.append(competitionID)
+        if let standingsPublisherForClosure = standingsPublisherForClosure {
+            return standingsPublisherForClosure(competitionID)
+        } else {
+            return standingsPublisherForReturnValue
         }
     }
 
@@ -744,35 +772,8 @@ class FriendsManagingMock: FriendsManaging {
         }
     }
 
-    //MARK: - search
-
-    var searchWithCallsCount = 0
-    var searchWithCalled: Bool {
-        return searchWithCallsCount > 0
-    }
-    var searchWithReceivedText: String?
-    var searchWithReceivedInvocations: [String] = []
-    var searchWithReturnValue: AnyPublisher<[User], Error>!
-    var searchWithClosure: ((String) -> AnyPublisher<[User], Error>)?
-
-    func search(with text: String) -> AnyPublisher<[User], Error> {
-        searchWithCallsCount += 1
-        searchWithReceivedText = text
-        searchWithReceivedInvocations.append(text)
-        if let searchWithClosure = searchWithClosure {
-            return searchWithClosure(text)
-        } else {
-            return searchWithReturnValue
-        }
-    }
-
 }
 class HealthKitManagingMock: HealthKitManaging {
-    var backgroundDeliveryReceived: AnyPublisher<Void, Never> {
-        get { return underlyingBackgroundDeliveryReceived }
-        set(value) { underlyingBackgroundDeliveryReceived = value }
-    }
-    var underlyingBackgroundDeliveryReceived: AnyPublisher<Void, Never>!
     var permissionStatus: AnyPublisher<PermissionStatus, Never> {
         get { return underlyingPermissionStatus }
         set(value) { underlyingPermissionStatus = value }
@@ -794,6 +795,23 @@ class HealthKitManagingMock: HealthKitManaging {
         executeReceivedQuery = query
         executeReceivedInvocations.append(query)
         executeClosure?(query)
+    }
+
+    //MARK: - registerBackgroundDeliveryTask
+
+    var registerBackgroundDeliveryTaskCallsCount = 0
+    var registerBackgroundDeliveryTaskCalled: Bool {
+        return registerBackgroundDeliveryTaskCallsCount > 0
+    }
+    var registerBackgroundDeliveryTaskReceivedPublisher: AnyPublisher<Void, Never>?
+    var registerBackgroundDeliveryTaskReceivedInvocations: [AnyPublisher<Void, Never>] = []
+    var registerBackgroundDeliveryTaskClosure: ((AnyPublisher<Void, Never>) -> Void)?
+
+    func registerBackgroundDeliveryTask(_ publisher: AnyPublisher<Void, Never>) {
+        registerBackgroundDeliveryTaskCallsCount += 1
+        registerBackgroundDeliveryTaskReceivedPublisher = publisher
+        registerBackgroundDeliveryTaskReceivedInvocations.append(publisher)
+        registerBackgroundDeliveryTaskClosure?(publisher)
     }
 
     //MARK: - requestPermissions
@@ -861,6 +879,119 @@ class PermissionsManagingMock: PermissionsManaging {
     }
 
 }
+class PremiumManagingMock: PremiumManaging {
+    var premium: AnyPublisher<Premium?, Never> {
+        get { return underlyingPremium }
+        set(value) { underlyingPremium = value }
+    }
+    var underlyingPremium: AnyPublisher<Premium?, Never>!
+    var products: AnyPublisher<[Product], Never> {
+        get { return underlyingProducts }
+        set(value) { underlyingProducts = value }
+    }
+    var underlyingProducts: AnyPublisher<[Product], Never>!
+
+    //MARK: - purchase
+
+    var purchaseCallsCount = 0
+    var purchaseCalled: Bool {
+        return purchaseCallsCount > 0
+    }
+    var purchaseReceivedProduct: Product?
+    var purchaseReceivedInvocations: [Product] = []
+    var purchaseReturnValue: AnyPublisher<Void, Error>!
+    var purchaseClosure: ((Product) -> AnyPublisher<Void, Error>)?
+
+    func purchase(_ product: Product) -> AnyPublisher<Void, Error> {
+        purchaseCallsCount += 1
+        purchaseReceivedProduct = product
+        purchaseReceivedInvocations.append(product)
+        if let purchaseClosure = purchaseClosure {
+            return purchaseClosure(product)
+        } else {
+            return purchaseReturnValue
+        }
+    }
+
+    //MARK: - restorePurchases
+
+    var restorePurchasesCallsCount = 0
+    var restorePurchasesCalled: Bool {
+        return restorePurchasesCallsCount > 0
+    }
+    var restorePurchasesReturnValue: AnyPublisher<Void, Error>!
+    var restorePurchasesClosure: (() -> AnyPublisher<Void, Error>)?
+
+    func restorePurchases() -> AnyPublisher<Void, Error> {
+        restorePurchasesCallsCount += 1
+        if let restorePurchasesClosure = restorePurchasesClosure {
+            return restorePurchasesClosure()
+        } else {
+            return restorePurchasesReturnValue
+        }
+    }
+
+    //MARK: - manageSubscription
+
+    var manageSubscriptionCallsCount = 0
+    var manageSubscriptionCalled: Bool {
+        return manageSubscriptionCallsCount > 0
+    }
+    var manageSubscriptionClosure: (() -> Void)?
+
+    func manageSubscription() {
+        manageSubscriptionCallsCount += 1
+        manageSubscriptionClosure?()
+    }
+
+}
+class SearchManagingMock: SearchManaging {
+
+    //MARK: - searchForCompetitions
+
+    var searchForCompetitionsByNameCallsCount = 0
+    var searchForCompetitionsByNameCalled: Bool {
+        return searchForCompetitionsByNameCallsCount > 0
+    }
+    var searchForCompetitionsByNameReceivedName: String?
+    var searchForCompetitionsByNameReceivedInvocations: [String] = []
+    var searchForCompetitionsByNameReturnValue: AnyPublisher<[Competition], Error>!
+    var searchForCompetitionsByNameClosure: ((String) -> AnyPublisher<[Competition], Error>)?
+
+    func searchForCompetitions(byName name: String) -> AnyPublisher<[Competition], Error> {
+        searchForCompetitionsByNameCallsCount += 1
+        searchForCompetitionsByNameReceivedName = name
+        searchForCompetitionsByNameReceivedInvocations.append(name)
+        if let searchForCompetitionsByNameClosure = searchForCompetitionsByNameClosure {
+            return searchForCompetitionsByNameClosure(name)
+        } else {
+            return searchForCompetitionsByNameReturnValue
+        }
+    }
+
+    //MARK: - searchForUsers
+
+    var searchForUsersByNameCallsCount = 0
+    var searchForUsersByNameCalled: Bool {
+        return searchForUsersByNameCallsCount > 0
+    }
+    var searchForUsersByNameReceivedName: String?
+    var searchForUsersByNameReceivedInvocations: [String] = []
+    var searchForUsersByNameReturnValue: AnyPublisher<[User], Error>!
+    var searchForUsersByNameClosure: ((String) -> AnyPublisher<[User], Error>)?
+
+    func searchForUsers(byName name: String) -> AnyPublisher<[User], Error> {
+        searchForUsersByNameCallsCount += 1
+        searchForUsersByNameReceivedName = name
+        searchForUsersByNameReceivedInvocations.append(name)
+        if let searchForUsersByNameClosure = searchForUsersByNameClosure {
+            return searchForUsersByNameClosure(name)
+        } else {
+            return searchForUsersByNameReturnValue
+        }
+    }
+
+}
 class StorageManagingMock: StorageManaging {
 
     //MARK: - data
@@ -882,59 +1013,6 @@ class StorageManagingMock: StorageManaging {
             return dataForClosure(storagePath)
         } else {
             return dataForReturnValue
-        }
-    }
-
-}
-class StoreKitManagingMock: StoreKitManaging {
-    var products: AnyPublisher<[FriendlyCompetitionsProduct], Never> {
-        get { return underlyingProducts }
-        set(value) { underlyingProducts = value }
-    }
-    var underlyingProducts: AnyPublisher<[FriendlyCompetitionsProduct], Never>!
-    var purchases: AnyPublisher<[FriendlyCompetitionsProduct], Never> {
-        get { return underlyingPurchases }
-        set(value) { underlyingPurchases = value }
-    }
-    var underlyingPurchases: AnyPublisher<[FriendlyCompetitionsProduct], Never>!
-
-    //MARK: - purchase
-
-    var purchaseCallsCount = 0
-    var purchaseCalled: Bool {
-        return purchaseCallsCount > 0
-    }
-    var purchaseReceivedProduct: FriendlyCompetitionsProduct?
-    var purchaseReceivedInvocations: [FriendlyCompetitionsProduct] = []
-    var purchaseReturnValue: AnyPublisher<Void, Error>!
-    var purchaseClosure: ((FriendlyCompetitionsProduct) -> AnyPublisher<Void, Error>)?
-
-    func purchase(_ product: FriendlyCompetitionsProduct) -> AnyPublisher<Void, Error> {
-        purchaseCallsCount += 1
-        purchaseReceivedProduct = product
-        purchaseReceivedInvocations.append(product)
-        if let purchaseClosure = purchaseClosure {
-            return purchaseClosure(product)
-        } else {
-            return purchaseReturnValue
-        }
-    }
-
-    //MARK: - refreshPurchasedProducts
-
-    var refreshPurchasedProductsCallsCount = 0
-    var refreshPurchasedProductsCalled: Bool {
-        return refreshPurchasedProductsCallsCount > 0
-    }
-    var refreshPurchasedProductsReturnValue: AnyPublisher<Void, Error>!
-    var refreshPurchasedProductsClosure: (() -> AnyPublisher<Void, Error>)?
-
-    func refreshPurchasedProducts() -> AnyPublisher<Void, Error> {
-        refreshPurchasedProductsCallsCount += 1
-        if let refreshPurchasedProductsClosure = refreshPurchasedProductsClosure {
-            return refreshPurchasedProductsClosure()
-        } else {
-            return refreshPurchasedProductsReturnValue
         }
     }
 
@@ -993,24 +1071,6 @@ class UserManagingMock: UserManaging {
 
 }
 class WorkoutManagingMock: WorkoutManaging {
-
-    //MARK: - update
-
-    var updateCallsCount = 0
-    var updateCalled: Bool {
-        return updateCallsCount > 0
-    }
-    var updateReturnValue: AnyPublisher<Void, Error>!
-    var updateClosure: (() -> AnyPublisher<Void, Error>)?
-
-    func update() -> AnyPublisher<Void, Error> {
-        updateCallsCount += 1
-        if let updateClosure = updateClosure {
-            return updateClosure()
-        } else {
-            return updateReturnValue
-        }
-    }
 
     //MARK: - workouts
 

@@ -10,8 +10,9 @@ fileprivate enum Dependencies {
     static let friendsManager = FriendsManagingMock()
     static let healthKitManager = HealthKitManagingMock()
     static let permissionsManager = PermissionsManagingMock()
+    static let searchManager = SearchManagingMock()
     static let storageManager = StorageManagingMock()
-    static let storeKitManager = StoreKitManagingMock()
+    static let premiumManager = PremiumManagingMock()
     static let userManager = UserManagingMock()
     static let workoutManager = WorkoutManagingMock()
     
@@ -24,15 +25,15 @@ fileprivate enum Dependencies {
         Container.friendsManager.register { friendsManager }
         Container.healthKitManager.register { healthKitManager }
         Container.permissionsManager.register { permissionsManager }
+        Container.searchManager.register { searchManager }
         Container.storageManager.register { storageManager }
-        Container.storeKitManager.register { storeKitManager }
+        Container.premiumManager.register { premiumManager }
         Container.userManager.register { userManager }
         Container.workoutManager.register { workoutManager }
     }
 
     static func baseSetupMocks() {
         activitySummaryManager.activitySummary = .just(nil)
-        activitySummaryManager.updateReturnValue = .just(())
         activitySummaryManager.activitySummariesInReturnValue = .just([])
 
         authenticationManager.emailVerified = .just(true)
@@ -40,35 +41,35 @@ fileprivate enum Dependencies {
 
         competitionsManager.competitions = .just([.mock])
         competitionsManager.invitedCompetitions = .just([])
-        competitionsManager.standings = .just([:])
-        competitionsManager.participants = .just([:])
-        competitionsManager.pendingParticipants = .just([:])
+        competitionsManager.standingsPublisherForReturnValue = .just([])
+        competitionsManager.standingsForResultIDReturnValue = .just([])
+        competitionsManager.participantsForReturnValue = .just([])
         competitionsManager.appOwnedCompetitions = .just([.mockPublic])
-        competitionsManager.searchReturnValue = .just([.mockPublic, .mock])
         competitionsManager.resultsForReturnValue = .just([])
-        competitionsManager.standingsForEndingOnReturnValue = .just([])
         
         friendsManager.friends = .just([])
         friendsManager.friendActivitySummaries = .just([:])
         friendsManager.friendRequests = .just([])
 
+        searchManager.searchForCompetitionsByNameReturnValue = .just([])
+        searchManager.searchForUsersByNameReturnValue = .just([])
+        
         storageManager.dataForReturnValue = .just(.init())
         
-        let products: [FriendlyCompetitionsProduct] = [
-            .init(id: "1", price: "$0.99/month", title: "Monthly", description: "Access premium features for one month"),
-            .init(id: "2", price: "$1.99/six months", title: "Semi-Annually", description: "Access premium features for six months"),
-            .init(id: "3", price: "$2.99/year", title: "Yearly", description: "Access premium features for one year")
+        let products: [Product] = [
+            .init(id: "1", price: "$0.99 / month", offer: "Free for 3 days", title: "Monthly", description: "Access premium features for one month"),
+            .init(id: "2", price: "$1.99 / six months", offer: nil, title: "Semi-Annually", description: "Access premium features for six months"),
+            .init(id: "3", price: "$2.99 / year", offer: nil, title: "Yearly", description: "Access premium features for one year")
         ]
-        storeKitManager.products = .just(products)
-        storeKitManager.purchases = .just([])
-        storeKitManager.purchaseReturnValue = .just(())
-        storeKitManager.refreshPurchasedProductsReturnValue = .just(())
+        premiumManager.premium = .just(nil)
+        premiumManager.products = .just(products)
+        premiumManager.purchaseReturnValue = .just(())
+//        premiumManager.refreshPurchasedProductsReturnValue = .just(())
         
         userManager.user = .evan
         userManager.userPublisher = .just(.evan)
         userManager.updateWithReturnValue = .just(())
         
-        workoutManager.updateReturnValue = .just(())
         workoutManager.workoutsOfWithInReturnValue = .just([])
     }
 }
@@ -83,7 +84,7 @@ extension PreviewProvider {
     static var healthKitManager: HealthKitManagingMock { Dependencies.healthKitManager }
     static var permissionsManager: PermissionsManagingMock { Dependencies.permissionsManager }
     static var storageManager: StorageManagingMock { Dependencies.storageManager }
-    static var storeKitManager: StoreKitManagingMock { Dependencies.storeKitManager }
+    static var premiumManager: PremiumManagingMock { Dependencies.premiumManager }
     static var userManager: UserManagingMock { Dependencies.userManager }
     static var workoutManager: WorkoutManagingMock { Dependencies.workoutManager }
 }

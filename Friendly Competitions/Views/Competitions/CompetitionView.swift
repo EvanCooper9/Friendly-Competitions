@@ -20,10 +20,6 @@ struct CompetitionView: View {
                 results
             }
             
-            if viewModel.pendingParticipants.isNotEmpty {
-                pendingInvites
-            }
-            
             if viewModel.editing {
                 EditCompetitionSection(
                     name: $viewModel.competition.name,
@@ -34,23 +30,8 @@ struct CompetitionView: View {
                     isPublic: $viewModel.competition.isPublic
                 )
             } else {
-                ImmutableListItemView(
-                    value: viewModel.competition.start.formatted(date: .abbreviated, time: .omitted),
-                    valueType: .date(description: viewModel.competition.started ? "Started" : "Starts")
-                )
-                ImmutableListItemView(
-                    value: viewModel.competition.end.formatted(date: .abbreviated, time: .omitted),
-                    valueType: .date(description: viewModel.competition.ended ? "Ended" : "Ends")
-                )
-                ImmutableListItemView(
-                    value: viewModel.competition.scoringModel.displayName,
-                    valueType: .other(systemImage: .plusminusCircle, description: "Scoring model")
-                )
-                if viewModel.competition.repeats {
-                    ImmutableListItemView(
-                        value: "Yes",
-                        valueType: .other(systemImage: .repeatCircle, description: "Restarts")
-                    )
+                ForEach(viewModel.details, id: \.value) { detail in
+                    ImmutableListItemView(value: detail.value, valueType: detail.valueType)
                 }
             }
             
@@ -61,7 +42,7 @@ struct CompetitionView: View {
             if viewModel.canEdit {
                 HStack {
                     if viewModel.editing {
-                        Button("Save", action: viewModel.saveTapped)
+                        Button(L10n.Generics.save, action: viewModel.saveTapped)
                             .disabled(!canSaveEdits)
                     }
                     Button(viewModel.editButtonTitle, action: viewModel.editTapped)
@@ -81,29 +62,28 @@ struct CompetitionView: View {
 
     private var standings: some View {
         Section {
-            ForEach(viewModel.standings) {
-                CompetitionParticipantRow(config: $0)
+            if viewModel.loadingStandings {
+                ProgressView()
+            } else {
+                ForEach(viewModel.standings) { config in
+                    CompetitionParticipantRow(config: config)
+                }
+                if viewModel.showShowMoreButton {
+                    Button(L10n.Competition.Standings.showMore, action: viewModel.showMoreTapped)
+                }
             }
         } header: {
-            Text("Standings")
+            Text(L10n.Competition.Standings.title)
         } footer: {
-            if viewModel.standings.isEmpty {
-                Text("Nothing here, yet.")
+            if viewModel.standings.isEmpty && !viewModel.loadingStandings {
+                Text(L10n.Competition.Standings.empty)
             }
         }
     }
     
     private var results: some View {
         Section {
-            NavigationLink("Results", value: NavigationDestination.competitionResults(viewModel.competition))
-        }
-    }
-
-    private var pendingInvites: some View {
-        Section("Pending invites") {
-            ForEach(viewModel.pendingParticipants) {
-                CompetitionParticipantRow(config: $0)
-            }
+            NavigationLink(L10n.Competition.Results.results, value: NavigationDestination.competitionResults(viewModel.competition))
         }
     }
 
@@ -121,8 +101,8 @@ struct CompetitionView: View {
             }
         }
         .confirmationDialog(viewModel.confirmationTitle, isPresented: $viewModel.confirmationRequired, titleVisibility: .visible) {
-            Button("Yes", role: .destructive, action: viewModel.confirm)
-            Button("Cancel", role: .cancel) {}
+            Button(L10n.Generics.yes, role: .destructive, action: viewModel.confirm)
+            Button(L10n.Generics.cancel, role: .cancel) {}
         }
         .sheet(isPresented: $viewModel.showInviteFriend) {
             InviteFriendsView(action: .competitionInvite(viewModel.competition))
@@ -138,26 +118,18 @@ struct CompetitionView_Previews: PreviewProvider {
     private static func setupMocks() {
         let evan = User.evan
         let gabby = User.gabby
-        let standings: [Competition.ID: [Competition.Standing]] = [
-            competition.id: [
-                .init(rank: 1, userId: "Somebody", points: 100),
-                .init(rank: 2, userId: "Rick", points: 75),
-                .init(rank: 3, userId: "Bob", points: 60),
-                .init(rank: 4, userId: gabby.id, points: 50),
-                .init(rank: 5, userId: evan.id, points: 20),
-                .init(rank: 6, userId: "Joe", points: 9),
-            ]
+        let standings: [Competition.Standing] = [
+            .init(rank: 1, userId: "Somebody", points: 100),
+            .init(rank: 2, userId: "Rick", points: 75),
+            .init(rank: 3, userId: "Bob", points: 60),
+            .init(rank: 4, userId: gabby.id, points: 50),
+            .init(rank: 5, userId: evan.id, points: 20),
+            .init(rank: 6, userId: "Joe", points: 9),
         ]
-        let participants: [Competition.ID: [User]] = [
-            competition.id: [evan, gabby]
-        ]
-        let pendingParticipants: [Competition.ID: [User]] = [
-            competition.id: [gabby]
-        ]
+        let participants = [evan, gabby]
         competitionsManager.competitions = .just([competition])
-        competitionsManager.standings = .just(standings)
-        competitionsManager.participants = .just(participants)
-        competitionsManager.pendingParticipants = .just(pendingParticipants)
+        competitionsManager.standingsPublisherForReturnValue = .just(standings)
+        competitionsManager.participantsForReturnValue = .just(participants)
     }
 
     static var previews: some View {

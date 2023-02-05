@@ -11,12 +11,14 @@ import HealthKit
 // sourcery: AutoMockable
 protocol ActivitySummaryManaging {
     var activitySummary: AnyPublisher<ActivitySummary?, Never> { get }
-    
     func activitySummaries(in dateInterval: DateInterval) -> AnyPublisher<[ActivitySummary], Error>
-    func update() -> AnyPublisher<Void, Error>
 }
 
 final class ActivitySummaryManager: ActivitySummaryManaging {
+    
+    private enum Constants {
+        static var activitySummaryKey: String { #function }
+    }
 
     // MARK: - Public Properties
 
@@ -31,53 +33,61 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
     @Injected(Container.workoutManager) private var workoutManager
 
     private var activitySummarySubject: CurrentValueSubject<ActivitySummary?, Never>
-    private let upload = PassthroughSubject<[ActivitySummary], Never>()
-    private let uploadFinished = PassthroughSubject<Void, Error>()
-    private let query = PassthroughSubject<Void, Never>()
-
     private var cancellables = Cancellables()
 
     // MARK: - Lifecycle
 
     init() {
-        let storedActivitySummary = UserDefaults.standard.decode(ActivitySummary.self, forKey: "activity_summary")
+        let storedActivitySummary = UserDefaults.standard.decode(ActivitySummary.self, forKey: Constants.activitySummaryKey)
         activitySummarySubject = .init(storedActivitySummary?.date.isToday == true ? storedActivitySummary : nil)
+        activitySummarySubject
+            .dropFirst()
+            .sink { UserDefaults.standard.encode($0, forKey: Constants.activitySummaryKey) }
+            .store(in: &cancellables)
 
         activitySummary = activitySummarySubject
             .removeDuplicates()
-            .handleEvents(receiveOutput: { UserDefaults.standard.encode($0, forKey: "activity_summary") })
             .receive(on: RunLoop.main)
             .share(replay: 1)
             .eraseToAnyPublisher()
-
-        Publishers
-            .Merge3(
-                healthKitManager.backgroundDeliveryReceived,
-                query,
-                UIApplication.willEnterForegroundNotification.publisher
-            )
-            .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
-            .flatMapLatest(withUnretained: self) { $0.requestActivitySummaries() }
-            .combineLatest(userManager.userPublisher)
-            .sinkAsync { [weak self] activitySummaries, user in
-                guard let strongSelf = self else { return }
-                defer { strongSelf.uploadFinished.send() }
-            
-                guard activitySummaries.isNotEmpty else { return }
+        
+        let fetchAndUpload = PassthroughSubject<DateInterval, Error>()
+        let fetchAndUploadFinished = PassthroughSubject<Void, Never>()
+        
+        fetchAndUpload
+            .debounce(for: .seconds(1), scheduler: RunLoop.main)
+            .flatMapLatest(withUnretained: self) { $0.activitySummaries(in: $1) }
+            .handleEvents(withUnretained: self, receiveOutput: { strongSelf, activitySummaries in
                 if let activitySummary = activitySummaries.last, activitySummary.date.isToday {
                     strongSelf.activitySummarySubject.send(activitySummary)
+                } else {
+                    strongSelf.activitySummarySubject.send(nil)
                 }
-
-                let batch = strongSelf.database.batch()
-                try activitySummaries.forEach { activitySummary in
-                    var activitySummary = activitySummary
-                    activitySummary.userID = user.id
-                    let documentId = DateFormatter.dateDashed.string(from: activitySummary.date)
-                    let document = strongSelf.database.document("users/\(user.id)/activitySummaries/\(documentId)")
-                    let _ = try batch.setDataEncodable(activitySummary, forDocument: document)
-                }
-                try await batch.commit()
-            }
+            })
+            .flatMapLatest(withUnretained: self) { $0.upload(activitySummaries: $1) }
+            .sink(receiveCompletion: { _ in }, receiveValue: { fetchAndUploadFinished.send() })
+            .store(in: &cancellables)
+        
+        let backgroundDeliveryTrigger = Just(())
+            .handleEvents(withUnretained: self, receiveSubscription: { strongSelf, _ in
+                fetchAndUpload.send(strongSelf.competitionsManager.competitionsDateInterval)
+            })
+            .flatMapLatest { fetchAndUploadFinished }
+            .eraseToAnyPublisher()
+        
+        healthKitManager.registerBackgroundDeliveryTask(backgroundDeliveryTrigger)
+        
+        Publishers
+            .Merge(
+                UIApplication.willEnterForegroundNotification.publisher
+                    .map { [weak self] _ in self?.competitionsManager.competitionsDateInterval }
+                    .unwrap(),
+                competitionsManager.competitions
+                    .filterMany(\.isActive)
+                    .map(\.dateInterval)
+            )
+            .debounce(for: .seconds(1), scheduler: RunLoop.main)
+            .sink(receiveValue: { fetchAndUpload.send($0) })
             .store(in: &cancellables)
     }
 
@@ -93,28 +103,28 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
             subject.send(hkActivitySummaries?.map(\.activitySummary) ?? [])
             subject.send(completion: .finished)
         }
-        self.healthKitManager.execute(query)
-        return subject.eraseToAnyPublisher()
-    }
-
-    func update() -> AnyPublisher<Void, Error> {
-        uploadFinished
-            .handleEvents(receiveSubscription: { [weak self] _ in self?.query.send() })
+        return subject
+            .handleEvents(withUnretained: self, receiveSubscription: { strongSelf, _ in
+                strongSelf.healthKitManager.execute(query)
+            })
             .eraseToAnyPublisher()
     }
 
     // MARK: - Private Methods
-
-    /// Don't call this directly, call `query` instead
-    private func requestActivitySummaries() -> AnyPublisher<[ActivitySummary], Never> {
-        competitionsManager.competitions
-            .filterMany(\.isActive)
-            .map(\.dateInterval)
-            .flatMapLatest(withUnretained: self) { strongSelf, dateInterval in
-                strongSelf.activitySummaries(in: dateInterval)
-                    .catchErrorJustReturn([])
+    
+    private func upload(activitySummaries: [ActivitySummary]) -> AnyPublisher<Void, Error> {
+        .fromAsync { [weak self] in
+            guard let strongSelf = self else { return }
+            let userID = strongSelf.userManager.user.id
+            let batch = strongSelf.database.batch()
+            try activitySummaries.forEach { activitySummary in
+                var activitySummary = activitySummary
+                activitySummary.userID = userID
+                let document = strongSelf.database.document("users/\(userID)/activitySummaries/\(activitySummary.id)")
+                let _ = try batch.setDataEncodable(activitySummary, forDocument: document)
             }
-            .eraseToAnyPublisher()
+            try await batch.commit()
+        }
     }
 }
 

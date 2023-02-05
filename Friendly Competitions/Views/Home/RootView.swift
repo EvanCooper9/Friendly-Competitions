@@ -1,13 +1,18 @@
 import SwiftUI
 
 struct RootView: View {
+    
+    @StateObject private var viewModel = RootViewModel()
+    
     var body: some View {
-        TabView {
+        TabView(selection: $viewModel.tab) {
             HomeView()
-                .tabItem { Label("Home", systemImage: .houseFill) }
+                .tabItem { Label(L10n.Root.home, systemImage: .houseFill) }
+                .tag(RootTab.home)
         
             ExploreView()
-                .tabItem { Label("Explore", systemImage: .sparkleMagnifyingglass) }
+                .tabItem { Label(L10n.Root.explore, systemImage: .sparkleMagnifyingglass) }
+                .tag(RootTab.explore)
         }
     }
 }
@@ -18,11 +23,10 @@ struct Home_Previews: PreviewProvider {
     private static func setupMocks() {
         activitySummaryManager.activitySummary = .just(.mock)
 
-        let competitions: [Competition] = [.mock, .mockInvited, .mockOld]
         competitionsManager.appOwnedCompetitions = .just([.mockPublic, .mockPublic])
-        competitionsManager.competitions = .just(competitions)
-        competitionsManager.participants = .just(competitions.reduce(into: [:]) { $0[$1.id] = [.evan] })
-        competitionsManager.standings = .just(competitions.reduce(into: [:]) { $0[$1.id] = [.mock(for: .evan)] })
+        competitionsManager.competitions = .just([.mock, .mockInvited, .mockOld])
+        competitionsManager.participantsForReturnValue = .just([.evan])
+        competitionsManager.standingsPublisherForReturnValue = .just([.mock(for: .evan)])
 
         let friend = User.gabby
         friendsManager.friends = .just([friend])

@@ -16,25 +16,25 @@ extension Container {
     static let healthKitManager = Factory(scope: .shared) { HealthKitManager() as HealthKitManaging }
     static let notificationManager = Factory(scope: .shared) { NotificationManager() as NotificationManaging }
     static let permissionsManager = Factory(scope: .shared) { PermissionsManager() as PermissionsManaging }
-    static let storeKitManager = Factory(scope: .shared) { StoreKitManager() as StoreKitManaging }
+    static let premiumManager = Factory(scope: .shared) { PremiumManager() as PremiumManaging }
+    static let searchManager = Factory(scope: .shared) { SearchManager() as SearchManaging }
     static let storageManager = Factory(scope: .shared) { StorageManager() as StorageManaging }
     static let userManager = Factory<UserManaging>(scope: .shared) { fatalError("User manager not initialized") }
     static let workoutManager = Factory(scope: .shared) { WorkoutManager() as WorkoutManaging }
     
     // Global state
-    static let appState = Factory(scope: .singleton) { AppState() as AppStateProviding }
+    static let appState = Factory(scope: .shared) { AppState() as AppStateProviding }
     
     static let database = Factory(scope: .shared) {
         let environment = Container.environmentManager.callAsFunction().firestoreEnvironment
         let firestore = Firestore.firestore()
         let settings = firestore.settings
-        settings.isPersistenceEnabled = false
-        settings.cacheSizeBytes = 1_048_576 // 1 MB
 
         switch environment.type {
         case .prod:
             break
         case .debug:
+            settings.isPersistenceEnabled = false
             settings.isSSLEnabled = false
             switch environment.emulationType {
             case .localhost:

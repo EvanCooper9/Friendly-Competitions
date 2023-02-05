@@ -26,7 +26,7 @@ struct ExploreView: View {
                 } else {
                     Section {
                         if viewModel.searchResults.isEmpty {
-                            Text("Nothing here")
+                            Text(L10n.Explore.Search.nothingHere)
                                 .padding()
                                 .background(.ultraThinMaterial)
                                 .cornerRadius(8)
@@ -45,8 +45,9 @@ struct ExploreView: View {
                                     NavigationLink(value: NavigationDestination.competition(competition)) { EmptyView() }
                                         .opacity(0)
                                     CompetitionDetails(competition: competition, showParticipantCount: true, isFeatured: false)
-                                        .padding()
-                                        .background(.white)
+                                        .padding(.vertical, .small)
+                                        .padding(.horizontal)
+                                        .background(.systemFill)
                                         .cornerRadius(10)
                                 }
                             }
@@ -56,7 +57,7 @@ struct ExploreView: View {
                 }
             }
             .searchable(text: $viewModel.searchText, placement: .navigationBarDrawer(displayMode: .always))
-            .navigationTitle("Explore")
+            .navigationTitle(L10n.Explore.title)
             .registerScreenView(name: "Explore")
             .navigationDestination(for: NavigationDestination.self) { $0.view }
         }

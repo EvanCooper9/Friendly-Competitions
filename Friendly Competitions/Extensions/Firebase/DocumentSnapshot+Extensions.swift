@@ -1,6 +1,7 @@
 import ECKit
 import Firebase
 import FirebaseFirestore
+import FirebaseCrashlytics
 
 enum DocumentSnapshotDecodingError: Error {
     case missingData
@@ -15,7 +16,7 @@ public extension DocumentSnapshot {
             let data = try JSONSerialization.data(withJSONObject: documentData, options: [])
             return try JSONDecoder.shared.decode(T.self, from: data)
         } catch {
-            print(error)
+            Crashlytics.crashlytics().record(error: error)
             throw error
         }
     }

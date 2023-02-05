@@ -43,8 +43,6 @@ struct CompetitionResultsView: View {
             Text("You need Friendly Competitions Premium to see older results")
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .font(.title)
-            Text("You still have access to the earliest results for every competition")
-                .foregroundColor(.secondaryLabel)
             PremiumBanner()
                 .cornerRadius(10)
         }
@@ -74,7 +72,7 @@ struct CompetitionResultsView_Previews: PreviewProvider {
             .init(rank: 5, userId: "5", points: 100),
             .init(rank: 6, userId: "6", points: 100)
         ]
-        competitionsManager.standingsForEndingOnReturnValue = .just(stats)
+        competitionsManager.standingsForResultIDReturnValue = .just(stats)
     }
     
     static var previews: some View {

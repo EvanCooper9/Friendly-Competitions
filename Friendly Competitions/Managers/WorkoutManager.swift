@@ -10,7 +10,6 @@ import UIKit
 
 // sourcery: AutoMockable
 protocol WorkoutManaging {
-    func update() -> AnyPublisher<Void, Error>
     func workouts(of type: WorkoutType, with metrics: [WorkoutMetric], in dateInterval: DateInterval) -> AnyPublisher<[Workout], Error>
 }
 
@@ -18,47 +17,66 @@ final class WorkoutManager: WorkoutManaging {
     
     // MARK: - Private Properties
     
+    @Injected(Container.appState) private var appState
     @Injected(Container.competitionsManager) private var competitionsManager
     @Injected(Container.healthKitManager) private var healthKitManager
     @Injected(Container.userManager) private var userManager
     @Injected(Container.database) private var database
     
-    private let query = PassthroughSubject<Void, Never>()
-    private let uploadFinished = PassthroughSubject<Void, Error>()
+    private var cachedMetrics = [WorkoutType: [WorkoutMetric]]()
+    
     private var cancellables = Cancellables()
     
     // MARK: - Lifecycle
     
     init() {
-        Publishers
-            .Merge3(
-                healthKitManager.backgroundDeliveryReceived,
-                query,
-                UIApplication.willEnterForegroundNotification.publisher
-            )
-            .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
-            .flatMapLatest(withUnretained: self) { $0.requestWorkouts() }
-            .combineLatest(userManager.userPublisher)
-            .sinkAsync { [weak self] workouts, user in
-                guard let strongSelf = self else { return }
-                defer { strongSelf.uploadFinished.send() }
-                let batch = strongSelf.database.batch()
-                try workouts.forEach { workout in
-                    let document = strongSelf.database.document("users/\(user.id)/workouts/\(workout.id)")
-                    _ = try batch.setDataEncodable(workout, forDocument: document)
+        let fetchAndUpload = PassthroughSubject<Void, Error>()
+        let fetchAndUploadFinished = PassthroughSubject<Void, Never>()
+        
+        fetchAndUpload
+            .debounce(for: .seconds(1), scheduler: RunLoop.main)
+            .flatMapLatest(withUnretained: self) { strongSelf in
+                let dateInterval = strongSelf.competitionsManager.competitionsDateInterval
+                let publishers = strongSelf.cachedMetrics.map { workoutType, metrics in
+                    strongSelf.workouts(of: workoutType, with: metrics, in: dateInterval)
                 }
-                try await batch.commit()
+                return Publishers
+                    .ZipMany(publishers)
+                    .map { $0.reduce([], +) }
+                    .eraseToAnyPublisher()
             }
+            .flatMapLatest(withUnretained: self) { $0.upload(workouts: $1) }
+            .sink(receiveCompletion: { _ in }, receiveValue: { fetchAndUploadFinished.send() })
+            .store(in: &cancellables)
+        
+        appState.didBecomeActive
+            .filter { $0 }
+            .mapToVoid()
+            .flatMapLatest(withUnretained: self) { $0.fetchWorkoutMetrics() }
+            .sink()
+            .store(in: &cancellables)
+        
+        let backgroundDeliveryTrigger = Just(())
+            .handleEvents(receiveSubscription: { _ in
+                fetchAndUpload.send()
+            })
+            .flatMapLatest { fetchAndUploadFinished }
+            .eraseToAnyPublisher()
+        
+        healthKitManager.registerBackgroundDeliveryTask(backgroundDeliveryTrigger)
+        
+        Publishers
+            .CombineLatest(
+                UIApplication.willEnterForegroundNotification.publisher,
+                competitionsManager.competitions
+            )
+            .mapToVoid()
+            .debounce(for: .seconds(1), scheduler: RunLoop.main)
+            .sink(receiveValue: { fetchAndUpload.send() })
             .store(in: &cancellables)
     }
-
+    
     // MARK: - Public Methods
-
-    func update() -> AnyPublisher<Void, Error> {
-        uploadFinished
-            .handleEvents(receiveSubscription: { [weak self] _ in self?.query.send() })
-            .eraseToAnyPublisher()
-    }
     
     func workouts(of type: WorkoutType, with metrics: [WorkoutMetric], in dateInterval: DateInterval) -> AnyPublisher<[Workout], Error> {
         .fromAsync { [weak self] in
@@ -85,6 +103,34 @@ final class WorkoutManager: WorkoutManaging {
     }
     
     // MARK: - Private Methods
+    
+    private func upload(workouts: [Workout]) -> AnyPublisher<Void, Error> {
+        .fromAsync { [weak self] in
+            guard let strongSelf = self else { return }
+            let userID = strongSelf.userManager.user.id
+            let batch = strongSelf.database.batch()
+            try workouts.forEach { workout in
+                let document = strongSelf.database.document("users/\(userID)/workouts/\(workout.id)")
+                _ = try batch.setDataEncodable(workout, forDocument: document)
+            }
+            try await batch.commit()
+        }
+    }
+    
+    private func fetchWorkoutMetrics() -> AnyPublisher<[WorkoutType: [WorkoutMetric]], Never> {
+        competitionsManager.competitions
+            .map { competitions -> [WorkoutType: [WorkoutMetric]] in
+                competitions.reduce(into: [WorkoutType: [WorkoutMetric]]()) { partialResult, competition in
+                    guard case let .workout(workoutType, metrics) = competition.scoringModel else { return }
+                    let metricsForWorkoutType = (partialResult[workoutType] ?? [])
+                        .appending(contentsOf: metrics)
+                        .uniqued()
+                    partialResult[workoutType] = Array(metricsForWorkoutType)
+                }
+            }
+            .handleEvents(withUnretained: self, receiveOutput: { $0.cachedMetrics = $1 })
+            .eraseToAnyPublisher()
+    }
 
     private func requestWorkouts() -> AnyPublisher<[Workout], Never> {
         competitionsManager.competitions

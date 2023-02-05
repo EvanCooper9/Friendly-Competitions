@@ -26,7 +26,7 @@ final class NewCompetitionViewModel: ObservableObject {
     @Published var scoringModel: Competition.ScoringModel = .percentOfGoals
     @Published var start: Date = .now.advanced(by: 1.days)
     @Published var end: Date = .now.advanced(by: 8.days)
-    @Published var repeats = false
+    @Published var repeats = true
     @Published var isPublic = false
     @Published var friendRows = [InviteFriendsRow]()
     @Published private(set) var createDisabled = true
@@ -73,9 +73,9 @@ final class NewCompetitionViewModel: ObservableObject {
         let disabledReason = inputs
             .map { name, scoringModel, start, end, repeats, isPublic, friendRows, user -> String? in
                 if name.isEmpty {
-                    return "Please enter a name"
+                    return L10n.NewCompetition.Disabled.name
                 } else if !isPublic && friendRows.filter(\.invited).isEmpty {
-                    return "Please invite at least 1 friend"
+                    return L10n.NewCompetition.Disabled.inviteFriend
                 }
                 return nil
             }

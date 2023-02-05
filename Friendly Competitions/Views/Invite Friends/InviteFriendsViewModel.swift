@@ -2,6 +2,7 @@ import Combine
 import CombineExt
 import ECKit
 import Factory
+import Foundation
 
 final class InviteFriendsViewModel: ObservableObject {
     
@@ -25,6 +26,7 @@ final class InviteFriendsViewModel: ObservableObject {
     
     @Injected(Container.competitionsManager) private var competitionsManager
     @Injected(Container.friendsManager) private var friendsManager
+    @Injected(Container.searchManager) private var searchManager
     @Injected(Container.userManager) private var userManager
 
     private let acceptSubject = PassthroughSubject<User, Never>()
@@ -47,24 +49,21 @@ final class InviteFriendsViewModel: ObservableObject {
                 .map(\.incomingFriendRequests)
                 .eraseToAnyPublisher()
         case .competitionInvite(let competition):
-            alreadyInvited = Publishers
-                .CombineLatest(competitionsManager.participants, competitionsManager.pendingParticipants)
-                .map { participants, pendingParticipants in
-                    let participants = participants[competition.id] ?? []
-                    let pendingParticipants = pendingParticipants[competition.id] ?? []
-                    return (participants + pendingParticipants).map(\.id)
-                }
+            alreadyInvited = competitionsManager.competitionPublisher(for: competition.id)
+                .map { $0.participants + $0.pendingParticipants }
+                .catchErrorJustReturn([])
                 .share(replay: 1)
                 .eraseToAnyPublisher()
-
             incomingRequests = .just([])
         }
 
         $searchText
+            .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
             .flatMapLatest(withUnretained: self) { strongSelf, searchText -> AnyPublisher<[User], Never> in
                 guard !searchText.isEmpty else { return .just([]) }
-                return strongSelf.friendsManager
-                    .search(with: searchText)
+                return strongSelf.searchManager
+                    .searchForUsers(byName: searchText)
+                    .isLoading { strongSelf.loading = $0 }
                     .catchErrorJustReturn([])
             }
             .combineLatest(alreadyInvited, incomingRequests)
@@ -75,26 +74,25 @@ final class InviteFriendsViewModel: ObservableObject {
                         id: friend.id,
                         name: friend.name,
                         pillId: friend.hashId,
-                        buttonTitle: hasIncomingInvite ? "Accept" : (alreadyInvited.contains(friend.id) ? "Invited" : "Invite"),
+                        buttonTitle: hasIncomingInvite ?
+                            L10n.InviteFriends.accept :
+                            (alreadyInvited.contains(friend.id) ? L10n.InviteFriends.invited : L10n.InviteFriends.invite),
                         buttonDisabled: alreadyInvited.contains(friend.id),
                         buttonAction: { [weak self, friend] in
-                            guard let self = self, let index = self.rows.firstIndex(where: { $0.id == friend.id }) else { return }
-                            self.rows[index].buttonDisabled.toggle()
-                            self.rows[index].buttonTitle = self.rows[index].buttonDisabled ? "Invited" : "Invite"
+                            guard let strongSelf = self else { return }
                             switch action {
                             case .addFriend:
-                                if hasIncomingInvite {
-                                    self.acceptSubject.send(friend)
-                                } else {
-                                    self.inviteSubject.send(friend)
-                                }
+                                hasIncomingInvite ?
+                                    strongSelf.acceptSubject.send(friend) :
+                                    strongSelf.inviteSubject.send(friend)
                             case .competitionInvite:
-                                self.inviteSubject.send(friend)
+                                strongSelf.inviteSubject.send(friend)
                             }
                         }
                     )
                 }
             }
+            .receive(on: RunLoop.main)
             .assign(to: &$rows)
 
         acceptSubject

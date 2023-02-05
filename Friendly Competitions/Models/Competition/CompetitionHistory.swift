@@ -2,6 +2,8 @@ import Foundation
 
 struct CompetitionResult: Codable, Identifiable {
     let id: String
-    @PostDecoded<DateToMidnight, Date> var start: Date
-    @PostDecoded<DateToMidnight, Date> var end: Date
+    @PostDecoded<DateToStartOfDay, Date> var start: Date
+    @PostDecoded<DateToEndOfDay, Date> var end: Date
+    
+    var dateInterval: DateInterval { .init(start: start, end: end) }
 }

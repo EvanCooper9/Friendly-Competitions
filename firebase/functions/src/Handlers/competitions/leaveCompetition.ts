@@ -7,22 +7,14 @@ import { getFirestore } from "../../Utilities/firstore";
  * @param {string} userID The ID of the user leaving the competition
  * @return {Promise<void>} A promise that resolve when completed
  */
-function leaveCompetition(competitionID: string, userID: string): Promise<void> {
+async function leaveCompetition(competitionID: string, userID: string): Promise<void> {
     const firestore = getFirestore();
-
-    return firestore.doc(`competitions/${competitionID}`)
-        .get()
-        .then(doc => new Competition(doc))
-        .then(competition => {
-            const index = competition.participants.indexOf(userID, 0);
-            if (index > -1) competition.participants.splice(index, 1);
-            const obj = Object.assign({}, competition);
-            return firestore.doc(`competitions/${competitionID}`).set(obj);
-        })
-        .then(() => {
-            return firestore.doc(`competitions/${competitionID}/standings/${userID}`).delete();
-        })
-        .then();
+    const competition = await firestore.doc(`competitions/${competitionID}`).get().then(doc => new Competition(doc));
+    const index = competition.participants.indexOf(userID, 0);
+    if (index > -1) competition.participants.splice(index, 1);
+    await firestore.doc(`competitions/${competitionID}`).update({ participants: competition.participants });
+    await firestore.doc(`competitions/${competitionID}/standings/${userID}`).delete();
+    await competition.updateStandingRanks();
 }
 
 export {

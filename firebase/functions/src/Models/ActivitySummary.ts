@@ -1,4 +1,5 @@
 import { Competition } from "./Competition";
+import { RawScoringModel, ScoringModel } from "./ScoringModel";
 
 /**
  * Activity summary
@@ -35,6 +36,28 @@ class ActivitySummary {
      */
     isIncludedInCompetition(competition: Competition): boolean {
         return this.date >= competition.start && this.date <= competition.end;
+    }
+
+    /**
+     * Calculate how many points are earned based on a scoring model
+     * @param {ScoringModel} scoringModel the scoring model for a given competition
+     * @return {number} the amount of points
+     */
+    pointsForScoringModel(scoringModel: ScoringModel): number {
+        switch (scoringModel.type) {
+        case RawScoringModel.percentOfGoals: {
+            const energy = (this.activeEnergyBurned / this.activeEnergyBurnedGoal) * 100;
+            const exercise = (this.appleExerciseTime / this.appleExerciseTimeGoal) * 100;
+            const stand = (this.appleStandHours / this.appleStandHoursGoal) * 100;
+            return Math.round(energy + exercise + stand);
+        }
+        case RawScoringModel.rawNumbers: {
+            return Math.round(this.activeEnergyBurned + this.appleExerciseTime + this.appleStandHours);
+        }
+        case RawScoringModel.workout: {
+            return 0;
+        }
+        }
     }
 }
 

@@ -22,7 +22,7 @@ final class HomeViewModel: ObservableObject {
     @Published var requiresPermissions = false
     @Published private(set) var title = Bundle.main.name
     @Published private(set) var showDeveloper = false
-    
+    @Published private(set) var loadingDeepLink = false
     @Published private(set) var showPremiumBanner = false
     @Published var showPaywall = false
     
@@ -30,14 +30,17 @@ final class HomeViewModel: ObservableObject {
     
     @Injected(Container.appState) private var appState
     @Injected(Container.activitySummaryManager) private var activitySummaryManager
+    @Injected(Container.analyticsManager) private var analyticsManager
     @Injected(Container.competitionsManager) private var competitionsManager
     @Injected(Container.friendsManager) private var friendsManager
     @Injected(Container.permissionsManager) private var permissionsManager
-    @Injected(Container.storeKitManager) private var storeKitManager
+    @Injected(Container.premiumManager) private var premiumManager
     @Injected(Container.userManager) private var userManager
     
-    @UserDefault("competitionsFiltered") var competitionsFiltered = false
-    @UserDefault("dismissedPremiumBanner") private var dismissedPremiumBanner = false
+    @UserDefault("competitionsFiltered", defaultValue: false) var competitionsFiltered
+    @UserDefault("dismissedPremiumBanner", defaultValue: false) private var dismissedPremiumBanner
+    
+    private var cancellables = Cancellables()
     
     // MARK: - Lifecycle
 
@@ -56,20 +59,23 @@ final class HomeViewModel: ObservableObject {
                 switch deepLink {
                 case .user(let id):
                     return strongSelf.friendsManager.user(withId: id)
+                        .isLoading { strongSelf.loadingDeepLink = $0 }
                         .unwrap()
                         .map { [.user($0)] }
                         .ignoreFailure()
                         .eraseToAnyPublisher()
                 case .competition(let id):
                     return strongSelf.competitionsManager.search(byID: id)
+                        .isLoading { strongSelf.loadingDeepLink = $0 }
                         .unwrap()
                         .map { [.competition($0)] }
                         .ignoreFailure()
                         .eraseToAnyPublisher()
                 case .competitionResults(let id):
                     return strongSelf.competitionsManager.search(byID: id)
+                        .isLoading { strongSelf.loadingDeepLink = $0 }
                         .unwrap()
-                        .map { [.competition($0), .competitionResults($0)] }
+                        .map { [.competitionResults($0)] }
                         .ignoreFailure()
                         .eraseToAnyPublisher()
                 case .none:
@@ -81,6 +87,34 @@ final class HomeViewModel: ObservableObject {
         activitySummaryManager.activitySummary.assign(to: &$activitySummary)
         competitionsManager.competitions.assign(to: &$competitions)
         competitionsManager.invitedCompetitions.assign(to: &$invitedCompetitions)
+        
+        Publishers
+            .CombineLatest4($competitions, $invitedCompetitions, $friendRows, appState.deepLink)
+            .map { [weak self] competitions, invitedCompetitions, friendRows, deepLink -> [NavigationDestination] in
+                guard let strongSelf = self else { return [] }
+                let homeScreenCompetitionIDs = Set(competitions.map(\.id) + invitedCompetitions.map(\.id))
+                let homeScreenFriendIDs = Set(friendRows.map(\.user.id))
+                return strongSelf.navigationDestinations.filter { navigationDestination in
+                    // accont for deep link to ensure that if comp/friend lists updates, then the deep link isn't dismissed
+                    switch (navigationDestination, deepLink) {
+                    case (.competition(let competition), .competition(id: let deepLinkedCompeititonID)):
+                        return homeScreenCompetitionIDs.contains(competition.id) || deepLinkedCompeititonID == competition.id
+                    case (.competition(let competition), nil):
+                        return homeScreenCompetitionIDs.contains(competition.id)
+                    case (.competitionResults(let competition), .competitionResults(id: let deepLinkedCompeititonID)):
+                        return homeScreenCompetitionIDs.contains(competition.id) || deepLinkedCompeititonID == competition.id
+                    case (.competitionResults(let competition), nil):
+                        return homeScreenCompetitionIDs.contains(competition.id)
+                    case (.user(let user), .user(id: let deepLinkedUserID)):
+                        return homeScreenFriendIDs.contains(user.id) || deepLinkedUserID == user.id
+                    case (.user(let user), nil):
+                        return homeScreenFriendIDs.contains(user.id)
+                    default:
+                        return true
+                    }
+                }
+            }
+            .assign(to: &$navigationDestinations)
         
         Publishers
             .CombineLatest(friendsManager.friends, friendsManager.friendRequests)
@@ -102,8 +136,17 @@ final class HomeViewModel: ObservableObject {
             .assign(to: &$requiresPermissions)
         
         Publishers
-            .CombineLatest($dismissedPremiumBanner, storeKitManager.hasPremium)
-            .map { !$1 && !$1 }
+            .CombineLatest(
+                $dismissedPremiumBanner,
+                premiumManager.premium.map { $0 != nil }
+            )
+            .handleEvents(withUnretained: self, receiveOutput: { strongSelf, result in
+                let (_, premium) = result
+                guard premium else { return }
+                // show banner again when premium expires
+                strongSelf.dismissedPremiumBanner = false
+            })
+            .map { !$0 && !$1 }
             .receive(on: RunLoop.main)
             .assign(to: &$showPremiumBanner)
         
@@ -112,11 +155,8 @@ final class HomeViewModel: ObservableObject {
             .assign(to: &$title)
     }
     
-    func purchaseTapped() {
-        showPaywall.toggle()
-    }
-    
     func dismissPremiumBannerTapped() {
+        analyticsManager.log(event: .premiumBannerDismissed)
         dismissedPremiumBanner.toggle()
     }
 }

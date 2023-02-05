@@ -3,7 +3,7 @@ import { Competition } from "../../Models/Competition";
 import { Standing } from "../../Models/Standing";
 import { User } from "../../Models/User";
 import { getFirestore } from "../../Utilities/firstore";
-import * as notifications from "../../notifications";
+import * as notifications from "../notifications/notifications";
 
 /**
  * Sends notifications to competition participants, updates history, and resets repeating competitions.
@@ -13,42 +13,49 @@ async function sendCompetitionCompleteNotifications(): Promise<void> {
     const firestore = getFirestore();
 
     const yesterday = moment().utc().subtract(1, "day");
-    const competitionsRef = await firestore.collection("competitions")
+    const competitions = await firestore.collection("competitions")
         .where("end", "==", yesterday.format("YYYY-MM-DD"))
-        .get();
+        .get()
+        .then(query => query.docs.map(doc => new Competition(doc)));
 
-    const competitionPromises = competitionsRef.docs.map(async doc => {
-        const competition = new Competition(doc);
-        const standingsRef = await firestore.collection(`competitions/${competition.id}/standings`).get();
-        const standings = standingsRef.docs.map(doc => new Standing(doc));
-        const notificationPromises = competition.participants.map(async participantId => {
-            const userRef = await firestore.doc(`users/${participantId}`).get();
-            const user = new User(userRef);
-            const standing = standings.find(standing => standing.userId == user.id);
-            if (standing == null) return null;
+    await Promise.all(competitions.map(async competition => {
+        const standings = await firestore.collection(`competitions/${competition.id}/standings`)
+            .orderBy("id", "desc")
+            .where("id", "in", competition.participants)
+            .get()
+            .then(query => query.docs.map(doc => new Standing(doc)));
 
-            const rank = standing.rank;
-            const ordinal = ["st", "nd", "rd"][((rank+90)%100-10)%10-1] || "th";
-            return notifications
-                .sendNotificationsToUser(
-                    user,
-                    "Competition complete!",
-                    `You placed ${rank}${ordinal} in ${competition.name}!`,
-                    `https://friendly-competitions.app/competition/${competition.id}/history`
-                )
-                .then(() => user.updateStatisticsWithNewRank(rank));
+        const users = await firestore.collection("users")
+            .orderBy("id", "desc")
+            .where("id", "in", competition.participants)
+            .get()
+            .then(query => query.docs.map(doc => new User(doc)));
+
+        if (standings.length != users.length) {
+            console.error(`Standings (count: ${standings.length}) or users (count: ${users.length}) are missing from competition: ${competition.id}`);
+            return;
+        }
+        const pairs = users.map((user, index) => {
+            // assume that order is the same, based on firestore query
+            return { user: user, standing: standings[index] };
         });
 
-        return Promise
-            .all(notificationPromises)
-            .then(async () => {
-                await competition.recordResults();
-                await competition.updateRepeatingCompetition();
-                await competition.updateStandings();
-            });
-    });
+        await Promise.all(pairs.map(async pair => {
+            const rank = pair.standing.rank;
+            const ordinal = ["st", "nd", "rd"][((rank+90)%100-10)%10-1] || "th";
+            await notifications.sendNotificationsToUser(
+                pair.user,
+                "Competition complete!",
+                `You placed ${rank}${ordinal} in ${competition.name}. Tap to see your results.`,
+                `https://friendly-competitions.app/competition/${competition.id}/results`
+            );
+            await pair.user.updateStatisticsWithNewRank(rank);
+        }));
 
-    return Promise.all(competitionPromises).then();
+        await competition.recordResults();
+        await competition.updateRepeatingCompetition();
+        await competition.resetStandings();
+    }));
 }
 
 export {

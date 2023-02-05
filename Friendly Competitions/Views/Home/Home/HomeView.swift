@@ -2,7 +2,7 @@ import SwiftUI
 import SwiftUIX
 
 struct HomeView: View {
-    
+        
     @StateObject private var viewModel = HomeViewModel()
             
     @State private var presentAbout = false
@@ -15,7 +15,7 @@ struct HomeView: View {
         NavigationStack(path: $viewModel.navigationDestinations) {
             List {
                 if viewModel.showPremiumBanner {
-                    premium
+                    premiumBanner
                 }
                 Group {
                     activitySummary
@@ -43,17 +43,17 @@ struct HomeView: View {
             .sheet(isPresented: $viewModel.requiresPermissions, content: PermissionsView.init)
             .sheet(isPresented: $presentDeveloper, content: DeveloperView.init)
             .sheet(isPresented: $viewModel.showPaywall, content: PaywallView.init)
+            .withLoadingOverlay(isLoading: viewModel.loadingDeepLink)
             .navigationDestination(for: NavigationDestination.self) { $0.view }
             .registerScreenView(name: "Home")
         }
     }
     
-    private var premium: some View {
+    private var premiumBanner: some View {
         Section {
             PremiumBanner().overlay {
                 Button(systemImage: .xmark, action: viewModel.dismissPremiumBannerTapped)
-                    .foregroundColor(.gray.opacity(0.5))
-                    .padding()
+                    .padding(14)
                     .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
                     .buttonStyle(.plain)
             }
@@ -65,10 +65,10 @@ struct HomeView: View {
         Section {
             ActivitySummaryInfoView(activitySummary: viewModel.activitySummary)
         } header: {
-            Text("Activity").font(.title3)
+            Text(L10n.Home.Section.Activity.title).font(.title3)
         } footer: {
             if viewModel.activitySummary == nil {
-                Text("Have you worn your watch today? We can't find any activity summaries yet. If this is a mistake, please make sure that permissions are enabled in the Health app.")
+                Text(L10n.Home.Section.Activity.missing)
             }
         }
     }
@@ -76,25 +76,15 @@ struct HomeView: View {
     private var competitions: some View {
         Section {
             ForEach(viewModel.competitions + viewModel.invitedCompetitions) { competition in
-                if viewModel.competitionsFiltered ? competition.isActive : true {
-                    NavigationLink(value: NavigationDestination.competition(competition)) {
-                        CompetitionDetails(competition: competition, showParticipantCount: false, isFeatured: false)
-                    }
+                NavigationLink(value: NavigationDestination.competition(competition)) {
+                    CompetitionDetails(competition: competition, showParticipantCount: false, isFeatured: false)
                 }
             }
         } header: {
             HStack {
-                let text = viewModel.competitionsFiltered ? "Active competitions" : "Competitions"
-                Text(text).font(.title3)
+                Text(L10n.Home.Section.Competitions.title)
+                    .font(.title3)
                 Spacer()
-                Button {
-                    withAnimation { viewModel.competitionsFiltered.toggle() }
-                } label: {
-                    Image(systemName: "line.3.horizontal.decrease.circle\(viewModel.competitionsFiltered ? ".fill" : "")")
-                        .font(.title2)
-                }
-                .disabled(viewModel.competitions.isEmpty)
-                
                 Button(toggling: $presentNewCompetition) {
                     Image(systemName: .plusCircle)
                         .font(.title2)
@@ -102,7 +92,7 @@ struct HomeView: View {
             }
         } footer: {
             if viewModel.competitions.isEmpty && viewModel.invitedCompetitions.isEmpty {
-                Text("Start a competition against your friends!")
+                Text(L10n.Home.Section.Competitions.createPrompt)
             }
         }
     }
@@ -117,7 +107,7 @@ struct HomeView: View {
                         Text(row.user.name)
                         Spacer()
                         if row.isInvitation {
-                            Text("Invited")
+                            Text(L10n.Home.Section.Friends.invited)
                                 .foregroundColor(.secondaryLabel)
                         }
                     }
@@ -125,7 +115,7 @@ struct HomeView: View {
             }
         } header: {
             HStack {
-                Text("Friends")
+                Text(L10n.Home.Section.Friends.title)
                     .font(.title3)
                 Spacer()
                 Button(toggling: $presentSearchFriendsSheet) {
@@ -135,7 +125,7 @@ struct HomeView: View {
             }
         } footer: {
             if viewModel.friendRows.isEmpty {
-                Text("Add friends to get started!")
+                Text(L10n.Home.Section.Friends.addPrompt)
             }
         }
     }
@@ -147,16 +137,9 @@ struct HomeView_Previews: PreviewProvider {
     private static func setupMocks() {
         activitySummaryManager.activitySummary = .just(.mock)
         
-        let competitions: [Competition] = [.mock, .mockInvited, .mockOld, .mockPublic]
-        let participants = competitions.reduce(into: [Competition.ID: [User]]()) { partialResult, competition in
-            partialResult[competition.id] = [.evan]
-        }
-        let standings = competitions.reduce(into: [Competition.ID: [Competition.Standing]]()) { partialResult, competition in
-            partialResult[competition.id] = [.mock(for: .evan)]
-        }
-        competitionsManager.competitions = .just(competitions)
-        competitionsManager.participants = .just(participants)
-        competitionsManager.standings = .just(standings)
+        competitionsManager.competitions = .just([.mock, .mockInvited, .mockOld, .mockPublic])
+        competitionsManager.participantsForReturnValue = .just([.evan])
+        competitionsManager.standingsPublisherForReturnValue = .just([.mock(for: .evan)])
 
         friendsManager.friends = .just([.gabby])
         friendsManager.friendRequests = .just([.andrew])

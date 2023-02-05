@@ -20,7 +20,7 @@ final class CompetitionResultsViewModel: ObservableObject {
     
     @Injected(Container.activitySummaryManager) private var activitySummaryManager
     @Injected(Container.competitionsManager) private var competitionsManager
-    @Injected(Container.storeKitManager) private var storeKitManager
+    @Injected(Container.premiumManager) private var premiumManager
     @Injected(Container.userManager) private var userManager
     @Injected(Container.workoutManager) private var workoutManager
     
@@ -30,13 +30,15 @@ final class CompetitionResultsViewModel: ObservableObject {
 
     init(competition: Competition) {
         self.competition = competition
+        
+        let results = competitionsManager
+            .results(for: competition.id)
+            .catchErrorJustReturn([])
                 
         Publishers
             .CombineLatest3(
-                competitionsManager
-                    .results(for: competition.id)
-                    .catchErrorJustReturn([]),
-                storeKitManager.hasPremium,
+                results,
+                premiumManager.premium.map(\.isNil.not),
                 selectedIndex
             )
             .map { results, hasPremium, selectedIndex in
@@ -44,45 +46,47 @@ final class CompetitionResultsViewModel: ObservableObject {
                     .sorted(by: \.end)
                     .reversed()
                     .enumerated()
-                    .map { offset, event in
+                    .map { offset, result in
                         CompetitionResultsDateRange(
-                            start: event.start,
-                            end: event.end,
+                            start: result.start,
+                            end: result.end,
                             selected: offset == selectedIndex,
-                            locked: offset == 0 ? true : true // !hasPremium
+                            locked: offset == 0 ? false : !hasPremium
                         )
                     }
             }
             .receive(on: RunLoop.main)
             .assign(to: &$ranges)
         
-        let currentRanges = $ranges
-            .compactMap { ranges -> (CompetitionResultsDateRange, CompetitionResultsDateRange?)?  in
-                guard let currentIndex = ranges.firstIndex(where: \.selected) else { return nil }
-                if let previousIndex = currentIndex <= ranges.count - 2 ? currentIndex + 1 : nil {
-                    return (ranges[currentIndex], ranges[previousIndex])
-                }
-                return (ranges[currentIndex], nil)
-            }
-            .share(replay: 1)
-        
-        currentRanges
-            .map(\.0.locked)
+        $ranges
+            .map { $0.first(where: \.selected)?.locked ?? true }
             .assign(to: &$locked)
         
-        currentRanges
-            .filter { !$0.0.locked }
-            .flatMapLatest(withUnretained: self) { strongSelf, ranges in
-                Publishers
+        let currentSelection = Publishers
+            .CombineLatest(results, selectedIndex)
+            .compactMap { results, selectedIndex -> (CompetitionResult, CompetitionResult?)? in
+                if let previousIndex = selectedIndex <= results.count - 2 ? selectedIndex + 1 : nil {
+                    return (results[selectedIndex], results[previousIndex])
+                }
+                return (results[selectedIndex], nil)
+            }
+            .handleEvents(withUnretained: self, receiveSubscription: { strongSelf, _ in strongSelf.loading = true })
+        
+        Publishers
+            .CombineLatest(currentSelection, $locked)
+            .flatMapLatest(withUnretained: self, { strongSelf, input in
+                let (currentSelection, locked) = input
+                guard !locked else { return .just([]) }
+                return Publishers
                     .CombineLatest(
-                        strongSelf.standingsDataPoints(currentRange: ranges.0, previousRange: ranges.1),
-                        strongSelf.scoringDataPoints(currentRange: ranges.0, previousRange: ranges.1)
+                        strongSelf.standingsDataPoints(currentResult: currentSelection.0, previousResult: currentSelection.1),
+                        strongSelf.scoringDataPoints(currentResult: currentSelection.0, previousResult: currentSelection.1)
                     )
                     .first()
                     .map(+)
                     .isLoading { strongSelf.loading = $0 }
                     .eraseToAnyPublisher()
-            }
+            })
             .receive(on: RunLoop.main)
             .assign(to: &$dataPoints)
     }
@@ -100,19 +104,19 @@ final class CompetitionResultsViewModel: ObservableObject {
     
     // MARK: - Private Methods
     
-    private func standingsDataPoints(currentRange: CompetitionResultsDateRange, previousRange: CompetitionResultsDateRange?) -> AnyPublisher<[CompetitionResultsDataPoint], Never> {
+    private func standingsDataPoints(currentResult: CompetitionResult, previousResult: CompetitionResult?) -> AnyPublisher<[CompetitionResultsDataPoint], Never> {
         let previousStandings: AnyPublisher<[Competition.Standing]?, Never> = {
-            guard let previousRange else { return .just(nil) }
+            guard let previousResult else { return .just(nil) }
             return competitionsManager
-                .standings(for: competition.id, endingOn: previousRange.dateInterval.end)
+                .standings(for: competition.id, resultID: previousResult.id)
                 .map { $0 as [Competition.Standing]? }
-                .catch { _ in AnyPublisher<[Competition.Standing]?, Never>.just(nil) }
+                .catchErrorJustReturn(nil)
                 .eraseToAnyPublisher()
         }()
         
         let currentStandings = competitionsManager
-            .standings(for: competition.id, endingOn: currentRange.end)
-            .catch { _ in AnyPublisher<[Competition.Standing], Never>.just([]) }
+            .standings(for: competition.id, resultID: currentResult.id)
+            .catchErrorJustReturn([])
         
         return Publishers
             .CombineLatest3(currentStandings, previousStandings, userManager.userPublisher)
@@ -147,28 +151,27 @@ final class CompetitionResultsViewModel: ObservableObject {
             .eraseToAnyPublisher()
     }
     
-    private func scoringDataPoints(currentRange: CompetitionResultsDateRange, previousRange: CompetitionResultsDateRange?) -> AnyPublisher<[CompetitionResultsDataPoint], Never> {
+    private func scoringDataPoints(currentResult: CompetitionResult, previousResult: CompetitionResult?) -> AnyPublisher<[CompetitionResultsDataPoint], Never> {
         switch competition.scoringModel {
         case .rawNumbers, .percentOfGoals:
             let previousActivitySummaries: AnyPublisher<[ActivitySummary]?, Never> = {
-                guard let previousRange else { return .just(nil) }
+                guard let previousResult else { return .just(nil) }
                 return activitySummaryManager
-                    .activitySummaries(in: previousRange.dateInterval)
+                    .activitySummaries(in: previousResult.dateInterval)
                     .map { $0 as [ActivitySummary]? }
-                    .catch { _ in AnyPublisher<[ActivitySummary]?, Never>.just(nil) }
+                    .catchErrorJustReturn(nil)
                     .eraseToAnyPublisher()
             }()
             
             let currentActivitySummaries = activitySummaryManager
-                .activitySummaries(in: currentRange.dateInterval)
-                .catch { _ in AnyPublisher<[ActivitySummary], Never>.just([]) }
+                .activitySummaries(in: currentResult.dateInterval)
+                .catchErrorJustReturn([])
 
             return Publishers
                 .CombineLatest(
                     currentActivitySummaries,
                     previousActivitySummaries
                 )
-                .ignoreFailure()
                 .map { [weak self] currentActivitySummaries, previousActivitySummaries in
                     guard let strongSelf = self else { return [] }
                     let scoringModel = strongSelf.competition.scoringModel
@@ -186,15 +189,15 @@ final class CompetitionResultsViewModel: ObservableObject {
                 .eraseToAnyPublisher()
         case let .workout(type, metrics):
             let previousWorkouts: AnyPublisher<[Workout]?, Error> = {
-                guard let previousRange else { return .just(nil) }
+                guard let previousResult else { return .just(nil) }
                 return workoutManager
-                    .workouts(of: type, with: metrics, in: previousRange.dateInterval)
+                    .workouts(of: type, with: metrics, in: previousResult.dateInterval)
                     .map { $0 as [Workout]? }
                     .eraseToAnyPublisher()
             }()
             return Publishers
                 .CombineLatest(
-                    workoutManager.workouts(of: type, with: metrics, in: currentRange.dateInterval),
+                    workoutManager.workouts(of: type, with: metrics, in: currentResult.dateInterval),
                     previousWorkouts
                 )
                 .ignoreFailure()

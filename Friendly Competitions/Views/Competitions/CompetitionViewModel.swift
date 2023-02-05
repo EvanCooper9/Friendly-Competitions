@@ -18,7 +18,7 @@ final class CompetitionViewModel: ObservableObject {
     var confirmationTitle: String { actionRequiringConfirmation?.confirmationTitle ?? "" }
     @Published var confirmationRequired = false
     @Published var competition: Competition
-    @Published var editButtonTitle = "Edit"
+    @Published var editButtonTitle = L10n.Competition.Action.Edit.buttonTitle
     @Published var editing = false
     @Published var standings = [CompetitionParticipantRow.Config]()
     @Published var pendingParticipants = [CompetitionParticipantRow.Config]()
@@ -26,10 +26,34 @@ final class CompetitionViewModel: ObservableObject {
     @Published var showInviteFriend = false
     @Published private(set) var showResults = false
     @Published private(set) var loading = false
+    @Published private(set) var loadingStandings = false
+    @Published private(set) var showShowMoreButton = false
+    
+    var details: [(value: String, valueType: ImmutableListItemView.ValueType)] {
+        [
+            (
+                value: competition.start.formatted(date: .abbreviated, time: .omitted),
+                valueType: .date(description: competition.started ? "Started" : "Starts")
+            ),
+            (
+                value: competition.end.formatted(date: .abbreviated, time: .omitted),
+                valueType: .date(description: competition.ended ? "Ended" : "Ends")
+            ),
+            (
+                value: competition.scoringModel.displayName,
+                valueType: .other(systemImage: .plusminusCircle, description: "Scoring model")
+            ),
+            (
+                value: competition.repeats ? L10n.Generics.yes : L10n.Generics.no,
+                valueType: .other(systemImage: .repeatCircle, description: "Restarts")
+            )
+        ]
+    }
     
     // MARK: - Private Properties
 
     private var competitionPreEdit: Competition
+    @Published private var currentStandingsMaximum = 10
     
     private var actionRequiringConfirmation: CompetitionViewAction? {
         didSet { confirmationRequired = actionRequiringConfirmation != nil }
@@ -61,7 +85,7 @@ final class CompetitionViewModel: ObservableObject {
             .assign(to: &$showResults)
         
         $editing
-            .map { $0  ? "Cancel" : "Edit" }
+            .map { $0  ? L10n.Generics.cancel : L10n.Competition.Action.Edit.buttonTitle }
             .assign(to: &$editButtonTitle)
         
         $competition
@@ -86,54 +110,71 @@ final class CompetitionViewModel: ObservableObject {
             }
             .assign(to: &$actions)
         
-        competitionsManager.competitions
-            .compactMap { $0.first { $0.id == competition.id } }
-            .receive(on: RunLoop.main)
-            .assign(to: &$competition)
-        
-        competitionsManager.standings
-            .combineLatest(competitionsManager.participants, userManager.userPublisher)
-            .map { standings, participants, currentUser -> [CompetitionParticipantRow.Config] in
-                guard let standings = standings[competition.id],
-                      let participants = participants[competition.id]
-                else { return [] }
-
-                return standings.map { standing in
-                    let user = participants.first { $0.id == standing.userId }
-                    let visibility = user?.visibility(by: currentUser) ?? .hidden
-                    return CompetitionParticipantRow.Config(
-                        id: standing.id,
-                        rank: standing.rank.ordinalString ?? "?",
-                        name: user?.name ?? standing.userId,
-                        idPillText: visibility == .visible ? user?.hashId : nil,
-                        blurred: visibility == .hidden,
-                        points: standing.points,
-                        highlighted: standing.userId == currentUser.id
-                    )
-                }
+        let fetchParticipants = PassthroughSubject<Void, Never>()
+        let participants = fetchParticipants
+            .prepend(())
+            .flatMapLatest(withUnretained: self) { strongSelf in
+                strongSelf.competitionsManager
+                    .participants(for: competition.id)
+                    .catchErrorJustReturn([])
             }
-            .receive(on: RunLoop.main)
+        
+        $competition
+            .map(\.participants)
+            .removeDuplicates()
+            .dropFirst()
+            .mapToVoid()
+            .sink { fetchParticipants.send() }
+            .store(in: &cancellables)
+        
+        Publishers
+            .CombineLatest(
+                competitionsManager.standingsPublisher(for: competition.id).catchErrorJustReturn([]),
+                participants
+            )
+            .handleEvents(
+                withUnretained: self,
+                receiveSubscription: { strongSelf, _ in strongSelf.loadingStandings = true }
+            )
+            .combineLatest($currentStandingsMaximum)
+            .map { [weak self] standingsAndParticipants, limit in
+                guard let strongSelf = self else { return [] }
+                let (standings, participants) = standingsAndParticipants
+                let currentUser = strongSelf.userManager.user
+                var rows = standings
+                    .sorted(by: \.rank)
+                    .dropLast(max(0, standings.count - limit))
+                    .map { standing in
+                        CompetitionParticipantRow.Config(
+                            user: participants.first { $0.id == standing.userId },
+                            currentUser: currentUser,
+                            standing: standing
+                        )
+                    }
+
+                if !rows.contains(where: { $0.id == currentUser.id }), let standing = standings.first(where: { $0.userId == currentUser.id }) {
+                    rows.append(CompetitionParticipantRow.Config(
+                        user: currentUser,
+                        currentUser: currentUser,
+                        standing: standing
+                    ))
+                }
+
+                return rows
+            }
+            .handleEvents(
+                withUnretained: self,
+                receiveOutput: { strongSelf, _ in strongSelf.loadingStandings = false }
+            )
             .assign(to: &$standings)
         
-        competitionsManager.pendingParticipants
-            .combineLatest(userManager.userPublisher)
-            .map { pendingParticipants, user in
-                guard let pendingParticipants = pendingParticipants[competition.id] else { return [] }
-                return pendingParticipants.map { pendingParticipant in
-                    let visibility = user.visibility(by: user)
-                    return CompetitionParticipantRow.Config(
-                        id: pendingParticipant.id,
-                        rank: nil,
-                        name: pendingParticipant.name,
-                        idPillText: visibility == .visible ? user.hashId : nil,
-                        blurred: visibility == .hidden,
-                        points: nil,
-                        highlighted: pendingParticipant.id == user.id
-                    )
-                }
-            }
-            .receive(on: RunLoop.main)
-            .assign(to: &$pendingParticipants)
+        competitionsManager.competitionPublisher(for: competition.id)
+            .ignoreFailure()
+            .assign(to: &$competition)
+        
+        Publishers.CombineLatest($standings, $currentStandingsMaximum)
+            .map { $0.count >= $1 }
+            .assign(to: &$showShowMoreButton)
 
         confirmActionSubject
             .flatMapLatest(withUnretained: self) { strongSelf -> AnyPublisher<Void, Error> in
@@ -149,6 +190,7 @@ final class CompetitionViewModel: ObservableObject {
                 case .leave:
                     return strongSelf.competitionsManager
                         .leave(competition)
+                        .handleEvents(receiveOutput: { fetchParticipants.send() })
                         .isLoading { strongSelf.loading = $0 }
                         .eraseToAnyPublisher()
                 default:
@@ -176,6 +218,7 @@ final class CompetitionViewModel: ObservableObject {
                 case .acceptInvite:
                     return strongSelf.competitionsManager
                         .accept(competition)
+                        .handleEvents(receiveOutput: { fetchParticipants.send() })
                         .isLoading { strongSelf.loading = $0 }
                         .eraseToAnyPublisher()
                 case .declineInvite:
@@ -195,6 +238,7 @@ final class CompetitionViewModel: ObservableObject {
                 case .join:
                     return strongSelf.competitionsManager
                         .join(competition)
+                        .handleEvents(receiveOutput: { fetchParticipants.send() })
                         .isLoading { strongSelf.loading = $0 }
                         .eraseToAnyPublisher()
                 }
@@ -226,5 +270,24 @@ final class CompetitionViewModel: ObservableObject {
     
     func perform(_ action: CompetitionViewAction) {
         performActionSubject.send(action)
+    }
+    
+    func showMoreTapped() {
+        currentStandingsMaximum += 10
+    }
+}
+
+private extension CompetitionParticipantRow.Config {
+    init(user: User?, currentUser: User, standing: Competition.Standing) {
+        let visibility = user?.visibility(by: currentUser) ?? .hidden
+        self.init(
+            id: standing.id,
+            rank: standing.rank.ordinalString ?? "?",
+            name: user?.name ?? standing.userId,
+            idPillText: visibility == .visible ? user?.hashId : nil,
+            blurred: visibility == .hidden,
+            points: standing.points,
+            highlighted: standing.userId == currentUser.id
+        )
     }
 }
