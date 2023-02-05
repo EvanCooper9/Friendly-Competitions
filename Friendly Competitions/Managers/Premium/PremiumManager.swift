@@ -2,7 +2,6 @@ import Combine
 import CombineExt
 import ECKit
 import FirebaseCrashlytics
-import FirebaseFirestoreCombineSwift
 import Factory
 import Foundation
 import RevenueCat
@@ -33,7 +32,6 @@ final class PremiumManager: PremiumManaging {
     // MARK: - Private Properties
     
     @Injected(Container.analyticsManager) private var analyticsManager
-    @Injected(Container.database) private var database
     @Injected(Container.userManager) private var userManager
     
     private let premiumSubject = ReplaySubject<Premium?, Never>(bufferSize: 1)
