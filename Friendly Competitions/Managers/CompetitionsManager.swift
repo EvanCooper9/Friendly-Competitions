@@ -5,7 +5,6 @@ import ECKit_Firebase
 import Factory
 import Firebase
 import FirebaseFirestore
-import FirebaseFunctionsCombineSwift
 import Foundation
 import UIKit
 
@@ -178,7 +177,7 @@ final class CompetitionsManager: CompetitionsManaging {
     func standings(for competitionID: Competition.ID, resultID: CompetitionResult.ID) -> AnyPublisher<[Competition.Standing], Error> {
         database.collection("competitions/\(competitionID)/results/\(resultID)/standings")
             .getDocumentsPreferCache()
-            .map { $0.documents.compactMap { try? $0.data(as: Competition.Standing.self) } }
+            .map { $0.documents.compactMap { try? $0.decoded(as: Competition.Standing.self) } }
             .eraseToAnyPublisher()
     }
     
