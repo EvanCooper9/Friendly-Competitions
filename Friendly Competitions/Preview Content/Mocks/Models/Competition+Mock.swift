@@ -1,4 +1,7 @@
+#if DEBUG
+
 import Foundation
+
 extension Competition {
     static var mock: Competition {
         .init(
@@ -96,3 +99,4 @@ extension Competition.Standing {
         .init(rank: 1, userId: user.id, points: Int.random(in: 100...1000))
     }
 }
+#endif

@@ -85,9 +85,11 @@ struct SignIn: View {
     }
 }
 
-struct WelcomeView_Previews: PreviewProvider {
+#if DEBUG
+struct SignIn_Previews: PreviewProvider {
     static var previews: some View {
         SignIn()
             .setupMocks()
     }
 }
+#endif

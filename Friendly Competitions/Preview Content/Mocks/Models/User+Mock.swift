@@ -1,3 +1,4 @@
+#if DEBUG
 extension User {
     static var andrew: User {
         .init(
@@ -34,3 +35,4 @@ extension Array where Element == User {
         [.evan]
     }
 }
+#endif
