@@ -21,7 +21,9 @@ lane :deploy do
         build_number: new_build
     )
 
-    build_app
+    build_app(
+        xcargs: "CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++"
+    )
 
     upload_to_testflight(
         notify_external_testers: false

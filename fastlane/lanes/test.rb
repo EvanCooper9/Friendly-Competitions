@@ -3,6 +3,6 @@ lane :test do
         clean: !is_ci,
         scheme: "Friendly Competitions",
         device: "iPhone 14 Pro Max",
-        xcargs: "CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++",
+        xcargs: "CC=clang CPLUSPLUS=clang++ LD=clang LDPLUSPLUS=clang++"
     )
 end
