@@ -40,7 +40,8 @@ jobs:
 
     - name: Setup GoogleService-Info.plist
       run: |
-        if "${{ github.event.inputs.configuration }}"" == "debug"; then
+        echo "${{ github.event.inputs.configuration }}"
+        if "${{ github.event.inputs.configuration }}" == "debug"; then
           mkdir -p "Friendly Competitions/Firebase/Debug"
           echo $GOOGLE_SERVICE_INFO_DEBUG > "Friendly Competitions/Firebase/Debug/GoogleService-Info.plist"
         elif "${{ github.event.inputs.configuration }}" == "release"; then
