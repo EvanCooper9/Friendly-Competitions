@@ -297,14 +297,31 @@ class AuthenticationManagingMock: AuthenticationManaging {
 
 }
 class CompetitionsManagingMock: CompetitionsManaging {
-    var competitions: AnyPublisher<[Competition], Never>!
-    var invitedCompetitions: AnyPublisher<[Competition], Never>!
-    var appOwnedCompetitions: AnyPublisher<[Competition], Never>!
+    var competitions: AnyPublisher<[Competition], Never> {
+        get { return underlyingCompetitions }
+        set(value) { underlyingCompetitions = value }
+    }
+    var underlyingCompetitions: AnyPublisher<[Competition], Never>!
+    var invitedCompetitions: AnyPublisher<[Competition], Never> {
+        get { return underlyingInvitedCompetitions }
+        set(value) { underlyingInvitedCompetitions = value }
+    }
+    var underlyingInvitedCompetitions: AnyPublisher<[Competition], Never>!
+    var appOwnedCompetitions: AnyPublisher<[Competition], Never> {
+        get { return underlyingAppOwnedCompetitions }
+        set(value) { underlyingAppOwnedCompetitions = value }
+    }
+    var underlyingAppOwnedCompetitions: AnyPublisher<[Competition], Never>!
     var competitionsDateInterval: DateInterval {
         get { return underlyingCompetitionsDateInterval }
         set(value) { underlyingCompetitionsDateInterval = value }
     }
     var underlyingCompetitionsDateInterval: DateInterval!
+    var hasResults: AnyPublisher<Bool, Never> {
+        get { return underlyingHasResults }
+        set(value) { underlyingHasResults = value }
+    }
+    var underlyingHasResults: AnyPublisher<Bool, Never>!
 
     //MARK: - accept
 
@@ -880,6 +897,11 @@ class PermissionsManagingMock: PermissionsManaging {
 
 }
 class PremiumManagingMock: PremiumManaging {
+    var showPremiumBanner: AnyPublisher<Bool, Never> {
+        get { return underlyingShowPremiumBanner }
+        set(value) { underlyingShowPremiumBanner = value }
+    }
+    var underlyingShowPremiumBanner: AnyPublisher<Bool, Never>!
     var premium: AnyPublisher<Premium?, Never> {
         get { return underlyingPremium }
         set(value) { underlyingPremium = value }

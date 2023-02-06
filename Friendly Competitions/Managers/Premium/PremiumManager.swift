@@ -32,6 +32,7 @@ final class PremiumManager: PremiumManaging {
     // MARK: - Private Properties
     
     @Injected(Container.analyticsManager) private var analyticsManager
+    @Injected(Container.competitionsManager) private var competitionsManager
     @Injected(Container.userManager) private var userManager
     
     private let premiumSubject = ReplaySubject<Premium?, Never>(bufferSize: 1)
