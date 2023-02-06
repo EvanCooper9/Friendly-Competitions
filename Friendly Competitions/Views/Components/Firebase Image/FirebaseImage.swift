@@ -41,9 +41,11 @@ struct FirebaseImage: View {
     }
 }
 
+#if DEBUG
 struct FirebaseImage_Previews: PreviewProvider {
     static var previews: some View {
         FirebaseImage(path: "")
             .setupMocks()
     }
 }
+#endif

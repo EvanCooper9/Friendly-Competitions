@@ -14,8 +14,10 @@ struct ActivityRingView: UIViewRepresentable {
     }
 }
 
+#if DEBUG
 struct ActivityRingView_Previews: PreviewProvider {
     static var previews: some View {
         ActivityRingView(activitySummary: .mock)
     }
 }
+#endif
