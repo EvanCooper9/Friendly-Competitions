@@ -6,7 +6,6 @@ import Firebase
 import FirebaseCrashlytics
 import FirebaseFirestore
 import FirebaseFunctions
-import FirebaseFunctionsCombineSwift
 import UIKit
 
 // sourcery: AutoMockable

@@ -128,6 +128,7 @@ struct EmailSignInForm: View {
     }
 }
 
+#if DEBUG
 struct EmailSignInForm_Previews: PreviewProvider {
     static var previews: some View {
         ZStack {
@@ -149,3 +150,4 @@ struct EmailSignInForm_Previews: PreviewProvider {
         }
     }
 }
+#endif

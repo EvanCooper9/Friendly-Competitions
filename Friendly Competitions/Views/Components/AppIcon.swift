@@ -14,8 +14,10 @@ struct AppIcon: View {
     }
 }
 
+#if DEBUG
 struct AppIcron_Previews: PreviewProvider {
     static var previews: some View {
         AppIcon()
     }
 }
+#endif

@@ -1,6 +1,7 @@
 import ECKit_Firebase
 import Factory
 import Firebase
+import FirebaseAuth
 import FirebaseFirestore
 import FirebaseMessaging
 import RevenueCat
@@ -39,7 +40,7 @@ extension AppDelegate: MessagingDelegate {
         Task {
             let tokens = try await database.document("users/\(userId)")
                 .getDocument(source: .cache) // can fetch from cache because tokens shouldn't be out of date
-                .data(as: User.self)
+                .decoded(as: User.self)
                 .notificationTokens ?? []
 
             guard !tokens.contains(fcmToken) else { return }

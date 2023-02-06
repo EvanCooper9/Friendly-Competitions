@@ -15,8 +15,10 @@ struct UserInfoSection: View {
     }
 }
 
+#if DEBUG
 struct UserInfoSection_Previews: PreviewProvider {
     static var previews: some View {
         UserInfoSection(user: .evan)
     }
 }
+#endif

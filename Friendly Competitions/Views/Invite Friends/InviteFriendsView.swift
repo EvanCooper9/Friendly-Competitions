@@ -45,9 +45,11 @@ struct InviteFriendsView: View {
     }
 }
 
+#if DEBUG
 struct InviteFriends_Previews: PreviewProvider {
     static var previews: some View {
         InviteFriendsView(action: .addFriend)
             .setupMocks()
     }
 }
+#endif
