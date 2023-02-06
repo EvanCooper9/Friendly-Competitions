@@ -10,34 +10,14 @@ concurrency:
 
 jobs:
   build:
+    uses: ./.github/workflows/build.yml
+    with:
+      confiugration: release
+  deploy:
     name: Deploy
     runs-on: macos-12
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-
-    - name: Setup SSH
-      uses: webfactory/ssh-agent@v0.5.4
-      with:
-        ssh-private-key: ${{ secrets.SSH_KEY }}
-
-    - name: Setup Ruby
-      uses: ruby/setup-ruby@v1
-      with:
-        bundler-cache: true
-
-    - name: Setup GoogleService-Info.plist
-      run: |
-        mkdir -p "Friendly Competitions/Firebase/Release"
-        echo $GOOGLE_SERVICE_INFO_RELEASE > "Friendly Competitions/Firebase/Release/GoogleService-Info.plist"
-      env:
-        GOOGLE_SERVICE_INFO_RELEASE: ${{ secrets.GOOGLE_SERVICE_INFO_RELEASE }}
-
-    - name: Homebrew
-      run: brew bundle
-
+    
     # https://docs.fastlane.tools/getting-started/ios/authentication/
     - name: Deploy
       run: bundle exec fastlane deploy

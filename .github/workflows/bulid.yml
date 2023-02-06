@@ -1,0 +1,58 @@
+name: Build
+
+on:
+  workflow_call:
+    inputs:
+      configuration:
+        required: true
+        type: choice
+        options:
+        - debug
+        - release
+
+jobs:
+  build:
+    name: Build
+    runs-on: macos-12
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+      with:
+        fetch-depth: 0
+    
+    - name: Setup SSH
+      uses: webfactory/ssh-agent@v0.7
+      with:
+        ssh-private-key: ${{ secrets.SSH_KEY }}
+  
+    - name: Build Cache
+      uses: mikehardy/buildcache-action@v2
+    
+    - name: Cache Swift Packages
+      uses: actions/cache@v3
+      with:
+        path: ~/Library/Developer/Xcode/DerivedData/**/SourcePackages/checkouts
+        key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+        restore-keys: |
+          ${{ runner.os }}-spm-
+    
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        bundler-cache: true
+
+    - name: Setup GoogleService-Info.plist
+      run: |
+        if ${{ github.event.inputs.configuration }} == "debug"; then
+          mkdir -p "Friendly Competitions/Firebase/Debug"
+          echo $GOOGLE_SERVICE_INFO_DEBUG > "Friendly Competitions/Firebase/Debug/GoogleService-Info.plist"
+        else:
+          mkdir -p "Friendly Competitions/Firebase/Release"
+          echo $GOOGLE_SERVICE_INFO_RELEASE > "Friendly Competitions/Firebase/Release/GoogleService-Info.plist"
+        endif
+      env:
+        GOOGLE_SERVICE_INFO_DEBUG: ${{ secrets.GOOGLE_SERVICE_INFO_DEBUG }}
+        GOOGLE_SERVICE_INFO_RELEASE: ${{ secrets.GOOGLE_SERVICE_INFO_RELEASE }}
+
+    - name: Homebrew
+      run: brew bundle

@@ -2,7 +2,7 @@ name: Run unit tests
 
 on:
   pull_request:
-    branches: [main, release/*]
+    branches: [main]
 
 concurrency: 
   group: ${{ github.ref }}
@@ -10,47 +10,13 @@ concurrency:
 
 jobs:
   build:
+    uses: ./.github/workflows/build.yml
+    with:
+      confiugration: debug
+  test:
     name: Test
     runs-on: macos-12
-    env:
-      BUILDCACHE_DEBUG: 2
     steps:
-    - name: Checkout
-      uses: actions/checkout@v3
-      with:
-        fetch-depth: 0
-    
-    - name: Setup SSH
-      uses: webfactory/ssh-agent@v0.5.4
-      with:
-        ssh-private-key: ${{ secrets.SSH_KEY }}
-  
-    - name: Build Cache
-      uses: mikehardy/buildcache-action@v2
-    
-    - name: Cache Swift Packages
-      uses: actions/cache@v3
-      with:
-        path: ~/Library/Developer/Xcode/DerivedData/**/SourcePackages/checkouts
-        key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
-        restore-keys: |
-          ${{ runner.os }}-spm-
-    
-    - name: Setup Ruby
-      uses: ruby/setup-ruby@v1
-      with:
-        bundler-cache: true
-
-    - name: Setup GoogleService-Info.plist
-      run: |
-        mkdir -p "Friendly Competitions/Firebase/Debug"
-        echo $GOOGLE_SERVICE_INFO_DEBUG > "Friendly Competitions/Firebase/Debug/GoogleService-Info.plist"
-      env:
-        GOOGLE_SERVICE_INFO_DEBUG: ${{ secrets.GOOGLE_SERVICE_INFO_DEBUG }}
-
-    - name: Homebrew
-      run: brew bundle
-    
     - name: Fastlane
       run: bundle exec fastlane test
       env:
