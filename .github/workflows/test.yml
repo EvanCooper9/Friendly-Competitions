@@ -10,7 +10,7 @@ concurrency:
 
 jobs:
   build:
-    uses: ./.github/workflows/build.yml
+    uses: EvanCooper9/Friendly-Competitions/.github/workflows/build.yml
     with:
       confiugration: debug
   test:
