@@ -13,10 +13,10 @@ jobs:
     name: Deploy
     runs-on: macos-12
     steps:
-    - uses: ./github/actions/setup.yml
+    - uses: ./github/actions/setup/action.yml
       with:
         configuration: release
-        
+
     # https://docs.fastlane.tools/getting-started/ios/authentication/
     - name: Deploy
       run: bundle exec fastlane deploy
