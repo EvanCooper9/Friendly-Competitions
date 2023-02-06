@@ -13,6 +13,7 @@ jobs:
     uses: ./.github/workflows/build.yml
     with:
       configuration: debug
+    secrets: inherit
   test:
     name: Test
     runs-on: macos-12

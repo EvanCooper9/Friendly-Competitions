@@ -13,6 +13,7 @@ jobs:
     uses: ./.github/workflows/build.yml
     with:
       configuration: release
+    secrets: inherit
   deploy:
     name: Deploy
     runs-on: macos-12
