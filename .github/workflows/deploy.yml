@@ -9,14 +9,14 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  setup:
-    uses: ./.github/workflows/setup.yml
-    secrets: inherit
   deploy:
     name: Deploy
     runs-on: macos-12
     steps:
-
+    - uses: ./github/actions/setup.yml
+      with:
+        configuration: release
+        
     # https://docs.fastlane.tools/getting-started/ios/authentication/
     - name: Deploy
       run: bundle exec fastlane deploy

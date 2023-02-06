@@ -9,13 +9,13 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  setup:
-    uses: ./.github/workflows/setup.yml
-    secrets: inherit
   test:
     name: Test
     runs-on: macos-12
     steps:
+    - uses: ./github/actions/setup.yml
+      with:
+        configuration: debug
     - name: Fastlane
       run: bundle exec fastlane test
       env:
