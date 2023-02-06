@@ -9,7 +9,7 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
+  setup:
     uses: ./.github/workflows/setup.yml
     secrets: inherit
   test:
