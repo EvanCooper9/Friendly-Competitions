@@ -1,15 +1,7 @@
-name: Build
-
-on:
-  workflow_call:
-    inputs:
-      configuration:
-        required: true
-        type: string
+on: workflow_call
 
 jobs:
-  build:
-    name: Build
+  setup:
     runs-on: macos-12
     steps:
     - name: Checkout
@@ -40,14 +32,10 @@ jobs:
 
     - name: Setup GoogleService-Info.plist
       run: |
-        echo "${{ github.event.inputs.configuration }}"
-        if "${{ github.event.inputs.configuration }}" == "debug"; then
-          mkdir -p "Friendly Competitions/Firebase/Debug"
-          echo $GOOGLE_SERVICE_INFO_DEBUG > "Friendly Competitions/Firebase/Debug/GoogleService-Info.plist"
-        elif "${{ github.event.inputs.configuration }}" == "release"; then
-          mkdir -p "Friendly Competitions/Firebase/Release"
-          echo $GOOGLE_SERVICE_INFO_RELEASE > "Friendly Competitions/Firebase/Release/GoogleService-Info.plist"
-        endif
+        mkdir -p "Friendly Competitions/Firebase/Debug"
+        echo $GOOGLE_SERVICE_INFO_DEBUG > "Friendly Competitions/Firebase/Debug/GoogleService-Info.plist"
+        mkdir -p "Friendly Competitions/Firebase/Release"
+        echo $GOOGLE_SERVICE_INFO_RELEASE > "Friendly Competitions/Firebase/Release/GoogleService-Info.plist"
       env:
         GOOGLE_SERVICE_INFO_DEBUG: ${{ secrets.GOOGLE_SERVICE_INFO_DEBUG }}
         GOOGLE_SERVICE_INFO_RELEASE: ${{ secrets.GOOGLE_SERVICE_INFO_RELEASE }}

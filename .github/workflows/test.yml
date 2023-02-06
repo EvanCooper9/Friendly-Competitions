@@ -10,9 +10,7 @@ concurrency:
 
 jobs:
   build:
-    uses: ./.github/workflows/build.yml
-    with:
-      configuration: debug
+    uses: ./.github/workflows/setup.yml
     secrets: inherit
   test:
     name: Test

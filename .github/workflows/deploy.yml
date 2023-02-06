@@ -9,10 +9,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  build:
-    uses: ./.github/workflows/build.yml
-    with:
-      configuration: release
+  setup:
+    uses: ./.github/workflows/setup.yml
     secrets: inherit
   deploy:
     name: Deploy
@@ -29,7 +27,3 @@ jobs:
         MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
         MATCH_GIT_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
         FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: 120
-
-    - uses: actions/upload-artifact@v3
-      with:
-        path: "Friendly Competitions.app.dSYM.zip"
