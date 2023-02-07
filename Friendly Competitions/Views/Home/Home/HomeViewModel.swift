@@ -136,17 +136,14 @@ final class HomeViewModel: ObservableObject {
             .assign(to: &$requiresPermissions)
         
         Publishers
-            .CombineLatest(
+            .CombineLatest3(
                 $dismissedPremiumBanner,
-                premiumManager.premium.map { $0 != nil }
+                premiumManager.premium,
+                competitionsManager.hasPremiumResults
             )
-            .handleEvents(withUnretained: self, receiveOutput: { strongSelf, result in
-                let (_, premium) = result
-                guard premium else { return }
-                // show banner again when premium expires
-                strongSelf.dismissedPremiumBanner = false
-            })
-            .map { !$0 && !$1 }
+            .map { dismissedPremiumBanner, premium, hasPremiumResults in
+                !dismissedPremiumBanner && premium == nil && hasPremiumResults
+            }
             .receive(on: RunLoop.main)
             .assign(to: &$showPremiumBanner)
         
@@ -154,6 +151,8 @@ final class HomeViewModel: ObservableObject {
             .map { $0.name.ifEmpty(Bundle.main.name) }
             .assign(to: &$title)
     }
+    
+    // MARK: - Public Methods
     
     func dismissPremiumBannerTapped() {
         analyticsManager.log(event: .premiumBannerDismissed)

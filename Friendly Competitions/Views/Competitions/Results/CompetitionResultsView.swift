@@ -55,12 +55,12 @@ struct CompetitionResultsView_Previews: PreviewProvider {
     
     private static func setupMocks() {
         let results: [CompetitionResult] = [
-            .init(id: "1", start: .now.advanced(by: -7.days), end: .now),
-            .init(id: "2", start: .now.advanced(by: -14.days), end: .now.advanced(by: -8.days)),
-            .init(id: "3", start: .now.advanced(by: -21.days), end: .now.advanced(by: -15.days)),
-            .init(id: "4", start: .now.advanced(by: -28.days), end: .now.advanced(by: -22.days)),
-            .init(id: "5", start: .now.advanced(by: -35.days), end: .now.advanced(by: -29.days)),
-            .init(id: "5", start: .now.advanced(by: -42.days), end: .now.advanced(by: -43.days))
+            .init(id: "1", start: .now.advanced(by: -7.days), end: .now, participants: []),
+            .init(id: "2", start: .now.advanced(by: -14.days), end: .now.advanced(by: -8.days), participants: []),
+            .init(id: "3", start: .now.advanced(by: -21.days), end: .now.advanced(by: -15.days), participants: []),
+            .init(id: "4", start: .now.advanced(by: -28.days), end: .now.advanced(by: -22.days), participants: []),
+            .init(id: "5", start: .now.advanced(by: -35.days), end: .now.advanced(by: -29.days), participants: []),
+            .init(id: "6", start: .now.advanced(by: -42.days), end: .now.advanced(by: -43.days), participants: [])
         ]
         competitionsManager.resultsForReturnValue = .just(results)
         
