@@ -317,11 +317,11 @@ class CompetitionsManagingMock: CompetitionsManaging {
         set(value) { underlyingCompetitionsDateInterval = value }
     }
     var underlyingCompetitionsDateInterval: DateInterval!
-    var hasResults: AnyPublisher<Bool, Never> {
-        get { return underlyingHasResults }
-        set(value) { underlyingHasResults = value }
+    var hasPremiumResults: AnyPublisher<Bool, Never> {
+        get { return underlyingHasPremiumResults }
+        set(value) { underlyingHasPremiumResults = value }
     }
-    var underlyingHasResults: AnyPublisher<Bool, Never>!
+    var underlyingHasPremiumResults: AnyPublisher<Bool, Never>!
 
     //MARK: - accept
 
@@ -897,11 +897,6 @@ class PermissionsManagingMock: PermissionsManaging {
 
 }
 class PremiumManagingMock: PremiumManaging {
-    var showPremiumBanner: AnyPublisher<Bool, Never> {
-        get { return underlyingShowPremiumBanner }
-        set(value) { underlyingShowPremiumBanner = value }
-    }
-    var underlyingShowPremiumBanner: AnyPublisher<Bool, Never>!
     var premium: AnyPublisher<Premium?, Never> {
         get { return underlyingPremium }
         set(value) { underlyingPremium = value }

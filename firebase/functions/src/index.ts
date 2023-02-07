@@ -15,7 +15,7 @@ import { updateCompetitionRanks } from "./Handlers/competitions/updateCompetitio
 import { updateUserCompetitionStandingsLEGACY, updateCompetitionStandingsLEGACY } from "./Handlers/competitions/updateCompetitionStandingsLEGACY";
 import { updateActivitySummaryScores } from "./Handlers/jobs/updateActivitySummaryScores";
 import { updateWorkoutScores } from "./Handlers/jobs/updateWorkoutScores";
-import { updateCompetitionStandings } from "./Handlers/jobs/updateCompetitionStandings";
+import { handleCompetitionUpdate } from "./Handlers/jobs/updateCompetitionStandings";
 
 admin.initializeApp();
 
@@ -134,12 +134,12 @@ exports.updateWorkoutScores = functions
         await updateWorkoutScores(userID, before, after);
     });
 
-exports.updateCompetitionStandings = functions.firestore
+exports.onCompetitionUpdate = functions.firestore
     .document("competitions/{competitionID}")
     .onUpdate(async snapshot => {
         const before = snapshot.before;
         const after = snapshot.after;
-        await updateCompetitionStandings(before, after);
+        await handleCompetitionUpdate(before, after);
     });
 
 // Jobs

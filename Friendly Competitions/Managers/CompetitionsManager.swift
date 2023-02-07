@@ -103,47 +103,34 @@ final class CompetitionsManager: CompetitionsManaging {
             }
             .removeDuplicates { $0.id == $1.id }
             .flatMapLatest(withUnretained: self) { strongSelf, result -> AnyPublisher<Bool, Never> in
-                let (id, competitions) = result
-                guard UserDefaults.standard.bool(forKey: id) != true else { return .just(true) }
-                return competitions
-                    .map { competition in
-                        strongSelf.results(for: competition.id)
-                            .map { $0.count > 1 }
-                            .catchErrorJustReturn(false)
-                    }
-                    .combineLatest()
-                    .map { $0.contains(true) }
-                    .eraseToAnyPublisher()
+                
+                struct HasResultsContainer: Codable {
+                    let id: String
+                    let hasResults: Bool
+                }
+                
+                if let container = UserDefaults.standard.decode(HasResultsContainer.self, forKey: Constants.hasResultsKey),
+                   container.id == result.id,
+                   container.hasResults {
+                    return .just(true)
+                } else {
+                    return result.competitions
+                        .map { competition in
+                            strongSelf.results(for: competition.id)
+                                .map { $0.count > 1 }
+                                .catchErrorJustReturn(false)
+                        }
+                        .combineLatest()
+                        .map { $0.contains(true) }
+                        .handleEvents(receiveOutput: { hasResults in
+                            let container = HasResultsContainer(id: result.id, hasResults: hasResults)
+                            UserDefaults.standard.encode(container, forKey: Constants.hasResultsKey)
+                        })
+                        .eraseToAnyPublisher()
+                }
             }
             .sink(withUnretained: self) { $0.hasPremiumResultsSubject.send($1) }
             .store(in: &cancellables)
-        
-//        database.collection("competitions")
-//            .getDocuments()
-//            .flatMapLatest(withUnretained: self) { strongSelf, snapshot -> AnyPublisher<Void, Error> in
-//                snapshot.documents
-//                    .decoded(asArrayOf: Competition.self)
-//                    .map { competition in
-//                        strongSelf.results(for: competition.id)
-//                            .flatMapLatest { results in
-//                                results.map { result in
-//                                    strongSelf.standings(for: competition.id, resultID: result.id)
-//                                        .flatMapLatest { standings in
-//                                            strongSelf.database.document("competitions/\(competition.id)/results/\(result.id)")
-//                                                .updateData(["participants": standings.map(\.userId) ])
-//                                                .eraseToAnyPublisher()
-//                                        }
-//                                }
-//                                .combineLatest()
-//                                .mapToVoid()
-//                            }
-//                    }
-//                    .combineLatest()
-//                    .mapToVoid()
-//                    .eraseToAnyPublisher()
-//            }
-//            .sink()
-//            .store(in: &cancellables)
     }
 
     // MARK: - Public Methods
@@ -229,12 +216,9 @@ final class CompetitionsManager: CompetitionsManaging {
     
     func results(for competitionID: Competition.ID) -> AnyPublisher<[CompetitionResult], Error> {
         database.collection("competitions/\(competitionID)/results")
+            .whereField("participants", arrayContains: userManager.user.id)
             .getDocuments()
             .map { $0.documents.decoded(asArrayOf: CompetitionResult.self) }
-            .filterMany { [weak self] result in
-                guard let strongSelf = self else { return false }
-                return result.participants.contains(strongSelf.userManager.user.id)
-            }
             .eraseToAnyPublisher()
     }
     
