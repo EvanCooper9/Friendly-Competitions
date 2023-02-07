@@ -5,8 +5,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/algolia/algoliasearch-client-swift",
       "state" : {
-        "revision" : "d507e54c2f5e11134ee066727fda976d921f1c10",
-        "version" : "8.16.0"
+        "revision" : "6bcb6cf5417b8f423e3170b4993e47513cb40d4d",
+        "version" : "8.17.0"
       }
     },
     {
@@ -32,8 +32,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/hmlongco/Factory",
       "state" : {
-        "revision" : "8c5196703504b93413fe6813ed6984d6767c4725",
-        "version" : "1.3.3"
+        "revision" : "b92b5630e83d9c23fdea3356c66c4355cf67ffb3",
+        "version" : "1.3.6"
       }
     },
     {
@@ -68,8 +68,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/RevenueCat/purchases-ios",
       "state" : {
-        "revision" : "9cfb6adb41dc40d80c104b2ef6e9a84bca03ea48",
-        "version" : "4.16.0"
+        "revision" : "7280a0a850d4ccbc7a21270f767e509fb9c35fdb",
+        "version" : "4.17.4"
       }
     },
     {
