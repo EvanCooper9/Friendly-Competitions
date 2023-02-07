@@ -1,6 +1,7 @@
 import Factory
 import SwiftUI
 
+#if DEBUG
 fileprivate enum Dependencies {
     static let appState = AppState()
     static let activitySummaryManager = ActivitySummaryManagingMock()
@@ -97,3 +98,4 @@ extension View {
         return self
     }
 }
+#endif

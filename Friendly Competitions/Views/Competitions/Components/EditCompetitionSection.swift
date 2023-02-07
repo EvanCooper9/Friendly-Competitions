@@ -45,14 +45,10 @@ struct EditCompetitionSection: View {
     }
 
     private var detailsFooterTexts: [String] {
-        var detailsTexts = [String]()
-        if repeats {
-            detailsTexts.append(L10n.Competition.Edit.Repeats.disclaimer)
+        .build {
+            if repeats { L10n.Competition.Edit.Repeats.disclaimer }
+            if isPublic { L10n.Competition.Edit.Public.disclaimer }
         }
-        if isPublic {
-            detailsTexts.append(L10n.Competition.Edit.Public.disclaimer)
-        }
-        return detailsTexts
     }
     
     // MARK: - Lifecycle

@@ -50,6 +50,7 @@ struct ActivitySummaryInfoView: View {
     }
 }
 
+#if DEBUG
 struct ActivitySummaryInfoView_Previews: PreviewProvider {
     static var previews: some View {
         List {
@@ -57,3 +58,4 @@ struct ActivitySummaryInfoView_Previews: PreviewProvider {
         }
     }
 }
+#endif

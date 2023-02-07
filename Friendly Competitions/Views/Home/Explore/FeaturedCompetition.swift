@@ -29,6 +29,7 @@ struct FeaturedCompetition: View {
     }
 }
 
+#if DEBUG
 struct FeaturedCompetitionView_Previews: PreviewProvider {
 
     private static let competition = Competition.mockPublic
@@ -49,6 +50,6 @@ struct FeaturedCompetitionView_Previews: PreviewProvider {
         .navigationTitle("Previews")
         .embeddedInNavigationView()
         .setupMocks(setupMocks)
-//        .preferredColorScheme(.dark)
     }
 }
+#endif

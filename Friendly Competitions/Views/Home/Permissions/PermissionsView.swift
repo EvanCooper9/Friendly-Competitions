@@ -25,6 +25,7 @@ struct PermissionsView: View {
     }
 }
 
+#if DEBUG
 struct PermissionsView_Previews: PreviewProvider {
 
     private static func setupMocks() {
@@ -39,3 +40,4 @@ struct PermissionsView_Previews: PreviewProvider {
             .setupMocks(setupMocks)
     }
 }
+#endif
