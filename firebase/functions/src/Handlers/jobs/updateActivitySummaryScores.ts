@@ -36,9 +36,8 @@ async function updateActivitySummaryScores(userID: string, before: DocumentSnaps
             if (Object.keys(pointsBreakdown).length == 0) {
                 const activitySummaries = await competition.activitySummaries(userID);
                 activitySummaries.forEach(activitySummary => {
-                    const id = moment(activitySummary.date).format("YYYY-MM-DD");
                     const points = activitySummary.pointsForScoringModel(competition.scoringModel);
-                    pointsBreakdown[id] = points;
+                    pointsBreakdown[after.id] = points;
                 });
             } else {
                 if (after.exists) { // created or updated
