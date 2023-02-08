@@ -8,33 +8,33 @@ struct ActivitySummaryInfoView: View {
         HStack {
             VStack(alignment: .leading, spacing: 10) {
                 VStack(alignment: .leading) {
-                    Text("Move")
+                    Text(L10n.ActivitySummaryInfo.move)
                     if let activitySummary {
                         Text("\(activitySummary.activeEnergyBurned.formatted())/\(activitySummary.activeEnergyBurnedGoal.formatted(.number))")
                             .foregroundColor(.red)
                             .font(.title3)
                     } else {
-                        Text("—").foregroundColor(.gray).font(.title3)
+                        emtpy
                     }
                 }
                 VStack(alignment: .leading) {
-                    Text("Exercise")
+                    Text(L10n.ActivitySummaryInfo.exercise)
                     if let activitySummary {
                         Text("\(activitySummary.appleExerciseTime.formatted())/\(activitySummary.appleExerciseTimeGoal.formatted())")
                             .foregroundColor(.green)
                             .font(.title3)
                     } else {
-                        Text("—").foregroundColor(.gray).font(.title3)
+                        emtpy
                     }
                 }
                 VStack(alignment: .leading) {
-                    Text("Stand")
+                    Text(L10n.ActivitySummaryInfo.stand)
                     if let activitySummary {
                         Text("\(activitySummary.appleStandHours.formatted())/\(activitySummary.appleStandHoursGoal.formatted())")
                             .foregroundColor(.blue)
                             .font(.title3)
                     } else {
-                        Text("—").foregroundColor(.gray).font(.title3)
+                        emtpy
                     }
                 }
             }
@@ -44,8 +44,13 @@ struct ActivitySummaryInfoView: View {
                 .padding([.top, .bottom], 15)
         }
     }
+    
+    private var emtpy: some View {
+        Text(L10n.ActivitySummaryInfo.Value.empty).foregroundColor(.gray).font(.title3)
+    }
 }
 
+#if DEBUG
 struct ActivitySummaryInfoView_Previews: PreviewProvider {
     static var previews: some View {
         List {
@@ -53,3 +58,4 @@ struct ActivitySummaryInfoView_Previews: PreviewProvider {
         }
     }
 }
+#endif

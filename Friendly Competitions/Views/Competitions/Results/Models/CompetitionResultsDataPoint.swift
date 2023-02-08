@@ -16,32 +16,32 @@ enum CompetitionResultsDataPoint: Identifiable {
     var id: String {
         switch self {
         case let .rank(current, previous):
-            return "Rank \(current) \(previous ?? 0)"
+            return "rank-\(current)-\(previous ?? 0)"
         case .standings:
-            return "Standings"
+            return "standings"
         case let .points(current, previous):
-            return "Points \(current) \(previous ?? 0)"
+            return "points-\(current)-\(previous ?? 0)"
         case .activitySummaryBestDay:
-            return "Activity Summary Best Day"
+            return "activity-summary-best-day"
         case .activitySummaryCloseCount:
-            return "Activity Summary Close Count"
+            return "activity-summary-close-count"
         case .workoutsBestDay:
-            return "Workouts Best Day"
+            return "workouts-best-day"
         }
     }
     
     var title: String {
         switch self {
         case .rank:
-            return "Rank"
+            return L10n.Results.Rank.title
         case .standings:
-            return "Standings"
+            return L10n.Results.Standings.title
         case .points:
-            return "Points"
+            return L10n.Results.Points.title
         case .activitySummaryBestDay, .activitySummaryCloseCount:
-            return "Rings"
+            return L10n.Results.ActivitySummaries.title
         case .workoutsBestDay:
-            return "Workouts"
+            return L10n.Results.Workouts.title
         }
     }
 }

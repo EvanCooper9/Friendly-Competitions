@@ -5,16 +5,16 @@ import ECKit_Firebase
 import Factory
 import Firebase
 import FirebaseFirestore
-import FirebaseFunctionsCombineSwift
 import Foundation
 import UIKit
 
 // sourcery: AutoMockable
 protocol CompetitionsManaging {
-    var competitions: AnyPublisher<[Competition], Never>! { get }
-    var invitedCompetitions: AnyPublisher<[Competition], Never>! { get }
-    var appOwnedCompetitions: AnyPublisher<[Competition], Never>! { get }
+    var competitions: AnyPublisher<[Competition], Never> { get }
+    var invitedCompetitions: AnyPublisher<[Competition], Never> { get }
+    var appOwnedCompetitions: AnyPublisher<[Competition], Never> { get }
     var competitionsDateInterval: DateInterval { get }
+    var hasPremiumResults: AnyPublisher<Bool, Never> { get }
 
     func accept(_ competition: Competition) -> AnyPublisher<Void, Error>
     func create(_ competition: Competition) -> AnyPublisher<Void, Error>
@@ -38,20 +38,23 @@ final class CompetitionsManager: CompetitionsManaging {
     private enum Constants {
         static let maxParticipantsToFetch = 10
         static var competitionsDateIntervalKey: String { #function }
+        static var hasResultsKey: String { #function }
     }
     
     // MARK: - Public Properties
 
-    private(set) var competitions: AnyPublisher<[Competition], Never>!
-    private(set) var invitedCompetitions: AnyPublisher<[Competition], Never>!
-    private(set) var appOwnedCompetitions: AnyPublisher<[Competition], Never>!
+    let competitions: AnyPublisher<[Competition], Never>
+    let invitedCompetitions: AnyPublisher<[Competition], Never>
+    let appOwnedCompetitions: AnyPublisher<[Competition], Never>
     private(set) var competitionsDateInterval: DateInterval
+    let hasPremiumResults: AnyPublisher<Bool, Never>
 
     // MARK: - Private Properties
     
     private let competitionsSubject = ReplaySubject<[Competition], Never>(bufferSize: 1)
     private let invitedCompetitionsSubject = ReplaySubject<[Competition], Never>(bufferSize: 1)
     private let appOwnedCompetitionsSubject = ReplaySubject<[Competition], Never>(bufferSize: 1)
+    private let hasPremiumResultsSubject = ReplaySubject<Bool, Never>(bufferSize: 1)
 
     @Injected(Container.appState) private var appState
     @Injected(Container.analyticsManager) private var analyticsManager
@@ -67,6 +70,7 @@ final class CompetitionsManager: CompetitionsManaging {
         competitions = competitionsSubject.share(replay: 1).eraseToAnyPublisher()
         invitedCompetitions = invitedCompetitionsSubject.share(replay: 1).eraseToAnyPublisher()
         appOwnedCompetitions = appOwnedCompetitionsSubject.share(replay: 1).eraseToAnyPublisher()
+        hasPremiumResults = hasPremiumResultsSubject.eraseToAnyPublisher()
         
         let dateInterval = UserDefaults.standard.decode(DateInterval.self, forKey: Constants.competitionsDateIntervalKey) ?? .init()
         competitionsDateInterval = dateInterval
@@ -84,6 +88,48 @@ final class CompetitionsManager: CompetitionsManaging {
             .filter { $0 }
             .mapToVoid()
             .sink(withUnretained: self) { $0.listenForCompetitions() }
+            .store(in: &cancellables)
+        
+        competitions
+            .map { competitions -> (id: String, competitions: [Competition]) in
+                let id = competitions
+                    .map { competition in
+                        let start = DateFormatter.dateDashed.string(from: competition.start)
+                        let end = DateFormatter.dateDashed.string(from: competition.end)
+                        return "\(competition.id)-\(start)-\(end)"
+                    }
+                    .joined(separator: "_")
+                return (id: id, competitions: competitions)
+            }
+            .removeDuplicates { $0.id == $1.id }
+            .flatMapLatest(withUnretained: self) { strongSelf, result -> AnyPublisher<Bool, Never> in
+                
+                struct HasResultsContainer: Codable {
+                    let id: String
+                    let hasResults: Bool
+                }
+                
+                if let container = UserDefaults.standard.decode(HasResultsContainer.self, forKey: Constants.hasResultsKey),
+                   container.id == result.id,
+                   container.hasResults {
+                    return .just(true)
+                } else {
+                    return result.competitions
+                        .map { competition in
+                            strongSelf.results(for: competition.id)
+                                .map { $0.count > 1 }
+                                .catchErrorJustReturn(false)
+                        }
+                        .combineLatest()
+                        .map { $0.contains(true) }
+                        .handleEvents(receiveOutput: { hasResults in
+                            let container = HasResultsContainer(id: result.id, hasResults: hasResults)
+                            UserDefaults.standard.encode(container, forKey: Constants.hasResultsKey)
+                        })
+                        .eraseToAnyPublisher()
+                }
+            }
+            .sink(withUnretained: self) { $0.hasPremiumResultsSubject.send($1) }
             .store(in: &cancellables)
     }
 
@@ -170,6 +216,7 @@ final class CompetitionsManager: CompetitionsManaging {
     
     func results(for competitionID: Competition.ID) -> AnyPublisher<[CompetitionResult], Error> {
         database.collection("competitions/\(competitionID)/results")
+            .whereField("participants", arrayContains: userManager.user.id)
             .getDocuments()
             .map { $0.documents.decoded(asArrayOf: CompetitionResult.self) }
             .eraseToAnyPublisher()
@@ -178,7 +225,7 @@ final class CompetitionsManager: CompetitionsManaging {
     func standings(for competitionID: Competition.ID, resultID: CompetitionResult.ID) -> AnyPublisher<[Competition.Standing], Error> {
         database.collection("competitions/\(competitionID)/results/\(resultID)/standings")
             .getDocumentsPreferCache()
-            .map { $0.documents.compactMap { try? $0.data(as: Competition.Standing.self) } }
+            .map { $0.documents.compactMap { try? $0.decoded(as: Competition.Standing.self) } }
             .eraseToAnyPublisher()
     }
     

@@ -13,18 +13,19 @@ struct PermissionsView: View {
                     }
                 }
             } header: {
-                Text("To get the best experience in Friendly Competitions, we need access to a few things.")
+                Text(L10n.Permissions.header)
             } footer: {
-                Text("You can change your responses in the settings app.")
+                Text(L10n.Permissions.footer)
             }
             .textCase(.none)
         }
-        .navigationTitle("Permissions needed")
+        .navigationTitle(L10n.Permissions.title)
         .embeddedInNavigationView()
         .registerScreenView(name: "Permissions")
     }
 }
 
+#if DEBUG
 struct PermissionsView_Previews: PreviewProvider {
 
     private static func setupMocks() {
@@ -39,3 +40,4 @@ struct PermissionsView_Previews: PreviewProvider {
             .setupMocks(setupMocks)
     }
 }
+#endif

@@ -30,23 +30,8 @@ struct CompetitionView: View {
                     isPublic: $viewModel.competition.isPublic
                 )
             } else {
-                ImmutableListItemView(
-                    value: viewModel.competition.start.formatted(date: .abbreviated, time: .omitted),
-                    valueType: .date(description: viewModel.competition.started ? "Started" : "Starts")
-                )
-                ImmutableListItemView(
-                    value: viewModel.competition.end.formatted(date: .abbreviated, time: .omitted),
-                    valueType: .date(description: viewModel.competition.ended ? "Ended" : "Ends")
-                )
-                ImmutableListItemView(
-                    value: viewModel.competition.scoringModel.displayName,
-                    valueType: .other(systemImage: .plusminusCircle, description: "Scoring model")
-                )
-                if viewModel.competition.repeats {
-                    ImmutableListItemView(
-                        value: "Yes",
-                        valueType: .other(systemImage: .repeatCircle, description: "Restarts")
-                    )
+                ForEach(viewModel.details, id: \.value) { detail in
+                    ImmutableListItemView(value: detail.value, valueType: detail.valueType)
                 }
             }
             
@@ -57,7 +42,7 @@ struct CompetitionView: View {
             if viewModel.canEdit {
                 HStack {
                     if viewModel.editing {
-                        Button("Save", action: viewModel.saveTapped)
+                        Button(L10n.Generics.save, action: viewModel.saveTapped)
                             .disabled(!canSaveEdits)
                     }
                     Button(viewModel.editButtonTitle, action: viewModel.editTapped)
@@ -84,21 +69,21 @@ struct CompetitionView: View {
                     CompetitionParticipantRow(config: config)
                 }
                 if viewModel.showShowMoreButton {
-                    Button("Show more", action: viewModel.showMoreTapped)
+                    Button(L10n.Competition.Standings.showMore, action: viewModel.showMoreTapped)
                 }
             }
         } header: {
-            Text("Standings")
+            Text(L10n.Competition.Standings.title)
         } footer: {
             if viewModel.standings.isEmpty && !viewModel.loadingStandings {
-                Text("Nothing here, yet.")
+                Text(L10n.Competition.Standings.empty)
             }
         }
     }
     
     private var results: some View {
         Section {
-            NavigationLink("Results", value: NavigationDestination.competitionResults(viewModel.competition))
+            NavigationLink(L10n.Competition.Results.results, value: NavigationDestination.competitionResults(viewModel.competition))
         }
     }
 
@@ -116,8 +101,8 @@ struct CompetitionView: View {
             }
         }
         .confirmationDialog(viewModel.confirmationTitle, isPresented: $viewModel.confirmationRequired, titleVisibility: .visible) {
-            Button("Yes", role: .destructive, action: viewModel.confirm)
-            Button("Cancel", role: .cancel) {}
+            Button(L10n.Generics.yes, role: .destructive, action: viewModel.confirm)
+            Button(L10n.Generics.cancel, role: .cancel) {}
         }
         .sheet(isPresented: $viewModel.showInviteFriend) {
             InviteFriendsView(action: .competitionInvite(viewModel.competition))
@@ -143,6 +128,7 @@ struct CompetitionView_Previews: PreviewProvider {
         ]
         let participants = [evan, gabby]
         competitionsManager.competitions = .just([competition])
+        competitionsManager.competitionPublisherForReturnValue = .just(competition)
         competitionsManager.standingsPublisherForReturnValue = .just(standings)
         competitionsManager.participantsForReturnValue = .just(participants)
     }

@@ -10,27 +10,27 @@
 ## Generate constants for your localized strings.
 ##   Be sure that SwiftGen only parses ONE locale (typically Base.lproj, or en.lproj, or whichever your development region is); otherwise it will generate the same keys multiple times.
 ##   SwiftGen will parse all `.strings` files found in that folder.
-# strings:
-#   inputs:
-#     - Resources/Base.lproj
-#   outputs:
-#     - templateName: structured-swift5
-#       output: Strings+Generated.swift
+strings:
+  inputs:
+    - "Friendly Competitions/Resources/Strings/en.lproj"
+  outputs:
+    - templateName: structured-swift5
+      output: "Friendly Competitions/SwiftGen/Strings+Generated.swift"
 
 
 ## Generate constants for your Assets Catalogs, including constants for images, colors, ARKit resources, etc.
 ##   This example also shows how to provide additional parameters to your template to customize the output.
 ##   - Especially the `forceProvidesNamespaces: true` param forces to create sub-namespace for each folder/group used in your Asset Catalogs, even the ones without "Provides Namespace". Without this param, SwiftGen only generates sub-namespaces for folders/groups which have the "Provides Namespace" box checked in the Inspector pane.
 ##   - To know which params are supported for a template, use `swiftgen template doc xcassets swift5` to open the template documentation on GitHub.
- xcassets:
-   inputs:
-     - "Friendly Competitions/Images.xcassets"
-     - "Friendly Competitions/Colors.xcassets"
-   outputs:
-     - templateName: swift5
-       params:
-         forceProvidesNamespaces: true
-       output: "Friendly Competitions/SwiftGen/XCAssets+Generated.swift"
+xcassets:
+  inputs:
+    - "Friendly Competitions/Resources/Assets/Images.xcassets"
+    - "Friendly Competitions/Resources/Assets/Colors.xcassets"
+  outputs:
+    - templateName: swift5
+      params:
+        forceProvidesNamespaces: true
+      output: "Friendly Competitions/SwiftGen/XCAssets+Generated.swift"
 
 
 ## Generate constants for your storyboards and XIBs.

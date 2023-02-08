@@ -24,7 +24,7 @@ struct NewCompetitionView: View {
             friends
 
             Section {
-                Button("Create", action: viewModel.create)
+                Button(L10n.NewCompetition.create, action: viewModel.create)
                     .disabled(viewModel.createDisabled)
                     .frame(maxWidth: .infinity)
             } footer: {
@@ -33,7 +33,7 @@ struct NewCompetitionView: View {
                 }
             }
         }
-        .navigationTitle("New Competition")
+        .navigationTitle(L10n.NewCompetition.titile)
         .embeddedInNavigationView()
         .sheet(isPresented: $presentAddFriends) { InviteFriendsView(action: .addFriend) }
         .registerScreenView(name: "New Competition")
@@ -42,7 +42,7 @@ struct NewCompetitionView: View {
     }
 
     private var friends: some View {
-        Section("Invite friends") {
+        Section {
             ForEach($viewModel.friendRows) { $friend in
                 HStack {
                     Text(friend.name)
@@ -57,10 +57,12 @@ struct NewCompetitionView: View {
             
             if viewModel.friendRows.isEmpty {
                 HStack {
-                    Text("Nothing here, yet!")
-                    Button("Add friends.", toggling: $presentAddFriends)
+                    Text(L10n.NewCompetition.Friends.nothingHere)
+                    Button(L10n.NewCompetition.Friends.addFriends, toggling: $presentAddFriends)
                 }
             }
+        } header: {
+            Text(L10n.NewCompetition.Friends.title)
         }
     }
 }

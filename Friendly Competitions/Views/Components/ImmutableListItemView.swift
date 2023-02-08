@@ -25,9 +25,9 @@ struct ImmutableListItemView: View {
         var description: String {
             switch self {
             case .name:
-                return "Name"
+                return L10n.ListItem.Name.description
             case .email:
-                return "Email"
+                return L10n.ListItem.Email.description
             case let .date(description):
                 return description
             case let .other(_, description):

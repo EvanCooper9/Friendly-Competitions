@@ -2,7 +2,6 @@ import Combine
 import CombineExt
 import ECKit
 import FirebaseFirestore
-import FirebaseFirestoreCombineSwift
 
 extension Future where Output == QuerySnapshot {
     func decoded<T: Decodable>(asArrayOf type: T.Type) -> AnyPublisher<[T], Failure> {

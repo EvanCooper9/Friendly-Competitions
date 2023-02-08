@@ -7,18 +7,18 @@ enum Permission: String, CaseIterable, Identifiable {
     var title: String {
         switch self {
         case .health:
-            return "Health"
+            return L10n.Permission.Health.title
         case .notifications:
-            return "Notifications"
+            return L10n.Permission.Notifications.titile
         }
     }
 
     var description: String {
         switch self {
         case .health:
-            return "So we can count score"
+            return L10n.Permission.Health.description
         case .notifications:
-            return "So you can stay up to date"
+            return L10n.Permission.Notifications.desciption
         }
     }
 

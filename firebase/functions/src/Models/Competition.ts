@@ -119,7 +119,8 @@ class Competition {
         const resultsObj = {
             id: end, 
             start: moment(this.start).format(dateFormat), 
-            end: end
+            end: end,
+            participants: this.participants
         };
         batch.set(resultsRef, resultsObj);
 

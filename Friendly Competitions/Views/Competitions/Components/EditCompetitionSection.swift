@@ -45,14 +45,10 @@ struct EditCompetitionSection: View {
     }
 
     private var detailsFooterTexts: [String] {
-        var detailsTexts = [String]()
-        if repeats {
-            detailsTexts.append("This competition will restart the next day after it ends.")
+        .build {
+            if repeats { L10n.Competition.Edit.Repeats.disclaimer }
+            if isPublic { L10n.Competition.Edit.Public.disclaimer }
         }
-        if isPublic {
-            detailsTexts.append("Heads up! Anyone can join public competitions from the explore page.")
-        }
-        return detailsTexts
     }
     
     // MARK: - Lifecycle
@@ -81,39 +77,39 @@ struct EditCompetitionSection: View {
     
     var body: some View {
         Section {
-            TextField("Name", text: $name)
+            TextField(L10n.Competition.Edit.name, text: $name)
             
             DatePicker(
-                "Starts",
+                L10n.Competition.Edit.starts,
                 selection: $start,
                 in: PartialRangeFrom(min(start, Date())),
                 displayedComponents: [.date]
             )
             DatePicker(
-                "Ends",
+                L10n.Competition.Edit.ends,
                 selection: $end,
                 in: PartialRangeFrom(start.addingTimeInterval(1.days)),
                 displayedComponents: [.date]
             )
 
-            EnumPicker("ScoringModel", selection: $underlyingScoringModel)
+            EnumPicker(L10n.Competition.Edit.scoringModel, selection: $underlyingScoringModel)
 
             if underlyingScoringModel == .workout {
-                EnumPicker("Workout type", selection: $underlyingWorkoutType, allowsNoSelection: true)
+                EnumPicker(L10n.Competition.Edit.workoutType, selection: $underlyingWorkoutType, allowsNoSelection: true)
 
                 if let underlyingWorkoutType {
                     MultiPicker(
-                        title: "Workout metrics",
+                        title: L10n.Competition.Edit.workoutMetrics,
                         selection: $underlyingWorkoutMetrics,
                         options: underlyingWorkoutType.metrics
                     )
                 }
             }
 
-            Toggle("Repeats", isOn: $repeats)
-            Toggle("Public", isOn: $isPublic)
+            Toggle(L10n.Competition.Edit.repeats, isOn: $repeats)
+            Toggle(L10n.Competition.Edit.public, isOn: $isPublic)
         } header: {
-            Text("Details")
+            Text(L10n.Competition.Edit.title)
         } footer: {
             if detailsFooterTexts.isNotEmpty {
                 VStack(alignment: .leading, spacing: 10) {

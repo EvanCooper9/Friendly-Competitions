@@ -15,8 +15,10 @@ struct IDPill: View {
     }
 }
 
+#if DEBUG
 struct IDPill_Previews: PreviewProvider {
     static var previews: some View {
         IDPill(id: User.evan.hashId)
     }
 }
+#endif

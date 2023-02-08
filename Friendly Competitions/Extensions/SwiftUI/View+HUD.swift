@@ -117,6 +117,7 @@ extension View {
     }
 }
 
+#if DEBUG
 struct HUD_Previews: PreviewProvider {
     
     private struct Container: View {
@@ -150,3 +151,4 @@ struct HUD_Previews: PreviewProvider {
         Container()
     }
 }
+#endif

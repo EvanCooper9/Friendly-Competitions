@@ -32,6 +32,7 @@ final class HomeViewModelTests: XCTestCase {
         appState.deepLink = .never()
         competitionsManager.competitions = .never()
         competitionsManager.invitedCompetitions = .never()
+        competitionsManager.hasPremiumResults = .never()
         friendsManager.friends = .never()
         friendsManager.friendRequests = .never()
         friendsManager.friendActivitySummaries = .never()

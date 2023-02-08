@@ -2,7 +2,7 @@ import SwiftUI
 import SwiftUIX
 
 struct HomeView: View {
-    
+        
     @StateObject private var viewModel = HomeViewModel()
             
     @State private var presentAbout = false
@@ -10,7 +10,6 @@ struct HomeView: View {
     @State private var presentPermissions = false
     @State private var presentNewCompetition = false
     @State private var presentSearchFriendsSheet = false
-    @AppStorage("competitionsFiltered") var competitionsFiltered = false
     
     var body: some View {
         NavigationStack(path: $viewModel.navigationDestinations) {
@@ -66,10 +65,10 @@ struct HomeView: View {
         Section {
             ActivitySummaryInfoView(activitySummary: viewModel.activitySummary)
         } header: {
-            Text("Activity").font(.title3)
+            Text(L10n.Home.Section.Activity.title).font(.title3)
         } footer: {
             if viewModel.activitySummary == nil {
-                Text("Have you worn your watch today? We can't find any activity summaries yet. If this is a mistake, please make sure that permissions are enabled in the Health app.")
+                Text(L10n.Home.Section.Activity.missing)
             }
         }
     }
@@ -77,25 +76,15 @@ struct HomeView: View {
     private var competitions: some View {
         Section {
             ForEach(viewModel.competitions + viewModel.invitedCompetitions) { competition in
-                if competitionsFiltered ? competition.isActive : true {
-                    NavigationLink(value: NavigationDestination.competition(competition)) {
-                        CompetitionDetails(competition: competition, showParticipantCount: false, isFeatured: false)
-                    }
+                NavigationLink(value: NavigationDestination.competition(competition)) {
+                    CompetitionDetails(competition: competition, showParticipantCount: false, isFeatured: false)
                 }
             }
         } header: {
             HStack {
-                let text = competitionsFiltered ? "Active competitions" : "Competitions"
-                Text(text).font(.title3)
+                Text(L10n.Home.Section.Competitions.title)
+                    .font(.title3)
                 Spacer()
-                Button {
-                    withAnimation { competitionsFiltered.toggle() }
-                } label: {
-                    Image(systemName: "line.3.horizontal.decrease.circle\(competitionsFiltered ? ".fill" : "")")
-                        .font(.title2)
-                }
-                .disabled(viewModel.competitions.isEmpty)
-                
                 Button(toggling: $presentNewCompetition) {
                     Image(systemName: .plusCircle)
                         .font(.title2)
@@ -103,7 +92,7 @@ struct HomeView: View {
             }
         } footer: {
             if viewModel.competitions.isEmpty && viewModel.invitedCompetitions.isEmpty {
-                Text("Start a competition against your friends!")
+                Text(L10n.Home.Section.Competitions.createPrompt)
             }
         }
     }
@@ -118,7 +107,7 @@ struct HomeView: View {
                         Text(row.user.name)
                         Spacer()
                         if row.isInvitation {
-                            Text("Invited")
+                            Text(L10n.Home.Section.Friends.invited)
                                 .foregroundColor(.secondaryLabel)
                         }
                     }
@@ -126,7 +115,7 @@ struct HomeView: View {
             }
         } header: {
             HStack {
-                Text("Friends")
+                Text(L10n.Home.Section.Friends.title)
                     .font(.title3)
                 Spacer()
                 Button(toggling: $presentSearchFriendsSheet) {
@@ -136,7 +125,7 @@ struct HomeView: View {
             }
         } footer: {
             if viewModel.friendRows.isEmpty {
-                Text("Add friends to get started!")
+                Text(L10n.Home.Section.Friends.addPrompt)
             }
         }
     }
