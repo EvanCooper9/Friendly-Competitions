@@ -23,10 +23,10 @@ async function updateWorkoutScores(userID: string, before: DocumentSnapshot, aft
         if (!competition.isActive()) return;
 
         await firestore.runTransaction(async transaction => {
-            const standingDoc = firestore.doc(`competitions/${competition.id}/standings/${userID}`);
-            const standingRef = await standingDoc.get();        
+            const standingRef = firestore.doc(`competitions/${competition.id}/standings/${userID}`);
+            const standingDoc = await transaction.get(standingRef);
             let standing = Standing.new(0, userID);
-            if (standingRef.exists) standing = new Standing(standingRef);
+            if (standingDoc.exists) standing = new Standing(standingDoc);
 
             const pointsBreakdown = standing.pointsBreakdown ?? {};
             if (Object.keys(pointsBreakdown).length == 0) {
@@ -48,8 +48,7 @@ async function updateWorkoutScores(userID: string, before: DocumentSnapshot, aft
             standing.pointsBreakdown = pointsBreakdown;
             standing.points = 0;
             Object.keys(pointsBreakdown).forEach(key => standing.points += pointsBreakdown[key]);
-
-            await standingDoc.set(prepareForFirestore(standing));
+            await transaction.set(standingRef, prepareForFirestore(standing));
         });
 
         await competition.updateStandingRanks();
