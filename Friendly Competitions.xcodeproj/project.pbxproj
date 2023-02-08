@@ -89,6 +89,8 @@
 		C1F9D7CD26FF871A00B25651 /* NotificationManaging.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1F9D7CC26FF871A00B25651 /* NotificationManaging.swift */; };
 		ED039768295F5458003D4D80 /* CompetitionResultsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED039766295F5458003D4D80 /* CompetitionResultsView.swift */; };
 		ED039769295F5458003D4D80 /* CompetitionResultsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED039767295F5458003D4D80 /* CompetitionResultsViewModel.swift */; };
+		ED0BF32A29940A9E004ADAD7 /* Device.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED0BF32929940A9E004ADAD7 /* Device.swift */; };
+		ED0BF32C29940CBF004ADAD7 /* AboutViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED0BF32B29940CBF004ADAD7 /* AboutViewModel.swift */; };
 		ED130764295FFA5C00E0AC87 /* CompetitionResultsDataPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED130763295FFA5C00E0AC87 /* CompetitionResultsDataPoint.swift */; };
 		ED19724C283803850018FDFF /* WorkoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED19724B283803850018FDFF /* WorkoutTests.swift */; };
 		ED19724E283803F60018FDFF /* WorkoutTypeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED19724D283803F60018FDFF /* WorkoutTypeTests.swift */; };
@@ -312,6 +314,8 @@
 		C1F9D7CC26FF871A00B25651 /* NotificationManaging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManaging.swift; sourceTree = "<group>"; };
 		ED039766295F5458003D4D80 /* CompetitionResultsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionResultsView.swift; sourceTree = "<group>"; };
 		ED039767295F5458003D4D80 /* CompetitionResultsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionResultsViewModel.swift; sourceTree = "<group>"; };
+		ED0BF32929940A9E004ADAD7 /* Device.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Device.swift; sourceTree = "<group>"; };
+		ED0BF32B29940CBF004ADAD7 /* AboutViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutViewModel.swift; sourceTree = "<group>"; };
 		ED130763295FFA5C00E0AC87 /* CompetitionResultsDataPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionResultsDataPoint.swift; sourceTree = "<group>"; };
 		ED19724B283803850018FDFF /* WorkoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutTests.swift; sourceTree = "<group>"; };
 		ED19724D283803F60018FDFF /* WorkoutTypeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutTypeTests.swift; sourceTree = "<group>"; };
@@ -500,6 +504,7 @@
 			isa = PBXGroup;
 			children = (
 				C123C9DD27A8AF5100375F73 /* About.swift */,
+				ED0BF32B29940CBF004ADAD7 /* AboutViewModel.swift */,
 			);
 			path = About;
 			sourceTree = "<group>";
@@ -1016,6 +1021,7 @@
 				EDA35297283713C200390585 /* Sharable.swift */,
 				EDB749B62875BC3F00021014 /* StringKeyEncoded.swift */,
 				EDA035B729173F140091E7A6 /* ArrayBuilder.swift */,
+				ED0BF32929940A9E004ADAD7 /* Device.swift */,
 			);
 			path = Utility;
 			sourceTree = "<group>";
@@ -1288,7 +1294,8 @@
 				C1691DC026D55FCF006FFA30 /* Frameworks */,
 				C1691DC126D55FCF006FFA30 /* Resources */,
 				C111939126E7B89D003B7EB3 /* Embed Watch Content */,
-				C1DB3B5C27AA0CF40074BED1 /* Firebase */,
+				C1DB3B5C27AA0CF40074BED1 /* Copy GoogleService-Info.plist */,
+				EDA0E0C12994203400868AF1 /* Crashlytics */,
 				EDC06FC129903F4E00923730 /* Firebase XCFrameworks Copy Resource Bundles */,
 			);
 			buildRules = (
@@ -1399,7 +1406,7 @@
 			shellPath = /bin/sh;
 			shellScript = "if [ \"${ENABLE_PREVIEWS}\" = \"YES\" ]; then\n  echo \"Previews enabled, quitting to prevent 'preview paused'.\"\n  exit 0\nfi\n\nif [ $(arch) = \"arm64\" ]; then\n    /opt/homebrew/bin/swiftgen\nelse\n    swiftgen\nfi\n";
 		};
-		C1DB3B5C27AA0CF40074BED1 /* Firebase */ = {
+		C1DB3B5C27AA0CF40074BED1 /* Copy GoogleService-Info.plist */ = {
 			isa = PBXShellScriptBuildPhase;
 			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
@@ -1409,14 +1416,14 @@
 			);
 			inputPaths = (
 			);
-			name = Firebase;
+			name = "Copy GoogleService-Info.plist";
 			outputFileListPaths = (
 			);
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "rsync -t -r \"${PROJECT_DIR}/Friendly Competitions/Firebase/${CONFIGURATION}/GoogleService-Info.plist\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/GoogleService-Info.plist\" \n\nif [ $? -ne 0 ]; then  \n  echo \"Error copying GoogleService-Info.plist into app\"\nelse\n  echo \"GoogleService-Info.plist copied successfully\"\nfi\n\nif [ \"${ENABLE_PREVIEWS}\" = \"YES\" ]; then\n  echo \"Previews enabled, quitting to prevent 'preview paused'.\"\n  exit 0\nfi\n\n\"${BUILD_DIR%Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n\nexit 0\n";
+			shellScript = "rsync -t -r \"${PROJECT_DIR}/Friendly Competitions/Firebase/${CONFIGURATION}/GoogleService-Info.plist\" \"${BUILT_PRODUCTS_DIR}/${PRODUCT_NAME}.app/GoogleService-Info.plist\" \n\nif [ $? -ne 0 ]; then  \n  echo \"Error copying GoogleService-Info.plist into app\"\nelse\n  echo \"GoogleService-Info.plist copied successfully\"\nfi\n\nif [ \"${ENABLE_PREVIEWS}\" = \"YES\" ]; then\n  echo \"Previews enabled, quitting to prevent 'preview paused'.\"\n  exit 0\nfi\n\nexit 0\n";
 		};
 		ED3ED8F4284F936C00B5100F /* Sourcery */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1436,6 +1443,26 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "if [ \"${ENABLE_PREVIEWS}\" = \"YES\" ]; then\n  echo \"Previews enabled, quitting to prevent 'preview paused'.\"\n  exit 0\nfi\n\nif [ $(arch) = \"arm64\" ]; then\n    /opt/homebrew/bin/sourcery\nelse\n    sourcery\nfi\n";
+		};
+		EDA0E0C12994203400868AF1 /* Crashlytics */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+				"${DWARF_DSYM_FOLDER_PATH}/${DWARF_DSYM_FILE_NAME}/Contents/Resources/DWARF/${TARGET_NAME}\n",
+				"$(SRCROOT)/$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
+			);
+			name = Crashlytics;
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n\"${BUILD_DIR%Build/*}/SourcePackages/checkouts/firebase-ios-sdk-xcframeworks/Sources/FirebaseCrashlytics/run\"\n";
 		};
 		EDC06FC129903F4E00923730 /* Firebase XCFrameworks Copy Resource Bundles */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -1544,6 +1571,7 @@
 				ED901B452802426800FE619E /* HomeViewModel.swift in Sources */,
 				C15522A026E793DA00FE0DA7 /* ActivitySummary+Mock.swift in Sources */,
 				ED901B4A2802463900FE619E /* ProfileViewModel.swift in Sources */,
+				ED0BF32C29940CBF004ADAD7 /* AboutViewModel.swift in Sources */,
 				C10A267927E9528700FD1C2C /* ColorScheme+Extensions.swift in Sources */,
 				EDB4E42829903818009C12D3 /* PhoneAuthProvider+Combine.swift in Sources */,
 				C132336727BEBB1600196D81 /* UIScreen+Extensions.swift in Sources */,
@@ -1618,6 +1646,7 @@
 				EDB4E42329903818009C12D3 /* WriteBatch+Combine.swift in Sources */,
 				EDB4E42729903818009C12D3 /* GameCenterAuthProvider+Combine.swift in Sources */,
 				ED8D05F9295F5DB8002B3B3A /* CompetitionResultsDateRange.swift in Sources */,
+				ED0BF32A29940A9E004ADAD7 /* Device.swift in Sources */,
 				C132336D27BF0C0F00196D81 /* View+CornerRadius.swift in Sources */,
 				EDB4E42D29903818009C12D3 /* Auth+Combine.swift in Sources */,
 				ED8D05F7295F5DA1002B3B3A /* CompetitionResultsDateRangeSelector.swift in Sources */,

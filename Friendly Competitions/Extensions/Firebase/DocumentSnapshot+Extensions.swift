@@ -16,7 +16,12 @@ public extension DocumentSnapshot {
             let data = try JSONSerialization.data(withJSONObject: documentData, options: [])
             return try JSONDecoder.shared.decode(T.self, from: data)
         } catch {
-            Crashlytics.crashlytics().record(error: error)
+            let nsError = (error as NSError).addingItemsToUserInfo([
+                "documentPath": reference.path,
+                "type": String(describing: type),
+                "data": documentData
+            ])
+            Crashlytics.crashlytics().record(error: nsError)
             throw error
         }
     }
@@ -25,5 +30,15 @@ public extension DocumentSnapshot {
 public extension Array where Element: DocumentSnapshot {
     func decoded<T: Decodable>(asArrayOf type: T.Type) -> [T] {
         compactMap { try? $0.decoded(as: T.self) }
+    }
+}
+
+extension NSError {
+    func addingItemsToUserInfo(_ newUserInfo: [String: Any]) -> NSError {
+        var currentUserInfo = userInfo
+        newUserInfo.forEach { (key, value) in
+            currentUserInfo[key] = value
+        }
+        return NSError(domain: domain, code: code, userInfo: currentUserInfo)
     }
 }
