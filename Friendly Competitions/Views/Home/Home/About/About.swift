@@ -4,6 +4,9 @@ import SwiftUI
 import SwiftUIX
 
 struct About: View {
+    
+    @StateObject private var viewModel = AboutViewModel()
+    
     var body: some View {
         List {
             Section {
@@ -18,10 +21,10 @@ struct About: View {
                 Link(destination: .privacyPolicy) {
                     Label(L10n.About.App.privacyPolicy, systemImage: .handRaisedFill)
                 }
-                Link(destination: .featureRequest) {
+                Link(destination: viewModel.featureRequestURL) {
                     Label(L10n.About.App.featureRequest, systemImage: .lightbulbFill)
                 }
-                Link(destination: .bugReport) {
+                Link(destination: viewModel.bugReportURL) {
                     Label(L10n.About.App.reportIssue, systemImage: "ladybug.fill")
                 }
             } header: {
