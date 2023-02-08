@@ -1,5 +1,4 @@
 import { DocumentSnapshot } from "firebase-admin/firestore";
-import moment = require("moment");
 import { Competition } from "../../Models/Competition";
 import { Standing } from "../../Models/Standing";
 import { Workout } from "../../Models/Workout";
@@ -35,14 +34,12 @@ async function updateWorkoutScores(userID: string, before: DocumentSnapshot, aft
                 const workouts = await competition.workouts(userID);
                 workouts.forEach(workout => {
                     const points = workout.pointsForScoringModel(competition.scoringModel);
-                    const id = moment(workout.date).format("YYYY-MM-DD");
-                    pointsBreakdown[id] = points;
+                    pointsBreakdown[workout.id] = points;
                 });
             } else {
                 if (after.exists) { // created or updated
                     const workout = new Workout(after);
-                    const id = moment(workout.date).format("YYYY-MM-DD");
-                    pointsBreakdown[id] = workout.pointsForScoringModel(competition.scoringModel);
+                    pointsBreakdown[workout.id] = workout.pointsForScoringModel(competition.scoringModel);
                 } else {
                     pointsBreakdown[before.id] = 0;
                 }

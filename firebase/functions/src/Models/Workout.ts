@@ -8,19 +8,23 @@ import { WorkoutType } from "./WorkoutType";
  * Workout
  */
 class Workout {
+    id: string;
     type: WorkoutType;
     points: EnumDictionary<WorkoutMetric, number>;
     date: Date;
+    userID: string;
 
     /**
      * Builds a workout record from a firestore document
      * @param {FirebaseFirestore.DocumentSnapshot} document The firestore document to build the workout record from
      */
     constructor(document: FirebaseFirestore.DocumentSnapshot) {
+        this.id = document.ref.id;
         this.type = document.get("type") as WorkoutType;
         this.points = document.get("points");
         const dateString: string = document.get("date");
         this.date = new Date(dateString);
+        this.userID = document.ref.parent.parent?.id ?? "";
     }
 
     /**

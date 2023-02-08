@@ -1,5 +1,4 @@
 import { DocumentSnapshot } from "firebase-admin/firestore";
-import moment = require("moment");
 import { Competition } from "../../Models/Competition";
 import { StringKeyDictionary } from "../../Models/Helpers/EnumDictionary";
 import { RawScoringModel, ScoringModel } from "../../Models/ScoringModel";
@@ -9,6 +8,7 @@ import { prepareForFirestore } from "../../Utilities/prepareForFirestore";
 import { updateCompetitionRanks } from "../competitions/updateCompetitionRanks";
 
 interface Scoring {
+    id: string;
     date: Date;
     pointsForScoringModel(scoringModel: ScoringModel): number;
 }
@@ -59,8 +59,7 @@ async function updateAllCompetitionStandings(competition: Competition): Promise<
         scoringData.forEach(scoringDatum => {
             const points = scoringDatum.pointsForScoringModel(competition.scoringModel);
             totalPoints += points;
-            const id = moment(scoringDatum.date).format("YYYY-MM-DD");
-            pointsBreakdown[id] = points;
+            pointsBreakdown[scoringDatum.id] = points;
         });
         const standing = Standing.new(totalPoints, participantID);
         standing.pointsBreakdown = pointsBreakdown;

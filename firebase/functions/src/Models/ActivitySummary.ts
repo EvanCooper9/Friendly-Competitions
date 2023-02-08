@@ -5,6 +5,7 @@ import { RawScoringModel, ScoringModel } from "./ScoringModel";
  * Activity summary
  */
 class ActivitySummary {
+    id: string;
     activeEnergyBurned: number;
     activeEnergyBurnedGoal: number;
     appleExerciseTime: number;
@@ -12,12 +13,14 @@ class ActivitySummary {
     appleStandHours: number;
     appleStandHoursGoal: number;
     date: Date;
+    userID: string;
 
     /**
      * Builds an activity summary from a firestore document
      * @param {FirebaseFirestore.DocumentSnapshot} document The firestore document to build the activity summary from
      */
     constructor(document: FirebaseFirestore.DocumentSnapshot) {
+        this.id = document.ref.id;
         this.activeEnergyBurned = document.get("activeEnergyBurned");
         this.activeEnergyBurnedGoal = document.get("activeEnergyBurnedGoal");
         this.appleExerciseTime = document.get("appleExerciseTime");
@@ -27,6 +30,8 @@ class ActivitySummary {
 
         const dateString: string = document.get("date");
         this.date = new Date(dateString);
+
+        this.userID = document.get("userID");
     }
 
     /**
