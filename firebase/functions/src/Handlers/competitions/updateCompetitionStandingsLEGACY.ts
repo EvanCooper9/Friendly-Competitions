@@ -41,7 +41,14 @@ async function updateStandings(competition: Competition): Promise<void> {
     const standings = await Promise.all(competition.participants.map(async userId => {
         let totalPoints = 0;
         switch (competition.scoringModel.type) {
-        case RawScoringModel.percentOfGoals, RawScoringModel.rawNumbers: {
+        case RawScoringModel.percentOfGoals: {
+            const activitySummaries = await competition.activitySummaries(userId);
+            activitySummaries.forEach(activitySummary => {
+                totalPoints += activitySummary.pointsForScoringModel(competition.scoringModel);
+            });
+            break;
+        }
+        case RawScoringModel.rawNumbers: {
             const activitySummaries = await competition.activitySummaries(userId);
             activitySummaries.forEach(activitySummary => {
                 totalPoints += activitySummary.pointsForScoringModel(competition.scoringModel);

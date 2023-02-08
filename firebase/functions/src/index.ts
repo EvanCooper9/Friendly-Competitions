@@ -60,7 +60,7 @@ exports.updateCompetitionStandings = functions.https.onCall(async (data, context
     const competitionID = data.competitionID;
     if (competitionID == undefined) {
         const userID = context.auth?.uid;
-        if (userID == null) return Promise.resolve();
+        if (userID == null) return;
         await updateUserCompetitionStandingsLEGACY(userID);
     } else {
         await updateCompetitionStandingsLEGACY(competitionID);
