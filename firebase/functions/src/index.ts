@@ -123,9 +123,7 @@ exports.updateActivitySummaryScores = functions.firestore
         await updateActivitySummaryScores(userID, before, after);
     });
 
-exports.updateWorkoutScores = functions
-    .runWith({ timeoutSeconds: 540 })
-    .firestore
+exports.updateWorkoutScores = functions.firestore
     .document("users/{userID}/workouts/{workoutID}")
     .onWrite(async (snapshot, context) => {
         const userID = context.params.userID;
