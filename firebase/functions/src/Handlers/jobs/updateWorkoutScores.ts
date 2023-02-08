@@ -36,9 +36,8 @@ async function updateWorkoutScores(userID: string, before: DocumentSnapshot, aft
                 const workouts = await competition.workouts(userID);
                 console.log(workouts);
                 workouts.forEach(workout => {
-                    const id = moment(workout.date).format(dateFormat);
                     const points = workout.pointsForScoringModel(competition.scoringModel);
-                    pointsBreakdown[id] = points;
+                    pointsBreakdown[after.id] = points;
                 });
             } else {
                 if (after.exists) { // created or updated
