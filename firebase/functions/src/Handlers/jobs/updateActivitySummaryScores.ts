@@ -1,5 +1,4 @@
 import { DocumentSnapshot } from "firebase-admin/firestore";
-import moment = require("moment");
 import { ActivitySummary } from "../../Models/ActivitySummary";
 import { Competition } from "../../Models/Competition";
 import { Standing } from "../../Models/Standing";

@@ -1,12 +1,9 @@
 import { DocumentSnapshot } from "firebase-admin/firestore";
-import moment = require("moment");
 import { Competition } from "../../Models/Competition";
 import { Standing } from "../../Models/Standing";
 import { Workout } from "../../Models/Workout";
 import { getFirestore } from "../../Utilities/firstore";
 import { prepareForFirestore } from "../../Utilities/prepareForFirestore";
-
-const dateFormat = "YYYY-MM-DD";
 
 /**
  * Updates all competition standings for the workout that has changed
