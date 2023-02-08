@@ -20,7 +20,7 @@ async function cleanupWorkouts(): Promise<void> {
             return matchingCompetition == null || matchingCompetition == undefined; 
         })
         .forEach(workout => {
-            const ref = firestore.doc(`users/${workout.userID}/activitySummaries/${workout.id}`);
+            const ref = firestore.doc(`users/${workout.userID}/workouts/${workout.id}`);
             batch.delete(ref);
         });
         
