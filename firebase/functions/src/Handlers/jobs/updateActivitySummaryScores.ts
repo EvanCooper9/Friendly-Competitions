@@ -1,5 +1,4 @@
 import { DocumentSnapshot } from "firebase-admin/firestore";
-import moment = require("moment");
 import { ActivitySummary } from "../../Models/ActivitySummary";
 import { Competition } from "../../Models/Competition";
 import { Standing } from "../../Models/Standing";
@@ -17,6 +16,7 @@ async function updateActivitySummaryScores(userID: string, before: DocumentSnaps
 
     const competitions = await firestore.collection("competitions")
         .where("participants", "array-contains", userID)
+        .where("scoringModel.type", "in", [0, 1])
         .get()
         .then(query => query.docs.map(doc => new Competition(doc)));
 
@@ -36,14 +36,13 @@ async function updateActivitySummaryScores(userID: string, before: DocumentSnaps
             if (Object.keys(pointsBreakdown).length == 0) {
                 const activitySummaries = await competition.activitySummaries(userID);
                 activitySummaries.forEach(activitySummary => {
-                    const id = moment(activitySummary.date).format("YYYY-MM-DD");
                     const points = activitySummary.pointsForScoringModel(competition.scoringModel);
-                    pointsBreakdown[id] = points;
+                    pointsBreakdown[activitySummary.id] = points;
                 });
             } else {
                 if (after.exists) { // created or updated
                     const activitySummary = new ActivitySummary(after);
-                    pointsBreakdown[after.id] = activitySummary.pointsForScoringModel(competition.scoringModel);
+                    pointsBreakdown[activitySummary.id] = activitySummary.pointsForScoringModel(competition.scoringModel);
                 } else { // deleted
                     pointsBreakdown[before.id] = 0;
                 }
