@@ -41,8 +41,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/hmlongco/Factory",
       "state" : {
-        "revision" : "39ff6a675cd0272d833d184d35add0f8fddd63de",
-        "version" : "1.3.7"
+        "revision" : "b92b5630e83d9c23fdea3356c66c4355cf67ffb3",
+        "version" : "1.3.6"
       }
     },
     {
@@ -59,8 +59,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/akaffenberger/firebase-ios-sdk-xcframeworks",
       "state" : {
-        "revision" : "a2315cad1a1309d9d3d3497e3cea6e2559b49852",
-        "version" : "10.5.0"
+        "revision" : "c15bd2b0bc6adb2187fa8115ba873319e73651ff",
+        "version" : "10.3.0"
       }
     },
     {
@@ -77,8 +77,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/RevenueCat/purchases-ios",
       "state" : {
-        "revision" : "511a20c40756127a72f63c4d87e4ca510471c5c6",
-        "version" : "4.17.6"
+        "revision" : "7280a0a850d4ccbc7a21270f767e509fb9c35fdb",
+        "version" : "4.17.4"
       }
     },
     {

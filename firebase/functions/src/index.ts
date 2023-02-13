@@ -17,6 +17,7 @@ import { updateActivitySummaryScores } from "./Handlers/jobs/updateActivitySumma
 import { updateWorkoutScores } from "./Handlers/jobs/updateWorkoutScores";
 import { handleCompetitionUpdate } from "./Handlers/jobs/updateCompetitionStandings";
 import { cleanupWorkouts } from "./Handlers/jobs/cleanupWorkouts";
+import { calculateCompetitionScores } from "./Handlers/jobs/calculateCompetitionScores";
 
 admin.initializeApp();
 
@@ -164,3 +165,7 @@ exports.dev_sendCompetitionCompleteNotification = functions.https.onCall(async (
     }
     await completeCompetitionsForDate(data.date);
 });
+
+exports.calculateCompetitionScores = functions.pubsub.schedule("every 15 minutes")
+    .timeZone("America/Toronto")
+    .onRun(async () => await calculateCompetitionScores());

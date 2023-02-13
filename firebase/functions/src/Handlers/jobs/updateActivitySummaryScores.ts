@@ -1,6 +1,8 @@
 import { DocumentSnapshot } from "firebase-admin/firestore";
 import { ActivitySummary } from "../../Models/ActivitySummary";
 import { Competition } from "../../Models/Competition";
+import { StringKeyDictionary } from "../../Models/Helpers/EnumDictionary";
+import { RawScoringModel } from "../../Models/ScoringModel";
 import { Standing } from "../../Models/Standing";
 import { getFirestore } from "../../Utilities/firstore";
 import { prepareForFirestore } from "../../Utilities/prepareForFirestore";
@@ -53,6 +55,33 @@ async function updateActivitySummaryScores(userID: string, before: DocumentSnaps
         });
         
         await competition.updateStandingRanks();
+    }));
+}
+
+/**
+ * 
+ * @param {string} userID 
+ * @param {DocumentSnapshot} before 
+ * @param {DocumentSnapshot} after 
+ */
+async function updateActivitySummaryScoresNew(userID: string, before: DocumentSnapshot, after: DocumentSnapshot): Promise<void> {
+    const firestore = getFirestore();
+    const scoringModelTypes = [RawScoringModel.percentOfGoals, RawScoringModel.rawNumbers];
+    await Promise.all(scoringModelTypes.map(async scoringModelType => {
+        await firestore.runTransaction(async transaction => {
+            const ref = firestore.doc(`users/${userID}/scores/${RawScoringModel.toString(scoringModelType)}`);
+            const doc = await transaction.get(ref);
+            const points = doc.data() as StringKeyDictionary<string, number>;
+            
+            if (after.exists) {
+                const activitySummary = new ActivitySummary(after);
+                points[activitySummary.id] = activitySummary.pointsForScoringModel({type: scoringModelType});
+            } else {
+                points[before.id] = 0;
+            }
+            
+            transaction.update(ref, points);
+        });
     }));
 }
 

@@ -7,6 +7,19 @@ enum RawScoringModel {
     workout = 2
 }
 
+namespace RawScoringModel {
+    export function toString(scoringModel: RawScoringModel): string {
+        switch (scoringModel) {
+        case RawScoringModel.percentOfGoals:
+            return "percentOfGoals";
+        case RawScoringModel.rawNumbers:
+            return "rawNumbers";
+        case RawScoringModel.workout:
+            return "workout"
+        }
+    }
+}
+
 interface ScoringModel {
     type: RawScoringModel;
     workoutType?: WorkoutType;
