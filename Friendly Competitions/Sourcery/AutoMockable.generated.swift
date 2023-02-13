@@ -1281,6 +1281,28 @@ class SearchManagingMock: SearchManaging {
         }
     }
 
+    //MARK: - searchForUsers
+
+    var searchForUsersByIDsCallsCount = 0
+    var searchForUsersByIDsCalled: Bool {
+        return searchForUsersByIDsCallsCount > 0
+    }
+    var searchForUsersByIDsReceivedIds: [User.ID]?
+    var searchForUsersByIDsReceivedInvocations: [[User.ID]] = []
+    var searchForUsersByIDsReturnValue: AnyPublisher<[User], Error>!
+    var searchForUsersByIDsClosure: (([User.ID]) -> AnyPublisher<[User], Error>)?
+
+    func searchForUsers(byIDs ids: [User.ID]) -> AnyPublisher<[User], Error> {
+        searchForUsersByIDsCallsCount += 1
+        searchForUsersByIDsReceivedIds = ids
+        searchForUsersByIDsReceivedInvocations.append(ids)
+        if let searchForUsersByIDsClosure = searchForUsersByIDsClosure {
+            return searchForUsersByIDsClosure(ids)
+        } else {
+            return searchForUsersByIDsReturnValue
+        }
+    }
+
 }
 class StorageMock: Storage {
 

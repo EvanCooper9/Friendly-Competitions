@@ -86,5 +86,6 @@ async function updateActivitySummaryScoresNew(userID: string, before: DocumentSn
 }
 
 export {
-    updateActivitySummaryScores
+    updateActivitySummaryScores,
+    updateActivitySummaryScoresNew
 };

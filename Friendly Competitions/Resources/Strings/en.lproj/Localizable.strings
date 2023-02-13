@@ -69,6 +69,7 @@
 "Competition.Standings.title" = "Standings";
 "Competition.Standings.showMore" = "Show more";
 "Competition.Standings.empty" = "Nothing here, yet.";
+"Competition.Standings.delay" = "Standings may be delayed by up to 15 minutes";
 "Competition.Results.results" = "Results";
 
 "Competition.Action.AcceptInvite.buttonTitle" = "Accept invite";

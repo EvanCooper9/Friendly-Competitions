@@ -61,6 +61,7 @@ final class CompetitionViewModel: ObservableObject {
     
     @Injected(Container.api) private var api
     @Injected(Container.competitionsManager) private var competitionsManager
+    @Injected(Container.searchManager) private var searchManager
     @Injected(Container.userManager) private var userManager
 
     private let confirmActionSubject = PassthroughSubject<Void, Error>()
@@ -111,21 +112,14 @@ final class CompetitionViewModel: ObservableObject {
             .assign(to: &$actions)
         
         let fetchParticipants = PassthroughSubject<Void, Never>()
-        let participants = fetchParticipants
-            .prepend(())
-            .flatMapLatest(withUnretained: self) { strongSelf in
+        
+        let participants = $competition
+            .flatMapLatest(withUnretained: self) { strongSelf, competition in
                 strongSelf.competitionsManager
                     .participants(for: competition.id)
                     .catchErrorJustReturn([])
             }
-        
-        $competition
-            .map(\.participants)
             .removeDuplicates()
-            .dropFirst()
-            .mapToVoid()
-            .sink { fetchParticipants.send() }
-            .store(in: &cancellables)
         
         Publishers
             .CombineLatest(

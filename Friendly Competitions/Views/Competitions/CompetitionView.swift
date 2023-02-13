@@ -77,6 +77,8 @@ struct CompetitionView: View {
         } footer: {
             if viewModel.standings.isEmpty && !viewModel.loadingStandings {
                 Text(L10n.Competition.Standings.empty)
+            } else {
+                Text(L10n.Competition.Standings.delay)
             }
         }
     }
@@ -130,7 +132,8 @@ struct CompetitionView_Previews: PreviewProvider {
         competitionsManager.competitions = .just([competition])
         competitionsManager.competitionPublisherForReturnValue = .just(competition)
         competitionsManager.standingsPublisherForReturnValue = .just(standings)
-        competitionsManager.participantsForReturnValue = .just(participants)
+        
+        searchManager.searchForUsersByIDsReturnValue = .just(participants)
     }
 
     static var previews: some View {

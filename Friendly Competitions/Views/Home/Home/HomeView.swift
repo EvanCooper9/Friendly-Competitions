@@ -138,7 +138,6 @@ struct HomeView_Previews: PreviewProvider {
         activitySummaryManager.activitySummary = .just(.mock)
         
         competitionsManager.competitions = .just([.mock, .mockInvited, .mockOld, .mockPublic])
-        competitionsManager.participantsForReturnValue = .just([.evan])
         competitionsManager.standingsPublisherForReturnValue = .just([.mock(for: .evan)])
 
         friendsManager.friends = .just([.gabby])
@@ -150,6 +149,8 @@ struct HomeView_Previews: PreviewProvider {
             .health: .authorized,
             .notifications: .authorized
         ])
+        
+        searchManager.searchForUsersByIDsReturnValue = .just([.evan])
     }
     
     static var previews: some View {

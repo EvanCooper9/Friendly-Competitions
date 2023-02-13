@@ -58,11 +58,6 @@ struct CompetitionDetails: View {
 #if DEBUG
 struct CompetitionDetails_Previews: PreviewProvider {
 
-    private static func setupMocks() {
-        competitionsManager.competitions = .just([])
-        competitionsManager.participantsForReturnValue = .just([])
-    }
-
     static var previews: some View {
         List {
             CompetitionDetails(competition: .mockFuture, showParticipantCount: true, isFeatured: false)
@@ -70,7 +65,7 @@ struct CompetitionDetails_Previews: PreviewProvider {
             CompetitionDetails(competition: .mockOld, showParticipantCount: true, isFeatured: false)
         }
         .navigationTitle("Previews")
-        .setupMocks(setupMocks)
+        .setupMocks()
     }
 }
 #endif

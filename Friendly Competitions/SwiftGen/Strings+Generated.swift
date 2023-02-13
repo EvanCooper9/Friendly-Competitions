@@ -126,6 +126,8 @@ internal enum L10n {
       internal static let results = L10n.tr("Localizable", "Competition.Results.results", fallback: "Results")
     }
     internal enum Standings {
+      /// Standings may be delayed by up to 15 minutes
+      internal static let delay = L10n.tr("Localizable", "Competition.Standings.delay", fallback: "Standings may be delayed by up to 15 minutes")
       /// Nothing here, yet.
       internal static let empty = L10n.tr("Localizable", "Competition.Standings.empty", fallback: "Nothing here, yet.")
       /// Show more
