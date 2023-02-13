@@ -9,7 +9,7 @@ import { FriendRequestAction, handleFriendRequest } from "./Handlers/friends/han
 import { joinCompetition } from "./Handlers/competitions/joinCompetition";
 import { leaveCompetition } from "./Handlers/competitions/leaveCompetition";
 import { cleanupActivitySummaries } from "./Handlers/jobs/cleanupActivitySummaries";
-import { sendCompetitionCompleteNotifications } from "./Handlers/jobs/sendCompetitionCompleteNotifications";
+import { completeCompetitionsForDate, completeCompetitionsForYesterday } from "./Handlers/jobs/completeCompetitions";
 import { sendNewCompetitionInvites } from "./Handlers/competitions/sendNewCompetitionInvites";
 import { updateCompetitionRanks } from "./Handlers/competitions/updateCompetitionRanks";
 import { updateUserCompetitionStandingsLEGACY, updateCompetitionStandingsLEGACY } from "./Handlers/competitions/updateCompetitionStandingsLEGACY";
@@ -150,6 +150,17 @@ exports.cleanScoringData = functions.pubsub.schedule("every day 02:00")
         await cleanupWorkouts();
     });
 
-exports.sendCompetitionCompleteNotifications = functions.pubsub.schedule("every day 12:00")
+exports.completeCompetitions = functions.pubsub.schedule("every day 12:00")
     .timeZone("America/Toronto")
-    .onRun(async () => await sendCompetitionCompleteNotifications());
+    .onRun(async () => await completeCompetitionsForYesterday());
+
+// Developer
+
+exports.dev_sendCompetitionCompleteNotification = functions.https.onCall(async (data, context) => {
+    const userID = context.auth?.uid;
+    if (userID != "LqfhMHfQ97b0s9vaQdWyf8jqvSa2" && userID != "o2E4T1HS9tUqCYfrm7qPd3TuryE2") {
+        console.log(`Unauthorized access to developer function from user ID: ${userID}`);
+        return;
+    }
+    await completeCompetitionsForDate(data.date);
+});

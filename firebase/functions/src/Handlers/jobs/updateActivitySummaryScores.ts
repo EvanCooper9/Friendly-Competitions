@@ -21,8 +21,6 @@ async function updateActivitySummaryScores(userID: string, before: DocumentSnaps
         .then(query => query.docs.map(doc => new Competition(doc)));
 
     await Promise.all(competitions.map(async competition => {
-        if (!competition.isActive()) return;
-
         const date = new Date(after.id);
         if (date < competition.start || date > competition.end) return;
 

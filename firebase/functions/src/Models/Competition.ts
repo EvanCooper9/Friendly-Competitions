@@ -57,6 +57,7 @@ class Competition {
         const batch = admin.firestore().batch();
         standings.forEach(standing => {
             standing.points = 0;
+            standing.pointsBreakdown = {};
             const ref = admin.firestore().doc(`competitions/${this.id}/standings/${standing.userId}`);
             batch.set(ref, prepareForFirestore(standing));
         });
