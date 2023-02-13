@@ -50,45 +50,19 @@ async function completeCompetitionsForDate(date: string): Promise<void> {
  */
 async function completeCompetition(competition: Competition): Promise<void> {
     const firestore = getFirestore();
-    const standings = await firestore.collection(`competitions/${competition.id}/standings`)
-        .where("userId", "in", competition.participants)
-        .get()
-        .then(query => {
-            return query.docs
-                .map(doc => new Standing(doc))
-                .sort((a, b) => a.userId.localeCompare(b.userId));
-        });
-
-    const users = await firestore.collection("users")
-        .where("id", "in", competition.participants)
-        .get()
-        .then(query => {
-            return query.docs
-                .map(doc => new User(doc))
-                .sort((a, b) => a.id.localeCompare(b.id));
-        });
-
-    if (standings.length != users.length) {
-        console.error(`Standings (count: ${standings.length}) or users (count: ${users.length}) are missing from competition: ${competition.id}`);
-        return;
-    }
-    const pairs = users.map((user, index) => {
-        // assume that order is the same, based on firestore query
-        return { user: user, standing: standings[index] };
-    });
-
-    await Promise.all(pairs.map(async pair => {
-        const rank = pair.standing.rank;
+    await Promise.all(competition.participants.map(async userID => {
+        const user = await firestore.doc(`users/${userID}`).get().then(doc => new User(doc));
+        const standing = await firestore.doc(`competitions/${competition.id}/standings/${userID}`).get().then(doc => new Standing(doc));
+        const rank = standing.rank;
         const ordinal = ["st", "nd", "rd"][((rank+90)%100-10)%10-1] || "th";
         await notifications.sendNotificationsToUser(
-            pair.user,
+            user,
             "Competition complete!",
             `You placed ${rank}${ordinal} in ${competition.name}. Tap to see your results.`,
             `https://friendly-competitions.app/competition/${competition.id}/results`
         );
-        await pair.user.updateStatisticsWithNewRank(rank);
+        await user.updateStatisticsWithNewRank(rank);
     }));
-
     await competition.recordResults();
     await competition.updateRepeatingCompetition();
     await competition.resetStandings();
