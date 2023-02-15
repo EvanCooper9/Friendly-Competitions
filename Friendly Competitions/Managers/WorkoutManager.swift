@@ -25,54 +25,30 @@ final class WorkoutManager: WorkoutManaging {
     
     private var cachedMetrics = [WorkoutType: [WorkoutMetric]]()
     
+    private var helper: HealthKitDataHelper<[Workout]>!
     private var cancellables = Cancellables()
     
     // MARK: - Lifecycle
     
     init() {
-        let fetchAndUpload = PassthroughSubject<Void, Error>()
-        let fetchAndUploadFinished = PassthroughSubject<Void, Never>()
-        
-        fetchAndUpload
-            .debounce(for: .seconds(1), scheduler: RunLoop.main)
-            .flatMapLatest(withUnretained: self) { strongSelf in
-                let dateInterval = strongSelf.competitionsManager.competitionsDateInterval
-                let publishers = strongSelf.cachedMetrics.map { workoutType, metrics in
-                    strongSelf.workouts(of: workoutType, with: metrics, in: dateInterval)
-                }
-                return Publishers
-                    .ZipMany(publishers)
-                    .map { $0.reduce([], +) }
-                    .eraseToAnyPublisher()
+        helper = HealthKitDataHelper { [weak self] dateInterval in
+            guard let strongSelf = self else { return .never() }
+            let publishers = strongSelf.cachedMetrics.map { workoutType, metrics in
+                strongSelf.workouts(of: workoutType, with: metrics, in: dateInterval)
             }
-            .flatMapLatest(withUnretained: self) { $0.upload(workouts: $1) }
-            .sink(receiveCompletion: { _ in }, receiveValue: { fetchAndUploadFinished.send() })
-            .store(in: &cancellables)
+            return Publishers
+                .ZipMany(publishers)
+                .map { $0.reduce([], +) }
+                .eraseToAnyPublisher()
+        } upload: { [weak self] in
+            self?.upload(workouts: $0) ?? .never()
+        }
         
         appState.didBecomeActive
             .filter { $0 }
             .mapToVoid()
             .flatMapLatest(withUnretained: self) { $0.fetchWorkoutMetrics() }
             .sink()
-            .store(in: &cancellables)
-        
-        let backgroundDeliveryTrigger = Just(())
-            .handleEvents(receiveSubscription: { _ in
-                fetchAndUpload.send()
-            })
-            .flatMapLatest { fetchAndUploadFinished }
-            .eraseToAnyPublisher()
-        
-        healthKitManager.registerBackgroundDeliveryTask(backgroundDeliveryTrigger)
-        
-        Publishers
-            .CombineLatest(
-                UIApplication.willEnterForegroundNotification.publisher,
-                competitionsManager.competitions
-            )
-            .mapToVoid()
-            .debounce(for: .seconds(1), scheduler: RunLoop.main)
-            .sink(receiveValue: { fetchAndUpload.send() })
             .store(in: &cancellables)
     }
     
