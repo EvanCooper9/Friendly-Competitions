@@ -15,6 +15,10 @@ protocol WorkoutManaging {
 
 final class WorkoutManager: WorkoutManaging {
     
+    private enum Constants {
+        static var cachedMetricsKey: String { #function }
+    }
+    
     // MARK: - Private Properties
     
     @Injected(Container.appState) private var appState
@@ -31,8 +35,8 @@ final class WorkoutManager: WorkoutManaging {
     // MARK: - Lifecycle
     
     init() {
-        helper = HealthKitDataHelper { [weak self] dateInterval in
-            guard let strongSelf = self else { return .never() }
+        helper = HealthKitDataHelper { [weak self] dateInterval -> AnyPublisher<[Workout], Error> in
+            guard let strongSelf = self else { return .just([]) }
             let publishers = strongSelf.cachedMetrics.map { workoutType, metrics in
                 strongSelf.workouts(of: workoutType, with: metrics, in: dateInterval)
             }
@@ -40,15 +44,19 @@ final class WorkoutManager: WorkoutManaging {
                 .ZipMany(publishers)
                 .map { $0.reduce([], +) }
                 .eraseToAnyPublisher()
-        } upload: { [weak self] in
-            self?.upload(workouts: $0) ?? .never()
+        } upload: { [weak self] workouts in
+            self?.upload(workouts: workouts) ?? .just(())
         }
         
+        cachedMetrics = UserDefaults.standard.decode([WorkoutType: [WorkoutMetric]].self, forKey: Constants.cachedMetricsKey) ?? [:]
         appState.didBecomeActive
             .filter { $0 }
             .mapToVoid()
-            .flatMapLatest(withUnretained: self) { $0.fetchWorkoutMetrics() }
-            .sink()
+            .flatMapLatest(withUnretained: self) { $0.fetchMetrics() }
+            .sink(withUnretained: self) { strongSelf, metrics in
+                UserDefaults.standard.encode(metrics, forKey: Constants.cachedMetricsKey)
+                strongSelf.cachedMetrics = metrics
+            }
             .store(in: &cancellables)
     }
     
@@ -79,6 +87,20 @@ final class WorkoutManager: WorkoutManaging {
     }
     
     // MARK: - Private Methods
+    
+    private func fetchMetrics() -> AnyPublisher<[WorkoutType: [WorkoutMetric]], Never> {
+        competitionsManager.competitions
+            .map { competitions -> [WorkoutType: [WorkoutMetric]] in
+                competitions.reduce(into: [WorkoutType: [WorkoutMetric]]()) { partialResult, competition in
+                    guard case let .workout(workoutType, metrics) = competition.scoringModel else { return }
+                    let metricsForWorkoutType = (partialResult[workoutType] ?? [])
+                        .appending(contentsOf: metrics)
+                        .uniqued()
+                    partialResult[workoutType] = Array(metricsForWorkoutType)
+                }
+            }
+            .eraseToAnyPublisher()
+    }
     
     private func upload(workouts: [Workout]) -> AnyPublisher<Void, Error> {
         .fromAsync { [weak self] in

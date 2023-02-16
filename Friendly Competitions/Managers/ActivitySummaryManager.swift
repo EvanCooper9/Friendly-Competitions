@@ -53,9 +53,9 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
             .eraseToAnyPublisher()
         
         helper = HealthKitDataHelper { [weak self] dateInterval in
-            self?.activitySummaries(in: dateInterval) ?? .never()
+            self?.activitySummaries(in: dateInterval) ?? .just([])
         } upload: { [weak self] in
-            self?.upload(activitySummaries: $0) ?? .never()
+            self?.upload(activitySummaries: $0) ?? .just(())
         }
     }
 
