@@ -16,7 +16,7 @@ protocol WorkoutManaging {
 final class WorkoutManager: WorkoutManaging {
     
     private enum Constants {
-        static var cachedMetricsKey: String { #function }
+        static var cachedWorkoutMetricsKey: String { #function }
     }
     
     // MARK: - Private Properties
@@ -27,9 +27,9 @@ final class WorkoutManager: WorkoutManaging {
     @Injected(Container.userManager) private var userManager
     @Injected(Container.database) private var database
     
-    private var cachedMetrics = [WorkoutType: [WorkoutMetric]]()
-    
+    private var cachedWorkoutMetrics = [WorkoutType: [WorkoutMetric]]()
     private var helper: HealthKitDataHelper<[Workout]>!
+    
     private var cancellables = Cancellables()
     
     // MARK: - Lifecycle
@@ -37,7 +37,7 @@ final class WorkoutManager: WorkoutManaging {
     init() {
         helper = HealthKitDataHelper { [weak self] dateInterval -> AnyPublisher<[Workout], Error> in
             guard let strongSelf = self else { return .just([]) }
-            let publishers = strongSelf.cachedMetrics.map { workoutType, metrics in
+            let publishers = strongSelf.cachedWorkoutMetrics.map { workoutType, metrics in
                 strongSelf.workouts(of: workoutType, with: metrics, in: dateInterval)
             }
             return Publishers
@@ -48,14 +48,11 @@ final class WorkoutManager: WorkoutManaging {
             self?.upload(workouts: workouts) ?? .just(())
         }
         
-        cachedMetrics = UserDefaults.standard.decode([WorkoutType: [WorkoutMetric]].self, forKey: Constants.cachedMetricsKey) ?? [:]
-        appState.didBecomeActive
-            .filter { $0 }
-            .mapToVoid()
-            .flatMapLatest(withUnretained: self) { $0.fetchMetrics() }
+        cachedWorkoutMetrics = UserDefaults.standard.decode([WorkoutType: [WorkoutMetric]].self, forKey: Constants.cachedWorkoutMetricsKey) ?? .all
+        fetchWorkoutMetrics()
             .sink(withUnretained: self) { strongSelf, metrics in
-                UserDefaults.standard.encode(metrics, forKey: Constants.cachedMetricsKey)
-                strongSelf.cachedMetrics = metrics
+                UserDefaults.standard.encode(metrics, forKey: Constants.cachedWorkoutMetricsKey)
+                strongSelf.cachedWorkoutMetrics = metrics
             }
             .store(in: &cancellables)
     }
@@ -88,20 +85,6 @@ final class WorkoutManager: WorkoutManaging {
     
     // MARK: - Private Methods
     
-    private func fetchMetrics() -> AnyPublisher<[WorkoutType: [WorkoutMetric]], Never> {
-        competitionsManager.competitions
-            .map { competitions -> [WorkoutType: [WorkoutMetric]] in
-                competitions.reduce(into: [WorkoutType: [WorkoutMetric]]()) { partialResult, competition in
-                    guard case let .workout(workoutType, metrics) = competition.scoringModel else { return }
-                    let metricsForWorkoutType = (partialResult[workoutType] ?? [])
-                        .appending(contentsOf: metrics)
-                        .uniqued()
-                    partialResult[workoutType] = Array(metricsForWorkoutType)
-                }
-            }
-            .eraseToAnyPublisher()
-    }
-    
     private func upload(workouts: [Workout]) -> AnyPublisher<Void, Error> {
         .fromAsync { [weak self] in
             guard let strongSelf = self else { return }
@@ -126,7 +109,6 @@ final class WorkoutManager: WorkoutManaging {
                     partialResult[workoutType] = Array(metricsForWorkoutType)
                 }
             }
-            .handleEvents(withUnretained: self, receiveOutput: { $0.cachedMetrics = $1 })
             .eraseToAnyPublisher()
     }
 
@@ -363,5 +345,12 @@ final class WorkoutManager: WorkoutManaging {
             }
             healthKitManager.execute(query)
         }
+    }
+}
+
+extension Dictionary where Key == WorkoutType, Value == [WorkoutMetric] {
+    static var all: Self {
+        let pairs = WorkoutType.allCases.map { ($0, $0.metrics) }
+        return Dictionary(uniqueKeysWithValues: pairs)
     }
 }

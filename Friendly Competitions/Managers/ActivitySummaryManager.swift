@@ -26,13 +26,13 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
 
     // MARK: - Private Properties
 
-    @Injected(Container.competitionsManager) private var competitionsManager
     @Injected(Container.healthKitManager) private var healthKitManager
     @Injected(Container.database) private var database
     @Injected(Container.userManager) private var userManager
     @Injected(Container.workoutManager) private var workoutManager
 
     private var helper: HealthKitDataHelper<[ActivitySummary]>!
+    
     private var activitySummarySubject: CurrentValueSubject<ActivitySummary?, Never>
     private var cancellables = Cancellables()
 
