@@ -94,9 +94,10 @@ final class HealthKitManager: HealthKitManaging {
         for sampleType in backgroundDeliveryTypes {
             let query = HKObserverQuery(sampleType: sampleType, predicate: nil) { [weak self] _, completion, _ in
                 guard let strongSelf = self else { return }
-                Publishers
-                    .ZipMany(strongSelf.backgroundDeliveryPublishers)
+                strongSelf.backgroundDeliveryPublishers
+                    .combineLatest()
                     .mapToVoid()
+                    .first()
                     .sink(receiveValue: completion)
                     .store(in: &strongSelf.cancellables)
             }

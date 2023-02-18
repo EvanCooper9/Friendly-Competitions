@@ -38,7 +38,7 @@ final class CompetitionsManager: CompetitionsManaging {
     private enum Constants {
         static let maxParticipantsToFetch = 10
         static var competitionsDateIntervalKey: String { #function }
-        static var hasResultsKey: String { #function }
+        static var hasPremiumResultsKey: String { #function }
     }
     
     // MARK: - Public Properties
@@ -67,9 +67,9 @@ final class CompetitionsManager: CompetitionsManaging {
     // MARK: - Lifecycle
 
     init() {
-        competitions = competitionsSubject.share(replay: 1).eraseToAnyPublisher()
-        invitedCompetitions = invitedCompetitionsSubject.share(replay: 1).eraseToAnyPublisher()
-        appOwnedCompetitions = appOwnedCompetitionsSubject.share(replay: 1).eraseToAnyPublisher()
+        competitions = competitionsSubject.eraseToAnyPublisher()
+        invitedCompetitions = invitedCompetitionsSubject.eraseToAnyPublisher()
+        appOwnedCompetitions = appOwnedCompetitionsSubject.eraseToAnyPublisher()
         hasPremiumResults = hasPremiumResultsSubject.eraseToAnyPublisher()
         
         let dateInterval = UserDefaults.standard.decode(DateInterval.self, forKey: Constants.competitionsDateIntervalKey) ?? .init()
@@ -102,33 +102,7 @@ final class CompetitionsManager: CompetitionsManaging {
                 return (id: id, competitions: competitions)
             }
             .removeDuplicates { $0.id == $1.id }
-            .flatMapLatest(withUnretained: self) { strongSelf, result -> AnyPublisher<Bool, Never> in
-                
-                struct HasResultsContainer: Codable {
-                    let id: String
-                    let hasResults: Bool
-                }
-                
-                if let container = UserDefaults.standard.decode(HasResultsContainer.self, forKey: Constants.hasResultsKey),
-                   container.id == result.id,
-                   container.hasResults {
-                    return .just(true)
-                } else {
-                    return result.competitions
-                        .map { competition in
-                            strongSelf.results(for: competition.id)
-                                .map { $0.count > 1 }
-                                .catchErrorJustReturn(false)
-                        }
-                        .combineLatest()
-                        .map { $0.contains(true) }
-                        .handleEvents(receiveOutput: { hasResults in
-                            let container = HasResultsContainer(id: result.id, hasResults: hasResults)
-                            UserDefaults.standard.encode(container, forKey: Constants.hasResultsKey)
-                        })
-                        .eraseToAnyPublisher()
-                }
-            }
+            .flatMapLatest(withUnretained: self) { $0.hasPremiumResults(for: $1.competitions, id: $1.id) }
             .sink(withUnretained: self) { $0.hasPremiumResultsSubject.send($1) }
             .store(in: &cancellables)
     }
@@ -291,6 +265,34 @@ final class CompetitionsManager: CompetitionsManaging {
             .map { $0.documents.decoded(asArrayOf: Competition.self) }
             .sink(withUnretained: self) { $0.appOwnedCompetitionsSubject.send($1) }
             .store(in: &cancellables)
+    }
+    
+    private func hasPremiumResults(for competitions: [Competition], id: String) -> AnyPublisher<Bool, Never> {
+        struct HasPremiumResultsContainer: Codable {
+            let id: String
+            let hasPremiumResults: Bool
+        }
+        
+        if let container = UserDefaults.standard.decode(HasPremiumResultsContainer.self, forKey: Constants.hasPremiumResultsKey),
+           container.id == id,
+           container.hasPremiumResults {
+            return .just(true)
+        } else {
+            return competitions
+                .compactMap { [weak self] competition -> AnyPublisher<Bool, Never>? in
+                    guard let strongSelf = self else { return nil }
+                    return strongSelf.results(for: competition.id)
+                        .map { $0.count > 1 }
+                        .catchErrorJustReturn(false)
+                }
+                .combineLatest()
+                .map { $0.contains(true) }
+                .handleEvents(receiveOutput: { hasPremiumResults in
+                    let container = HasPremiumResultsContainer(id: id, hasPremiumResults: hasPremiumResults)
+                    UserDefaults.standard.encode(container, forKey: Constants.hasPremiumResultsKey)
+                })
+                .eraseToAnyPublisher()
+        }
     }
 }
 

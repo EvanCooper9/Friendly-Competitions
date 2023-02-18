@@ -15,6 +15,10 @@ protocol WorkoutManaging {
 
 final class WorkoutManager: WorkoutManaging {
     
+    private enum Constants {
+        static var cachedWorkoutMetricsKey: String { #function }
+    }
+    
     // MARK: - Private Properties
     
     @Injected(Container.appState) private var appState
@@ -23,56 +27,33 @@ final class WorkoutManager: WorkoutManaging {
     @Injected(Container.userManager) private var userManager
     @Injected(Container.database) private var database
     
-    private var cachedMetrics = [WorkoutType: [WorkoutMetric]]()
+    private var cachedWorkoutMetrics = [WorkoutType: [WorkoutMetric]]()
+    private var helper: HealthKitDataHelper<[Workout]>!
     
     private var cancellables = Cancellables()
     
     // MARK: - Lifecycle
     
     init() {
-        let fetchAndUpload = PassthroughSubject<Void, Error>()
-        let fetchAndUploadFinished = PassthroughSubject<Void, Never>()
-        
-        fetchAndUpload
-            .debounce(for: .seconds(1), scheduler: RunLoop.main)
-            .flatMapLatest(withUnretained: self) { strongSelf in
-                let dateInterval = strongSelf.competitionsManager.competitionsDateInterval
-                let publishers = strongSelf.cachedMetrics.map { workoutType, metrics in
-                    strongSelf.workouts(of: workoutType, with: metrics, in: dateInterval)
-                }
-                return Publishers
-                    .ZipMany(publishers)
-                    .map { $0.reduce([], +) }
-                    .eraseToAnyPublisher()
+        helper = HealthKitDataHelper { [weak self] dateInterval -> AnyPublisher<[Workout], Error> in
+            guard let strongSelf = self else { return .just([]) }
+            let publishers = strongSelf.cachedWorkoutMetrics.map { workoutType, metrics in
+                strongSelf.workouts(of: workoutType, with: metrics, in: dateInterval)
             }
-            .flatMapLatest(withUnretained: self) { $0.upload(workouts: $1) }
-            .sink(receiveCompletion: { _ in }, receiveValue: { fetchAndUploadFinished.send() })
-            .store(in: &cancellables)
+            return Publishers
+                .ZipMany(publishers)
+                .map { $0.reduce([], +) }
+                .eraseToAnyPublisher()
+        } upload: { [weak self] workouts in
+            self?.upload(workouts: workouts) ?? .just(())
+        }
         
-        appState.didBecomeActive
-            .filter { $0 }
-            .mapToVoid()
-            .flatMapLatest(withUnretained: self) { $0.fetchWorkoutMetrics() }
-            .sink()
-            .store(in: &cancellables)
-        
-        let backgroundDeliveryTrigger = Just(())
-            .handleEvents(receiveSubscription: { _ in
-                fetchAndUpload.send()
-            })
-            .flatMapLatest { fetchAndUploadFinished }
-            .eraseToAnyPublisher()
-        
-        healthKitManager.registerBackgroundDeliveryTask(backgroundDeliveryTrigger)
-        
-        Publishers
-            .CombineLatest(
-                UIApplication.willEnterForegroundNotification.publisher,
-                competitionsManager.competitions
-            )
-            .mapToVoid()
-            .debounce(for: .seconds(1), scheduler: RunLoop.main)
-            .sink(receiveValue: { fetchAndUpload.send() })
+        cachedWorkoutMetrics = UserDefaults.standard.decode([WorkoutType: [WorkoutMetric]].self, forKey: Constants.cachedWorkoutMetricsKey) ?? .all
+        fetchWorkoutMetrics()
+            .sink(withUnretained: self) { strongSelf, metrics in
+                UserDefaults.standard.encode(metrics, forKey: Constants.cachedWorkoutMetricsKey)
+                strongSelf.cachedWorkoutMetrics = metrics
+            }
             .store(in: &cancellables)
     }
     
@@ -128,7 +109,6 @@ final class WorkoutManager: WorkoutManaging {
                     partialResult[workoutType] = Array(metricsForWorkoutType)
                 }
             }
-            .handleEvents(withUnretained: self, receiveOutput: { $0.cachedMetrics = $1 })
             .eraseToAnyPublisher()
     }
 
@@ -365,5 +345,12 @@ final class WorkoutManager: WorkoutManaging {
             }
             healthKitManager.execute(query)
         }
+    }
+}
+
+extension Dictionary where Key == WorkoutType, Value == [WorkoutMetric] {
+    static var all: Self {
+        let pairs = WorkoutType.allCases.map { ($0, $0.metrics) }
+        return Dictionary(uniqueKeysWithValues: pairs)
     }
 }

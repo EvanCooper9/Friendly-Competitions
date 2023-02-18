@@ -26,12 +26,13 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
 
     // MARK: - Private Properties
 
-    @Injected(Container.competitionsManager) private var competitionsManager
     @Injected(Container.healthKitManager) private var healthKitManager
     @Injected(Container.database) private var database
     @Injected(Container.userManager) private var userManager
     @Injected(Container.workoutManager) private var workoutManager
 
+    private var helper: HealthKitDataHelper<[ActivitySummary]>!
+    
     private var activitySummarySubject: CurrentValueSubject<ActivitySummary?, Never>
     private var cancellables = Cancellables()
 
@@ -51,56 +52,31 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
             .share(replay: 1)
             .eraseToAnyPublisher()
         
-        let fetchAndUpload = PassthroughSubject<DateInterval, Error>()
-        let fetchAndUploadFinished = PassthroughSubject<Void, Never>()
-        
-        fetchAndUpload
-            .debounce(for: .seconds(1), scheduler: RunLoop.main)
-            .flatMapLatest(withUnretained: self) { $0.activitySummaries(in: $1) }
-            .handleEvents(withUnretained: self, receiveOutput: { strongSelf, activitySummaries in
-                if let activitySummary = activitySummaries.last, activitySummary.date.isToday {
-                    strongSelf.activitySummarySubject.send(activitySummary)
-                } else {
-                    strongSelf.activitySummarySubject.send(nil)
-                }
-            })
-            .flatMapLatest(withUnretained: self) { $0.upload(activitySummaries: $1) }
-            .sink(receiveCompletion: { _ in }, receiveValue: { fetchAndUploadFinished.send() })
-            .store(in: &cancellables)
-        
-        let backgroundDeliveryTrigger = Just(())
-            .handleEvents(withUnretained: self, receiveSubscription: { strongSelf, _ in
-                fetchAndUpload.send(strongSelf.competitionsManager.competitionsDateInterval)
-            })
-            .flatMapLatest { fetchAndUploadFinished }
-            .eraseToAnyPublisher()
-        
-        healthKitManager.registerBackgroundDeliveryTask(backgroundDeliveryTrigger)
-        
-        Publishers
-            .Merge(
-                UIApplication.willEnterForegroundNotification.publisher
-                    .map { [weak self] _ in self?.competitionsManager.competitionsDateInterval }
-                    .unwrap(),
-                competitionsManager.competitions
-                    .filterMany(\.isActive)
-                    .map(\.dateInterval)
-            )
-            .debounce(for: .seconds(1), scheduler: RunLoop.main)
-            .sink(receiveValue: { fetchAndUpload.send($0) })
-            .store(in: &cancellables)
+        helper = HealthKitDataHelper { [weak self] dateInterval in
+            self?.activitySummaries(in: dateInterval) ?? .just([])
+        } upload: { [weak self] in
+            self?.upload(activitySummaries: $0) ?? .just(())
+        }
     }
 
     // MARK: - Public Methods
     
     func activitySummaries(in dateInterval: DateInterval) -> AnyPublisher<[ActivitySummary], Error> {
         let subject = PassthroughSubject<[ActivitySummary], Error>()
-        let query = HKActivitySummaryQuery(predicate: dateInterval.activitySummaryPredicate) { query, hkActivitySummaries, error in
+        let query = HKActivitySummaryQuery(predicate: dateInterval.activitySummaryPredicate) { [weak self] query, hkActivitySummaries, error in
             if let error {
                 subject.send(completion: .failure(error))
                 return
             }
-            subject.send(hkActivitySummaries?.map(\.activitySummary) ?? [])
+            
+            let activitySummaries = hkActivitySummaries?.map(\.activitySummary) ?? []
+            if let activitySummary = activitySummaries.last, activitySummary.date.isToday {
+                self?.activitySummarySubject.send(activitySummary)
+            } else {
+                self?.activitySummarySubject.send(nil)
+            }
+            
+            subject.send(activitySummaries)
             subject.send(completion: .finished)
         }
         return subject
