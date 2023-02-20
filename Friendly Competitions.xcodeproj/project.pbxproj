@@ -237,19 +237,6 @@
 		};
 /* End PBXContainerItemProxy section */
 
-/* Begin PBXCopyFilesBuildPhase section */
-		C111939126E7B89D003B7EB3 /* Embed Watch Content */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "$(CONTENTS_FOLDER_PATH)/Watch";
-			dstSubfolderSpec = 16;
-			files = (
-			);
-			name = "Embed Watch Content";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
-
 /* Begin PBXFileReference section */
 		7CBF67E727F4BA910047DC81 /* User+Visibility.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "User+Visibility.swift"; sourceTree = "<group>"; };
 		C10A267827E9528700FD1C2C /* ColorScheme+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ColorScheme+Extensions.swift"; sourceTree = "<group>"; };
@@ -1480,7 +1467,6 @@
 				C1691DBF26D55FCF006FFA30 /* Sources */,
 				C1691DC026D55FCF006FFA30 /* Frameworks */,
 				C1691DC126D55FCF006FFA30 /* Resources */,
-				C111939126E7B89D003B7EB3 /* Embed Watch Content */,
 				C1DB3B5C27AA0CF40074BED1 /* Copy GoogleService-Info.plist */,
 				EDA0E0C12994203400868AF1 /* Crashlytics */,
 				EDC06FC129903F4E00923730 /* Firebase XCFrameworks Copy Resource Bundles */,
@@ -1634,7 +1620,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ \"${ENABLE_PREVIEWS}\" = \"YES\" ]; then\n  echo \"Previews enabled, quitting to prevent 'preview paused'.\"\n  exit 0\nfi\n\nif [ $(arch) = \"arm64\" ]; then\n    /opt/homebrew/bin/sourcery\n    echo \"arm64\"\nelse\n    sourcery\n    echo \"not arm64\"\nfi\n";
+			shellScript = "if [ \"${ENABLE_PREVIEWS}\" = \"YES\" ]; then\n  echo \"Previews enabled, quitting to prevent 'preview paused'.\"\n  exit 0\nfi\n\nif [ $(arch) = \"arm64\" ]; then\n    /opt/homebrew/bin/sourcery\nelse\n    sourcery\nfi\n";
 		};
 		EDA0E0C12994203400868AF1 /* Crashlytics */ = {
 			isa = PBXShellScriptBuildPhase;

@@ -59,9 +59,8 @@ final class HealthKitManager: HealthKitManaging {
 
     // MARK: - Public Methods
 
-    func execute(_ query: any HealthKitQuery) {
-        guard let underlyingQuery = query.underlyingQuery else { return }
-        healthStore.execute(underlyingQuery)
+    func execute(_ query: AnyHealthKitQuery) {
+        healthStore.execute(query.underlyingQuery)
     }
 
     func requestPermissions() {

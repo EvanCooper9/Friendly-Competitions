@@ -4,7 +4,7 @@ protocol HealthKitQuery {
     associatedtype Data
     var predicate: NSPredicate { get }
     var resultsHandler: (Result<Data, Error>) -> Void { get }
-    var underlyingQuery: HKQuery? { get }
+    var underlyingQuery: HKQuery { get }
 }
 
 // MARK: - HealthKit Implementations
@@ -15,7 +15,7 @@ final class ActivitySummaryQuery: HealthKitQuery {
     
     let predicate: NSPredicate
     let resultsHandler: (Result<Data, Error>) -> Void
-    let underlyingQuery: HKQuery?
+    let underlyingQuery: HKQuery
     
     init(predicate: NSPredicate, resultsHandler: @escaping (Result<Data, Error>) -> Void) {
         self.predicate = predicate
@@ -38,7 +38,7 @@ final class WorkoutQuery: HealthKitQuery {
     
     let predicate: NSPredicate
     let resultsHandler: (Result<Data, Error>) -> Void
-    let underlyingQuery: HKQuery?
+    let underlyingQuery: HKQuery
     
     init(predicate: NSPredicate, dateInterval: DateInterval, resultsHandler: @escaping (Result<Data, Error>) -> Void) {
         self.predicate = predicate
@@ -65,7 +65,7 @@ final class StepsQuery: HealthKitQuery {
     
     let predicate: NSPredicate
     let resultsHandler: (Result<Data, Error>) -> Void
-    let underlyingQuery: HKQuery?
+    let underlyingQuery: HKQuery
     
     init(predicate: NSPredicate, resultsHandler: @escaping (Result<Data, Error>) -> Void) {
         self.predicate = predicate
@@ -90,7 +90,7 @@ final class SampleQuery: HealthKitQuery {
     
     let predicate: NSPredicate
     let resultsHandler: (Result<Data, Error>) -> Void
-    let underlyingQuery: HKQuery?
+    let underlyingQuery: HKQuery
     
     init(sampleType: HKSampleType, unit: HKUnit, predicate: NSPredicate, resultsHandler: @escaping (Result<Data, Error>) -> Void) {
         self.predicate = predicate
