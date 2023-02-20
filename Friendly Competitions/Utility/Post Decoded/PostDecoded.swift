@@ -15,14 +15,6 @@ protocol PostDecodingStrategy {
     static func transform(_ value: Value) -> Value
 }
 
-enum DateToEndOfDay: PostDecodingStrategy {
-    static func transform(_ value: Date) -> Date { value.advanced(by: 23.hours + 59.minutes) }
-}
-
-enum DateToStartOfDay: PostDecodingStrategy {
-    static func transform(_ value: Date) -> Date { value }
-}
-
 // MARK: - Decodable
 
 extension PostDecoded: Decodable where Value: Decodable {

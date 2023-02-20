@@ -28,6 +28,15 @@
       }
     },
     {
+      "identity" : "eckit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/EvanCooper9/ECKit",
+      "state" : {
+        "branch" : "main",
+        "revision" : "ede6467a0e72461f4a8168b3bb8818278b418ee9"
+      }
+    },
+    {
       "identity" : "factory",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/hmlongco/Factory",
@@ -75,7 +84,7 @@
     {
       "identity" : "swift-algorithms",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-algorithms",
+      "location" : "https://github.com/apple/swift-algorithms.git",
       "state" : {
         "revision" : "b14b7f4c528c942f121c8b860b9410b2bf57825e",
         "version" : "1.0.0"

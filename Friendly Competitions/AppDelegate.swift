@@ -6,12 +6,16 @@ import FirebaseMessaging
 import RevenueCat
 import UIKit
 
+let isRunningUnitTests = ProcessInfo.processInfo.environment["TEST"] != nil
+
 final class AppDelegate: NSObject, UIApplicationDelegate {
 
     // Needs to be lazy so that `FirebaseApp.configure()` is called first
     @LazyInjected(Container.database) private var database
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+        guard !isRunningUnitTests else { return true }
+        
         FirebaseApp.configure()
         Messaging.messaging().delegate = self
         

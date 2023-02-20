@@ -4,9 +4,13 @@ import ECKit
 import Factory
 import HealthKit
 
+/// Required typealias so that sourcery can generate mock for type `any HealthKitQuery`
+typealias AnyHealthKitQuery = any HealthKitQuery
+
+// sourcery: AutoMockable
 protocol HealthKitManaging {
     var permissionStatus: AnyPublisher<PermissionStatus, Never> { get }
-    func execute(_ query: any HealthKitQuery)
+    func execute(_ query: AnyHealthKitQuery)
     func registerBackgroundDeliveryTask(_ publisher: AnyPublisher<Void, Never>)
     func requestPermissions()
 }

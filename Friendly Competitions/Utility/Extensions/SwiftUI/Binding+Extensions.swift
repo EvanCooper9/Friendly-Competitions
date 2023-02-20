@@ -7,22 +7,3 @@ func ??<T> (left: Binding<T?>, right: T) -> Binding<T> {
         left.wrappedValue = $0
     }
 }
-
-extension Binding {
-    func unwrapped<T>() -> Binding<T>? where Value == T? {
-        guard let value = wrappedValue else { return nil }
-        return Binding<T>(
-            get: { value },
-            set: { self.wrappedValue = $0 }
-        )
-    }
-}
-
-extension Binding {
-    func mapTo<Mapped>(_ value: Mapped) -> Binding<Mapped> {
-        return Binding<Mapped>(
-            get: { value },
-            set: { _ in }
-        )
-    }
-}
