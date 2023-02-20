@@ -15,37 +15,36 @@ final class PermissionsManager: PermissionsManaging {
 
     // MARK: - Public Properties
 
-    let requiresPermission: AnyPublisher<Bool, Never>
-    let permissionStatus: AnyPublisher<[Permission: PermissionStatus], Never>
+    var requiresPermission: AnyPublisher<Bool, Never> {
+        permissionStatus
+            .map { $0.map(\.value).contains(.notDetermined) }
+            .receive(on: scheduler)
+            .eraseToAnyPublisher()
+    }
+    
+    var permissionStatus: AnyPublisher<[Permission: PermissionStatus], Never> {
+        permissionStatusSubject
+            .receive(on: scheduler)
+            .eraseToAnyPublisher()
+    }
 
     // MARK: - Private Properties
 
     @Injected(Container.healthKitManager) private var healthKitManager
-    @Injected(Container.notificationManager) private var notificationManager
+    @Injected(Container.notificationsManager) private var notificationManager
+    @Injected(Container.scheduler) private var scheduler
+    
+    private let permissionStatusSubject = ReplaySubject<[Permission: PermissionStatus], Never>(bufferSize: 1)
     
     private var cancellables = Cancellables()
 
     // MARK: - Lifecycle
 
     init() {
-        let permissionStatusSubject = ReplaySubject<[Permission: PermissionStatus], Never>(bufferSize: 1)
-        
-        permissionStatus = permissionStatusSubject
-            .receive(on: RunLoop.main)
-            .eraseToAnyPublisher()
-        
-        requiresPermission = permissionStatus
-            .map { statuses in
-                statuses.contains { permission, status in
-                    status == .notDetermined
-                }
-            }
-            .eraseToAnyPublisher()
-        
         Publishers
             .CombineLatest(healthKitManager.permissionStatus, notificationManager.permissionStatus)
             .map { [.health: $0, .notifications: $1] }
-            .sink { permissionStatusSubject.send($0) }
+            .sink(withUnretained: self) { $0.permissionStatusSubject.send($1) }
             .store(in: &cancellables)
     }
 

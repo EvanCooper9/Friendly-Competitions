@@ -7,27 +7,30 @@ import XCTest
 
 final class CompetitionsManagerTests: XCTestCase {
     
+    private var api: APIMock!
     private var appState: AppStateProvidingMock!
     private var analyticsManager: AnalyticsManagingMock!
+    private var cache: CompetitionCacheMock!
     private var database: DatabaseMock!
-    private var api: APIMock!
     private var userManager: UserManagingMock!
     
     private var cancellables: Cancellables!
     
     override func setUp() {
         super.setUp()
+        api = .init()
         appState = .init()
         analyticsManager = .init()
+        cache = .init()
         database = .init()
-        api = .init()
         userManager = .init()
         
         Container.Registrations.reset()
+        Container.api.register { self.api }
         Container.appState.register { self.appState }
         Container.analyticsManager.register { self.analyticsManager }
+        Container.competitionCache.register { self.cache }
         Container.database.register { self.database }
-        Container.api.register { self.api }
         Container.userManager.register { self.userManager }
         cancellables = .init()
         
@@ -36,10 +39,11 @@ final class CompetitionsManagerTests: XCTestCase {
     
     override func tearDown() {
         super.tearDown()
+        api = nil
         appState = nil
         analyticsManager = nil
+        cache = .init()
         database = nil
-        api = nil
         userManager = nil
         cancellables = nil
     }
@@ -366,6 +370,22 @@ final class CompetitionsManagerTests: XCTestCase {
         waitForExpectations(timeout: 1)
     }
     
+    func testThatCompetitionsDateIntervalIsCorrect() {
+        let cachedDateInterval = DateInterval()
+        cache.competitionsDateInterval = cachedDateInterval
+        
+        let didBecomeActive = PassthroughSubject<Bool, Never>()
+        appState.didBecomeActive = didBecomeActive.eraseToAnyPublisher()
+        
+        let competitions = [Competition.mock]
+        setupDatabaseWithCompetitions(participating: competitions)
+        
+        let manager = CompetitionsManager()
+        XCTAssertEqual(manager.competitionsDateInterval, cachedDateInterval)
+        didBecomeActive.send(true)
+        XCTAssertEqual(manager.competitionsDateInterval, competitions.dateInterval)
+    }
+    
     // MARK: - Private
     
     private func testAPI(_ publisher: AnyPublisher<Void, Error>, expect expectedResult: Result<Void, MockError>, expectation: XCTestExpectation) {
@@ -387,5 +407,29 @@ final class CompetitionsManagerTests: XCTestCase {
                 }
             }
             .store(in: &cancellables)
+    }
+    
+    private func setupDatabaseWithCompetitions(participating: [Competition] = [.mock], invited: [Competition] = [.mockInvited], appOwned: [Competition] = [.mockPublic]) {
+        let expectedCompetitions: [[Competition]] = [
+            participating,
+            invited,
+            appOwned
+        ]
+        
+        let competitionSourcesSubjects = (0...2).map { i in
+            CurrentValueSubject<[Competition], Error>(expectedCompetitions[i])
+        }
+        
+        let collection = CollectionMock<Competition>()
+        collection.publisherClosure = {
+            return competitionSourcesSubjects[collection.publisherCallCount - 1].eraseToAnyPublisher()
+        }
+        collection.whereFieldArrayContainsClosure = { collection }
+        collection.whereFieldIsEqualToClosure = { collection }
+        collection.getDocumentsClosure = { .never() }
+        
+        database.collectionReturnValue = collection
+        
+        userManager.user = .evan
     }
 }

@@ -1,11 +1,11 @@
 import Foundation
 
 // sourcery: AutoMockable
-protocol Cache {
+protocol ActivitySummaryCache {
     var activitySummary: ActivitySummary? { get set }
 }
 
-extension UserDefaults: Cache {
+extension UserDefaults: ActivitySummaryCache {
     
     private enum Constants {
         static var activitySummaryKey: String { #function }

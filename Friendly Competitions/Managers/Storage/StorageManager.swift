@@ -22,13 +22,9 @@ final class StorageManager: StorageManaging {
 
     // MARK: - Public Methods
     
-    func data(for storagePath: String) -> AnyPublisher<Data, Error> {
-        let storageReference = storage.child(storagePath)
-        
+    func data(for storagePath: String) -> AnyPublisher<Data, Error> {        
         guard let documents = Folder.documents?.url else {
-            return storageReference
-                .getData(maxSize: .max)
-                .eraseToAnyPublisher()
+            return storage.data(path: storagePath)
         }
         
         let localPath = documents.appendingPathComponent(storagePath)
@@ -37,8 +33,7 @@ final class StorageManager: StorageManaging {
             return .just(localData)
         }
         
-        return storageReference
-            .getData(maxSize: .max)
+        return storage.data(path: storagePath)
             .handleEvents(receiveOutput: { _ = try? Folder.documents?.createFileIfNeeded(at: storagePath, contents: $0) })
             .eraseToAnyPublisher()
     }

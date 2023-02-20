@@ -4,12 +4,12 @@ import UserNotifications
 import UIKit
 
 // sourcery: AutoMockable
-protocol NotificationManaging {
+protocol NotificationsManaging {
     var permissionStatus: AnyPublisher<PermissionStatus, Never> { get }
     func requestPermissions()
 }
 
-final class NotificationManager: NSObject, NotificationManaging {
+final class NotificationsManager: NSObject, NotificationsManaging {
 
     // MARK: - Public Properties
 
@@ -69,7 +69,7 @@ final class NotificationManager: NSObject, NotificationManaging {
     }
 }
 
-extension NotificationManager: UNUserNotificationCenterDelegate {
+extension NotificationsManager: UNUserNotificationCenterDelegate {
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification) async -> UNNotificationPresentationOptions {
         [.sound, .banner, .badge, .list]
     }

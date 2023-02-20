@@ -1,7 +1,6 @@
 import Combine
 import CombineExt
 import ECKit
-import ECKit_Firebase
 import Factory
 import FirebaseFirestore
 import SwiftUI

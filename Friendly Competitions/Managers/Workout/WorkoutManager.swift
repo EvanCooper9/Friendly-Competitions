@@ -1,7 +1,5 @@
-import Algorithms
 import Combine
 import ECKit
-import ECKit_Firebase
 import Factory
 import Firebase
 import FirebaseFirestore
@@ -23,11 +21,11 @@ final class WorkoutManager: WorkoutManaging {
     
     @Injected(Container.appState) private var appState
     @Injected(Container.competitionsManager) private var competitionsManager
+    @Injected(Container.database) private var database
     @Injected(Container.healthKitManager) private var healthKitManager
     @Injected(Container.userManager) private var userManager
-    @Injected(Container.database) private var database
+    @Injected(Container.workoutCache) private var cache
     
-    private var cachedWorkoutMetrics = [WorkoutType: [WorkoutMetric]]()
     private var helper: HealthKitDataHelper<[Workout]>!
     
     private var cancellables = Cancellables()
@@ -37,7 +35,7 @@ final class WorkoutManager: WorkoutManaging {
     init() {
         helper = HealthKitDataHelper { [weak self] dateInterval -> AnyPublisher<[Workout], Error> in
             guard let strongSelf = self else { return .just([]) }
-            let publishers = strongSelf.cachedWorkoutMetrics.map { workoutType, metrics in
+            let publishers = strongSelf.cache.workoutMetrics.map { workoutType, metrics in
                 strongSelf.workouts(of: workoutType, with: metrics, in: dateInterval)
             }
             return Publishers
@@ -48,12 +46,8 @@ final class WorkoutManager: WorkoutManaging {
             self?.upload(workouts: workouts) ?? .just(())
         }
         
-        cachedWorkoutMetrics = UserDefaults.standard.decode([WorkoutType: [WorkoutMetric]].self, forKey: Constants.cachedWorkoutMetricsKey) ?? .all
         fetchWorkoutMetrics()
-            .sink(withUnretained: self) { strongSelf, metrics in
-                UserDefaults.standard.encode(metrics, forKey: Constants.cachedWorkoutMetricsKey)
-                strongSelf.cachedWorkoutMetrics = metrics
-            }
+            .sink(withUnretained: self) { $0.cache.workoutMetrics = $1 }
             .store(in: &cancellables)
     }
     

@@ -2,7 +2,6 @@ import Combine
 import CombineExt
 import CombineSchedulers
 import ECKit
-import ECKit_Firebase
 import Factory
 import Firebase
 import FirebaseFirestore
@@ -28,7 +27,7 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
 
     // MARK: - Private Properties
 
-    @Injected(Container.cache) private var cache
+    @Injected(Container.activitySummaryCache) private var cache
     @Injected(Container.healthKitManager) private var healthKitManager
     @Injected(Container.database) private var database
     @Injected(Container.scheduler) private var scheduler

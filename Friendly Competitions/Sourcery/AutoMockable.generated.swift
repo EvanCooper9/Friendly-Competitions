@@ -63,6 +63,13 @@ class APIMock: API {
     }
 
 }
+class ActivitySummaryCacheMock: ActivitySummaryCache {
+
+
+    var activitySummary: ActivitySummary?
+
+
+}
 class ActivitySummaryManagingMock: ActivitySummaryManaging {
 
 
@@ -344,10 +351,15 @@ class AuthenticationManagingMock: AuthenticationManaging {
     }
 
 }
-class CacheMock: Cache {
+class CompetitionCacheMock: CompetitionCache {
 
 
-    var activitySummary: ActivitySummary?
+    var competitionsDateInterval: DateInterval {
+        get { return underlyingCompetitionsDateInterval }
+        set(value) { underlyingCompetitionsDateInterval = value }
+    }
+    var underlyingCompetitionsDateInterval: DateInterval!
+    var competitionsHasPremiumResults: HasPremiumResultsContainerCache?
 
 
 }
@@ -944,7 +956,7 @@ class FriendsManagingMock: FriendsManaging {
     }
 
 }
-class NotificationManagingMock: NotificationManaging {
+class NotificationsManagingMock: NotificationsManaging {
 
 
     var permissionStatus: AnyPublisher<PermissionStatus, Never> {
@@ -1120,6 +1132,34 @@ class SearchManagingMock: SearchManaging {
     }
 
 }
+class StorageMock: Storage {
+
+
+
+
+    //MARK: - data
+
+    var dataPathCallsCount = 0
+    var dataPathCalled: Bool {
+        return dataPathCallsCount > 0
+    }
+    var dataPathReceivedPath: String?
+    var dataPathReceivedInvocations: [String] = []
+    var dataPathReturnValue: AnyPublisher<Data, Error>!
+    var dataPathClosure: ((String) -> AnyPublisher<Data, Error>)?
+
+    func data(path: String) -> AnyPublisher<Data, Error> {
+        dataPathCallsCount += 1
+        dataPathReceivedPath = path
+        dataPathReceivedInvocations.append(path)
+        if let dataPathClosure = dataPathClosure {
+            return dataPathClosure(path)
+        } else {
+            return dataPathReturnValue
+        }
+    }
+
+}
 class StorageManagingMock: StorageManaging {
 
 
@@ -1202,6 +1242,13 @@ class UserManagingMock: UserManaging {
             return updateWithReturnValue
         }
     }
+
+}
+class WorkoutCacheMock: WorkoutCache {
+
+
+    var workoutMetrics: [WorkoutType: [WorkoutMetric]] = [:]
+
 
 }
 class WorkoutManagingMock: WorkoutManaging {

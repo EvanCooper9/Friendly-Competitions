@@ -1,7 +1,6 @@
 import Combine
 import CombineExt
 import ECKit
-import ECKit_Firebase
 import Factory
 import Firebase
 import FirebaseFirestore
@@ -36,7 +35,6 @@ protocol CompetitionsManaging {
 final class CompetitionsManager: CompetitionsManaging {
     
     private enum Constants {
-        static let maxParticipantsToFetch = 10
         static var competitionsDateIntervalKey: String { #function }
         static var hasPremiumResultsKey: String { #function }
     }
@@ -46,7 +44,7 @@ final class CompetitionsManager: CompetitionsManaging {
     let competitions: AnyPublisher<[Competition], Never>
     let invitedCompetitions: AnyPublisher<[Competition], Never>
     let appOwnedCompetitions: AnyPublisher<[Competition], Never>
-    private(set) var competitionsDateInterval: DateInterval
+    var competitionsDateInterval: DateInterval { cache.competitionsDateInterval }
     let hasPremiumResults: AnyPublisher<Bool, Never>
 
     // MARK: - Private Properties
@@ -59,6 +57,7 @@ final class CompetitionsManager: CompetitionsManaging {
     @Injected(Container.api) private var api
     @Injected(Container.appState) private var appState
     @Injected(Container.analyticsManager) private var analyticsManager
+    @Injected(Container.competitionCache) private var cache
     @Injected(Container.database) private var database
     @Injected(Container.userManager) private var userManager
 
@@ -72,16 +71,11 @@ final class CompetitionsManager: CompetitionsManaging {
         appOwnedCompetitions = appOwnedCompetitionsSubject.eraseToAnyPublisher()
         hasPremiumResults = hasPremiumResultsSubject.eraseToAnyPublisher()
         
-        let dateInterval = UserDefaults.standard.decode(DateInterval.self, forKey: Constants.competitionsDateIntervalKey) ?? .init()
-        competitionsDateInterval = dateInterval
         competitions
-            .dropFirst()
             .filterMany(\.isActive)
             .map(\.dateInterval)
-            .sink(withUnretained: self) { strongSelf, dateInterval in
-                strongSelf.competitionsDateInterval = dateInterval
-                UserDefaults.standard.encode(dateInterval, forKey: Constants.competitionsDateIntervalKey)
-            }
+            .removeDuplicates()
+            .sink(withUnretained: self) { $0.cache.competitionsDateInterval = $1 }
             .store(in: &cancellables)
 
         appState.didBecomeActive
@@ -237,14 +231,7 @@ final class CompetitionsManager: CompetitionsManaging {
     }
     
     private func hasPremiumResults(for competitions: [Competition], id: String) -> AnyPublisher<Bool, Never> {
-        struct HasPremiumResultsContainer: Codable {
-            let id: String
-            let hasPremiumResults: Bool
-        }
-        
-        if let container = UserDefaults.standard.decode(HasPremiumResultsContainer.self, forKey: Constants.hasPremiumResultsKey),
-           container.id == id,
-           container.hasPremiumResults {
+        if let container = cache.competitionsHasPremiumResults, container.id == id, container.hasPremiumResults {
             return .just(true)
         } else {
             return competitions
@@ -257,7 +244,7 @@ final class CompetitionsManager: CompetitionsManaging {
                 .combineLatest()
                 .map { $0.contains(true) }
                 .handleEvents(receiveOutput: { hasPremiumResults in
-                    let container = HasPremiumResultsContainer(id: id, hasPremiumResults: hasPremiumResults)
+                    let container = HasPremiumResultsContainerCache(id: id, hasPremiumResults: hasPremiumResults)
                     UserDefaults.standard.encode(container, forKey: Constants.hasPremiumResultsKey)
                 })
                 .eraseToAnyPublisher()

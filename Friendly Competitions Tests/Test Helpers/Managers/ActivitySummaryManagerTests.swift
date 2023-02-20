@@ -10,7 +10,7 @@ import XCTest
 
 final class ActivitySummaryManagerTests: XCTestCase {
     
-    private var cache: CacheMock!
+    private var cache: ActivitySummaryCacheMock!
     private var competitionsManager: CompetitionsManagingMock!
     private var healthKitManager: HealthKitManagingMock!
     private var database: DatabaseMock!
@@ -30,7 +30,7 @@ final class ActivitySummaryManagerTests: XCTestCase {
         workoutManager = .init()
         
         Container.Registrations.reset()
-        Container.cache.register { self.cache }
+        Container.activitySummaryCache.register { self.cache }
         Container.competitionsManager.register { self.competitionsManager }
         Container.healthKitManager.register { self.healthKitManager }
         Container.database.register { self.database }

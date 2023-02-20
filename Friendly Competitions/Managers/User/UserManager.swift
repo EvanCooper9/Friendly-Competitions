@@ -1,6 +1,5 @@
 import Combine
 import ECKit
-import ECKit_Firebase
 import Factory
 import Firebase
 import FirebaseCrashlytics

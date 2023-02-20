@@ -1,4 +1,3 @@
-import ECKit_Firebase
 import Factory
 import Firebase
 import FirebaseAuth

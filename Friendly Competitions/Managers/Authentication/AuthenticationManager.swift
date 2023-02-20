@@ -2,7 +2,6 @@ import AuthenticationServices
 import Combine
 import CryptoKit
 import ECKit
-import ECKit_Firebase
 import Factory
 import Firebase
 import FirebaseAuth
@@ -179,7 +178,7 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
             .joined()
     }
 
-    private func registerUserManager(with user: User) {
+    private func registerUserManager(with user: User) {        
         Container.userManager.register { [weak self] in
             guard let strongSelf = self else { fatalError("This should not happen") }
             let userManager = UserManager(user: user)
