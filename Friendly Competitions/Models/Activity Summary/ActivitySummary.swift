@@ -21,9 +21,9 @@ struct ActivitySummary: Identifiable, Codable, Equatable {
     func points(from scoringModel: Competition.ScoringModel) -> Double {
         switch scoringModel {
         case .percentOfGoals:
-            return (activeEnergyBurned / activeEnergyBurnedGoal) +
-                (appleExerciseTime / appleStandHoursGoal) +
-                (appleStandHours / appleStandHoursGoal)
+            return (activeEnergyBurned / activeEnergyBurnedGoal) * 100 +
+                (appleExerciseTime / appleStandHoursGoal) * 100 +
+                (appleStandHours / appleStandHoursGoal) * 100
         case .rawNumbers:
             return activeEnergyBurned + appleExerciseTime + appleStandHours
         case .workout:

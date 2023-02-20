@@ -4,10 +4,9 @@ import ECKit
 import Factory
 import HealthKit
 
-// sourcery: AutoMockable
 protocol HealthKitManaging {
     var permissionStatus: AnyPublisher<PermissionStatus, Never> { get }
-    func execute(_ query: HKQuery)
+    func execute(_ query: any HealthKitQuery)
     func registerBackgroundDeliveryTask(_ publisher: AnyPublisher<Void, Never>)
     func requestPermissions()
 }
@@ -56,8 +55,9 @@ final class HealthKitManager: HealthKitManaging {
 
     // MARK: - Public Methods
 
-    func execute(_ query: HKQuery) {
-        healthStore.execute(query)
+    func execute(_ query: any HealthKitQuery) {
+        guard let underlyingQuery = query.underlyingQuery else { return }
+        healthStore.execute(underlyingQuery)
     }
 
     func requestPermissions() {

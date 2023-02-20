@@ -9,6 +9,7 @@ import XCTest
 final class HomeViewModelTests: XCTestCase {
 
     private var activitySummaryManager: ActivitySummaryManagingMock!
+    private var analyticsManager: AnalyticsManagingMock!
     private var appState: AppStateProvidingMock!
     private var competitionsManager: CompetitionsManagingMock!
     private var friendsManager: FriendsManagingMock!
@@ -20,6 +21,7 @@ final class HomeViewModelTests: XCTestCase {
 
     override func setUp() {
         activitySummaryManager = .init()
+        analyticsManager = .init()
         appState = .init()
         competitionsManager = .init()
         friendsManager = .init()
@@ -40,7 +42,9 @@ final class HomeViewModelTests: XCTestCase {
         premiumManager.premium = .never()
         userManager.userPublisher = .just(.evan)
         
+        Container.Registrations.reset()
         Container.activitySummaryManager.register { self.activitySummaryManager }
+        Container.analyticsManager.register { self.analyticsManager }
         Container.appState.register { self.appState }
         Container.competitionsManager.register { self.competitionsManager }
         Container.friendsManager.register { self.friendsManager }

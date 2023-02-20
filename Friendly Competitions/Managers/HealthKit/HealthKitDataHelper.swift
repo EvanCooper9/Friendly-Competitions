@@ -4,6 +4,14 @@ import Factory
 import Foundation
 import UIKit
 
+protocol HealthKitDataHelping {
+    associatedtype Data
+    typealias FetchClosure = (DateInterval) -> AnyPublisher<Data, Error>
+    typealias UploadClosure = (Data) -> AnyPublisher<Void, Error>
+    
+    init(fetch fetchClosure: @escaping FetchClosure, upload uploadClosure: @escaping UploadClosure)
+}
+
 /// Facilitates triggers for fetching & uploading data from HealthKit
 final class HealthKitDataHelper<Data> {
     
@@ -14,6 +22,7 @@ final class HealthKitDataHelper<Data> {
     
     @Injected(Container.competitionsManager) private var competitionsManager
     @Injected(Container.healthKitManager) private var healthKitManager
+    @Injected(Container.scheduler) private var scheduler
     
     private let fetchAndUpload = PassthroughSubject<DateInterval, Never>()
     private let fetchAndUploadFinished = PassthroughSubject<Void, Never>()
@@ -26,7 +35,7 @@ final class HealthKitDataHelper<Data> {
         
         // Ignore errors from fetchClosure & uploadClosure so that finished is still trigered
         fetchAndUpload
-            .debounce(for: .seconds(1), scheduler: RunLoop.main)
+            .debounce(for: .seconds(1), scheduler: scheduler)
             .flatMapLatest { dateInterval -> AnyPublisher<Data?, Never> in
                 fetchClosure(dateInterval)
                     .map { $0 as Data? }
@@ -46,11 +55,16 @@ final class HealthKitDataHelper<Data> {
                     .map { [weak self] _ in self?.competitionsManager.competitionsDateInterval }
                     .unwrap(),
                 competitionsManager.competitions
+                    .print("competition")
                     .filterMany(\.isActive)
+                    .print("competition is active")
                     .map(\.dateInterval)
+                    .print("date interval")
             )
-            .debounce(for: .seconds(1), scheduler: RunLoop.main)
-            .sink(withUnretained: self, receiveValue: { $0.fetchAndUpload.send($1) })
+            .print("foreground / competitions")
+            .sink(withUnretained: self, receiveValue: {
+                $0.fetchAndUpload.send($1)
+            })
             .store(in: &cancellables)
         
         registerForBackgroundDelivery()

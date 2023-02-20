@@ -1,3 +1,5 @@
+import Combine
+import CombineSchedulers
 import Factory
 import Firebase
 import FirebaseFirestore
@@ -25,6 +27,10 @@ extension Container {
     // Global state
     static let appState = Factory(scope: .shared) { AppState() as AppStateProviding }
     
+    // Util
+    static let cache = Factory(scope: .shared) { UserDefaults.standard as Cache }
+    static let scheduler = Factory(scope: .shared) { AnySchedulerOf<RunLoop>.main }
+    
     static let database = Factory(scope: .shared) {
         let environment = Container.environmentManager.callAsFunction().firestoreEnvironment
         let firestore = Firestore.firestore()
@@ -45,10 +51,10 @@ extension Container {
         }
 
         firestore.settings = settings
-        return firestore
+        return firestore as Database
     }
     
-    static let functions = Factory(scope: .shared) {
+    static let api = Factory(scope: .shared) {
         let environment = Container.environmentManager.callAsFunction().firestoreEnvironment
         let functions = Functions.functions()
 
@@ -64,7 +70,7 @@ extension Container {
             }
         }
 
-        return functions
+        return functions as API
     }
     
     static let storage = Factory(scope: .shared) {

@@ -39,15 +39,14 @@ extension AppDelegate: MessagingDelegate {
 
         Task {
             let tokens = try await database.document("users/\(userId)")
-                .getDocument(source: .cache) // can fetch from cache because tokens shouldn't be out of date
-                .decoded(as: User.self)
+                .getDocument(as: User.self) // TODO: fetch from cache sources
+                .async()
                 .notificationTokens ?? []
 
             guard !tokens.contains(fcmToken) else { return }
             try await database.document("users/\(userId)")
-                .updateData([
-                    "notificationTokens": tokens.appending(fcmToken)
-                ])
+                .updateData(from: ["notificationTokens": tokens.appending(fcmToken)])
+                .async()
         }
     }
 }

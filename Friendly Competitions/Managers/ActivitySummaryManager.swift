@@ -1,5 +1,6 @@
 import Combine
 import CombineExt
+import CombineSchedulers
 import ECKit
 import ECKit_Firebase
 import Factory
@@ -15,75 +16,66 @@ protocol ActivitySummaryManaging {
 }
 
 final class ActivitySummaryManager: ActivitySummaryManaging {
-    
-    private enum Constants {
-        static var activitySummaryKey: String { #function }
-    }
 
     // MARK: - Public Properties
 
-    let activitySummary: AnyPublisher<ActivitySummary?, Never>
+    var activitySummary: AnyPublisher<ActivitySummary?, Never> {
+        activitySummarySubject
+            .removeDuplicates()
+            .receive(on: scheduler)
+            .eraseToAnyPublisher()
+    }
 
     // MARK: - Private Properties
 
+    @Injected(Container.cache) private var cache
     @Injected(Container.healthKitManager) private var healthKitManager
     @Injected(Container.database) private var database
+    @Injected(Container.scheduler) private var scheduler
     @Injected(Container.userManager) private var userManager
     @Injected(Container.workoutManager) private var workoutManager
 
     private var helper: HealthKitDataHelper<[ActivitySummary]>!
     
-    private var activitySummarySubject: CurrentValueSubject<ActivitySummary?, Never>
+    private var activitySummarySubject = ReplaySubject<ActivitySummary?, Never>(bufferSize: 1)
     private var cancellables = Cancellables()
 
     // MARK: - Lifecycle
 
     init() {
-        let storedActivitySummary = UserDefaults.standard.decode(ActivitySummary.self, forKey: Constants.activitySummaryKey)
-        activitySummarySubject = .init(storedActivitySummary?.date.isToday == true ? storedActivitySummary : nil)
-        activitySummarySubject
-            .dropFirst()
-            .sink { UserDefaults.standard.encode($0, forKey: Constants.activitySummaryKey) }
-            .store(in: &cancellables)
-
-        activitySummary = activitySummarySubject
-            .removeDuplicates()
-            .receive(on: RunLoop.main)
-            .share(replay: 1)
-            .eraseToAnyPublisher()
-        
         helper = HealthKitDataHelper { [weak self] dateInterval in
             self?.activitySummaries(in: dateInterval) ?? .just([])
         } upload: { [weak self] in
             self?.upload(activitySummaries: $0) ?? .just(())
         }
+        
+        let storedActivitySummary = cache.activitySummary
+        activitySummarySubject.send(storedActivitySummary?.date.isToday == true ? storedActivitySummary : nil)
+        activitySummary
+            .sink(withUnretained: self) { $0.cache.activitySummary = $1 }
+            .store(in: &cancellables)
     }
 
     // MARK: - Public Methods
     
     func activitySummaries(in dateInterval: DateInterval) -> AnyPublisher<[ActivitySummary], Error> {
-        let subject = PassthroughSubject<[ActivitySummary], Error>()
-        let query = HKActivitySummaryQuery(predicate: dateInterval.activitySummaryPredicate) { [weak self] query, hkActivitySummaries, error in
-            if let error {
-                subject.send(completion: .failure(error))
-                return
+        Future() { [weak self] promise in
+            let query = ActivitySummaryQuery(predicate: dateInterval.activitySummaryPredicate) { [weak self] result in
+                switch result {
+                case .failure(let error):
+                    promise(.failure(error))
+                case .success(let activitySummaries):
+                    if let activitySummary = activitySummaries.last, activitySummary.date.isToday {
+                        self?.activitySummarySubject.send(activitySummary)
+                    } else {
+                        self?.activitySummarySubject.send(nil)
+                    }
+                    promise(.success(activitySummaries))
+                }
             }
-            
-            let activitySummaries = hkActivitySummaries?.map(\.activitySummary) ?? []
-            if let activitySummary = activitySummaries.last, activitySummary.date.isToday {
-                self?.activitySummarySubject.send(activitySummary)
-            } else {
-                self?.activitySummarySubject.send(nil)
-            }
-            
-            subject.send(activitySummaries)
-            subject.send(completion: .finished)
+            self?.healthKitManager.execute(query)
         }
-        return subject
-            .handleEvents(withUnretained: self, receiveSubscription: { strongSelf, _ in
-                strongSelf.healthKitManager.execute(query)
-            })
-            .eraseToAnyPublisher()
+        .eraseToAnyPublisher()
     }
 
     // MARK: - Private Methods
@@ -97,7 +89,7 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
                 var activitySummary = activitySummary
                 activitySummary.userID = userID
                 let document = strongSelf.database.document("users/\(userID)/activitySummaries/\(activitySummary.id)")
-                let _ = try batch.setDataEncodable(activitySummary, forDocument: document)
+                try batch.setData(from: activitySummary, forDocument: document)
             }
             try await batch.commit()
         }

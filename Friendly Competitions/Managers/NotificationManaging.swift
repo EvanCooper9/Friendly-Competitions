@@ -17,9 +17,9 @@ final class NotificationManager: NSObject, NotificationManaging {
 
     // MARK: - Private Properties
     
+    @Injected(Container.api) private var api
     @Injected(Container.appState) private var appState
     @LazyInjected(Container.analyticsManager) private var analyticsManager
-    @Injected(Container.functions) private var functions
 
     private let _permissionStatus: CurrentValueSubject<PermissionStatus, Never>
 

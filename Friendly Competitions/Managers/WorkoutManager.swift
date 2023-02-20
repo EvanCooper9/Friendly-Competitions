@@ -92,7 +92,7 @@ final class WorkoutManager: WorkoutManaging {
             let batch = strongSelf.database.batch()
             try workouts.forEach { workout in
                 let document = strongSelf.database.document("users/\(userID)/workouts/\(workout.id)")
-                _ = try batch.setDataEncodable(workout, forDocument: document)
+                try batch.setData(from: workout, forDocument: document)
             }
             try await batch.commit()
         }
@@ -178,17 +178,13 @@ final class WorkoutManager: WorkoutManaging {
         let startDateSort = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
         
         let workouts = try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<[HKWorkout], Error>) in
-            let query = HKSampleQuery(sampleType: sampleType, predicate: predicate, limit: 0, sortDescriptors: [startDateSort]) { _, workouts, error in
-                if let error {
+            let query = WorkoutQuery(predicate: predicate, dateInterval: dateInterval) { result in
+                switch result {
+                case .failure(let error):
                     continuation.resume(throwing: error)
-                    return
+                case .success(let workouts):
+                    continuation.resume(returning: workouts)
                 }
-
-                let workouts = workouts?
-                    .compactMap { $0 as? HKWorkout }
-                    .filter { dateInterval.contains($0.startDate) && dateInterval.contains($0.endDate) }
-
-                continuation.resume(returning: workouts ?? [])
             }
             healthKitManager.execute(query)
         }
@@ -253,7 +249,7 @@ final class WorkoutManager: WorkoutManaging {
                         switch metric {
                         case .steps:
                             // Steps are not actually recorded in workouts. A separate type of query is required
-                            pointsByDate = await self.steps(for: workout)
+                            pointsByDate = try await self.steps(for: workout)
                         default:
                             pointsByDate = try await self.pointsByDate(sampleType: sample, workout: workout, unit: metric.unit)
                         }
@@ -282,7 +278,7 @@ final class WorkoutManager: WorkoutManaging {
     /// Query HealthKit for steps that occured during a workout. Steps aren't recorded within workouts, so a separate query must be used.
     /// - Parameter workout: The workout to fetch the steps for
     /// - Returns: Steps by date
-    private func steps(for workout: HKWorkout) async -> [Date: Double] {
+    private func steps(for workout: HKWorkout) async throws -> [Date: Double] {
         let dateInterval = DateInterval(start: workout.startDate, end: workout.endDate)
 
         let predicate = HKQuery.predicateForSamples(
@@ -290,14 +286,15 @@ final class WorkoutManager: WorkoutManaging {
             end: dateInterval.end
         )
 
-        return await withCheckedContinuation { continuation in
-            let query = HKStatisticsQuery(
-                quantityType: HKQuantityType(.stepCount),
-                quantitySamplePredicate: predicate) { query, stats, error in
-                    let steps = stats?.sumQuantity()?.doubleValue(for: .count()) ?? 0
+        return try await withCheckedThrowingContinuation { continuation in
+            let query = StepsQuery(predicate: predicate) { result in
+                switch result {
+                case .failure(let error):
+                    continuation.resume(throwing: error)
+                case .success(let steps):
                     continuation.resume(returning: [workout.startDate: steps])
                 }
-
+            }
             healthKitManager.execute(query)
         }
     }
@@ -314,34 +311,13 @@ final class WorkoutManager: WorkoutManaging {
         let predicate = HKQuery.predicateForObjects(from: workout)
         
         return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<[Date: Double], Error>)  in
-            let query = HKSampleQuery(sampleType: sampleType, predicate: predicate, limit: 0, sortDescriptors: nil) { _, samples, error in
-                if let error {
+            let query = SampleQuery(sampleType: sampleType, unit: unit, predicate: predicate) { result in
+                switch result {
+                case .failure(let error):
                     continuation.resume(throwing: error)
-                    return
+                case .success(let results):
+                    continuation.resume(returning: results)
                 }
-                
-                guard let samples = samples else { return }
-                let total = samples
-                    .compactMap { $0 as? HKQuantitySample }
-                    .enumerated()
-                    .reduce(into: [Date: Double]()) { partialResult, next in
-                        let (offset, sample) = next
-                        let dateNoTime = Calendar.current.date(bySettingHour: 0, minute: 0, second: 0, of: sample.endDate)!
-                        let metric = WorkoutMetric(from: sampleType.identifier)
-                        switch metric {
-                        case .heartRate:
-                            let points = sample.quantity.doubleValue(for: unit)
-                            let oldAverage = partialResult[dateNoTime] ?? 0
-                            let oldTotal = oldAverage * Double(offset)
-                            let newTotal = oldTotal + points
-                            let newAverage = newTotal / Double(offset + 1)
-                            partialResult[dateNoTime] = newAverage
-                        case .distance, .steps, .none:
-                            partialResult[dateNoTime] = (partialResult[dateNoTime] ?? 0) + sample.quantity.doubleValue(for: unit)
-                        }
-                    }
-                
-                continuation.resume(returning: total)
             }
             healthKitManager.execute(query)
         }

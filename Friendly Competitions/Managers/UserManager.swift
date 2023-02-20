@@ -25,10 +25,10 @@ final class UserManager: UserManaging {
 
     // MARK: - Private Properties
 
+    @Injected(Container.api) private var api
     @Injected(Container.appState) private var appState
     @Injected(Container.analyticsManager) private var analyticsManager
     @Injected(Container.authenticationManager) private var authenticationManager
-    @Injected(Container.functions) private var functions
     @Injected(Container.database) private var database
     
     private let userSubject: CurrentValueSubject<User, Never>
@@ -50,27 +50,22 @@ final class UserManager: UserManaging {
     }
 
     func deleteAccount() -> AnyPublisher<Void, Error> {
-        functions.httpsCallable("deleteAccount")
-            .call()
-            .mapToVoid()
+        api.call("deleteAccount")
             .flatMapLatest(withUnretained: self) { $0.authenticationManager.deleteAccount() }
             .handleEvents(withUnretained: self, receiveOutput: { try? $0.authenticationManager.signOut() })
             .eraseToAnyPublisher()
     }
 
     func update(with user: User) -> AnyPublisher<Void, Error> {
-        guard user != self.user else { return .just(()) }
-        return .fromAsync { [weak self] in
-            try await self?.database.document("users/\(user.id)").updateDataEncodable(user)
-        }
+        database.document("users/\(user.id)")
+            .setData(from: user)
     }
 
     // MARK: - Private Methods
 
     private func listenForUser() {
         database.document("users/\(user.id)")
-            .snapshotPublisher()
-            .tryMap { try $0.decoded(as: User.self) }
+            .getDocumentPublisher(as: User.self)
             .receive(on: RunLoop.main)
             .sink(withUnretained: self) { strongSelf, user in
                 strongSelf.analyticsManager.set(userId: user.id)

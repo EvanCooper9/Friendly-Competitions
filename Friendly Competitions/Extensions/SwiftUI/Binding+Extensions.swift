@@ -26,13 +26,3 @@ extension Binding {
         )
     }
 }
-
-//extension Binding<Wrapped> where Value == Wrapped? {
-//    var isNotNil: Binding<Bool> {
-//        Binding<Bool> {
-//            self.wrappedValue != nil
-//        } set: { newValue in
-//            wrappedValue = newValue
-//        }
-//    }
-//}

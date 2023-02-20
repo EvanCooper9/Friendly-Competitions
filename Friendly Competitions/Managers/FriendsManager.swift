@@ -16,7 +16,7 @@ protocol FriendsManaging {
     func accept(friendRequest: User) -> AnyPublisher<Void, Error>
     func decline(friendRequest: User) -> AnyPublisher<Void, Error>
     func delete(friend: User) -> AnyPublisher<Void, Error>
-    func user(withId id: String) -> AnyPublisher<User?, Error>
+    func user(withId id: String) -> AnyPublisher<User, Error>
 }
 
 final class FriendsManager: FriendsManaging {
@@ -29,9 +29,9 @@ final class FriendsManager: FriendsManaging {
 
     // MARK: - Private Properties
 
+    @Injected(Container.api) private var api
     @Injected(Container.appState) private var appState
     @Injected(Container.database) private var database
-    @Injected(Container.functions) private var functions
     @Injected(Container.userManager) private var userManager
     
     let friendsSubject = CurrentValueSubject<[User], Never>([])
@@ -57,56 +57,45 @@ final class FriendsManager: FriendsManaging {
     // MARK: - Public Methods
 
     func add(user: User) -> AnyPublisher<Void, Error> {
-        functions.httpsCallable("sendFriendRequest")
-            .call(["userID": user.id])
-            .mapToVoid()
-            .eraseToAnyPublisher()
+        let data = ["userID": user.id]
+        return api.call("sendFriendRequest", with: data)
     }
 
     func accept(friendRequest: User) -> AnyPublisher<Void, Error> {
-        functions.httpsCallable("respondToFriendRequest")
-            .call([
-                "userID": friendRequest.id,
-                "accept": true
-            ])
-            .mapToVoid()
-            .eraseToAnyPublisher()
+        let data: [String: Any] = [
+            "userID": friendRequest.id,
+            "accept": true
+        ]
+        return api.call("respondToFriendRequest", with: data)
     }
 
     func decline(friendRequest: User) -> AnyPublisher<Void, Error> {
-        functions.httpsCallable("respondToFriendRequest")
-            .call([
-                "userID": friendRequest.id,
-                "accept": false
-            ])
-            .mapToVoid()
-            .eraseToAnyPublisher()
+        let data: [String: Any] = [
+            "userID": friendRequest.id,
+            "accept": false
+        ]
+        return api.call("respondToFriendRequest", with: data)
     }
 
     func delete(friend: User) -> AnyPublisher<Void, Error> {
-        functions.httpsCallable("deleteFriend")
-            .call(["userID": friend.id])
-            .mapToVoid()
-            .eraseToAnyPublisher()
+        let data = ["userID": friend.id]
+        return api.call("deleteFriend", with: data)
     }
 
-    func user(withId id: String) -> AnyPublisher<User?, Error> {
+    func user(withId id: String) -> AnyPublisher<User, Error> {
         database.document("users/\(id)")
-            .getDocument()
-            .tryMap { try $0.decoded(as: User.self) }
-            .eraseToAnyPublisher()
+            .getDocument(as: User.self)
     }
     
     // MARK: - Private Methods
     
     private func listenForFriends() {
         let allFriends = userManager.userPublisher
-            .flatMapAsync { [weak self] user -> [User] in
-                guard let strongSelf = self else { return [] }
-                return try await strongSelf.database.collection("users")
-                    .whereFieldWithChunking("id", in: user.friends + user.incomingFriendRequests)
-                    .decoded(asArrayOf: User.self)
-                    .sorted(by: \.name)
+            .flatMapLatest(withUnretained: self) { strongSelf, user in
+                strongSelf.database.collection("users")
+                    .whereField("id", asArrayOf: User.self, in: user.friends + user.incomingFriendRequests)
+                    .map { $0.sorted(by: \.name) }
+                    .catchErrorJustReturn([])
             }
             .share(replay: 1)
 
@@ -127,14 +116,13 @@ final class FriendsManager: FriendsManaging {
             .store(in: &cancellables)
 
         allFriends
-            .flatMapAsync { [weak self] (friends: [User]) in
-                guard let strongSelf = self else { return [:] }
-                
-                let activitySummaries = try await strongSelf.database.collectionGroup("activitySummaries")
+            .flatMapLatest(withUnretained: self) { strongSelf, friends in
+                strongSelf.database.collectionGroup("activitySummaries")
                     .whereField("date", isEqualTo: DateFormatter.dateDashed.string(from: .now))
-                    .whereFieldWithChunking("userID", in: friends.map(\.id))
-                    .decoded(asArrayOf: ActivitySummary.self)
-                
+                    .whereField("userID", asArrayOf: ActivitySummary.self, in: friends.map(\.id))
+                    .catchErrorJustReturn([])
+            }
+            .map { activitySummaries in
                 let pairs = activitySummaries.compactMap { activitySummary -> (User.ID, ActivitySummary)? in
                     guard let userID = activitySummary.userID else { return nil }
                     return (userID, activitySummary)
