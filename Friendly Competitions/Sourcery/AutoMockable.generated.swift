@@ -956,6 +956,13 @@ class FriendsManagingMock: FriendsManaging {
     }
 
 }
+class HealthKitManagerCacheMock: HealthKitManagerCache {
+
+
+    var permissionStatus: [HealthKitPermissionType: PermissionStatus] = [:]
+
+
+}
 class HealthKitManagingMock: HealthKitManaging {
 
 
@@ -1011,6 +1018,63 @@ class HealthKitManagingMock: HealthKitManaging {
     func requestPermissions() {
         requestPermissionsCallsCount += 1
         requestPermissionsClosure?()
+    }
+
+}
+class HealthStoringMock: HealthStoring {
+
+
+
+
+    //MARK: - execute
+
+    var executeCallsCount = 0
+    var executeCalled: Bool {
+        return executeCallsCount > 0
+    }
+    var executeReceivedQuery: AnyHealthKitQuery?
+    var executeReceivedInvocations: [AnyHealthKitQuery] = []
+    var executeClosure: ((AnyHealthKitQuery) -> Void)?
+
+    func execute(_ query: AnyHealthKitQuery) {
+        executeCallsCount += 1
+        executeReceivedQuery = query
+        executeReceivedInvocations.append(query)
+        executeClosure?(query)
+    }
+
+    //MARK: - enableBackgroundDelivery
+
+    var enableBackgroundDeliveryForCallsCount = 0
+    var enableBackgroundDeliveryForCalled: Bool {
+        return enableBackgroundDeliveryForCallsCount > 0
+    }
+    var enableBackgroundDeliveryForReceivedPermissionType: HealthKitPermissionType?
+    var enableBackgroundDeliveryForReceivedInvocations: [HealthKitPermissionType] = []
+    var enableBackgroundDeliveryForClosure: ((HealthKitPermissionType) -> Void)?
+
+    func enableBackgroundDelivery(for permissionType: HealthKitPermissionType) {
+        enableBackgroundDeliveryForCallsCount += 1
+        enableBackgroundDeliveryForReceivedPermissionType = permissionType
+        enableBackgroundDeliveryForReceivedInvocations.append(permissionType)
+        enableBackgroundDeliveryForClosure?(permissionType)
+    }
+
+    //MARK: - requestAuthorization
+
+    var requestAuthorizationForCompletionCallsCount = 0
+    var requestAuthorizationForCompletionCalled: Bool {
+        return requestAuthorizationForCompletionCallsCount > 0
+    }
+    var requestAuthorizationForCompletionReceivedArguments: (permissionTypes: [HealthKitPermissionType], completion: (Bool) -> Void)?
+    var requestAuthorizationForCompletionReceivedInvocations: [(permissionTypes: [HealthKitPermissionType], completion: (Bool) -> Void)] = []
+    var requestAuthorizationForCompletionClosure: (([HealthKitPermissionType], @escaping (Bool) -> Void) -> Void)?
+
+    func requestAuthorization(for permissionTypes: [HealthKitPermissionType], completion: @escaping (Bool) -> Void) {
+        requestAuthorizationForCompletionCallsCount += 1
+        requestAuthorizationForCompletionReceivedArguments = (permissionTypes: permissionTypes, completion: completion)
+        requestAuthorizationForCompletionReceivedInvocations.append((permissionTypes: permissionTypes, completion: completion))
+        requestAuthorizationForCompletionClosure?(permissionTypes, completion)
     }
 
 }
@@ -1137,6 +1201,34 @@ class PremiumManagingMock: PremiumManaging {
     func manageSubscription() {
         manageSubscriptionCallsCount += 1
         manageSubscriptionClosure?()
+    }
+
+}
+class SearchClientMock: SearchClient {
+
+
+
+
+    //MARK: - index
+
+    var indexWithNameCallsCount = 0
+    var indexWithNameCalled: Bool {
+        return indexWithNameCallsCount > 0
+    }
+    var indexWithNameReceivedName: String?
+    var indexWithNameReceivedInvocations: [String] = []
+    var indexWithNameReturnValue: SearchIndex!
+    var indexWithNameClosure: ((String) -> SearchIndex)?
+
+    func index(withName name: String) -> SearchIndex {
+        indexWithNameCallsCount += 1
+        indexWithNameReceivedName = name
+        indexWithNameReceivedInvocations.append(name)
+        if let indexWithNameClosure = indexWithNameClosure {
+            return indexWithNameClosure(name)
+        } else {
+            return indexWithNameReturnValue
+        }
     }
 
 }
@@ -1300,6 +1392,13 @@ class UserManagingMock: UserManaging {
             return updateWithReturnValue
         }
     }
+
+}
+class UsersCacheMock: UsersCache {
+
+
+    var users: [User.ID: User] = [:]
+
 
 }
 class WorkoutCacheMock: WorkoutCache {

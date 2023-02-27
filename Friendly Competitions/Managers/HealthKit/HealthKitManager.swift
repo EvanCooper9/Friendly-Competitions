@@ -4,9 +4,6 @@ import ECKit
 import Factory
 import HealthKit
 
-/// Required typealias so that sourcery can generate mock for type `any HealthKitQuery`
-typealias AnyHealthKitQuery = any HealthKitQuery
-
 // sourcery: AutoMockable
 protocol HealthKitManaging {
     var permissionStatus: AnyPublisher<PermissionStatus, Never> { get }
@@ -19,24 +16,8 @@ final class HealthKitManager: HealthKitManaging {
 
     // MARK: - Public Properties
 
-    let permissionStatus: AnyPublisher<PermissionStatus, Never>
-
-    // MARK: - Private Properties
-    
-    @Injected(Container.analyticsManager) private var analyticsManager
-    
-    private var cancellables = Cancellables()
-
-    private let healthStore = HKHealthStore()
-    private let backgroundDeliveryReceivedSubject = PassthroughSubject<Void, Never>()
-    private let permissionStatusSubject: CurrentValueSubject<[HealthKitPermissionType: PermissionStatus], Never>
-
-    // MARK: - Initializers
-
-    init() {
-        permissionStatusSubject = .init(UserDefaults.standard.decode([HealthKitPermissionType: PermissionStatus].self, forKey: "health_kit_permissions") ?? [:])
-        permissionStatus = permissionStatusSubject
-            .handleEvents(receiveOutput: { UserDefaults.standard.encode($0, forKey: "health_kit_permissions") })
+    var permissionStatus: AnyPublisher<PermissionStatus, Never> {
+        permissionStatusSubject
             .map { permissionStatuses in
                 let hasUndetermined = HealthKitPermissionType.allCases
                     .contains { permissionType in
@@ -51,35 +32,50 @@ final class HealthKitManager: HealthKitManaging {
                 let authorized = HealthKitPermissionType.allCases.allSatisfy { permissionStatuses[$0] == .authorized }
                 return authorized ? .authorized : .denied
             }
-            .share(replay: 1)
             .eraseToAnyPublisher()
+    }
 
+    // MARK: - Private Properties
+    
+    @Injected(Container.analyticsManager) private var analyticsManager
+    @Injected(Container.healthStore) private var healthStore
+    @Injected(Container.healthKitManagerCache) private var cache
+    
+    private let backgroundDeliveryReceivedSubject = PassthroughSubject<Void, Never>()
+    private let permissionStatusSubject = ReplaySubject<[HealthKitPermissionType: PermissionStatus], Never>(bufferSize: 1)
+    
+    private var cancellables = Cancellables()
+
+    // MARK: - Initializers
+
+    init() {
+        permissionStatusSubject.send(cache.permissionStatus)
+        permissionStatusSubject
+            .dropFirst()
+            .sink(withUnretained: self) { $0.cache.permissionStatus = $1 }
+            .store(in: &cancellables)
         registerForBackgroundDelivery()
     }
 
     // MARK: - Public Methods
 
     func execute(_ query: AnyHealthKitQuery) {
-        healthStore.execute(query.underlyingQuery)
+        healthStore.execute(query)
     }
 
     func requestPermissions() {
         let permissionsToRequest = HealthKitPermissionType.allCases
-            .filter { permissionStatusSubject.value[$0] != .authorized }
+            .filter { cache.permissionStatus[$0] != .authorized }
 
-        healthStore.requestAuthorization(
-            toShare: nil,
-            read: .init(permissionsToRequest.map(\.objectType)),
-            completion: { [weak self] authorized, error in
-                guard let strongSelf = self else { return }
-                let permissionStatus: PermissionStatus = authorized ? .authorized : .denied
-                strongSelf.analyticsManager.log(event: .healthKitPermissions(authorized: authorized))
-                var currentPermissions = strongSelf.permissionStatusSubject.value
-                permissionsToRequest.forEach { currentPermissions[$0] = permissionStatus }
-                strongSelf.permissionStatusSubject.send(currentPermissions)
-                strongSelf.registerForBackgroundDelivery()
-            }
-        )
+        healthStore.requestAuthorization(for: permissionsToRequest) { [weak self] authorized in
+            guard let strongSelf = self else { return }
+            let permissionStatus: PermissionStatus = authorized ? .authorized : .denied
+            strongSelf.analyticsManager.log(event: .healthKitPermissions(authorized: authorized))
+            var currentPermissions = strongSelf.cache.permissionStatus
+            permissionsToRequest.forEach { currentPermissions[$0] = permissionStatus }
+            strongSelf.permissionStatusSubject.send(currentPermissions)
+            strongSelf.registerForBackgroundDelivery()
+        }
     }
     
     private var backgroundDeliveryPublishers = [AnyPublisher<Void, Never>]()
@@ -91,21 +87,26 @@ final class HealthKitManager: HealthKitManaging {
 
     private func registerForBackgroundDelivery() {
         let backgroundDeliveryTypes = HealthKitPermissionType.allCases
-            .filter { permissionStatusSubject.value[$0] == .authorized }
-            .compactMap { $0.objectType as? HKSampleType }
+            .filter { cache.permissionStatus[$0] == .authorized }
 
         for sampleType in backgroundDeliveryTypes {
-            let query = HKObserverQuery(sampleType: sampleType, predicate: nil) { [weak self] _, completion, _ in
+            guard let hkSampleType = sampleType.objectType as? HKSampleType else { continue }
+            let query = ObserverQuery(sampleType: hkSampleType) { [weak self] result in
                 guard let strongSelf = self else { return }
-                strongSelf.backgroundDeliveryPublishers
-                    .combineLatest()
-                    .mapToVoid()
-                    .first()
-                    .sink(receiveValue: completion)
-                    .store(in: &strongSelf.cancellables)
+                switch result {
+                case .failure:
+                    break
+                case .success(let completion):
+                    strongSelf.backgroundDeliveryPublishers
+                        .combineLatest()
+                        .mapToVoid()
+                        .first()
+                        .sink(receiveValue: completion)
+                        .store(in: &strongSelf.cancellables)
+                }
             }
             healthStore.execute(query)
-            healthStore.enableBackgroundDelivery(for: sampleType, frequency: .hourly) { _, _ in }
+            healthStore.enableBackgroundDelivery(for: sampleType)
         }
     }
 }

@@ -32,10 +32,11 @@ final class FriendsManager: FriendsManaging {
     @Injected(Container.appState) private var appState
     @Injected(Container.database) private var database
     @Injected(Container.userManager) private var userManager
+    @Injected(Container.usersCache) private var usersCache
     
-    let friendsSubject = CurrentValueSubject<[User], Never>([])
-    let friendActivitySummariesSubject = CurrentValueSubject<[User.ID : ActivitySummary], Never>([:])
-    let friendRequestsSubject = CurrentValueSubject<[User], Never>([])
+    let friendsSubject = ReplaySubject<[User], Never>(bufferSize: 1)
+    let friendActivitySummariesSubject = ReplaySubject<[User.ID : ActivitySummary], Never>(bufferSize: 1)
+    let friendRequestsSubject = ReplaySubject<[User], Never>(bufferSize: 1)
 
     private var cancellables = Cancellables()
 
@@ -89,38 +90,24 @@ final class FriendsManager: FriendsManaging {
     // MARK: - Private Methods
     
     private func listenForFriends() {
-        let allFriends = userManager.userPublisher
-            .flatMapLatest(withUnretained: self) { strongSelf, user in
-                strongSelf.database.collection("users")
-                    .whereField("id", asArrayOf: User.self, in: user.friends + user.incomingFriendRequests)
-                    .map { $0.sorted(by: \.name) }
-                    .catchErrorJustReturn([])
-            }
-            .share(replay: 1)
-
-        Publishers
-            .CombineLatest(userManager.userPublisher, allFriends)
-            .map { user, allFriends in
-                allFriends.filter { user.friends.contains($0.id) }
-            }
+        userManager.userPublisher
+            .map(\.friends)
+            .removeDuplicates()
+            .flatMapLatest(withUnretained: self) { $0.users(withIDs: $1) }
             .sink(withUnretained: self) { $0.friendsSubject.send($1) }
             .store(in: &cancellables)
-
-        Publishers
-            .CombineLatest(userManager.userPublisher, allFriends)
-            .map { user, allFriends in
-                allFriends.filter { user.incomingFriendRequests.contains($0.id) }
-            }
+        
+        userManager.userPublisher
+            .map(\.incomingFriendRequests)
+            .removeDuplicates()
+            .flatMapLatest(withUnretained: self) { $0.users(withIDs: $1) }
             .sink(withUnretained: self) { $0.friendRequestsSubject.send($1) }
             .store(in: &cancellables)
 
-        allFriends
-            .flatMapLatest(withUnretained: self) { strongSelf, friends in
-                strongSelf.database.collectionGroup("activitySummaries")
-                    .whereField("date", isEqualTo: DateFormatter.dateDashed.string(from: .now))
-                    .whereField("userID", asArrayOf: ActivitySummary.self, in: friends.map(\.id))
-                    .catchErrorJustReturn([])
-            }
+        userManager.userPublisher
+            .map { $0.friends + $0.incomingFriendRequests }
+            .removeDuplicates()
+            .flatMapLatest(withUnretained: self) { $0.activitySummaries(for: $1) }
             .map { activitySummaries in
                 let pairs = activitySummaries.compactMap { activitySummary -> (User.ID, ActivitySummary)? in
                     guard let userID = activitySummary.userID else { return nil }
@@ -131,5 +118,33 @@ final class FriendsManager: FriendsManaging {
             }
             .sink(withUnretained: self) { $0.friendActivitySummariesSubject.send($1) }
             .store(in: &cancellables)
+    }
+    
+    private func users(withIDs userIDs: [User.ID]) -> AnyPublisher<[User], Never> {
+        var cached = [User]()
+        var toFetch = [User.ID]()
+        userIDs.forEach { id in
+            if let cachedUser = usersCache.users[id] {
+                cached.append(cachedUser)
+            } else {
+                toFetch.append(id)
+            }
+        }
+        
+        return database.collection("users")
+            .whereField("id", asArrayOf: User.self, in: toFetch)
+            .catchErrorJustReturn([])
+            .handleEvents(withUnretained: self, receiveOutput: { strongSelf, users in
+                users.forEach { strongSelf.usersCache.users[$0.id] = $0 }
+            })
+            .map { ($0 + cached).sorted(by: \.name) }
+            .eraseToAnyPublisher()
+    }
+    
+    private func activitySummaries(for userIDs: [User.ID]) -> AnyPublisher<[ActivitySummary], Never> {
+        database.collectionGroup("activitySummaries")
+            .whereField("date", isEqualTo: DateFormatter.dateDashed.string(from: .now))
+            .whereField("userID", asArrayOf: ActivitySummary.self, in: userIDs)
+            .catchErrorJustReturn([])
     }
 }

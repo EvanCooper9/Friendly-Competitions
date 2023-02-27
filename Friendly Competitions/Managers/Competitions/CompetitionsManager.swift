@@ -60,6 +60,7 @@ final class CompetitionsManager: CompetitionsManaging {
     @Injected(Container.competitionCache) private var cache
     @Injected(Container.database) private var database
     @Injected(Container.userManager) private var userManager
+    @Injected(Container.usersCache) private var usersCache
 
     private var cancellables = Cancellables()
 
@@ -173,7 +174,6 @@ final class CompetitionsManager: CompetitionsManaging {
 //            .getDocumentsPreferCache() TODO: go back to cache
     }
     
-    private var fetchedParticipants = [User]()
     func participants(for competitionsID: Competition.ID) -> AnyPublisher<[User], Error> {
         search(byID: competitionsID)
             .map(\.participants)
@@ -181,7 +181,7 @@ final class CompetitionsManager: CompetitionsManaging {
                 var cached = [User]()
                 var participantIDsToFetch = [String]()
                 participantIDs.forEach { participantID in
-                    if let user = strongSelf.fetchedParticipants.first(where: { $0.id == participantID }) {
+                    if let user = strongSelf.usersCache.users[participantID] {
                         cached.append(user)
                     } else {
                         participantIDsToFetch.append(participantID)
@@ -190,7 +190,9 @@ final class CompetitionsManager: CompetitionsManaging {
                 guard participantIDsToFetch.isNotEmpty else { return .just(cached) }
                 return strongSelf.database.collection("users")
                     .whereField("id", asArrayOf: User.self, in: participantIDsToFetch)
-                    .handleEvents(receiveOutput: { strongSelf.fetchedParticipants.append(contentsOf: $0) })
+                    .handleEvents(receiveOutput: { users in
+                        users.forEach { strongSelf.usersCache.users[$0.id] = $0 }
+                    })
                     .map { $0 + cached }
                     .eraseToAnyPublisher()
             }
