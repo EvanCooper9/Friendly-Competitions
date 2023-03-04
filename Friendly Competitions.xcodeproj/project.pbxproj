@@ -123,7 +123,6 @@
 		ED58C99629ABAEA500393468 /* User+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED58C99529ABAEA500393468 /* User+Extensions.swift */; };
 		ED58C99829ABB2C200393468 /* RootViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED58C99729ABB2C200393468 /* RootViewModelTests.swift */; };
 		ED58C99A29ABCCA300393468 /* UsersCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED58C99929ABCCA300393468 /* UsersCache.swift */; };
-		ED58C99C29ABCD0C00393468 /* Managers+Factory.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED58C99B29ABCD0C00393468 /* Managers+Factory.swift */; };
 		ED604B2A28DA2C660097B76F /* DeveloperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED604B2828DA2C660097B76F /* DeveloperView.swift */; };
 		ED604B2B28DA2C660097B76F /* DeveloperViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED604B2928DA2C660097B76F /* DeveloperViewModel.swift */; };
 		ED65D3BD280CF36C00B38486 /* WorkoutType.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED65D3BC280CF36C00B38486 /* WorkoutType.swift */; };
@@ -365,7 +364,6 @@
 		ED58C99529ABAEA500393468 /* User+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "User+Extensions.swift"; sourceTree = "<group>"; };
 		ED58C99729ABB2C200393468 /* RootViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewModelTests.swift; sourceTree = "<group>"; };
 		ED58C99929ABCCA300393468 /* UsersCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UsersCache.swift; sourceTree = "<group>"; };
-		ED58C99B29ABCD0C00393468 /* Managers+Factory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Managers+Factory.swift"; sourceTree = "<group>"; };
 		ED604B2828DA2C660097B76F /* DeveloperView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperView.swift; sourceTree = "<group>"; };
 		ED604B2928DA2C660097B76F /* DeveloperViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperViewModel.swift; sourceTree = "<group>"; };
 		ED65D3BC280CF36C00B38486 /* WorkoutType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutType.swift; sourceTree = "<group>"; };
@@ -874,8 +872,6 @@
 		C1DA90AA26F63C2500B0E2D3 /* Managers */ = {
 			isa = PBXGroup;
 			children = (
-				ED58C99B29ABCD0C00393468 /* Managers+Factory.swift */,
-				ED58C99929ABCCA300393468 /* UsersCache.swift */,
 				ED879C2729A40D070007DB91 /* Activity Summary */,
 				ED7881AE2850F70C00C7F6CB /* Analytics */,
 				ED7881A92850F6B400C7F6CB /* Authentication */,
@@ -1065,6 +1061,7 @@
 			isa = PBXGroup;
 			children = (
 				ED879C6329A417670007DB91 /* Utility+Factory.swift */,
+				ED58C99929ABCCA300393468 /* UsersCache.swift */,
 				ED9F255929A4352A008C9967 /* Post Decoded */,
 				C11193AD26E7C5C6003B7EB3 /* Extensions */,
 			);
@@ -1805,7 +1802,6 @@
 				ED879C3529A410540007DB91 /* CompetitionsManager+Factory.swift in Sources */,
 				ED58C98D29AA9ECE00393468 /* SearchClient.swift in Sources */,
 				ED7881B02850F71E00C7F6CB /* AnalyticsEvent.swift in Sources */,
-				ED58C99C29ABCD0C00393468 /* Managers+Factory.swift in Sources */,
 				C1884E5426D5A40E00C21014 /* Competition.swift in Sources */,
 				ED901B76280265DB00FE619E /* SignInViewModel.swift in Sources */,
 				EDB4E42629903818009C12D3 /* Functions+Combine.swift in Sources */,
