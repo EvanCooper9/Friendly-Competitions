@@ -10,7 +10,7 @@ extension Competition {
             participants: [User.evan.id, User.gabby.id, User.andrew.id],
             pendingParticipants: [],
             scoringModel: .percentOfGoals,
-            start: .now,
+            start: .now.addingTimeInterval(-1.days),
             end: .now.addingTimeInterval(2.days),
             repeats: true,
             isPublic: false,

@@ -2,7 +2,6 @@ import AuthenticationServices
 import Combine
 import CryptoKit
 import ECKit
-import ECKit_Firebase
 import Factory
 import Firebase
 import FirebaseAuth
@@ -179,7 +178,7 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
             .joined()
     }
 
-    private func registerUserManager(with user: User) {
+    private func registerUserManager(with user: User) {        
         Container.userManager.register { [weak self] in
             guard let strongSelf = self else { fatalError("This should not happen") }
             let userManager = UserManager(user: user)
@@ -201,14 +200,14 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
         ]
         
         do {
-            try await database.document("users/\(firebaseUser.uid)").updateData(userJson)
+            try await database.document("users/\(firebaseUser.uid)").updateData(from: userJson).async()
         } catch {
             guard let nsError = error as NSError?, nsError.domain == "FIRFirestoreErrorDomain", nsError.code == 5 else { return }
             let user = User(id: firebaseUser.uid, email: email, name: name)
-            try await database.document("users/\(user.id)").setDataEncodable(user)
+            try await database.document("users/\(user.id)").setData(from: user).async()
         }
         
-        let user = try await self.database.document("users/\(firebaseUser.uid)").getDocument().decoded(as: User.self)
+        let user = try await self.database.document("users/\(firebaseUser.uid)").getDocument(as: User.self).async()
         DispatchQueue.main.async {
             self.currentUser = user
             self.emailVerifiedSubject.send(firebaseUser.isEmailVerified || firebaseUser.email == "review@apple.com")

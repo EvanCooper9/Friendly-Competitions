@@ -18,7 +18,7 @@ struct RootView: View {
 }
 
 #if DEBUG
-struct Home_Previews: PreviewProvider {
+struct RootView_Previews: PreviewProvider {
 
     private static func setupMocks() {
         activitySummaryManager.activitySummary = .just(.mock)

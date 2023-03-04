@@ -1,4 +1,3 @@
-import ECKit_Firebase
 import Factory
 import Firebase
 import FirebaseAuth
@@ -7,12 +6,16 @@ import FirebaseMessaging
 import RevenueCat
 import UIKit
 
+let isRunningUnitTests = ProcessInfo.processInfo.environment["TEST"] != nil
+
 final class AppDelegate: NSObject, UIApplicationDelegate {
 
     // Needs to be lazy so that `FirebaseApp.configure()` is called first
     @LazyInjected(Container.database) private var database
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
+        guard !isRunningUnitTests else { return true }
+        
         FirebaseApp.configure()
         Messaging.messaging().delegate = self
         
@@ -39,15 +42,14 @@ extension AppDelegate: MessagingDelegate {
 
         Task {
             let tokens = try await database.document("users/\(userId)")
-                .getDocument(source: .cache) // can fetch from cache because tokens shouldn't be out of date
-                .decoded(as: User.self)
+                .getDocument(as: User.self) // TODO: fetch from cache sources
+                .async()
                 .notificationTokens ?? []
 
             guard !tokens.contains(fcmToken) else { return }
             try await database.document("users/\(userId)")
-                .updateData([
-                    "notificationTokens": tokens.appending(fcmToken)
-                ])
+                .updateData(from: ["notificationTokens": tokens.appending(fcmToken)])
+                .async()
         }
     }
 }

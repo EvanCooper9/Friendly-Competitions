@@ -10,6 +10,15 @@
       }
     },
     {
+      "identity" : "combine-schedulers",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/pointfreeco/combine-schedulers",
+      "state" : {
+        "revision" : "882ac01eb7ef9e36d4467eb4b1151e74fcef85ab",
+        "version" : "0.9.1"
+      }
+    },
+    {
       "identity" : "combineext",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/CombineCommunity/CombineExt",
@@ -24,7 +33,7 @@
       "location" : "https://github.com/EvanCooper9/ECKit",
       "state" : {
         "branch" : "main",
-        "revision" : "381d738d90540ece311c7ddec06e93114b19116c"
+        "revision" : "ede6467a0e72461f4a8168b3bb8818278b418ee9"
       }
     },
     {
@@ -32,8 +41,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/hmlongco/Factory",
       "state" : {
-        "revision" : "b92b5630e83d9c23fdea3356c66c4355cf67ffb3",
-        "version" : "1.3.6"
+        "revision" : "39ff6a675cd0272d833d184d35add0f8fddd63de",
+        "version" : "1.3.7"
       }
     },
     {
@@ -50,8 +59,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/akaffenberger/firebase-ios-sdk-xcframeworks",
       "state" : {
-        "revision" : "c15bd2b0bc6adb2187fa8115ba873319e73651ff",
-        "version" : "10.3.0"
+        "revision" : "a2315cad1a1309d9d3d3497e3cea6e2559b49852",
+        "version" : "10.5.0"
       }
     },
     {
@@ -68,14 +77,14 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/RevenueCat/purchases-ios",
       "state" : {
-        "revision" : "7280a0a850d4ccbc7a21270f767e509fb9c35fdb",
-        "version" : "4.17.4"
+        "revision" : "511a20c40756127a72f63c4d87e4ca510471c5c6",
+        "version" : "4.17.6"
       }
     },
     {
       "identity" : "swift-algorithms",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/apple/swift-algorithms",
+      "location" : "https://github.com/apple/swift-algorithms.git",
       "state" : {
         "revision" : "b14b7f4c528c942f121c8b860b9410b2bf57825e",
         "version" : "1.0.0"
@@ -105,7 +114,16 @@
       "location" : "https://github.com/SwiftUIX/SwiftUIX",
       "state" : {
         "branch" : "master",
-        "revision" : "da756b93aa26a952457ecd05e622c10c87405601"
+        "revision" : "914d152449be42cf0005a2b9dc8fda17c046c942"
+      }
+    },
+    {
+      "identity" : "xctest-dynamic-overlay",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/pointfreeco/xctest-dynamic-overlay",
+      "state" : {
+        "revision" : "62041e6016a30f56952f5d7d3f12a3fd7029e1cd",
+        "version" : "0.8.3"
       }
     }
   ],

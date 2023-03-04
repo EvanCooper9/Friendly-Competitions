@@ -60,21 +60,18 @@ final class HomeViewModel: ObservableObject {
                 case .user(let id):
                     return strongSelf.friendsManager.user(withId: id)
                         .isLoading { strongSelf.loadingDeepLink = $0 }
-                        .unwrap()
                         .map { [.user($0)] }
                         .ignoreFailure()
                         .eraseToAnyPublisher()
                 case .competition(let id):
                     return strongSelf.competitionsManager.search(byID: id)
                         .isLoading { strongSelf.loadingDeepLink = $0 }
-                        .unwrap()
                         .map { [.competition($0)] }
                         .ignoreFailure()
                         .eraseToAnyPublisher()
                 case .competitionResults(let id):
                     return strongSelf.competitionsManager.search(byID: id)
                         .isLoading { strongSelf.loadingDeepLink = $0 }
-                        .unwrap()
                         .map { [.competitionResults($0)] }
                         .ignoreFailure()
                         .eraseToAnyPublisher()

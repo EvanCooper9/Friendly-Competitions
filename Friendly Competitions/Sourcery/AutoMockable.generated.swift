@@ -1,4 +1,4 @@
-// Generated using Sourcery 1.8.2 — https://github.com/krzysztofzablocki/Sourcery
+// Generated using Sourcery 2.0.1 — https://github.com/krzysztofzablocki/Sourcery
 // DO NOT EDIT
 // swiftlint:disable line_length
 // swiftlint:disable variable_name
@@ -27,12 +27,58 @@ import HealthKit
 
 
 
+
+
+
+
+
+
+
+
+class APIMock: API {
+
+
+
+
+    //MARK: - call
+
+    var callWithCallsCount = 0
+    var callWithCalled: Bool {
+        return callWithCallsCount > 0
+    }
+    var callWithReceivedArguments: (endpoint: String, data: [String: Any]?)?
+    var callWithReceivedInvocations: [(endpoint: String, data: [String: Any]?)] = []
+    var callWithReturnValue: AnyPublisher<Void, Error>!
+    var callWithClosure: ((String, [String: Any]?) -> AnyPublisher<Void, Error>)?
+
+    func call(_ endpoint: String, with data: [String: Any]?) -> AnyPublisher<Void, Error> {
+        callWithCallsCount += 1
+        callWithReceivedArguments = (endpoint: endpoint, data: data)
+        callWithReceivedInvocations.append((endpoint: endpoint, data: data))
+        if let callWithClosure = callWithClosure {
+            return callWithClosure(endpoint, data)
+        } else {
+            return callWithReturnValue
+        }
+    }
+
+}
+class ActivitySummaryCacheMock: ActivitySummaryCache {
+
+
+    var activitySummary: ActivitySummary?
+
+
+}
 class ActivitySummaryManagingMock: ActivitySummaryManaging {
+
+
     var activitySummary: AnyPublisher<ActivitySummary?, Never> {
         get { return underlyingActivitySummary }
         set(value) { underlyingActivitySummary = value }
     }
     var underlyingActivitySummary: AnyPublisher<ActivitySummary?, Never>!
+
 
     //MARK: - activitySummaries
 
@@ -58,6 +104,9 @@ class ActivitySummaryManagingMock: ActivitySummaryManaging {
 
 }
 class AnalyticsManagingMock: AnalyticsManaging {
+
+
+
 
     //MARK: - set
 
@@ -95,6 +144,8 @@ class AnalyticsManagingMock: AnalyticsManaging {
 
 }
 class AppStateProvidingMock: AppStateProviding {
+
+
     var deepLink: AnyPublisher<DeepLink?, Never> {
         get { return underlyingDeepLink }
         set(value) { underlyingDeepLink = value }
@@ -110,6 +161,7 @@ class AppStateProvidingMock: AppStateProviding {
         set(value) { underlyingDidBecomeActive = value }
     }
     var underlyingDidBecomeActive: AnyPublisher<Bool, Never>!
+
 
     //MARK: - push
 
@@ -147,6 +199,8 @@ class AppStateProvidingMock: AppStateProviding {
 
 }
 class AuthenticationManagingMock: AuthenticationManaging {
+
+
     var emailVerified: AnyPublisher<Bool, Never> {
         get { return underlyingEmailVerified }
         set(value) { underlyingEmailVerified = value }
@@ -157,6 +211,7 @@ class AuthenticationManagingMock: AuthenticationManaging {
         set(value) { underlyingLoggedIn = value }
     }
     var underlyingLoggedIn: AnyPublisher<Bool, Never>!
+
 
     //MARK: - signIn
 
@@ -296,7 +351,21 @@ class AuthenticationManagingMock: AuthenticationManaging {
     }
 
 }
+class CompetitionCacheMock: CompetitionCache {
+
+
+    var competitionsDateInterval: DateInterval {
+        get { return underlyingCompetitionsDateInterval }
+        set(value) { underlyingCompetitionsDateInterval = value }
+    }
+    var underlyingCompetitionsDateInterval: DateInterval!
+    var competitionsHasPremiumResults: HasPremiumResultsContainerCache?
+
+
+}
 class CompetitionsManagingMock: CompetitionsManaging {
+
+
     var competitions: AnyPublisher<[Competition], Never> {
         get { return underlyingCompetitions }
         set(value) { underlyingCompetitions = value }
@@ -322,6 +391,7 @@ class CompetitionsManagingMock: CompetitionsManaging {
         set(value) { underlyingHasPremiumResults = value }
     }
     var underlyingHasPremiumResults: AnyPublisher<Bool, Never>!
+
 
     //MARK: - accept
 
@@ -507,10 +577,10 @@ class CompetitionsManagingMock: CompetitionsManaging {
     }
     var searchByIDReceivedCompetitionID: Competition.ID?
     var searchByIDReceivedInvocations: [Competition.ID] = []
-    var searchByIDReturnValue: AnyPublisher<Competition?, Error>!
-    var searchByIDClosure: ((Competition.ID) -> AnyPublisher<Competition?, Error>)?
+    var searchByIDReturnValue: AnyPublisher<Competition, Error>!
+    var searchByIDClosure: ((Competition.ID) -> AnyPublisher<Competition, Error>)?
 
-    func search(byID competitionID: Competition.ID) -> AnyPublisher<Competition?, Error> {
+    func search(byID competitionID: Competition.ID) -> AnyPublisher<Competition, Error> {
         searchByIDCallsCount += 1
         searchByIDReceivedCompetitionID = competitionID
         searchByIDReceivedInvocations.append(competitionID)
@@ -632,7 +702,99 @@ class CompetitionsManagingMock: CompetitionsManaging {
     }
 
 }
+class DatabaseMock: Database {
+
+
+
+
+    //MARK: - batch
+
+    var batchCallsCount = 0
+    var batchCalled: Bool {
+        return batchCallsCount > 0
+    }
+    var batchReturnValue: Batch!
+    var batchClosure: (() -> Batch)?
+
+    func batch() -> Batch {
+        batchCallsCount += 1
+        if let batchClosure = batchClosure {
+            return batchClosure()
+        } else {
+            return batchReturnValue
+        }
+    }
+
+    //MARK: - collection
+
+    var collectionCallsCount = 0
+    var collectionCalled: Bool {
+        return collectionCallsCount > 0
+    }
+    var collectionReceivedCollectionPath: String?
+    var collectionReceivedInvocations: [String] = []
+    var collectionReturnValue: Collection!
+    var collectionClosure: ((String) -> Collection)?
+
+    func collection(_ collectionPath: String) -> Collection {
+        collectionCallsCount += 1
+        collectionReceivedCollectionPath = collectionPath
+        collectionReceivedInvocations.append(collectionPath)
+        if let collectionClosure = collectionClosure {
+            return collectionClosure(collectionPath)
+        } else {
+            return collectionReturnValue
+        }
+    }
+
+    //MARK: - collectionGroup
+
+    var collectionGroupCallsCount = 0
+    var collectionGroupCalled: Bool {
+        return collectionGroupCallsCount > 0
+    }
+    var collectionGroupReceivedCollectionGroupID: String?
+    var collectionGroupReceivedInvocations: [String] = []
+    var collectionGroupReturnValue: Collection!
+    var collectionGroupClosure: ((String) -> Collection)?
+
+    func collectionGroup(_ collectionGroupID: String) -> Collection {
+        collectionGroupCallsCount += 1
+        collectionGroupReceivedCollectionGroupID = collectionGroupID
+        collectionGroupReceivedInvocations.append(collectionGroupID)
+        if let collectionGroupClosure = collectionGroupClosure {
+            return collectionGroupClosure(collectionGroupID)
+        } else {
+            return collectionGroupReturnValue
+        }
+    }
+
+    //MARK: - document
+
+    var documentCallsCount = 0
+    var documentCalled: Bool {
+        return documentCallsCount > 0
+    }
+    var documentReceivedDocumentPath: String?
+    var documentReceivedInvocations: [String] = []
+    var documentReturnValue: Document!
+    var documentClosure: ((String) -> Document)?
+
+    func document(_ documentPath: String) -> Document {
+        documentCallsCount += 1
+        documentReceivedDocumentPath = documentPath
+        documentReceivedInvocations.append(documentPath)
+        if let documentClosure = documentClosure {
+            return documentClosure(documentPath)
+        } else {
+            return documentReturnValue
+        }
+    }
+
+}
 class EnvironmentManagingMock: EnvironmentManaging {
+
+
     var firestoreEnvironment: FirestoreEnvironment {
         get { return underlyingFirestoreEnvironment }
         set(value) { underlyingFirestoreEnvironment = value }
@@ -643,6 +805,7 @@ class EnvironmentManagingMock: EnvironmentManaging {
         set(value) { underlyingFirestoreEnvironmentDidChange = value }
     }
     var underlyingFirestoreEnvironmentDidChange: AnyPublisher<Void, Never>!
+
 
     //MARK: - set
 
@@ -663,6 +826,8 @@ class EnvironmentManagingMock: EnvironmentManaging {
 
 }
 class FriendsManagingMock: FriendsManaging {
+
+
     var friends: AnyPublisher<[User], Never> {
         get { return underlyingFriends }
         set(value) { underlyingFriends = value }
@@ -678,6 +843,7 @@ class FriendsManagingMock: FriendsManaging {
         set(value) { underlyingFriendRequests = value }
     }
     var underlyingFriendRequests: AnyPublisher<[User], Never>!
+
 
     //MARK: - add
 
@@ -775,10 +941,10 @@ class FriendsManagingMock: FriendsManaging {
     }
     var userWithIdReceivedId: String?
     var userWithIdReceivedInvocations: [String] = []
-    var userWithIdReturnValue: AnyPublisher<User?, Error>!
-    var userWithIdClosure: ((String) -> AnyPublisher<User?, Error>)?
+    var userWithIdReturnValue: AnyPublisher<User, Error>!
+    var userWithIdClosure: ((String) -> AnyPublisher<User, Error>)?
 
-    func user(withId id: String) -> AnyPublisher<User?, Error> {
+    func user(withId id: String) -> AnyPublisher<User, Error> {
         userWithIdCallsCount += 1
         userWithIdReceivedId = id
         userWithIdReceivedInvocations.append(id)
@@ -790,12 +956,22 @@ class FriendsManagingMock: FriendsManaging {
     }
 
 }
+class HealthKitManagerCacheMock: HealthKitManagerCache {
+
+
+    var permissionStatus: [HealthKitPermissionType: PermissionStatus] = [:]
+
+
+}
 class HealthKitManagingMock: HealthKitManaging {
+
+
     var permissionStatus: AnyPublisher<PermissionStatus, Never> {
         get { return underlyingPermissionStatus }
         set(value) { underlyingPermissionStatus = value }
     }
     var underlyingPermissionStatus: AnyPublisher<PermissionStatus, Never>!
+
 
     //MARK: - execute
 
@@ -803,11 +979,11 @@ class HealthKitManagingMock: HealthKitManaging {
     var executeCalled: Bool {
         return executeCallsCount > 0
     }
-    var executeReceivedQuery: HKQuery?
-    var executeReceivedInvocations: [HKQuery] = []
-    var executeClosure: ((HKQuery) -> Void)?
+    var executeReceivedQuery: AnyHealthKitQuery?
+    var executeReceivedInvocations: [AnyHealthKitQuery] = []
+    var executeClosure: ((AnyHealthKitQuery) -> Void)?
 
-    func execute(_ query: HKQuery) {
+    func execute(_ query: AnyHealthKitQuery) {
         executeCallsCount += 1
         executeReceivedQuery = query
         executeReceivedInvocations.append(query)
@@ -845,12 +1021,72 @@ class HealthKitManagingMock: HealthKitManaging {
     }
 
 }
-class NotificationManagingMock: NotificationManaging {
+class HealthStoringMock: HealthStoring {
+
+
+
+
+    //MARK: - execute
+
+    var executeCallsCount = 0
+    var executeCalled: Bool {
+        return executeCallsCount > 0
+    }
+    var executeReceivedQuery: AnyHealthKitQuery?
+    var executeReceivedInvocations: [AnyHealthKitQuery] = []
+    var executeClosure: ((AnyHealthKitQuery) -> Void)?
+
+    func execute(_ query: AnyHealthKitQuery) {
+        executeCallsCount += 1
+        executeReceivedQuery = query
+        executeReceivedInvocations.append(query)
+        executeClosure?(query)
+    }
+
+    //MARK: - enableBackgroundDelivery
+
+    var enableBackgroundDeliveryForCallsCount = 0
+    var enableBackgroundDeliveryForCalled: Bool {
+        return enableBackgroundDeliveryForCallsCount > 0
+    }
+    var enableBackgroundDeliveryForReceivedPermissionType: HealthKitPermissionType?
+    var enableBackgroundDeliveryForReceivedInvocations: [HealthKitPermissionType] = []
+    var enableBackgroundDeliveryForClosure: ((HealthKitPermissionType) -> Void)?
+
+    func enableBackgroundDelivery(for permissionType: HealthKitPermissionType) {
+        enableBackgroundDeliveryForCallsCount += 1
+        enableBackgroundDeliveryForReceivedPermissionType = permissionType
+        enableBackgroundDeliveryForReceivedInvocations.append(permissionType)
+        enableBackgroundDeliveryForClosure?(permissionType)
+    }
+
+    //MARK: - requestAuthorization
+
+    var requestAuthorizationForCompletionCallsCount = 0
+    var requestAuthorizationForCompletionCalled: Bool {
+        return requestAuthorizationForCompletionCallsCount > 0
+    }
+    var requestAuthorizationForCompletionReceivedArguments: (permissionTypes: [HealthKitPermissionType], completion: (Bool) -> Void)?
+    var requestAuthorizationForCompletionReceivedInvocations: [(permissionTypes: [HealthKitPermissionType], completion: (Bool) -> Void)] = []
+    var requestAuthorizationForCompletionClosure: (([HealthKitPermissionType], @escaping (Bool) -> Void) -> Void)?
+
+    func requestAuthorization(for permissionTypes: [HealthKitPermissionType], completion: @escaping (Bool) -> Void) {
+        requestAuthorizationForCompletionCallsCount += 1
+        requestAuthorizationForCompletionReceivedArguments = (permissionTypes: permissionTypes, completion: completion)
+        requestAuthorizationForCompletionReceivedInvocations.append((permissionTypes: permissionTypes, completion: completion))
+        requestAuthorizationForCompletionClosure?(permissionTypes, completion)
+    }
+
+}
+class NotificationsManagingMock: NotificationsManaging {
+
+
     var permissionStatus: AnyPublisher<PermissionStatus, Never> {
         get { return underlyingPermissionStatus }
         set(value) { underlyingPermissionStatus = value }
     }
     var underlyingPermissionStatus: AnyPublisher<PermissionStatus, Never>!
+
 
     //MARK: - requestPermissions
 
@@ -867,6 +1103,8 @@ class NotificationManagingMock: NotificationManaging {
 
 }
 class PermissionsManagingMock: PermissionsManaging {
+
+
     var requiresPermission: AnyPublisher<Bool, Never> {
         get { return underlyingRequiresPermission }
         set(value) { underlyingRequiresPermission = value }
@@ -877,6 +1115,7 @@ class PermissionsManagingMock: PermissionsManaging {
         set(value) { underlyingPermissionStatus = value }
     }
     var underlyingPermissionStatus: AnyPublisher<[Permission: PermissionStatus], Never>!
+
 
     //MARK: - request
 
@@ -897,6 +1136,8 @@ class PermissionsManagingMock: PermissionsManaging {
 
 }
 class PremiumManagingMock: PremiumManaging {
+
+
     var premium: AnyPublisher<Premium?, Never> {
         get { return underlyingPremium }
         set(value) { underlyingPremium = value }
@@ -907,6 +1148,7 @@ class PremiumManagingMock: PremiumManaging {
         set(value) { underlyingProducts = value }
     }
     var underlyingProducts: AnyPublisher<[Product], Never>!
+
 
     //MARK: - purchase
 
@@ -962,7 +1204,38 @@ class PremiumManagingMock: PremiumManaging {
     }
 
 }
+class SearchClientMock: SearchClient {
+
+
+
+
+    //MARK: - index
+
+    var indexWithNameCallsCount = 0
+    var indexWithNameCalled: Bool {
+        return indexWithNameCallsCount > 0
+    }
+    var indexWithNameReceivedName: String?
+    var indexWithNameReceivedInvocations: [String] = []
+    var indexWithNameReturnValue: SearchIndex!
+    var indexWithNameClosure: ((String) -> SearchIndex)?
+
+    func index(withName name: String) -> SearchIndex {
+        indexWithNameCallsCount += 1
+        indexWithNameReceivedName = name
+        indexWithNameReceivedInvocations.append(name)
+        if let indexWithNameClosure = indexWithNameClosure {
+            return indexWithNameClosure(name)
+        } else {
+            return indexWithNameReturnValue
+        }
+    }
+
+}
 class SearchManagingMock: SearchManaging {
+
+
+
 
     //MARK: - searchForCompetitions
 
@@ -1009,7 +1282,38 @@ class SearchManagingMock: SearchManaging {
     }
 
 }
+class StorageMock: Storage {
+
+
+
+
+    //MARK: - data
+
+    var dataPathCallsCount = 0
+    var dataPathCalled: Bool {
+        return dataPathCallsCount > 0
+    }
+    var dataPathReceivedPath: String?
+    var dataPathReceivedInvocations: [String] = []
+    var dataPathReturnValue: AnyPublisher<Data, Error>!
+    var dataPathClosure: ((String) -> AnyPublisher<Data, Error>)?
+
+    func data(path: String) -> AnyPublisher<Data, Error> {
+        dataPathCallsCount += 1
+        dataPathReceivedPath = path
+        dataPathReceivedInvocations.append(path)
+        if let dataPathClosure = dataPathClosure {
+            return dataPathClosure(path)
+        } else {
+            return dataPathReturnValue
+        }
+    }
+
+}
 class StorageManagingMock: StorageManaging {
+
+
+
 
     //MARK: - data
 
@@ -1035,6 +1339,8 @@ class StorageManagingMock: StorageManaging {
 
 }
 class UserManagingMock: UserManaging {
+
+
     var user: User {
         get { return underlyingUser }
         set(value) { underlyingUser = value }
@@ -1045,6 +1351,7 @@ class UserManagingMock: UserManaging {
         set(value) { underlyingUserPublisher = value }
     }
     var underlyingUserPublisher: AnyPublisher<User, Never>!
+
 
     //MARK: - deleteAccount
 
@@ -1087,7 +1394,24 @@ class UserManagingMock: UserManaging {
     }
 
 }
+class UsersCacheMock: UsersCache {
+
+
+    var users: [User.ID: User] = [:]
+
+
+}
+class WorkoutCacheMock: WorkoutCache {
+
+
+    var workoutMetrics: [WorkoutType: [WorkoutMetric]] = [:]
+
+
+}
 class WorkoutManagingMock: WorkoutManaging {
+
+
+
 
     //MARK: - workouts
 
