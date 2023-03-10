@@ -62,7 +62,7 @@ async function completeCompetition(competition: Competition): Promise<void> {
             `https://friendly-competitions.app/competition/${competition.id}/results`
         );
         await user.updateStatisticsWithNewRank(rank);
-    }))
+    }));
 
     await notificationPromises
         .then(async () => await competition.recordResults())
