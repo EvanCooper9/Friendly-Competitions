@@ -50,7 +50,7 @@ async function completeCompetitionsForDate(date: string): Promise<void> {
  */
 async function completeCompetition(competition: Competition): Promise<void> {
     const firestore = getFirestore();
-    await Promise.all(competition.participants.map(async userID => {
+    const notificationPromises = Promise.all(competition.participants.map(async userID => {
         const user = await firestore.doc(`users/${userID}`).get().then(doc => new User(doc));
         const standing = await firestore.doc(`competitions/${competition.id}/standings/${userID}`).get().then(doc => new Standing(doc));
         const rank = standing.rank;
@@ -62,10 +62,12 @@ async function completeCompetition(competition: Competition): Promise<void> {
             `https://friendly-competitions.app/competition/${competition.id}/results`
         );
         await user.updateStatisticsWithNewRank(rank);
-    }));
-    await competition.recordResults();
-    await competition.updateRepeatingCompetition();
-    await competition.resetStandings();
+    }))
+
+    await notificationPromises
+        .then(async () => await competition.recordResults())
+        .then(async () => await competition.resetStandings())
+        .then(async () => await competition.updateRepeatingCompetition());
 }
 
 export {
