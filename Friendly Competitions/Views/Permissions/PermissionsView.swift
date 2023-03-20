@@ -2,39 +2,42 @@ import SwiftUI
 
 struct PermissionsView: View {
 
-    @EnvironmentObject private var permissionsManager: AnyPermissionsManager
+    @StateObject private var viewModel = PermissionsViewModel()
 
     var body: some View {
         List {
             Section {
-                ForEach(Array(permissionsManager.permissionStatus.keys)) { permission in
-                    PermissionView(permission: permission, status: permissionsManager.permissionStatus[permission]!) {
-                        permissionsManager.request(permission)
+                ForEach(viewModel.permissionStatuses, id: \.0) { permission, permissionStatus in
+                    PermissionView(permission: permission, status: permissionStatus) {
+                        viewModel.request(permission)
                     }
                 }
             } header: {
-                Text("To get the best experience in Friendly Competitions, we need access to a few things.")
+                Text(L10n.Permissions.header)
             } footer: {
-                Text("You can change your responses in the settings app.")
+                Text(L10n.Permissions.footer)
             }
             .textCase(.none)
         }
-        .navigationTitle("Permissions needed")
+        .navigationTitle(L10n.Permissions.title)
         .embeddedInNavigationView()
+        .registerScreenView(name: "Permissions")
     }
 }
 
+#if DEBUG
 struct PermissionsView_Previews: PreviewProvider {
 
     private static func setupMocks() {
-        permissionsManager.permissionStatus = [
+        permissionsManager.permissionStatus = .just([
             .health: .done,
             .notifications: .authorized
-        ]
+        ])
     }
     
     static var previews: some View {
         PermissionsView()
-            .withEnvironmentObjects(setupMocks: setupMocks)
+            .setupMocks(setupMocks)
     }
 }
+#endif
