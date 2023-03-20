@@ -2,26 +2,20 @@ import SwiftUI
 
 struct FeaturedCompetition: View {
 
-    @Binding var competition: Competition
+    let competition: Competition
 
     @Environment(\.colorScheme) private var colorScheme
-
-    private var start: String { competition.start.formatted(date: .abbreviated, time: .omitted) }
-    private var end: String { competition.end.formatted(date: .abbreviated, time: .omitted) }
 
     var body: some View {
         color
             .aspectRatio(3/2, contentMode: .fit)
             .overlay {
                 if let banner = competition.banner {
-                    FirestoreImage(path: banner)
-                } else {
-                    Asset.Colors.listSectionBackground.swiftUIColor
+                    FirebaseImage(path: banner)
                 }
             }
-            .clipped()
             .overlay {
-                CompetitionDetails(competition: $competition)
+                CompetitionDetails(competition: competition, showParticipantCount: true, isFeatured: true)
                     .padding(.vertical, 8)
                     .padding(.horizontal)
                     .background(.ultraThinMaterial)
@@ -31,20 +25,31 @@ struct FeaturedCompetition: View {
     }
 
     private var color: some View {
-        colorScheme == .light ? Color(uiColor: .systemGray4) : Color(uiColor: .secondarySystemBackground)
+        colorScheme == .light ? Color(uiColor: .systemGray4) : Color.secondarySystemBackground
     }
 }
 
+#if DEBUG
 struct FeaturedCompetitionView_Previews: PreviewProvider {
+
+    private static let competition = Competition.mockPublic
+
+    private static func setupMocks() {
+        competitionsManager.competitions = .just([competition])
+        competitionsManager.participantsForReturnValue = .just([])
+        storageManager.dataForReturnValue = .just(.init())
+    }
+
     static var previews: some View {
-        ScrollView {
-            FeaturedCompetition(competition: .constant(.mockPublic))
-                .padding()
-            FeaturedCompetition(competition: .constant(.mockPublic))
-                .padding()
+        List {
+            Section {
+                FeaturedCompetition(competition: competition)
+            }
+            .removingMargin()
         }
-//        .preferredColorScheme(.dark)
-        .background(Asset.Colors.listBackground.swiftUIColor)
-        .withEnvironmentObjects()
+        .navigationTitle("Previews")
+        .embeddedInNavigationView()
+        .setupMocks(setupMocks)
     }
 }
+#endif

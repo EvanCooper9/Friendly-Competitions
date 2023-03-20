@@ -31,6 +31,7 @@ struct PermissionView: View {
     }
 }
 
+#if DEBUG
 struct PermissionView_Previews: PreviewProvider {
     static var previews: some View {
         VStack {
@@ -40,3 +41,4 @@ struct PermissionView_Previews: PreviewProvider {
         .padding()
     }
 }
+#endif
