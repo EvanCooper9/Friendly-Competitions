@@ -4,13 +4,13 @@ import SwiftUI
 import SwiftUIX
 
 struct UserView: View {
-    
+
     @StateObject private var viewModel: UserViewModel
-        
+
     init(user: User) {
         _viewModel = .init(wrappedValue: .init(user: user))
     }
-    
+
     var body: some View {
         List {
             Section {

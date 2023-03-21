@@ -53,10 +53,10 @@ struct PaywallPurchaseView: View {
 }
 
 struct Chip: View {
-    
+
     let text: String
     let color: Color
-    
+
     var body: some View {
         Text(text)
             .bold()

@@ -127,6 +127,7 @@
 		ED4F722229C93110007C5864 /* RevenueCatAppService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED4F722129C93110007C5864 /* RevenueCatAppService.swift */; };
 		ED4F722429C94491007C5864 /* Array+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED4F722329C94491007C5864 /* Array+Extensions.swift */; };
 		ED4F722629C9610E007C5864 /* FCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED4F722529C9610E007C5864 /* FCTestCase.swift */; };
+		ED4F723029C96C13007C5864 /* Publisher+ZipMany.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED4F722F29C96C13007C5864 /* Publisher+ZipMany.swift */; };
 		ED58C98729AA805A00393468 /* FriendsManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED58C98629AA805A00393468 /* FriendsManagerTests.swift */; };
 		ED58C98929AA89CC00393468 /* HealthKitManagerCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED58C98829AA89CC00393468 /* HealthKitManagerCache.swift */; };
 		ED58C98B29AA8C0100393468 /* HealthStoring.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED58C98A29AA8C0100393468 /* HealthStoring.swift */; };
@@ -374,6 +375,7 @@
 		ED4F722129C93110007C5864 /* RevenueCatAppService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RevenueCatAppService.swift; sourceTree = "<group>"; };
 		ED4F722329C94491007C5864 /* Array+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Extensions.swift"; sourceTree = "<group>"; };
 		ED4F722529C9610E007C5864 /* FCTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FCTestCase.swift; sourceTree = "<group>"; };
+		ED4F722F29C96C13007C5864 /* Publisher+ZipMany.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Publisher+ZipMany.swift"; sourceTree = "<group>"; };
 		ED58C98629AA805A00393468 /* FriendsManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendsManagerTests.swift; sourceTree = "<group>"; };
 		ED58C98829AA89CC00393468 /* HealthKitManagerCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitManagerCache.swift; sourceTree = "<group>"; };
 		ED58C98A29AA8C0100393468 /* HealthStoring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthStoring.swift; sourceTree = "<group>"; };
@@ -526,6 +528,7 @@
 		C11193AD26E7C5C6003B7EB3 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
+				ED4F722E29C96C13007C5864 /* Combine */,
 				EDE53017295F716600ECAD00 /* Firebase */,
 				EDA035B92917FE050091E7A6 /* Foundation */,
 				C1C1542126D5DFEA00C6FA9F /* HealthKit */,
@@ -1081,6 +1084,14 @@
 			path = "Revenue Cat";
 			sourceTree = "<group>";
 		};
+		ED4F722E29C96C13007C5864 /* Combine */ = {
+			isa = PBXGroup;
+			children = (
+				ED4F722F29C96C13007C5864 /* Publisher+ZipMany.swift */,
+			);
+			path = Combine;
+			sourceTree = "<group>";
+		};
 		ED58C99429ABAE9800393468 /* Extensions */ = {
 			isa = PBXGroup;
 			children = (
@@ -1528,6 +1539,7 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = C1691DD126D55FCF006FFA30 /* Build configuration list for PBXNativeTarget "Friendly Competitions" */;
 			buildPhases = (
+				ED4F722729C962D2007C5864 /* SwiftLint */,
 				C10E5545272B46730053BBA6 /* SwiftGen */,
 				ED3ED8F4284F936C00B5100F /* Sourcery */,
 				C1691DBF26D55FCF006FFA30 /* Sources */,
@@ -1688,8 +1700,28 @@
 			shellPath = /bin/sh;
 			shellScript = "if [ \"${ENABLE_PREVIEWS}\" = \"YES\" ]; then\n  echo \"Previews enabled, quitting to prevent 'preview paused'.\"\n  exit 0\nfi\n\nif [ $(arch) = \"arm64\" ]; then\n    /opt/homebrew/bin/sourcery\nelse\n    sourcery\nfi\n";
 		};
+		ED4F722729C962D2007C5864 /* SwiftLint */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = SwiftLint;
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "export PATH=\"$PATH:/opt/homebrew/bin\"\nif which swiftlint > /dev/null; then\n  swiftlint\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+		};
 		EDA0E0C12994203400868AF1 /* Crashlytics */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
@@ -1710,6 +1742,7 @@
 		};
 		EDC06FC129903F4E00923730 /* Firebase XCFrameworks Copy Resource Bundles */ = {
 			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
 			buildActionMask = 2147483647;
 			files = (
 			);
@@ -1779,6 +1812,7 @@
 				C13F922C27BFFF9900FC6880 /* StorageManager.swift in Sources */,
 				ED879C6429A417670007DB91 /* Utility+Factory.swift in Sources */,
 				EDD8950029634043009636E6 /* FirestoreEnvironment.swift in Sources */,
+				ED4F723029C96C13007C5864 /* Publisher+ZipMany.swift in Sources */,
 				ED487830282747CE00AC1E2C /* InviteFriendsViewModel.swift in Sources */,
 				ED4878252826F43800AC1E2C /* CompetitionParticipantRow.swift in Sources */,
 				EDB4E41D29903818009C12D3 /* Storage+Combine.swift in Sources */,

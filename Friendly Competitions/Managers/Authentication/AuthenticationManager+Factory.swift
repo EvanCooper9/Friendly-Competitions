@@ -5,7 +5,7 @@ extension Container {
     var authenticationManager: Factory<AuthenticationManaging> {
         Factory(self) { AuthenticationManager() }.scope(.shared)
     }
-    
+
     var auth: Factory<Auth> {
         Factory(self) {
             let environment = self.environmentManager().firestoreEnvironment

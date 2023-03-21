@@ -3,7 +3,7 @@ import SwiftUI
 struct UserInfoSection: View {
 
     let user: User
-    
+
     var body: some View {
         Section(L10n.Profile.title) {
             HStack {

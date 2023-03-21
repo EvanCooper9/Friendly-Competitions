@@ -34,7 +34,7 @@ struct PermissionsView_Previews: PreviewProvider {
             .notifications: .authorized
         ])
     }
-    
+
     static var previews: some View {
         PermissionsView()
             .setupMocks(setupMocks)

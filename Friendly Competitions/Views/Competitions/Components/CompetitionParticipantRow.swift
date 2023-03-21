@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct CompetitionParticipantRow: View {
-    
+
     struct Config: Identifiable {
         let id: String
         let rank: String?
@@ -11,9 +11,9 @@ struct CompetitionParticipantRow: View {
         let points: Int?
         let highlighted: Bool
     }
-    
+
     let config: Config
-    
+
     var body: some View {
         HStack {
             if let rank = config.rank {

@@ -9,19 +9,19 @@ final class NewCompetitionViewModel: ObservableObject {
     private enum Constants {
         static let defaultInterval: TimeInterval = 7.days
     }
-    
+
     struct InviteFriendsRow: Identifiable {
         let id: String
         let name: String
         var invited: Bool
-        
+
         mutating func onTap() {
             invited.toggle()
         }
     }
 
     // MARK: - Public Properties
-    
+
     @Published var name = ""
     @Published var scoringModel: Competition.ScoringModel = .percentOfGoals
     @Published var start: Date = .now.advanced(by: 1.days)
@@ -31,12 +31,12 @@ final class NewCompetitionViewModel: ObservableObject {
     @Published var friendRows = [InviteFriendsRow]()
     @Published private(set) var createDisabled = true
     @Published private(set) var disabledReason: String?
-    
+
     @Published private(set) var loading = false
     @Published private(set) var dismiss = false
-    
+
     // MARK: - Private Properties
-    
+
     @Injected(\.competitionsManager) private var competitionsManager
     @Injected(\.friendsManager) private var friendsManager
     @Injected(\.userManager) private var userManager
@@ -45,9 +45,9 @@ final class NewCompetitionViewModel: ObservableObject {
     private var cancellables = Cancellables()
 
     // MARK: - Lifecycle
-        
+
     init() {
-        
+
         friendsManager.friends
             .mapMany { friend in
                 InviteFriendsRow(
@@ -57,7 +57,7 @@ final class NewCompetitionViewModel: ObservableObject {
                 )
             }
             .assign(to: &$friendRows)
-        
+
         let inputs = Publishers
             .CombineLatest3(
                 Publishers.CombineLatest4($name, $scoringModel, $start, $end),
@@ -69,9 +69,9 @@ final class NewCompetitionViewModel: ObservableObject {
                 let (repeats, isPublic, friendRows) = result2
                 return (name, scoringModel, start, end, repeats, isPublic, friendRows, user)
             }
-        
+
         let disabledReason = inputs
-            .map { name, scoringModel, start, end, repeats, isPublic, friendRows, user -> String? in
+            .map { name, _, _, _, _, isPublic, friendRows, _ -> String? in
                 if name.isEmpty {
                     return L10n.NewCompetition.Disabled.name
                 } else if !isPublic && friendRows.filter(\.invited).isEmpty {
@@ -81,7 +81,7 @@ final class NewCompetitionViewModel: ObservableObject {
             }
         disabledReason.assign(to: &$disabledReason)
         disabledReason.map { $0 != nil }.assign(to: &$createDisabled)
-        
+
         let competition = inputs
             .map { name, scoringModel, start, end, repeats, isPublic, friendRows, user in
                 Competition(
@@ -113,7 +113,7 @@ final class NewCompetitionViewModel: ObservableObject {
     }
 
     // MARK: - Public Properties
-    
+
     func create() {
         createSubject.send()
     }

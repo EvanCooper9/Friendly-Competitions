@@ -4,17 +4,17 @@ import Factory
 import Foundation
 
 final class RootViewModel: ObservableObject {
-    
+
     // MARK: - Public Properties
-    
+
     @Published var tab = RootTab.home
-    
+
     // MARK: - Private Properties
-    
+
     @Injected(\.appState) private var appState
-    
+
     // MARK: - Lifecycle
-    
+
     init() {
         appState.deepLink
             .unwrap()

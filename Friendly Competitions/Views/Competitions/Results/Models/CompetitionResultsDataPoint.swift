@@ -1,18 +1,18 @@
 enum CompetitionResultsDataPoint: Identifiable {
-    
+
     struct Standing {
         let rank: Int
         let points: Int
         let isHighlighted: Bool
     }
-    
+
     case rank(current: Int, previous: Int?)
     case standings([Standing])
     case points(current: Int, previous: Int?)
     case activitySummaryBestDay(ActivitySummary?)
     case activitySummaryCloseCount(current: Int, previous: Int?)
     case workoutsBestDay(Workout?)
-    
+
     var id: String {
         switch self {
         case let .rank(current, previous):
@@ -29,7 +29,7 @@ enum CompetitionResultsDataPoint: Identifiable {
             return "workouts-best-day"
         }
     }
-    
+
     var title: String {
         switch self {
         case .rank:

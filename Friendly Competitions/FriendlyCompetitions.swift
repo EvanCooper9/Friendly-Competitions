@@ -5,7 +5,7 @@ struct FriendlyCompetitions: App {
 
     @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @StateObject private var appModel = FriendlyCompetitionsAppModel()
-    
+
     var body: some Scene {
         WindowGroup {
             Group {

@@ -25,17 +25,17 @@ extension Firestore: Database {
         let writeBatch: WriteBatch = batch()
         return writeBatch
     }
-    
+
     func collection(_ collectionPath: String) -> any Collection {
         let collectionRef: CollectionReference = collection(collectionPath)
         return collectionRef
     }
-    
+
     func collectionGroup(_ collectionGroupID: String) -> any Collection {
         let query: Query = collectionGroup(collectionGroupID)
         return query
     }
-    
+
     func document(_ documentPath: String) -> Document {
         let documentRef: DocumentReference = document(documentPath)
         return documentRef
@@ -52,24 +52,24 @@ extension Query: Collection {
                 .map { try $0.data(as: T.self, decoder: .custom) }
         }
     }
-    
+
     func whereField(_ field: String, arrayContains value: Any) -> any Collection {
         let query: Query = whereField(field, arrayContains: value)
         return query
     }
-    
+
     func whereField(_ field: String, isEqualTo value: Any) -> any Collection {
         let query: Query = whereField(field, isEqualTo: value)
         return query
     }
-    
+
     func publisher<T: Decodable>(asArrayOf type: T.Type) -> AnyPublisher<[T], Error> {
         snapshotPublisher()
             .map(\.documents)
             .tryMap { try $0.map { try $0.data(as: T.self, decoder: .custom) } }
             .eraseToAnyPublisher()
     }
-    
+
     func getDocuments<T: Decodable>(ofType type: T.Type) -> AnyPublisher<[T], Error> {
         getDocuments()
             .map(\.documents)
@@ -84,7 +84,7 @@ extension DocumentReference: Document {
     func setData<T: Encodable>(from value: T) -> AnyPublisher<Void, Error> {
         setData(from: value, encoder: .custom).eraseToAnyPublisher()
     }
-    
+
     func updateData(from data: [String : Any]) -> AnyPublisher<Void, Error> {
         let subject = PassthroughSubject<Void, Error>()
         updateData(data) { error in
@@ -97,7 +97,7 @@ extension DocumentReference: Document {
         }
         return subject.eraseToAnyPublisher()
     }
-    
+
     func getDocument<T: Decodable>(as type: T.Type) -> AnyPublisher<T, Error> {
         let subject = PassthroughSubject<T, Error>()
         getDocument(as: T.self) { result in
@@ -111,7 +111,7 @@ extension DocumentReference: Document {
         }
         return subject.eraseToAnyPublisher()
     }
-    
+
     func getDocumentPublisher<T: Decodable>(as type: T.Type) -> AnyPublisher<T, Error> {
         snapshotPublisher()
             .tryMap { try $0.data(as: T.self, decoder: .custom) }

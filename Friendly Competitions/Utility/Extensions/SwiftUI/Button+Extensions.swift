@@ -1,13 +1,13 @@
 import SwiftUI
 
 extension Button where Label == Text {
-    
+
     init<S: StringProtocol>(_ title: S, optionalAction: (() -> Void)?) {
         self = Button(title, action: {
             optionalAction?()
         })
     }
-    
+
     init<S: StringProtocol>(_ title: S, asyncAction: @escaping () async throws -> Void) {
         self = Button(title, action: {
             Task {
@@ -31,7 +31,7 @@ extension Button {
             label()
         }
     }
-    
+
     init(asyncAction: @escaping () async throws -> Void, @ViewBuilder label: () -> Label) {
         self = Button {
             Task {
@@ -81,7 +81,7 @@ extension Button where Label == SwiftUI.Label<Text, Image> {
             SwiftUI.Label(title, systemImage: systemImage)
         }
     }
-    
+
     init<S: StringProtocol>(_ title: S, systemImage: String, action: @escaping () -> Void) {
         self = Button {
             action()
@@ -89,7 +89,7 @@ extension Button where Label == SwiftUI.Label<Text, Image> {
             SwiftUI.Label(title, systemImage: systemImage)
         }
     }
-    
+
     init<S: StringProtocol>(_ title: S, systemImage: String, asyncAction: @escaping () async throws -> Void) {
         self = Button {
             Task {

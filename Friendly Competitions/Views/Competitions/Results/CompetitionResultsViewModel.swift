@@ -7,7 +7,7 @@ import Foundation
 final class CompetitionResultsViewModel: ObservableObject {
 
     // MARK: - Public Properties
-    
+
     @Published private(set) var ranges = [CompetitionResultsDateRange]()
     @Published private(set) var dataPoints = [CompetitionResultsDataPoint]()
     @Published private(set) var locked = false
@@ -15,26 +15,26 @@ final class CompetitionResultsViewModel: ObservableObject {
     @Published var showPaywall = false
 
     // MARK: - Private Properties
-    
+
     private let competition: Competition
-    
+
     @Injected(\.activitySummaryManager) private var activitySummaryManager
     @Injected(\.competitionsManager) private var competitionsManager
     @Injected(\.premiumManager) private var premiumManager
     @Injected(\.userManager) private var userManager
     @Injected(\.workoutManager) private var workoutManager
-    
+
     private let selectedIndex = CurrentValueSubject<Int, Never>(0)
-    
+
     // MARK: - Lifecycle
 
     init(competition: Competition) {
         self.competition = competition
-        
+
         let results = competitionsManager
             .results(for: competition.id)
             .catchErrorJustReturn([])
-                
+
         Publishers
             .CombineLatest3(
                 results,
@@ -57,11 +57,11 @@ final class CompetitionResultsViewModel: ObservableObject {
             }
             .receive(on: RunLoop.main)
             .assign(to: &$ranges)
-        
+
         $ranges
             .map { $0.first(where: \.selected)?.locked ?? true }
             .assign(to: &$locked)
-        
+
         let currentSelection = Publishers
             .CombineLatest(results, selectedIndex)
             .compactMap { results, selectedIndex -> (CompetitionResult, CompetitionResult?)? in
@@ -71,7 +71,7 @@ final class CompetitionResultsViewModel: ObservableObject {
                 return (results[selectedIndex], nil)
             }
             .handleEvents(withUnretained: self, receiveSubscription: { strongSelf, _ in strongSelf.loading = true })
-        
+
         Publishers
             .CombineLatest(currentSelection, $locked)
             .flatMapLatest(withUnretained: self, { strongSelf, input in
@@ -92,18 +92,18 @@ final class CompetitionResultsViewModel: ObservableObject {
     }
 
     // MARK: - Public Methods
-    
+
     func select(_ dateRange: CompetitionResultsDateRange) {
         guard let index = ranges.firstIndex(of: dateRange) else { return }
         selectedIndex.send(index)
     }
-    
+
     func purchaseTapped() {
         showPaywall.toggle()
     }
-    
+
     // MARK: - Private Methods
-    
+
     private func standingsDataPoints(currentResult: CompetitionResult, previousResult: CompetitionResult?) -> AnyPublisher<[CompetitionResultsDataPoint], Never> {
         let previousStandings: AnyPublisher<[Competition.Standing]?, Never> = {
             guard let previousResult else { return .just(nil) }
@@ -113,11 +113,11 @@ final class CompetitionResultsViewModel: ObservableObject {
                 .catchErrorJustReturn(nil)
                 .eraseToAnyPublisher()
         }()
-        
+
         let currentStandings = competitionsManager
             .standings(for: competition.id, resultID: currentResult.id)
             .catchErrorJustReturn([])
-        
+
         return Publishers
             .CombineLatest3(currentStandings, previousStandings, userManager.userPublisher)
             .map { currentStandings, previousStandings, user -> [CompetitionResultsDataPoint] in
@@ -150,7 +150,7 @@ final class CompetitionResultsViewModel: ObservableObject {
             }
             .eraseToAnyPublisher()
     }
-    
+
     private func scoringDataPoints(currentResult: CompetitionResult, previousResult: CompetitionResult?) -> AnyPublisher<[CompetitionResultsDataPoint], Never> {
         switch competition.scoringModel {
         case .rawNumbers, .percentOfGoals:
@@ -162,7 +162,7 @@ final class CompetitionResultsViewModel: ObservableObject {
                     .catchErrorJustReturn(nil)
                     .eraseToAnyPublisher()
             }()
-            
+
             let currentActivitySummaries = activitySummaryManager
                 .activitySummaries(in: currentResult.dateInterval)
                 .catchErrorJustReturn([])
@@ -201,7 +201,7 @@ final class CompetitionResultsViewModel: ObservableObject {
                     previousWorkouts
                 )
                 .ignoreFailure()
-                .map { currentWorkouts, previousWorkouts in
+                .map { currentWorkouts, _ in
                     let best = currentWorkouts
                         .sorted { lhs, rhs in
                             let lhsPoints = lhs.points.map(\.value).reduce(0, +)

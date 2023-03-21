@@ -18,7 +18,7 @@ struct User: Codable, Equatable, Hashable, Identifiable {
         let endIndex = id.index(id.startIndex, offsetBy: 4)
         return "#" + id[..<endIndex].uppercased()
     }
-    
+
     func visibility(by otherUser: User) -> Visibility {
         otherUser.id == id || friends.contains(otherUser.id) || showRealName != false ? .visible : .hidden
     }

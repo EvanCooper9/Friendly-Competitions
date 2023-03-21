@@ -44,7 +44,7 @@ struct ActivitySummaryInfoView: View {
                 .padding([.top, .bottom], 15)
         }
     }
-    
+
     private var emtpy: some View {
         Text(L10n.ActivitySummaryInfo.Value.empty).foregroundColor(.gray).font(.title3)
     }

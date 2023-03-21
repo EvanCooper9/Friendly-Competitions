@@ -2,15 +2,15 @@ import SwiftUI
 import SwiftUIX
 
 struct HomeView: View {
-        
+
     @StateObject private var viewModel = HomeViewModel()
-            
+
     @State private var presentAbout = false
     @State private var presentDeveloper = false
     @State private var presentPermissions = false
     @State private var presentNewCompetition = false
     @State private var presentSearchFriendsSheet = false
-    
+
     var body: some View {
         NavigationStack(path: $viewModel.navigationDestinations) {
             List {
@@ -31,7 +31,7 @@ struct HomeView: View {
                         Button(systemImage: .hammer) { presentDeveloper.toggle() }
                     }
                     Button(systemImage: .questionmarkCircle) { presentAbout.toggle() }
-                    
+
                     NavigationLink(value: NavigationDestination.profile) {
                         Image(systemName: .personCropCircle)
                     }
@@ -48,7 +48,7 @@ struct HomeView: View {
             .registerScreenView(name: "Home")
         }
     }
-    
+
     private var premiumBanner: some View {
         Section {
             PremiumBanner().overlay {
@@ -60,7 +60,7 @@ struct HomeView: View {
         }
         .listRowInsets(.zero)
     }
-    
+
     private var activitySummary: some View {
         Section {
             ActivitySummaryInfoView(activitySummary: viewModel.activitySummary)
@@ -72,7 +72,7 @@ struct HomeView: View {
             }
         }
     }
-    
+
     private var competitions: some View {
         Section {
             ForEach(viewModel.competitions + viewModel.invitedCompetitions) { competition in
@@ -96,7 +96,7 @@ struct HomeView: View {
             }
         }
     }
-    
+
     private var friends: some View {
         Section {
             ForEach(viewModel.friendRows) { row in
@@ -133,10 +133,10 @@ struct HomeView: View {
 
 #if DEBUG
 struct HomeView_Previews: PreviewProvider {
-    
+
     private static func setupMocks() {
         activitySummaryManager.activitySummary = .just(.mock)
-        
+
         competitionsManager.competitions = .just([.mock, .mockInvited, .mockOld, .mockPublic])
         competitionsManager.participantsForReturnValue = .just([.evan])
         competitionsManager.standingsPublisherForReturnValue = .just([.mock(for: .evan)])
@@ -144,14 +144,14 @@ struct HomeView_Previews: PreviewProvider {
         friendsManager.friends = .just([.gabby])
         friendsManager.friendRequests = .just([.andrew])
         friendsManager.friendActivitySummaries = .just([User.gabby.id: .mock])
-        
+
         permissionsManager.requiresPermission = .just(false)
         permissionsManager.permissionStatus = .just([
             .health: .authorized,
             .notifications: .authorized
         ])
     }
-    
+
     static var previews: some View {
         HomeView()
             .setupMocks(setupMocks)

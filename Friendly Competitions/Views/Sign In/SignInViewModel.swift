@@ -11,7 +11,7 @@ final class SignInViewModel: ObservableObject {
     }
 
     // MARK: - Public Properties
-    
+
     @Published var loading = false
     @Published var signingInWithEmail = false
     @Published var isSigningUp = false
@@ -21,7 +21,7 @@ final class SignInViewModel: ObservableObject {
     @Published var passwordConfirmation = ""
 
     // MARK: - Private Properties
-    
+
     @Injected(\.appState) private var appState
     @Injected(\.authenticationManager) private var authenticationManager
 
@@ -30,9 +30,9 @@ final class SignInViewModel: ObservableObject {
     private let signUpSubject = PassthroughSubject<Void, Never>()
     private let hudSubject = PassthroughSubject<HUD, Never>()
     private var cancellables = Cancellables()
-    
+
     // MARK: - Lifecycle
-    
+
     init() {
         hudSubject
             .sink(withUnretained: self) { $0.appState.push(hud: $1) }
@@ -97,13 +97,13 @@ final class SignInViewModel: ObservableObject {
             })
             .store(in: &cancellables)
     }
-    
+
     // MARK: - Public Methods
-    
+
     func forgot() {
         forgotSubject.send()
     }
-    
+
     func submit() {
         if signingInWithEmail {
             if isSigningUp {
