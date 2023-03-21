@@ -2,7 +2,7 @@ import XCTest
 
 @testable import Friendly_Competitions
 
-final class WorkoutTypeTests: XCTestCase {
+final class WorkoutTypeTests: FCTestCase {
     func testThatIdIsCorrect() {
         WorkoutType.allCases.forEach { workoutType in
             XCTAssertEqual(workoutType.id, workoutType.rawValue)

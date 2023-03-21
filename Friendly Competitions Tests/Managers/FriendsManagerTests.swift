@@ -5,11 +5,12 @@ import XCTest
 
 @testable import Friendly_Competitions
 
-final class FriendsManagerTests: XCTestCase {
+final class FriendsManagerTests: FCTestCase {
     
     private var api: APIMock!
     private var appState: AppStateProvidingMock!
     private var database: DatabaseMock!
+    private var usersCache: UsersCacheMock!
     private var userManager: UserManagingMock!
     
     private var cancellables: Cancellables!
@@ -20,13 +21,14 @@ final class FriendsManagerTests: XCTestCase {
         api = .init()
         appState = .init()
         database = .init()
+        usersCache = .init()
         userManager = .init()
         
-        Container.Registrations.reset()
-        Container.api.register { self.api }
-        Container.appState.register { self.appState }
-        Container.database.register { self.database }
-        Container.userManager.register { self.userManager }
+        Container.shared = Container()
+        Container.shared.api.register { self.api }
+        Container.shared.appState.register { self.appState }
+        Container.shared.database.register { self.database }
+        Container.shared.userManager.register { self.userManager }
         
         cancellables = .init()
     }
@@ -59,6 +61,7 @@ final class FriendsManagerTests: XCTestCase {
         
         let manager = FriendsManager()
         manager.friends
+            .print(#function)
             .expect([], [.andrew], expectation: expectation)
             .store(in: &cancellables)
         

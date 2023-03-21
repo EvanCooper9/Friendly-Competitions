@@ -2,7 +2,7 @@ import XCTest
 
 @testable import Friendly_Competitions
 
-final class PermissionTests: XCTestCase {
+final class PermissionTests: FCTestCase {
     func testThatIdIsCorrect() {
         XCTAssertEqual(Permission.health.id, "health")
         XCTAssertEqual(Permission.notifications.id, "notifications")

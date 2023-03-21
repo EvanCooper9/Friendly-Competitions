@@ -8,7 +8,7 @@ import XCTest
 
 @testable import Friendly_Competitions
 
-final class ActivitySummaryManagerTests: XCTestCase {
+final class ActivitySummaryManagerTests: FCTestCase {
     
     private var cache: ActivitySummaryCacheMock!
     private var competitionsManager: CompetitionsManagingMock!
@@ -29,14 +29,13 @@ final class ActivitySummaryManagerTests: XCTestCase {
         userManager = .init()
         workoutManager = .init()
         
-        Container.Registrations.reset()
-        Container.activitySummaryCache.register { self.cache }
-        Container.competitionsManager.register { self.competitionsManager }
-        Container.healthKitManager.register { self.healthKitManager }
-        Container.database.register { self.database }
-        Container.scheduler.register { self.scheduler.eraseToAnyScheduler() }
-        Container.userManager.register { self.userManager }
-        Container.workoutManager.register { self.workoutManager }
+        Container.shared.activitySummaryCache.register { self.cache }
+        Container.shared.competitionsManager.register { self.competitionsManager }
+        Container.shared.healthKitManager.register { self.healthKitManager }
+        Container.shared.database.register { self.database }
+        Container.shared.scheduler.register { self.scheduler.eraseToAnyScheduler() }
+        Container.shared.userManager.register { self.userManager }
+        Container.shared.workoutManager.register { self.workoutManager }
         cancellables = .init()
         
         competitionsManager.competitions = .just([])

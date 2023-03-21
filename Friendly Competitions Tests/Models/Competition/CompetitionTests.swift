@@ -2,7 +2,7 @@ import XCTest
 
 @testable import Friendly_Competitions
 
-final class CompetitionTests: XCTestCase {
+final class CompetitionTests: FCTestCase {
     func testThatStartedIsCorrect() {
         XCTAssertTrue(Competition(start: .distantPast).started)
         XCTAssertFalse(Competition(start: .distantFuture).started)

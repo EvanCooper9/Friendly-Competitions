@@ -126,6 +126,7 @@
 		ED4F721D29C930C5007C5864 /* FirebaseAppService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED4F721C29C930C5007C5864 /* FirebaseAppService.swift */; };
 		ED4F722229C93110007C5864 /* RevenueCatAppService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED4F722129C93110007C5864 /* RevenueCatAppService.swift */; };
 		ED4F722429C94491007C5864 /* Array+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED4F722329C94491007C5864 /* Array+Extensions.swift */; };
+		ED4F722629C9610E007C5864 /* FCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED4F722529C9610E007C5864 /* FCTestCase.swift */; };
 		ED58C98729AA805A00393468 /* FriendsManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED58C98629AA805A00393468 /* FriendsManagerTests.swift */; };
 		ED58C98929AA89CC00393468 /* HealthKitManagerCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED58C98829AA89CC00393468 /* HealthKitManagerCache.swift */; };
 		ED58C98B29AA8C0100393468 /* HealthStoring.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED58C98A29AA8C0100393468 /* HealthStoring.swift */; };
@@ -372,6 +373,7 @@
 		ED4F721C29C930C5007C5864 /* FirebaseAppService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseAppService.swift; sourceTree = "<group>"; };
 		ED4F722129C93110007C5864 /* RevenueCatAppService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RevenueCatAppService.swift; sourceTree = "<group>"; };
 		ED4F722329C94491007C5864 /* Array+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Extensions.swift"; sourceTree = "<group>"; };
+		ED4F722529C9610E007C5864 /* FCTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FCTestCase.swift; sourceTree = "<group>"; };
 		ED58C98629AA805A00393468 /* FriendsManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendsManagerTests.swift; sourceTree = "<group>"; };
 		ED58C98829AA89CC00393468 /* HealthKitManagerCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitManagerCache.swift; sourceTree = "<group>"; };
 		ED58C98A29AA8C0100393468 /* HealthStoring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthStoring.swift; sourceTree = "<group>"; };
@@ -607,6 +609,7 @@
 			children = (
 				ED879C0429A088780007DB91 /* Container+SetupMocks.swift */,
 				ED1CFA9C2864B92A00192E49 /* Publisher+Extensions.swift */,
+				ED4F722529C9610E007C5864 /* FCTestCase.swift */,
 				ED58C99429ABAE9800393468 /* Extensions */,
 				ED879C0D29A151530007DB91 /* Mocks */,
 			);
@@ -1738,6 +1741,7 @@
 				ED879C0F29A151600007DB91 /* Database+Mock.swift in Sources */,
 				C132944A27DAB12200117548 /* DeepLinkTests.swift in Sources */,
 				ED1CFA9D2864B92A00192E49 /* Publisher+Extensions.swift in Sources */,
+				ED4F722629C9610E007C5864 /* FCTestCase.swift in Sources */,
 				C155CA7227AC126E005F49F4 /* UserTests.swift in Sources */,
 				ED58C99329ABAE7300393468 /* ActivitySummary+Extensions.swift in Sources */,
 				C1EBB16727AD7AF600376E59 /* UserDefaultsTests.swift in Sources */,

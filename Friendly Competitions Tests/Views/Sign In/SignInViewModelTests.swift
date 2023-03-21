@@ -4,7 +4,7 @@ import XCTest
 
 @testable import Friendly_Competitions
 
-final class SignInViewModelTests: XCTestCase {
+final class SignInViewModelTests: FCTestCase {
     
     private var appState: AppStateProvidingMock!
     private var authenticationManager: AuthenticationManagingMock!
@@ -17,8 +17,8 @@ final class SignInViewModelTests: XCTestCase {
         authenticationManager = .init()
         cancellables = .init()
         
-        Container.appState.register { self.appState }
-        Container.authenticationManager.register { self.authenticationManager }
+        Container.shared.appState.register { self.appState }
+        Container.shared.authenticationManager.register { self.authenticationManager }
     }
 
     override func tearDown() {
