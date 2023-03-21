@@ -69,6 +69,8 @@ async function updateStandings(competition: Competition): Promise<void> {
     const firestore = getFirestore();
     const batch = firestore.batch();
     standings
+        .filter(result => result.status == "fulfilled")
+        .map(result =>(result as PromiseFulfilledResult<Standing>).value)
         .sort((a, b) => a.points > b.points ? 1 : -1)
         .reverse()
         .forEach((standing, index) => {
