@@ -12,9 +12,9 @@ final class ProfileViewModel: ObservableObject {
     
     // MARK: - Private Properties
     
-    @Injected(Container.authenticationManager) private var authenticationManager
-    @Injected(Container.premiumManager) private var premiumManager
-    @Injected(Container.userManager) private var userManager
+    @Injected(\.authenticationManager) private var authenticationManager
+    @Injected(\.premiumManager) private var premiumManager
+    @Injected(\.userManager) private var userManager
 
     private let deleteAccountSubject = PassthroughSubject<Void, Never>()
     private let signOutSubject = PassthroughSubject<Void, Never>()

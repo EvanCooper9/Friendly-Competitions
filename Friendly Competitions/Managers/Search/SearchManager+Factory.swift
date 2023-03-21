@@ -2,6 +2,11 @@ import AlgoliaSearchClient
 import Factory
 
 extension Container {
-    static let searchClient = Factory<SearchClient>(scope: .shared, factory: AlgoliaSearchClient.SearchClient.init)
-    static let searchManager = Factory<SearchManaging>(scope: .shared, factory: SearchManager.init)
+    var searchClient: Factory<SearchClient>{
+        Factory(self) { AlgoliaSearchClient.SearchClient() }.scope(.shared)
+    }
+    
+    var searchManager: Factory<SearchManaging>{
+        Factory(self) { SearchManager() }.scope(.shared)
+    }
 }

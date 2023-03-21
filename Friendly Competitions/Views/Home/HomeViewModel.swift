@@ -28,14 +28,14 @@ final class HomeViewModel: ObservableObject {
     
     // MARK: - Private Properties
     
-    @Injected(Container.appState) private var appState
-    @Injected(Container.activitySummaryManager) private var activitySummaryManager
-    @Injected(Container.analyticsManager) private var analyticsManager
-    @Injected(Container.competitionsManager) private var competitionsManager
-    @Injected(Container.friendsManager) private var friendsManager
-    @Injected(Container.permissionsManager) private var permissionsManager
-    @Injected(Container.premiumManager) private var premiumManager
-    @Injected(Container.userManager) private var userManager
+    @Injected(\.appState) private var appState
+    @Injected(\.activitySummaryManager) private var activitySummaryManager
+    @Injected(\.analyticsManager) private var analyticsManager
+    @Injected(\.competitionsManager) private var competitionsManager
+    @Injected(\.friendsManager) private var friendsManager
+    @Injected(\.permissionsManager) private var permissionsManager
+    @Injected(\.premiumManager) private var premiumManager
+    @Injected(\.userManager) private var userManager
     
     @UserDefault("competitionsFiltered", defaultValue: false) var competitionsFiltered
     @UserDefault("dismissedPremiumBanner", defaultValue: false) private var dismissedPremiumBanner

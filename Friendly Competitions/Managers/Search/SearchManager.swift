@@ -14,8 +14,8 @@ final class SearchManager: SearchManaging {
     
     // MARK: - Private Properties
     
-    @Injected(Container.searchClient) private var searchClient
-    @Injected(Container.userManager) private var userManager
+    @Injected(\.searchClient) private var searchClient
+    @Injected(\.userManager) private var userManager
         
     private lazy var competitionsIndex = searchClient.index(withName: "competitions")
     private lazy var userIndex = searchClient.index(withName: "users")

@@ -3,7 +3,8 @@ import SwiftUI
 
 #if DEBUG
 fileprivate enum Dependencies {
-    static let appState = AppState()
+    static let api = APIMock()
+    static let appState = AppStateProvidingMock()
     static let activitySummaryManager = ActivitySummaryManagingMock()
     static let analyticsManager = AnalyticsManagingMock()
     static let authenticationManager = AuthenticationManagingMock()
@@ -18,35 +19,40 @@ fileprivate enum Dependencies {
     static let workoutManager = WorkoutManagingMock()
     
     static func register() {
-        Container.appState.register { appState }
-        Container.activitySummaryManager.register { activitySummaryManager }
-        Container.analyticsManager.register { analyticsManager }
-        Container.authenticationManager.register { authenticationManager }
-        Container.competitionsManager.register { competitionsManager }
-        Container.friendsManager.register { friendsManager }
-        Container.healthKitManager.register { healthKitManager }
-        Container.permissionsManager.register { permissionsManager }
-        Container.searchManager.register { searchManager }
-        Container.storageManager.register { storageManager }
-        Container.premiumManager.register { premiumManager }
-        Container.userManager.register { userManager }
-        Container.workoutManager.register { workoutManager }
+        let _ = Container.shared.api.register { api }
+        let _ = Container.shared.appState.register { appState }
+        let _ = Container.shared.activitySummaryManager.register { activitySummaryManager }
+        let _ = Container.shared.analyticsManager.register { analyticsManager }
+        let _ = Container.shared.authenticationManager.register { authenticationManager }
+        let _ = Container.shared.competitionsManager.register { competitionsManager }
+        let _ = Container.shared.friendsManager.register { friendsManager }
+        let _ = Container.shared.healthKitManager.register { healthKitManager }
+        let _ = Container.shared.permissionsManager.register { permissionsManager }
+        let _ = Container.shared.searchManager.register { searchManager }
+        let _ = Container.shared.storageManager.register { storageManager }
+        let _ = Container.shared.premiumManager.register { premiumManager }
+        let _ = Container.shared.userManager.register { userManager }
+        let _ = Container.shared.workoutManager.register { workoutManager }
     }
 
     static func baseSetupMocks() {
         activitySummaryManager.activitySummary = .just(nil)
         activitySummaryManager.activitySummariesInReturnValue = .just([])
+        
+        appState.deepLink = .just(nil)
 
         authenticationManager.emailVerified = .just(true)
         authenticationManager.loggedIn = .just(true)
 
-        competitionsManager.competitions = .just([.mock])
+        competitionsManager.competitions = .just([])
+        competitionsManager.competitionPublisherForClosure = { _ in .never() }
         competitionsManager.invitedCompetitions = .just([])
         competitionsManager.standingsPublisherForReturnValue = .just([])
         competitionsManager.standingsForResultIDReturnValue = .just([])
         competitionsManager.participantsForReturnValue = .just([])
         competitionsManager.appOwnedCompetitions = .just([.mockPublic])
         competitionsManager.resultsForReturnValue = .just([])
+        competitionsManager.hasPremiumResults = .just(false)
         
         friendsManager.friends = .just([])
         friendsManager.friendActivitySummaries = .just([:])
@@ -57,15 +63,9 @@ fileprivate enum Dependencies {
         
         storageManager.dataForReturnValue = .just(.init())
         
-        let products: [Product] = [
-            .init(id: "1", price: "$0.99 / month", offer: "Free for 3 days", title: "Monthly", description: "Access premium features for one month"),
-            .init(id: "2", price: "$1.99 / six months", offer: nil, title: "Semi-Annually", description: "Access premium features for six months"),
-            .init(id: "3", price: "$2.99 / year", offer: nil, title: "Yearly", description: "Access premium features for one year")
-        ]
         premiumManager.premium = .just(nil)
-        premiumManager.products = .just(products)
+        premiumManager.products = .just([])
         premiumManager.purchaseReturnValue = .just(())
-//        premiumManager.refreshPurchasedProductsReturnValue = .just(())
         
         userManager.user = .evan
         userManager.userPublisher = .just(.evan)
@@ -76,7 +76,8 @@ fileprivate enum Dependencies {
 }
 
 extension PreviewProvider {
-    static var appState: AppState { Dependencies.appState }
+    static var api: APIMock { Dependencies.api }
+    static var appState: AppStateProvidingMock { Dependencies.appState }
     static var activitySummaryManager: ActivitySummaryManagingMock { Dependencies.activitySummaryManager }
     static var analyticsManager: AnalyticsManagingMock { Dependencies.analyticsManager }
     static var authenticationManager: AuthenticationManagingMock { Dependencies.authenticationManager }
@@ -88,6 +89,12 @@ extension PreviewProvider {
     static var premiumManager: PremiumManagingMock { Dependencies.premiumManager }
     static var userManager: UserManagingMock { Dependencies.userManager }
     static var workoutManager: WorkoutManagingMock { Dependencies.workoutManager }
+    
+    static func setupMocks(_ setupMocks: (() -> Void)? = nil) {
+        Dependencies.register()
+        Dependencies.baseSetupMocks()
+        setupMocks?()
+    }
 }
 
 extension View {

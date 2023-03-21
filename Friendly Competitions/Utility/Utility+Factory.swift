@@ -3,6 +3,11 @@ import Factory
 import Foundation
 
 extension Container {
-    static let scheduler = Factory(scope: .shared) { AnySchedulerOf<RunLoop>.main }
-    static let usersCache = Factory<UsersCache>(scope: .shared, factory: UsersStore.init)
+    var scheduler: Factory<AnySchedulerOf<RunLoop>> {
+        Factory(self) { AnySchedulerOf<RunLoop>.main }
+    }
+    
+    var usersCache: Factory<UsersCache> {
+        Factory(self) { UsersStore() }.scope(.shared)
+    }
 }

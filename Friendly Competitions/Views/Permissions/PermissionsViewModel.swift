@@ -6,7 +6,7 @@ final class PermissionsViewModel: ObservableObject {
         
     @Published private(set) var permissionStatuses = [(Permission, PermissionStatus)]()
 
-    @Injected(Container.permissionsManager) private var permissionsManager
+    @Injected(\.permissionsManager) private var permissionsManager
 
     init() {
         permissionsManager.permissionStatus

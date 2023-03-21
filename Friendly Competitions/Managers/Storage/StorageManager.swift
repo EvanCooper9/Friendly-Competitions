@@ -12,7 +12,7 @@ final class StorageManager: StorageManaging {
 
     // MARK: - Private Properties
 
-    @Injected(Container.storage) private var storage
+    @Injected(\.storage) private var storage
 
     // MARK: - Lifecycle
 

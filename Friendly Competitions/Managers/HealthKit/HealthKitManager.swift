@@ -37,9 +37,9 @@ final class HealthKitManager: HealthKitManaging {
 
     // MARK: - Private Properties
     
-    @Injected(Container.analyticsManager) private var analyticsManager
-    @Injected(Container.healthStore) private var healthStore
-    @Injected(Container.healthKitManagerCache) private var cache
+    @Injected(\.analyticsManager) private var analyticsManager
+    @Injected(\.healthStore) private var healthStore
+    @Injected(\.healthKitManagerCache) private var cache
     
     private let backgroundDeliveryReceivedSubject = PassthroughSubject<Void, Never>()
     private let permissionStatusSubject = ReplaySubject<[HealthKitPermissionType: PermissionStatus], Never>(bufferSize: 1)

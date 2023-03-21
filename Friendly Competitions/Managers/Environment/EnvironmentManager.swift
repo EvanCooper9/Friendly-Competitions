@@ -24,6 +24,8 @@ final class EnvironmentManager: EnvironmentManaging {
     
     // MARK: - Private Properties
     
+    @Injected(\.environmentCache) private var environmentCache
+    
     private let firestoreEnvironmentSubject: CurrentValueSubject<FirestoreEnvironment, Never>
     
     private var cancellables = Cancellables()
@@ -34,7 +36,11 @@ final class EnvironmentManager: EnvironmentManaging {
         if let environment = UserDefaults.standard.decode(FirestoreEnvironment.self, forKey: Constants.environmentKey) {
             firestoreEnvironmentSubject = .init(environment)
         } else {
+            #if targetEnvironment(simulator)
+            firestoreEnvironmentSubject = .init(.init(type: .debug, emulationType: .localhost, emulationDestination: nil))
+            #else
             firestoreEnvironmentSubject = .init(.default)
+            #endif
         }
         
         firestoreEnvironmentDidChange = firestoreEnvironmentSubject

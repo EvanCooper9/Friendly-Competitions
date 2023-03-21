@@ -16,9 +16,9 @@ final class VerifyEmailViewModel: ObservableObject {
 
     // MARK: - Private Properties
     
-    @Injected(Container.appState) private var appState
-    @Injected(Container.authenticationManager) private var authenticationManager
-    @Injected(Container.userManager) private var userManager
+    @Injected(\.appState) private var appState
+    @Injected(\.authenticationManager) private var authenticationManager
+    @Injected(\.userManager) private var userManager
 
     private let hudSubject = PassthroughSubject<HUD, Never>()
     private let backSubject = PassthroughSubject<Void, Never>()

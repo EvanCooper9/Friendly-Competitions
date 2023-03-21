@@ -2,6 +2,11 @@ import Factory
 import Foundation
 
 extension Container {
-    static let competitionsManager = Factory<CompetitionsManaging>(scope: .shared, factory: CompetitionsManager.init)
-    static let competitionCache = Factory<CompetitionCache>(scope: .shared) { UserDefaults.standard }
+    var competitionCache: Factory<CompetitionCache> {
+        Factory(self) { UserDefaults.standard }.scope(.shared)
+    }
+    
+    var competitionsManager: Factory<CompetitionsManaging> {
+        Factory(self) { CompetitionsManager() }.scope(.shared)
+    }
 }

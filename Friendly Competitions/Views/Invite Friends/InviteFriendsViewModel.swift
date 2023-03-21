@@ -24,10 +24,10 @@ final class InviteFriendsViewModel: ObservableObject {
     
     // MARK: - Private Properties
     
-    @Injected(Container.competitionsManager) private var competitionsManager
-    @Injected(Container.friendsManager) private var friendsManager
-    @Injected(Container.searchManager) private var searchManager
-    @Injected(Container.userManager) private var userManager
+    @Injected(\.competitionsManager) private var competitionsManager
+    @Injected(\.friendsManager) private var friendsManager
+    @Injected(\.searchManager) private var searchManager
+    @Injected(\.userManager) private var userManager
 
     private let acceptSubject = PassthroughSubject<User, Never>()
     private let inviteSubject = PassthroughSubject<User, Never>()

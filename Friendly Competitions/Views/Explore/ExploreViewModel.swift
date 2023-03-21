@@ -13,8 +13,8 @@ final class ExploreViewModel: ObservableObject {
     
     // MARK: - Private Properties
     
-    @Injected(Container.competitionsManager) private var competitionsManager
-    @Injected(Container.searchManager) private var searchManager
+    @Injected(\.competitionsManager) private var competitionsManager
+    @Injected(\.searchManager) private var searchManager
     
     // MARK: - Lifecycle
 

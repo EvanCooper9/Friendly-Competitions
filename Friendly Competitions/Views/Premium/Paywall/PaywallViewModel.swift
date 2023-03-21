@@ -15,8 +15,8 @@ final class PaywallViewModel: ObservableObject {
 
     // MARK: - Private Properties
     
-    @Injected(Container.analyticsManager) private var analyticsManager
-    @Injected(Container.premiumManager) private var premiumManager
+    @Injected(\.analyticsManager) private var analyticsManager
+    @Injected(\.premiumManager) private var premiumManager
     
     private let selectedIndex = CurrentValueSubject<Int, Never>(0)
     private let purchaseSubject = PassthroughSubject<Void, Never>()
