@@ -40,7 +40,7 @@ async function updateAllCompetitionStandings(competition: Competition): Promise<
     const firestore = getFirestore();
     const batch = firestore.batch();
     
-    await Promise.all(competition.participants.map(async participantID => {
+    await Promise.allSettled(competition.participants.map(async participantID => {
         let scoringData: Scoring[];
         switch (competition.scoringModel.type) {
         case RawScoringModel.percentOfGoals:

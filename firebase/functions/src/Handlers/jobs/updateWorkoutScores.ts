@@ -20,7 +20,7 @@ async function updateWorkoutScores(userID: string, before: DocumentSnapshot, aft
         .get()
         .then(query => query.docs.map(doc => new Competition(doc)));
 
-    await Promise.all(competitions.map(async competition => {
+    await Promise.allSettled(competitions.map(async competition => {
         if (!competition.isActive()) return;
 
         await firestore.runTransaction(async transaction => {

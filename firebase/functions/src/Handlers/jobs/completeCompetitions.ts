@@ -35,7 +35,7 @@ async function completeCompetitionsForDate(date: string): Promise<void> {
         .where("end", "==", date)
         .get()
         .then(query => query.docs.map(doc => new Competition(doc)));
-    await Promise.all(competitions.map(async competition => await completeCompetition(competition)));
+    await Promise.allSettled(competitions.map(async competition => await completeCompetition(competition)));
 }
 
 /**
@@ -45,16 +45,23 @@ async function completeCompetitionsForDate(date: string): Promise<void> {
  * - Updating history
  * - Resetting standings
  * - Resetting dates (if repeating)
- * @param {Compeittion} competition The competition to complete
+ * @param {Competition} competition The competition to complete
  * @return {Promise<void>} A promise that resolves when complete
  */
 async function completeCompetition(competition: Competition): Promise<void> {
     const firestore = getFirestore();
-    const notificationPromises = Promise.all(competition.participants.map(async userID => {
+
+    console.log(`=== completing competition ${competition.name} - ${competition.id} ===`);
+
+    console.log(`   === sending notification for competition ${competition.id}`);
+    await Promise.allSettled(competition.participants.map(async userID => {
         const user = await firestore.doc(`users/${userID}`).get().then(doc => new User(doc));
         const standing = await firestore.doc(`competitions/${competition.id}/standings/${userID}`).get().then(doc => new Standing(doc));
         const rank = standing.rank;
         const ordinal = ["st", "nd", "rd"][((rank+90)%100-10)%10-1] || "th";
+
+        console.log(`user ${user.id} placed ${rank}${ordinal} in competition ${competition.id}`);
+
         await notifications.sendNotificationsToUser(
             user,
             "Competition complete!",
@@ -64,10 +71,16 @@ async function completeCompetition(competition: Competition): Promise<void> {
         await user.updateStatisticsWithNewRank(rank);
     }));
 
-    await notificationPromises
-        .then(async () => await competition.recordResults())
-        .then(async () => await competition.resetStandings())
-        .then(async () => await competition.updateRepeatingCompetition());
+    console.log(`   === recording results for competition ${competition.id}`);
+    await competition.recordResults();
+
+    console.log(`   === resetting standings for competition ${competition.id}`);
+    await competition.resetStandings();
+    
+    console.log(`   === updating repeating competition ${competition.id}`);
+    await competition.updateRepeatingCompetition();
+
+    console.log(`=== completed competition ${competition.name} - ${competition.id} ===`);
 }
 
 export {

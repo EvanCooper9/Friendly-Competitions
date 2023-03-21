@@ -15,7 +15,7 @@ async function updateUserCompetitionStandingsLEGACY(userID: string): Promise<voi
         .get()
         .then(query => query.docs.map(doc => new Competition(doc)));
     
-    await Promise.all(competitions.map(async competition => {
+    await Promise.allSettled(competitions.map(async competition => {
         await updateStandings(competition);
     }));
 }
@@ -38,7 +38,7 @@ async function updateCompetitionStandingsLEGACY(competitionID: string): Promise<
  */
 async function updateStandings(competition: Competition): Promise<void> {
     console.log(`USING DEPRECATED STANDINGS UPDATE, COMPETITION: ${competition.id}`);
-    const standings = await Promise.all(competition.participants.map(async userId => {
+    const standings = await Promise.allSettled(competition.participants.map(async userId => {
         let totalPoints = 0;
         switch (competition.scoringModel.type) {
         case RawScoringModel.percentOfGoals: {
