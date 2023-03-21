@@ -33,7 +33,7 @@
       "location" : "https://github.com/EvanCooper9/ECKit",
       "state" : {
         "branch" : "main",
-        "revision" : "ede6467a0e72461f4a8168b3bb8818278b418ee9"
+        "revision" : "c69e8e433beec789700cc91cb5f2f036b4f9eaa7"
       }
     },
     {
@@ -41,8 +41,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/hmlongco/Factory",
       "state" : {
-        "revision" : "39ff6a675cd0272d833d184d35add0f8fddd63de",
-        "version" : "1.3.7"
+        "revision" : "df622bf129ceb0915319a9651174800cfda87b2c",
+        "version" : "2.0.3"
       }
     },
     {
@@ -59,8 +59,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/akaffenberger/firebase-ios-sdk-xcframeworks",
       "state" : {
-        "revision" : "a2315cad1a1309d9d3d3497e3cea6e2559b49852",
-        "version" : "10.5.0"
+        "revision" : "bb802d035e700fb091033bb60ca3230856199202",
+        "version" : "10.6.0"
       }
     },
     {
@@ -77,8 +77,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/RevenueCat/purchases-ios",
       "state" : {
-        "revision" : "511a20c40756127a72f63c4d87e4ca510471c5c6",
-        "version" : "4.17.6"
+        "revision" : "5d77aeccee3622dd2a5dbfd7af5aed195b84767e",
+        "version" : "4.17.8"
       }
     },
     {
@@ -114,7 +114,7 @@
       "location" : "https://github.com/SwiftUIX/SwiftUIX",
       "state" : {
         "branch" : "master",
-        "revision" : "914d152449be42cf0005a2b9dc8fda17c046c942"
+        "revision" : "ce5fad60556f6de71f452033a61f43466bce297b"
       }
     },
     {
@@ -122,8 +122,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/xctest-dynamic-overlay",
       "state" : {
-        "revision" : "62041e6016a30f56952f5d7d3f12a3fd7029e1cd",
-        "version" : "0.8.3"
+        "revision" : "ab8c9f45843694dd16be4297e6d44c0634fd9913",
+        "version" : "0.8.4"
       }
     }
   ],

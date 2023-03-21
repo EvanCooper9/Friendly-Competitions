@@ -2,7 +2,7 @@ import XCTest
 
 @testable import Friendly_Competitions
 
-final class UserTests: XCTestCase {
+final class UserTests: FCTestCase {
     func testThatHashIdIsCorrect() {
         let user = User(
             id: "testing",

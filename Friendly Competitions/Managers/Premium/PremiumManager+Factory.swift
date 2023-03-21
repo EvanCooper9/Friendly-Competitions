@@ -1,5 +1,7 @@
 import Factory
 
 extension Container {
-    static let premiumManager = Factory<PremiumManaging>(scope: .shared, factory: PremiumManager.init)
+    var premiumManager: Factory<PremiumManaging> {
+        Factory(self) { PremiumManager() }.scope(.shared)
+    }
 }

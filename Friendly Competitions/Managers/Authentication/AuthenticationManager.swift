@@ -32,7 +32,8 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
 
     // MARK: - Private Properties
 
-    @LazyInjected(Container.database) private var database
+    @Injected(\.auth) private var auth
+    @Injected(\.database) private var database
 
     @UserDefault("current_user") private var currentUser: User?
 
@@ -50,7 +51,7 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
     override init() {
         super.init()
         
-        emailVerifiedSubject = .init(Auth.auth().currentUser?.isEmailVerified ?? false)
+        emailVerifiedSubject = .init(auth.currentUser?.isEmailVerified ?? false)
         loggedInSubject = .init(currentUser != nil)
 
         if let currentUser {
@@ -65,7 +66,7 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
                 if let user = user {
                     strongSelf.registerUserManager(with: user)
                 } else {
-                    Container.userManager.reset()
+                    Container.shared.userManager.reset()
                 }
                 strongSelf.loggedInSubject.send(user != nil)
             }
@@ -81,7 +82,7 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
         case .apple:
             return signInWithApple()
         case .email(let email, let password):
-            return Auth.auth()
+            return auth
                 .signIn(withEmail: email, password: password)
                 .mapToVoid()
                 .eraseToAnyPublisher()
@@ -90,7 +91,7 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
     
     func signUp(name: String, email: String, password: String, passwordConfirmation: String) -> AnyPublisher<Void, Error> {
         guard password == passwordConfirmation else { return .error(SignUpError.passwordMatch) }
-        return Auth.auth()
+        return auth
             .createUser(withEmail: email, password: password)
             .map(\.user)
             .flatMapAsync { [weak self] user in
@@ -105,7 +106,7 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
     }
     
     func checkEmailVerification() -> AnyPublisher<Void, Error> {
-        guard let firebaseUser = Auth.auth().currentUser else { return .just(()) }
+        guard let firebaseUser = auth.currentUser else { return .just(()) }
         return .fromAsync { try await firebaseUser.reload() }
             .receive(on: RunLoop.main)
             .handleEvents(withUnretained: self, receiveOutput: { $0.emailVerifiedSubject.send(firebaseUser.isEmailVerified) })
@@ -113,7 +114,7 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
     }
     
     func resendEmailVerification() -> AnyPublisher<Void, Error> {
-        guard let user = Auth.auth().currentUser else { return .just(()) }
+        guard let user = auth.currentUser else { return .just(()) }
         return user.sendEmailVerification().eraseToAnyPublisher()
     }
     
@@ -124,13 +125,13 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
     }
     
     func deleteAccount() -> AnyPublisher<Void, Error> {
-        .fromAsync {
-            try await Auth.auth().currentUser?.delete()
+        .fromAsync { [weak self] in
+            try await self?.auth.currentUser?.delete()
         }
     }
 
     func signOut() throws {
-        try Auth.auth().signOut()
+        try auth.signOut()
     }
     
     // MARK: - Private Methods
@@ -179,7 +180,7 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
     }
 
     private func registerUserManager(with user: User) {        
-        Container.userManager.register { [weak self] in
+        Container.shared.userManager.register { [weak self] in
             guard let strongSelf = self else { fatalError("This should not happen") }
             let userManager = UserManager(user: user)
             strongSelf.userListener = userManager.userPublisher

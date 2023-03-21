@@ -16,7 +16,7 @@ final class DeveloperViewModel: ObservableObject {
 
     // MARK: - Private Properties
     
-    @Injected(Container.environmentManager) private var environmentManager
+    @Injected(\.environmentManager) private var environmentManager
     
     private let saveSubject = PassthroughSubject<Void, Never>()
 

@@ -2,7 +2,7 @@ import XCTest
 
 @testable import Friendly_Competitions
 
-final class ActivitySummaryTests: XCTestCase {
+final class ActivitySummaryTests: FCTestCase {
     
     func testThatIDIsCorrect() {
         let now = Date.now

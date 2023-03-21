@@ -27,12 +27,12 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
 
     // MARK: - Private Properties
 
-    @Injected(Container.activitySummaryCache) private var cache
-    @Injected(Container.healthKitManager) private var healthKitManager
-    @Injected(Container.database) private var database
-    @Injected(Container.scheduler) private var scheduler
-    @Injected(Container.userManager) private var userManager
-    @Injected(Container.workoutManager) private var workoutManager
+    @Injected(\.activitySummaryCache) private var cache
+    @Injected(\.healthKitManager) private var healthKitManager
+    @Injected(\.database) private var database
+    @Injected(\.scheduler) private var scheduler
+    @Injected(\.userManager) private var userManager
+    @Injected(\.workoutManager) private var workoutManager
 
     private var helper: HealthKitDataHelper<[ActivitySummary]>!
     

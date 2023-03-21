@@ -1,5 +1,7 @@
 import Factory
 
 extension Container {
-    static let appState = Factory<AppStateProviding>(scope: .shared, factory: AppState.init)
+    var appState: Factory<AppStateProviding> {
+        Factory(self) { AppState() }.scope(.shared)
+    }
 }

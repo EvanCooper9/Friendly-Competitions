@@ -2,7 +2,7 @@ import XCTest
 
 @testable import Friendly_Competitions
 
-class Competition_ScoringModelTests: XCTestCase {
+class Competition_ScoringModelTests: FCTestCase {
     func testThatIdIsCorrect() {
         [Competition.ScoringModel.percentOfGoals, .rawNumbers, .workout(.walking, [])].forEach { scoringModel in
             XCTAssertEqual(scoringModel.id, scoringModel.displayName)

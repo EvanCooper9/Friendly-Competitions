@@ -18,11 +18,11 @@ final class CompetitionResultsViewModel: ObservableObject {
     
     private let competition: Competition
     
-    @Injected(Container.activitySummaryManager) private var activitySummaryManager
-    @Injected(Container.competitionsManager) private var competitionsManager
-    @Injected(Container.premiumManager) private var premiumManager
-    @Injected(Container.userManager) private var userManager
-    @Injected(Container.workoutManager) private var workoutManager
+    @Injected(\.activitySummaryManager) private var activitySummaryManager
+    @Injected(\.competitionsManager) private var competitionsManager
+    @Injected(\.premiumManager) private var premiumManager
+    @Injected(\.userManager) private var userManager
+    @Injected(\.workoutManager) private var workoutManager
     
     private let selectedIndex = CurrentValueSubject<Int, Never>(0)
     
@@ -39,7 +39,7 @@ final class CompetitionResultsViewModel: ObservableObject {
             .CombineLatest3(
                 results,
                 premiumManager.premium.map(\.isNil.not),
-                selectedIndex
+                selectedIndex.removeDuplicates()
             )
             .map { results, hasPremium, selectedIndex in
                 results

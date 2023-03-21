@@ -5,7 +5,7 @@ import XCTest
 
 @testable import Friendly_Competitions
 
-final class RootViewModelTests: XCTestCase {
+final class RootViewModelTests: FCTestCase {
     
     private var appState: AppStateProvidingMock!
     private var cancellables: Cancellables!
@@ -13,8 +13,7 @@ final class RootViewModelTests: XCTestCase {
     override func setUp() {
         super.setUp()
         appState = .init()
-        Container.Registrations.reset()
-        Container.appState.register { self.appState }
+        Container.shared.appState.register { self.appState }
         cancellables = .init()
     }
     

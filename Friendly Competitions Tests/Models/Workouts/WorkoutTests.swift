@@ -2,7 +2,7 @@ import XCTest
 
 @testable import Friendly_Competitions
 
-final class WorkoutTests: XCTestCase {
+final class WorkoutTests: FCTestCase {
     func testThatIdIsCorrect() {
         let date = Date.now
         let type = WorkoutType.running

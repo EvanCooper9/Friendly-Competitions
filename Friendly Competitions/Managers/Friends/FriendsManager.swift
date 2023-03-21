@@ -28,11 +28,11 @@ final class FriendsManager: FriendsManaging {
 
     // MARK: - Private Properties
 
-    @Injected(Container.api) private var api
-    @Injected(Container.appState) private var appState
-    @Injected(Container.database) private var database
-    @Injected(Container.userManager) private var userManager
-    @Injected(Container.usersCache) private var usersCache
+    @Injected(\.api) private var api
+    @Injected(\.appState) private var appState
+    @Injected(\.database) private var database
+    @Injected(\.userManager) private var userManager
+    @Injected(\.usersCache) private var usersCache
     
     let friendsSubject = ReplaySubject<[User], Never>(bufferSize: 1)
     let friendActivitySummariesSubject = ReplaySubject<[User.ID : ActivitySummary], Never>(bufferSize: 1)

@@ -54,13 +54,13 @@ final class CompetitionsManager: CompetitionsManaging {
     private let appOwnedCompetitionsSubject = ReplaySubject<[Competition], Never>(bufferSize: 1)
     private let hasPremiumResultsSubject = ReplaySubject<Bool, Never>(bufferSize: 1)
 
-    @Injected(Container.api) private var api
-    @Injected(Container.appState) private var appState
-    @Injected(Container.analyticsManager) private var analyticsManager
-    @Injected(Container.competitionCache) private var cache
-    @Injected(Container.database) private var database
-    @Injected(Container.userManager) private var userManager
-    @Injected(Container.usersCache) private var usersCache
+    @Injected(\.api) private var api
+    @Injected(\.appState) private var appState
+    @Injected(\.analyticsManager) private var analyticsManager
+    @Injected(\.competitionCache) private var cache
+    @Injected(\.database) private var database
+    @Injected(\.userManager) private var userManager
+    @Injected(\.usersCache) private var usersCache
 
     private var cancellables = Cancellables()
 

@@ -3,7 +3,15 @@ import Foundation
 import HealthKit
 
 extension Container {
-    static let healthStore = Factory<HealthStoring>(scope: .shared, factory: HKHealthStore.init)
-    static let healthKitManager = Factory<HealthKitManaging>(scope: .shared, factory: HealthKitManager.init)
-    static let healthKitManagerCache = Factory<HealthKitManagerCache>(scope: .shared) { UserDefaults.standard }
+    var healthStore: Factory<HealthStoring>{
+        Factory(self) { HKHealthStore() }.scope(.shared)
+    }
+    
+    var healthKitManager: Factory<HealthKitManaging>{
+        Factory(self) { HealthKitManager() }.scope(.shared)
+    }
+    
+    var healthKitManagerCache: Factory<HealthKitManagerCache>{
+        Factory(self) { UserDefaults.standard }.scope(.shared)
+    }
 }

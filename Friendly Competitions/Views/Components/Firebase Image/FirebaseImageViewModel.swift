@@ -14,8 +14,8 @@ final class FirebaseImageViewModel: ObservableObject {
     
     private let path: String
     
-    @Injected(Container.scheduler) private var scheduler
-    @LazyInjected(Container.storage) private var storage
+    @Injected(\.scheduler) private var scheduler
+    @Injected(\.storageManager) private var storageManager
     
     private let downloadImageSubject = PassthroughSubject<Void, Error>()
     
@@ -26,7 +26,7 @@ final class FirebaseImageViewModel: ObservableObject {
         
         downloadImageSubject
             .handleEvents(withUnretained: self, receiveOutput: { $0.failed = false })
-            .flatMapLatest(withUnretained: self) { $0.storage.data(path: path) }
+            .flatMapLatest(withUnretained: self) { $0.storageManager.data(for: path) }
             .map { $0 as Data? }
             .receive(on: scheduler)
             .catch { [weak self] error -> AnyPublisher<Data?, Never> in

@@ -2,7 +2,7 @@ import XCTest
 
 @testable import Friendly_Competitions
 
-final class UserDefaultsTests: XCTestCase {
+final class UserDefaultsTests: FCTestCase {
 
     private struct Model: Codable, Equatable {
         let foo: Int
