@@ -9,7 +9,7 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         guard appServices.isNotEmpty else { return true }
         return appServices
             .map { $0.application(application, didFinishLaunchingWithOptions: launchOptions) }
-            .allSatisfy { $0 == true }
+            .allTrue()
     }
 
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {

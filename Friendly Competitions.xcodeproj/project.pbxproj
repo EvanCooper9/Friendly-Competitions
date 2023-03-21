@@ -125,6 +125,7 @@
 		ED4F721A29C93025007C5864 /* AppServices+Factory.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED4F721929C93025007C5864 /* AppServices+Factory.swift */; };
 		ED4F721D29C930C5007C5864 /* FirebaseAppService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED4F721C29C930C5007C5864 /* FirebaseAppService.swift */; };
 		ED4F722229C93110007C5864 /* RevenueCatAppService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED4F722129C93110007C5864 /* RevenueCatAppService.swift */; };
+		ED4F722429C94491007C5864 /* Array+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED4F722329C94491007C5864 /* Array+Extensions.swift */; };
 		ED58C98729AA805A00393468 /* FriendsManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED58C98629AA805A00393468 /* FriendsManagerTests.swift */; };
 		ED58C98929AA89CC00393468 /* HealthKitManagerCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED58C98829AA89CC00393468 /* HealthKitManagerCache.swift */; };
 		ED58C98B29AA8C0100393468 /* HealthStoring.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED58C98A29AA8C0100393468 /* HealthStoring.swift */; };
@@ -370,6 +371,7 @@
 		ED4F721929C93025007C5864 /* AppServices+Factory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppServices+Factory.swift"; sourceTree = "<group>"; };
 		ED4F721C29C930C5007C5864 /* FirebaseAppService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseAppService.swift; sourceTree = "<group>"; };
 		ED4F722129C93110007C5864 /* RevenueCatAppService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RevenueCatAppService.swift; sourceTree = "<group>"; };
+		ED4F722329C94491007C5864 /* Array+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Extensions.swift"; sourceTree = "<group>"; };
 		ED58C98629AA805A00393468 /* FriendsManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendsManagerTests.swift; sourceTree = "<group>"; };
 		ED58C98829AA89CC00393468 /* HealthKitManagerCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitManagerCache.swift; sourceTree = "<group>"; };
 		ED58C98A29AA8C0100393468 /* HealthStoring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthStoring.swift; sourceTree = "<group>"; };
@@ -1378,6 +1380,7 @@
 		EDA035B92917FE050091E7A6 /* Foundation */ = {
 			isa = PBXGroup;
 			children = (
+				ED4F722329C94491007C5864 /* Array+Extensions.swift */,
 				ED1B5CE9296A574800122D7E /* URL+Extensions.swift */,
 			);
 			path = Foundation;
@@ -1888,6 +1891,7 @@
 				C1401F8B26D94D1C0080F74F /* ImmutableListItemView.swift in Sources */,
 				ED58C98B29AA8C0100393468 /* HealthStoring.swift in Sources */,
 				C1930E5227C68E5F00DB45C1 /* CompetitionDetails.swift in Sources */,
+				ED4F722429C94491007C5864 /* Array+Extensions.swift in Sources */,
 				ED879C5029A411E20007DB91 /* NotificationsManager+Factory.swift in Sources */,
 				C1E1A9D127A6D9D700E8E360 /* FriendsManager.swift in Sources */,
 				C1691DDE26D561D5006FFA30 /* SignIn.swift in Sources */,
