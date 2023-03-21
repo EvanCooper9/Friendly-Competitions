@@ -121,6 +121,7 @@ final class FriendsManager: FriendsManaging {
     }
 
     private func users(withIDs userIDs: [User.ID]) -> AnyPublisher<[User], Never> {
+        guard userIDs.isNotEmpty else { return .just([]) }
         var cached = [User]()
         var toFetch = [User.ID]()
         userIDs.forEach { id in

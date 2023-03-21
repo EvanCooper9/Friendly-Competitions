@@ -14,6 +14,7 @@ final class ExploreViewModel: ObservableObject {
     // MARK: - Private Properties
 
     @Injected(\.competitionsManager) private var competitionsManager
+    @Injected(\.scheduler) private var scheduler
     @Injected(\.searchManager) private var searchManager
 
     // MARK: - Lifecycle
@@ -29,6 +30,7 @@ final class ExploreViewModel: ObservableObject {
                     .isLoading { strongSelf.loading = $0 }
                     .ignoreFailure()
             }
+            .receive(on: scheduler)
             .assign(to: &$searchResults)
     }
 }
