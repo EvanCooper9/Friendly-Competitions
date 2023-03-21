@@ -1,56 +1,18 @@
 import Factory
-import Firebase
-import FirebaseAuth
-import FirebaseFirestore
-import FirebaseMessaging
-import RevenueCat
 import UIKit
-
-let isRunningUnitTests = ProcessInfo.processInfo.environment["TEST"] != nil
-let isPreview = ProcessInfo.processInfo.environment["ENABLE_PREVIEWS"] == "YES"
 
 final class AppDelegate: NSObject, UIApplicationDelegate {
 
-    // Needs to be lazy so that `FirebaseApp.configure()` is called first
-    @LazyInjected(\.database) private var database
+    @Injected(\.appServices) private var appServices
 
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey : Any]? = nil) -> Bool {
-//        guard !isPreview, !isRunningUnitTests else { return true }
-//        
-//        FirebaseApp.configure()
-//        Messaging.messaging().delegate = self
-//        
-//        let apiKey: String
-//        #if DEBUG
-//        apiKey = "appl_REFBiyXbqcpKtUtawSUJezooOfQ"
-//        #else
-//        apiKey = "appl_PfCzNKLwrBPhZHDqVcrFOfigEHq"
-//        #endif
-//        Purchases.logLevel = .warn
-//        Purchases.configure(with: .init(withAPIKey: apiKey).with(usesStoreKit2IfAvailable: true))
-        
-        return true
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
+        guard appServices.isNotEmpty else { return true }
+        return appServices
+            .map { $0.application(application, didFinishLaunchingWithOptions: launchOptions) }
+            .allSatisfy { $0 == true }
     }
 
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
-        Messaging.messaging().apnsToken = deviceToken
-    }
-}
-
-extension AppDelegate: MessagingDelegate {
-    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-        guard let fcmToken = fcmToken, let userId = Auth.auth().currentUser?.uid else { return }
-
-        Task {
-            let tokens = try await database.document("users/\(userId)")
-                .getDocument(as: User.self) // TODO: fetch from cache sources
-                .async()
-                .notificationTokens ?? []
-
-            guard !tokens.contains(fcmToken) else { return }
-            try await database.document("users/\(userId)")
-                .updateData(from: ["notificationTokens": tokens.appending(fcmToken)])
-                .async()
-        }
+        appServices.forEach { $0.application(application, didRegisterForRemoteNotificationsWithDeviceToken: deviceToken) }
     }
 }

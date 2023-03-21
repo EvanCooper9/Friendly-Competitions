@@ -122,6 +122,10 @@
 		ED487830282747CE00AC1E2C /* InviteFriendsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED48782F282747CE00AC1E2C /* InviteFriendsViewModel.swift */; };
 		ED48783228295A2100AC1E2C /* InviteFriendsAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED48783128295A2100AC1E2C /* InviteFriendsAction.swift */; };
 		ED493E9727FDE47300A94F4A /* AuthenticationServices.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = ED493E9627FDE47300A94F4A /* AuthenticationServices.framework */; };
+		ED4F721829C92FCB007C5864 /* AppService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED4F721729C92FCB007C5864 /* AppService.swift */; };
+		ED4F721A29C93025007C5864 /* AppServices+Factory.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED4F721929C93025007C5864 /* AppServices+Factory.swift */; };
+		ED4F721D29C930C5007C5864 /* FirebaseAppService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED4F721C29C930C5007C5864 /* FirebaseAppService.swift */; };
+		ED4F722229C93110007C5864 /* RevenueCatAppService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED4F722129C93110007C5864 /* RevenueCatAppService.swift */; };
 		ED58C98729AA805A00393468 /* FriendsManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED58C98629AA805A00393468 /* FriendsManagerTests.swift */; };
 		ED58C98929AA89CC00393468 /* HealthKitManagerCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED58C98829AA89CC00393468 /* HealthKitManagerCache.swift */; };
 		ED58C98B29AA8C0100393468 /* HealthStoring.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED58C98A29AA8C0100393468 /* HealthStoring.swift */; };
@@ -364,6 +368,10 @@
 		ED48782F282747CE00AC1E2C /* InviteFriendsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteFriendsViewModel.swift; sourceTree = "<group>"; };
 		ED48783128295A2100AC1E2C /* InviteFriendsAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteFriendsAction.swift; sourceTree = "<group>"; };
 		ED493E9627FDE47300A94F4A /* AuthenticationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AuthenticationServices.framework; path = System/Library/Frameworks/AuthenticationServices.framework; sourceTree = SDKROOT; };
+		ED4F721729C92FCB007C5864 /* AppService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppService.swift; sourceTree = "<group>"; };
+		ED4F721929C93025007C5864 /* AppServices+Factory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppServices+Factory.swift"; sourceTree = "<group>"; };
+		ED4F721C29C930C5007C5864 /* FirebaseAppService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseAppService.swift; sourceTree = "<group>"; };
+		ED4F722129C93110007C5864 /* RevenueCatAppService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RevenueCatAppService.swift; sourceTree = "<group>"; };
 		ED58C98629AA805A00393468 /* FriendsManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendsManagerTests.swift; sourceTree = "<group>"; };
 		ED58C98829AA89CC00393468 /* HealthKitManagerCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitManagerCache.swift; sourceTree = "<group>"; };
 		ED58C98A29AA8C0100393468 /* HealthStoring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthStoring.swift; sourceTree = "<group>"; };
@@ -702,6 +710,7 @@
 				EDA61C0E2977317E00370C5C /* FriendlyCompetitionsAppModel.swift */,
 				C1B2F4E3272B505C0028449F /* AppDelegate.swift */,
 				ED879C1B29A3BB580007DB91 /* API */,
+				ED4F721629C92FBE007C5864 /* App Services */,
 				ED879C6029A416A70007DB91 /* App State */,
 				ED1B85CE29C90F87008DB1F6 /* Authentication */,
 				ED879BFF29A06E660007DB91 /* Database */,
@@ -1049,6 +1058,33 @@
 				ED48782F282747CE00AC1E2C /* InviteFriendsViewModel.swift */,
 			);
 			path = "Invite Friends";
+			sourceTree = "<group>";
+		};
+		ED4F721629C92FBE007C5864 /* App Services */ = {
+			isa = PBXGroup;
+			children = (
+				ED4F721729C92FCB007C5864 /* AppService.swift */,
+				ED4F721929C93025007C5864 /* AppServices+Factory.swift */,
+				ED4F721B29C93044007C5864 /* Firebase */,
+				ED4F722029C93101007C5864 /* Revenue Cat */,
+			);
+			path = "App Services";
+			sourceTree = "<group>";
+		};
+		ED4F721B29C93044007C5864 /* Firebase */ = {
+			isa = PBXGroup;
+			children = (
+				ED4F721C29C930C5007C5864 /* FirebaseAppService.swift */,
+			);
+			path = Firebase;
+			sourceTree = "<group>";
+		};
+		ED4F722029C93101007C5864 /* Revenue Cat */ = {
+			isa = PBXGroup;
+			children = (
+				ED4F722129C93110007C5864 /* RevenueCatAppService.swift */,
+			);
+			path = "Revenue Cat";
 			sourceTree = "<group>";
 		};
 		ED58C99429ABAE9800393468 /* Extensions */ = {
@@ -1755,6 +1791,7 @@
 				C123C9DB27A8A98800375F73 /* UserManager.swift in Sources */,
 				EDBEA170281459D200058A47 /* EditCompetitionSection.swift in Sources */,
 				EDB4E42229903818009C12D3 /* Query+Combine.swift in Sources */,
+				ED4F722229C93110007C5864 /* RevenueCatAppService.swift in Sources */,
 				EDA352932836F87600390585 /* CompetitionViewAction.swift in Sources */,
 				ED3868DE29677F8100522722 /* PaywallPurchaseView.swift in Sources */,
 				C12D640727A5F2FC00259237 /* CompetitionsManager.swift in Sources */,
@@ -1770,6 +1807,7 @@
 				ED879C2E29A40DAB0007DB91 /* HasPremiumResultsCache.swift in Sources */,
 				ED879C4129A411430007DB91 /* EnvironmentManager+Factory.swift in Sources */,
 				EDA61C0D2977276F00370C5C /* RootViewModel.swift in Sources */,
+				ED4F721D29C930C5007C5864 /* FirebaseAppService.swift in Sources */,
 				ED879C5D29A413ED0007DB91 /* Storage+Firebase.swift in Sources */,
 				ED1B85C229C904CC008DB1F6 /* HomeViewModel.swift in Sources */,
 				ED58C99A29ABCCA300393468 /* UsersCache.swift in Sources */,
@@ -1849,6 +1887,7 @@
 				EDB4E42B29903818009C12D3 /* MultiFactor+Combine.swift in Sources */,
 				ED879C3329A4102E0007DB91 /* ActivitySummaryManager+Factory.swift in Sources */,
 				ED1B85AE29C9049E008DB1F6 /* FeaturedCompetition.swift in Sources */,
+				ED4F721A29C93025007C5864 /* AppServices+Factory.swift in Sources */,
 				ED7881AB2850F6C400C7F6CB /* SignInMethod.swift in Sources */,
 				ED130764295FFA5C00E0AC87 /* CompetitionResultsDataPoint.swift in Sources */,
 				ED58C98929AA89CC00393468 /* HealthKitManagerCache.swift in Sources */,
@@ -1881,6 +1920,7 @@
 				ED1B85D029C90F9E008DB1F6 /* Authentication.swift in Sources */,
 				C132945627DF6D9E00117548 /* Binding+Extensions.swift in Sources */,
 				ED039768295F5458003D4D80 /* CompetitionResultsView.swift in Sources */,
+				ED4F721829C92FCB007C5864 /* AppService.swift in Sources */,
 				ED879C4E29A411CA0007DB91 /* FriendsManager+Factory.swift in Sources */,
 				EDB4E42329903818009C12D3 /* WriteBatch+Combine.swift in Sources */,
 				EDB4E42729903818009C12D3 /* GameCenterAuthProvider+Combine.swift in Sources */,

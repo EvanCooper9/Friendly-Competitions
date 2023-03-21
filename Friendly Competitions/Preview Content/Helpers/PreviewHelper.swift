@@ -4,6 +4,7 @@ import SwiftUI
 #if DEBUG
 fileprivate enum Dependencies {
     static let api = APIMock()
+    static let appServices = [AppService]()
     static let appState = AppStateProvidingMock()
     static let activitySummaryManager = ActivitySummaryManagingMock()
     static let analyticsManager = AnalyticsManagingMock()
@@ -20,6 +21,7 @@ fileprivate enum Dependencies {
     
     static func register() {
         let _ = Container.shared.api.register { api }
+        let _ = Container.shared.appServices.register { appServices }
         let _ = Container.shared.appState.register { appState }
         let _ = Container.shared.activitySummaryManager.register { activitySummaryManager }
         let _ = Container.shared.analyticsManager.register { analyticsManager }
