@@ -38,10 +38,10 @@ struct InviteFriendsView: View {
             }
         }
         .listStyle(.insetGrouped)
+        .withLoadingOverlay(isLoading: viewModel.loading)
         .searchable(text: $viewModel.searchText, placement: .navigationBarDrawer(displayMode: .always))
         .navigationTitle(L10n.InviteFriends.title)
         .embeddedInNavigationView()
-        .withLoadingOverlay(isLoading: viewModel.loading)
     }
 }
 
