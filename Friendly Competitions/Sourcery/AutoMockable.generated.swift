@@ -792,6 +792,13 @@ class DatabaseMock: Database {
     }
 
 }
+class EnvironmentCacheMock: EnvironmentCache {
+
+
+    var environment: FirestoreEnvironment?
+
+
+}
 class EnvironmentManagingMock: EnvironmentManaging {
 
 

@@ -30,9 +30,9 @@ final class PermissionsManager: PermissionsManaging {
 
     // MARK: - Private Properties
 
-    @Injected(Container.healthKitManager) private var healthKitManager
-    @Injected(Container.notificationsManager) private var notificationManager
-    @Injected(Container.scheduler) private var scheduler
+    @Injected(\.healthKitManager) private var healthKitManager
+    @Injected(\.notificationsManager) private var notificationManager
+    @Injected(\.scheduler) private var scheduler
     
     private let permissionStatusSubject = ReplaySubject<[Permission: PermissionStatus], Never>(bufferSize: 1)
     

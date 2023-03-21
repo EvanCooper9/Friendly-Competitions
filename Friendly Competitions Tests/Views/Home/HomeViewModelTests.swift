@@ -6,7 +6,7 @@ import XCTest
 
 @testable import Friendly_Competitions
 
-final class HomeViewModelTests: XCTestCase {
+final class HomeViewModelTests: FCTestCase {
 
     private var activitySummaryManager: ActivitySummaryManagingMock!
     private var analyticsManager: AnalyticsManagingMock!
@@ -20,6 +20,7 @@ final class HomeViewModelTests: XCTestCase {
     private var cancellables: Cancellables!
 
     override func setUp() {
+        super.setUp()
         activitySummaryManager = .init()
         analyticsManager = .init()
         appState = .init()
@@ -42,17 +43,14 @@ final class HomeViewModelTests: XCTestCase {
         premiumManager.premium = .never()
         userManager.userPublisher = .just(.evan)
         
-        Container.Registrations.reset()
-        Container.activitySummaryManager.register { self.activitySummaryManager }
-        Container.analyticsManager.register { self.analyticsManager }
-        Container.appState.register { self.appState }
-        Container.competitionsManager.register { self.competitionsManager }
-        Container.friendsManager.register { self.friendsManager }
-        Container.permissionsManager.register { self.permissionsManager }
-        Container.premiumManager.register { self.premiumManager }
-        Container.userManager.register { self.userManager }
-
-        super.setUp()
+        Container.shared.activitySummaryManager.register { self.activitySummaryManager }
+        Container.shared.analyticsManager.register { self.analyticsManager }
+        Container.shared.appState.register { self.appState }
+        Container.shared.competitionsManager.register { self.competitionsManager }
+        Container.shared.friendsManager.register { self.friendsManager }
+        Container.shared.permissionsManager.register { self.permissionsManager }
+        Container.shared.premiumManager.register { self.premiumManager }
+        Container.shared.userManager.register { self.userManager }
     }
 
     override func tearDown() {

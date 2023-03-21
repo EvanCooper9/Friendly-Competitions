@@ -5,7 +5,7 @@ import XCTest
 
 @testable import Friendly_Competitions
 
-final class SearchManagerTests: XCTestCase {
+final class SearchManagerTests: FCTestCase {
     
     private var searchClient: SearchClientMock!
     private var userManager: UserManagingMock!
@@ -16,9 +16,8 @@ final class SearchManagerTests: XCTestCase {
         super.setUp()
         searchClient = .init()
         userManager = .init()
-        Container.Registrations.reset()
-        Container.searchClient.register { self.searchClient }
-        Container.userManager.register { self.userManager }
+        Container.shared.searchClient.register { self.searchClient }
+        Container.shared.userManager.register { self.userManager }
         cancellables = .init()
     }
     

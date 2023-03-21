@@ -20,9 +20,9 @@ final class HealthKitDataHelper<Data> {
     
     // MARK: - Private Properties
     
-    @Injected(Container.competitionsManager) private var competitionsManager
-    @Injected(Container.healthKitManager) private var healthKitManager
-    @Injected(Container.scheduler) private var scheduler
+    @Injected(\.competitionsManager) private var competitionsManager
+    @Injected(\.healthKitManager) private var healthKitManager
+    @Injected(\.scheduler) private var scheduler
     
     private let fetchAndUpload = PassthroughSubject<DateInterval, Never>()
     private let fetchAndUploadFinished = PassthroughSubject<Void, Never>()
@@ -55,16 +55,10 @@ final class HealthKitDataHelper<Data> {
                     .map { [weak self] _ in self?.competitionsManager.competitionsDateInterval }
                     .unwrap(),
                 competitionsManager.competitions
-                    .print("competition")
                     .filterMany(\.isActive)
-                    .print("competition is active")
                     .map(\.dateInterval)
-                    .print("date interval")
             )
-            .print("foreground / competitions")
-            .sink(withUnretained: self, receiveValue: {
-                $0.fetchAndUpload.send($1)
-            })
+            .sink(withUnretained: self, receiveValue: { $0.fetchAndUpload.send($1) })
             .store(in: &cancellables)
         
         registerForBackgroundDelivery()

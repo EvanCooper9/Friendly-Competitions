@@ -59,9 +59,9 @@ final class CompetitionViewModel: ObservableObject {
         didSet { confirmationRequired = actionRequiringConfirmation != nil }
     }
     
-    @Injected(Container.api) private var api
-    @Injected(Container.competitionsManager) private var competitionsManager
-    @Injected(Container.userManager) private var userManager
+    @Injected(\.api) private var api
+    @Injected(\.competitionsManager) private var competitionsManager
+    @Injected(\.userManager) private var userManager
 
     private let confirmActionSubject = PassthroughSubject<Void, Error>()
     private let performActionSubject = PassthroughSubject<CompetitionViewAction, Error>()

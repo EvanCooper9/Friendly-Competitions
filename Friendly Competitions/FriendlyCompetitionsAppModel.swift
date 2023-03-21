@@ -12,8 +12,8 @@ final class FriendlyCompetitionsAppModel: ObservableObject {
     
     // MARK: - Private Properties
 
-    @Injected(Container.appState) private var appState
-    @Injected(Container.authenticationManager) private var authenticationManager
+    @Injected(\.appState) private var appState
+    @Injected(\.authenticationManager) private var authenticationManager
     
     // MARK: - Lifecycle
 

@@ -19,8 +19,8 @@ final class UserViewModel: ObservableObject {
         didSet { confirmationRequired = actionRequiringConfirmation != nil }
     }
     
-    @Injected(Container.friendsManager) private var friendsManager
-    @Injected(Container.userManager) private var userManager
+    @Injected(\.friendsManager) private var friendsManager
+    @Injected(\.userManager) private var userManager
 
     private var confimActionSubject = PassthroughSubject<Void, Never>()
     private var performActionSubject = PassthroughSubject<UserViewAction, Never>()

@@ -22,8 +22,8 @@ final class SignInViewModel: ObservableObject {
 
     // MARK: - Private Properties
     
-    @Injected(Container.appState) private var appState
-    @Injected(Container.authenticationManager) private var authenticationManager
+    @Injected(\.appState) private var appState
+    @Injected(\.authenticationManager) private var authenticationManager
 
     private let forgotSubject = PassthroughSubject<Void, Never>()
     private let signInSubject = PassthroughSubject<SignInMethod, Never>()

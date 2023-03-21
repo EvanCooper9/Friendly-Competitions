@@ -2,7 +2,7 @@ import XCTest
 
 @testable import Friendly_Competitions
 
-final class TimeIntervalTests: XCTestCase {
+final class TimeIntervalTests: FCTestCase {
     func testThatSecondsIsCorrect() {
         XCTAssertEqual(1.0.seconds, 1)
         XCTAssertEqual(10.0.seconds, 10)

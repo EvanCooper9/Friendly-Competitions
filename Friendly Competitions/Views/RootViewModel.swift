@@ -11,7 +11,7 @@ final class RootViewModel: ObservableObject {
     
     // MARK: - Private Properties
     
-    @Injected(Container.appState) private var appState
+    @Injected(\.appState) private var appState
     
     // MARK: - Lifecycle
     

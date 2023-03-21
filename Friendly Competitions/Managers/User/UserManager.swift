@@ -24,11 +24,11 @@ final class UserManager: UserManaging {
 
     // MARK: - Private Properties
 
-    @Injected(Container.api) private var api
-    @Injected(Container.appState) private var appState
-    @Injected(Container.analyticsManager) private var analyticsManager
-    @Injected(Container.authenticationManager) private var authenticationManager
-    @Injected(Container.database) private var database
+    @Injected(\.api) private var api
+    @Injected(\.appState) private var appState
+    @Injected(\.analyticsManager) private var analyticsManager
+    @Injected(\.authenticationManager) private var authenticationManager
+    @Injected(\.database) private var database
     
     private let userSubject: CurrentValueSubject<User, Never>
 

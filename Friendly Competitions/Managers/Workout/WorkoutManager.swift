@@ -19,12 +19,12 @@ final class WorkoutManager: WorkoutManaging {
     
     // MARK: - Private Properties
     
-    @Injected(Container.appState) private var appState
-    @Injected(Container.competitionsManager) private var competitionsManager
-    @Injected(Container.database) private var database
-    @Injected(Container.healthKitManager) private var healthKitManager
-    @Injected(Container.userManager) private var userManager
-    @Injected(Container.workoutCache) private var cache
+    @Injected(\.appState) private var appState
+    @Injected(\.competitionsManager) private var competitionsManager
+    @Injected(\.database) private var database
+    @Injected(\.healthKitManager) private var healthKitManager
+    @Injected(\.userManager) private var userManager
+    @Injected(\.workoutCache) private var cache
     
     private var helper: HealthKitDataHelper<[Workout]>!
     

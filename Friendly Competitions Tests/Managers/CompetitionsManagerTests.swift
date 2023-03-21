@@ -5,7 +5,7 @@ import XCTest
 
 @testable import Friendly_Competitions
 
-final class CompetitionsManagerTests: XCTestCase {
+final class CompetitionsManagerTests: FCTestCase {
     
     private var api: APIMock!
     private var appState: AppStateProvidingMock!
@@ -25,13 +25,12 @@ final class CompetitionsManagerTests: XCTestCase {
         database = .init()
         userManager = .init()
         
-        Container.Registrations.reset()
-        Container.api.register { self.api }
-        Container.appState.register { self.appState }
-        Container.analyticsManager.register { self.analyticsManager }
-        Container.competitionCache.register { self.cache }
-        Container.database.register { self.database }
-        Container.userManager.register { self.userManager }
+        Container.shared.api.register { self.api }
+        Container.shared.appState.register { self.appState }
+        Container.shared.analyticsManager.register { self.analyticsManager }
+        Container.shared.competitionCache.register { self.cache }
+        Container.shared.database.register { self.database }
+        Container.shared.userManager.register { self.userManager }
         cancellables = .init()
         
         appState.didBecomeActive = .never()

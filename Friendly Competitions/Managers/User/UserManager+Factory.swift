@@ -1,5 +1,7 @@
 import Factory
 
 extension Container {
-    static let userManager = Factory<UserManaging>(scope: .shared) { fatalError("User manager not initialized") }
+    var userManager: Factory<UserManaging> {
+        Factory(self) { fatalError("User manager not initialized") }
+    }
 }

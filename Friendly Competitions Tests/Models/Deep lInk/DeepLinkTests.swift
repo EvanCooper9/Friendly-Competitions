@@ -2,7 +2,7 @@ import XCTest
 
 @testable import Friendly_Competitions
 
-final class DeepLinkTests: XCTestCase {
+final class DeepLinkTests: FCTestCase {
     func testThatFriendReferralCanBeInitialized() {
         let url = URL(string: "https://friendly-competitions.app/user/abc123")!
         let deepLink = DeepLink(from: url)

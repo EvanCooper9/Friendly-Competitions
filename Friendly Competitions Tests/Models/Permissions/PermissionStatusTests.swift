@@ -3,7 +3,7 @@ import XCTest
 
 @testable import Friendly_Competitions
 
-class PermissionStatusTests: XCTestCase {
+class PermissionStatusTests: FCTestCase {
     func testThatButtonTitleIsCorrect() {
         XCTAssertEqual(PermissionStatus.authorized.buttonTitle, "Allowed")
         XCTAssertEqual(PermissionStatus.denied.buttonTitle, "Denied")

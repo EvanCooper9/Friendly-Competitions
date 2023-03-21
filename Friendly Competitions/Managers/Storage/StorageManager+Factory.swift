@@ -1,5 +1,7 @@
 import Factory
 
 extension Container {
-    static let storageManager = Factory<StorageManaging>(scope: .shared, factory: StorageManager.init)
+    var storageManager: Factory<StorageManaging> {
+        Factory(self) { StorageManager() }.scope(.shared)
+    }
 }

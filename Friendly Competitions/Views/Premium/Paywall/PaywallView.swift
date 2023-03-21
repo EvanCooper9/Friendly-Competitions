@@ -48,14 +48,7 @@ struct PaywallView: View {
             }
         }
         .withLoadingOverlay(isLoading: viewModel.loading)
-        .background {
-            GeometryReader { proxy in
-                Color.clear
-                    .onChange(of: viewModel.step) { _ in size = proxy.size }
-                    .onAppear { size = proxy.size }
-            }
-        }
-        .presentationDetents(detents)
+        .fittedDetents()
         .animation(.default, value: detents)
     }
 }
@@ -71,9 +64,18 @@ struct PaywallView_Previews: PreviewProvider {
         }
     }
     
+    private static func setupMocks() {
+        let products: [Product] = [
+            .init(id: "1", price: "$0.99 / month", offer: "Free for 3 days", title: "Monthly", description: "Access premium features for one month"),
+            .init(id: "2", price: "$1.99 / six months", offer: nil, title: "Semi-Annually", description: "Access premium features for six months"),
+            .init(id: "3", price: "$2.99 / year", offer: nil, title: "Yearly", description: "Access premium features for one year")
+        ]
+        premiumManager.products = .just(products)
+    }
+    
     static var previews: some View {
         Preview()
-            .setupMocks()
+            .setupMocks(setupMocks)
     }
 }
 #endif
