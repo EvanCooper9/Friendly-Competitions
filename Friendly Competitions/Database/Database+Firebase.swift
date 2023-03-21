@@ -46,9 +46,9 @@ extension Firestore: Database {
 
 extension Query: Collection {
     func whereField<T: Decodable>(_ field: String, asArrayOf type: T.Type, in values: [Any]) -> AnyPublisher<[T], Error> {
-        .fromAsync { [weak self] in
-            guard let strongSelf = self else { return [] }
-            return try await strongSelf.whereFieldWithChunking(field, in: values)
+        .fromAsync {
+            try await self
+                .whereFieldWithChunking(field, in: values)
                 .map { try $0.data(as: T.self, decoder: .custom) }
         }
     }
@@ -100,7 +100,7 @@ extension DocumentReference: Document {
 
     func getDocument<T: Decodable>(as type: T.Type) -> AnyPublisher<T, Error> {
         let subject = PassthroughSubject<T, Error>()
-        getDocument(as: T.self) { result in
+        getDocument(as: T.self, decoder: .custom) { result in
             switch result {
             case .failure(let error):
                 subject.send(completion: .failure(error))

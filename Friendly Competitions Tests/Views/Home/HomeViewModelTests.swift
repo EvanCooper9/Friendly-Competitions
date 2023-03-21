@@ -1,4 +1,5 @@
 import Combine
+import CombineSchedulers
 import ECKit
 import Factory
 import Foundation
@@ -15,6 +16,7 @@ final class HomeViewModelTests: FCTestCase {
     private var friendsManager: FriendsManagingMock!
     private var permissionsManager: PermissionsManagingMock!
     private var premiumManager: PremiumManagingMock!
+    private var scheduler: TestSchedulerOf<RunLoop>!
     private var userManager: UserManagingMock!
 
     private var cancellables: Cancellables!
@@ -28,6 +30,7 @@ final class HomeViewModelTests: FCTestCase {
         friendsManager = .init()
         permissionsManager = .init()
         premiumManager = .init()
+        scheduler = .init(now: .init(.now))
         userManager = .init()
         cancellables = .init()
 
@@ -50,6 +53,7 @@ final class HomeViewModelTests: FCTestCase {
         Container.shared.friendsManager.register { self.friendsManager }
         Container.shared.permissionsManager.register { self.permissionsManager }
         Container.shared.premiumManager.register { self.premiumManager }
+        Container.shared.scheduler.register { self.scheduler.eraseToAnyScheduler() }
         Container.shared.userManager.register { self.userManager }
     }
 
@@ -59,6 +63,7 @@ final class HomeViewModelTests: FCTestCase {
         competitionsManager = nil
         friendsManager = nil
         permissionsManager = nil
+        scheduler = nil
         userManager = nil
         cancellables = nil
     }
@@ -73,12 +78,13 @@ final class HomeViewModelTests: FCTestCase {
 
         let viewModel = HomeViewModel()
         viewModel.$activitySummary
-            .expect(nil, ac, nil, ac, expectation: expectation)
+            .expect(nil, nil, ac, nil, ac, expectation: expectation)
             .store(in: &cancellables)
 
         subject.send(ac)
         subject.send(nil)
         subject.send(ac)
+        scheduler.advance()
         waitForExpectations(timeout: 1)
     }
 
@@ -93,11 +99,13 @@ final class HomeViewModelTests: FCTestCase {
 
         let viewModel = HomeViewModel()
         viewModel.$competitions
-            .expect([], [comp1], [comp1, comp2], expectation: expectation)
+            .print(#function)
+            .expect([], [], [comp1], [comp1, comp2], expectation: expectation)
             .store(in: &cancellables)
 
         subject.send([comp1])
         subject.send([comp1, comp2])
+        scheduler.advance()
         waitForExpectations(timeout: 1)
     }
 
@@ -112,11 +120,12 @@ final class HomeViewModelTests: FCTestCase {
 
         let viewModel = HomeViewModel()
         viewModel.$invitedCompetitions
-            .expect([], [comp1], [comp1, comp2], expectation: expectation)
+            .expect([], [], [comp1], [comp1, comp2], expectation: expectation)
             .store(in: &cancellables)
 
         subject.send([comp1])
         subject.send([comp1, comp2])
+        scheduler.advance()
         waitForExpectations(timeout: 1)
     }
 
@@ -138,12 +147,13 @@ final class HomeViewModelTests: FCTestCase {
 
         let viewModel = HomeViewModel()
         viewModel.$friendRows
-            .expect([], [evan], [evanWithAC], [evanWithAC, andrew], expectation: expectation)
+            .expect([], [], [evan], [evanWithAC], [evanWithAC, andrew], expectation: expectation)
             .store(in: &cancellables)
 
         friends.send([.evan])
         friendActivitySummaries.send([User.evan.id: activitySummary])
         friendRequests.send([.andrew])
+        scheduler.advance()
 
         waitForExpectations(timeout: 1)
     }
@@ -156,12 +166,13 @@ final class HomeViewModelTests: FCTestCase {
 
         let viewModel = HomeViewModel()
         viewModel.$requiresPermissions
-            .expect(true, false, true, false, expectation: expectation)
+            .expect(false, true, false, true, false, expectation: expectation)
             .store(in: &cancellables)
 
         subject.send(false)
         subject.send(true)
         subject.send(false)
+        scheduler.advance()
         waitForExpectations(timeout: 1)
     }
 
@@ -173,12 +184,12 @@ final class HomeViewModelTests: FCTestCase {
 
         let viewModel = HomeViewModel()
         viewModel.$title
-            .expect(User.evan.name, Bundle.main.name, expectation: expectation)
+            .expect(Bundle.main.name, User.evan.name, Bundle.main.name, expectation: expectation)
             .store(in: &cancellables)
 
         let noName = User(id: "abc", email: "test@test.com", name: "")
         subject.send(noName)
-
+        scheduler.advance()
         waitForExpectations(timeout: 1)
     }
 }

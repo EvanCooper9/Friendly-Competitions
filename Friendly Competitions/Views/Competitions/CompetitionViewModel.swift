@@ -61,6 +61,7 @@ final class CompetitionViewModel: ObservableObject {
 
     @Injected(\.api) private var api
     @Injected(\.competitionsManager) private var competitionsManager
+    @Injected(\.scheduler) private var scheduler
     @Injected(\.userManager) private var userManager
 
     private let confirmActionSubject = PassthroughSubject<Void, Error>()
@@ -116,6 +117,7 @@ final class CompetitionViewModel: ObservableObject {
             .flatMapLatest(withUnretained: self) { strongSelf in
                 strongSelf.competitionsManager
                     .participants(for: competition.id)
+                    .print("participants")
                     .catchErrorJustReturn([])
             }
 
@@ -162,6 +164,7 @@ final class CompetitionViewModel: ObservableObject {
 
                 return rows
             }
+            .receive(on: scheduler)
             .handleEvents(
                 withUnretained: self,
                 receiveOutput: { strongSelf, _ in strongSelf.loadingStandings = false }
