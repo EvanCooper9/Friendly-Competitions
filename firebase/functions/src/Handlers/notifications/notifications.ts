@@ -48,7 +48,7 @@ async function sendNotification(fcmToken: string, title: string, body: string, d
             body: body
         }
     };
-    console.log(`sending notification payload: ${notificationPayload}`);
+    console.log(`sending notification payload: ${JSON.stringify(notificationPayload)}`);
     if (deepLink != null) notificationPayload.data = { link: deepLink };
     await admin.messaging().send(notificationPayload);
 }
