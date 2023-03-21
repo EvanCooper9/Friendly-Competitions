@@ -62,7 +62,7 @@ extension Competition {
             banner: nil
         )
     }
-    
+
     static var mockFuture: Competition {
         .init(
             name: "Back to the future",

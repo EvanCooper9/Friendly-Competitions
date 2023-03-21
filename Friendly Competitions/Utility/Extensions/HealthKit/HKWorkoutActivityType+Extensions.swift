@@ -6,7 +6,7 @@ extension HKWorkoutActivityType {
         case .cycling:
             return [
                 (HKObjectType.quantityType(forIdentifier: .distanceCycling)!, .meter()),
-                (HKObjectType.quantityType(forIdentifier: .heartRate)!,  .init(from: "count/min")),
+                (HKObjectType.quantityType(forIdentifier: .heartRate)!,  .init(from: "count/min"))
             ]
         case .running:
             return [
@@ -17,7 +17,7 @@ extension HKWorkoutActivityType {
         case .swimming:
             return [
                 (HKObjectType.quantityType(forIdentifier: .distanceSwimming)!, .meter()),
-                (HKObjectType.quantityType(forIdentifier: .heartRate)!, .init(from: "count/min")),
+                (HKObjectType.quantityType(forIdentifier: .heartRate)!, .init(from: "count/min"))
             ]
         case .walking:
             return [

@@ -8,7 +8,7 @@ struct ExploreView: View {
     }
 
     @StateObject private var viewModel = ExploreViewModel()
-    
+
     var body: some View {
         NavigationStack(path: $viewModel.navigationDestinations) {
             List {

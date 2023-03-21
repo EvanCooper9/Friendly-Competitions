@@ -9,7 +9,7 @@ enum UserViewAction {
 }
 
 extension UserViewAction {
-    
+
     var buttonTitle: String {
         switch self {
         case .acceptFriendRequest:
@@ -22,7 +22,7 @@ extension UserViewAction {
             return "Remove friend"
         }
     }
-    
+
     var destructive: Bool {
         switch self {
         case .acceptFriendRequest, .request:
@@ -31,7 +31,7 @@ extension UserViewAction {
             return true
         }
     }
-    
+
     var systemImage: SFSymbolName {
         switch self {
         case .acceptFriendRequest, .request:
@@ -39,5 +39,5 @@ extension UserViewAction {
         case .denyFriendRequest, .deleteFriend:
             return .personCropCircleBadgeMinus
         }
-    }    
+    }
 }

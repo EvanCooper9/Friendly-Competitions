@@ -10,24 +10,24 @@ protocol AnalyticsManaging {
 }
 
 final class AnalyticsManager: AnalyticsManaging {
-    
+
     private let encoder: JSONEncoder = {
         let encoder = JSONEncoder()
         encoder.keyEncodingStrategy = .convertToSnakeCase
         return encoder
     }()
-    
+
     private let decoder: JSONDecoder = {
         let decoder = JSONDecoder()
         decoder.keyDecodingStrategy = .convertFromSnakeCase
         return decoder
     }()
-    
+
     func set(userId: String) {
         Analytics.setUserID(userId)
         Crashlytics.crashlytics().setUserID(userId)
     }
-    
+
     func log(event: AnalyticsEvent) {
         guard let data = try? event.encoded(using: encoder),
               let json = try? JSON.decoded(from: data, using: decoder),
@@ -35,7 +35,7 @@ final class AnalyticsManager: AnalyticsManaging {
               let eventName = dictionary.keys.first, let parameters = dictionary[eventName],
               case .object(let nestedDictionary) = parameters
         else { return }
-            
+
         let firebaseCompatibleDictionary = nestedDictionary.reduce(into: [String: Any]()) { partialResult, current in
             switch current.value {
             case .string(let string):
@@ -48,7 +48,7 @@ final class AnalyticsManager: AnalyticsManaging {
                 break
             }
         }
-        
+
         Analytics.logEvent(eventName, parameters: firebaseCompatibleDictionary)
     }
 }
@@ -57,14 +57,14 @@ final class AnalyticsManager: AnalyticsManaging {
 /// for JSON values, since it makes sure only valid JSON values are present & supports `Equatable`
 /// and `Codable`, so that you can compare values for equality and code and decode them into data
 /// or strings.
-fileprivate enum JSON: Decodable {
+private enum JSON: Decodable {
     case string(String)
     case number(Double)
     case object([String:JSON])
     case array([JSON])
     case bool(Bool)
     case null
-    
+
     public init(from decoder: Decoder) throws {
         let container = try decoder.singleValueContainer()
         if let object = try? container.decode([String: JSON].self) {

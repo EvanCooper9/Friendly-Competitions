@@ -29,7 +29,7 @@ final class UserManager: UserManaging {
     @Injected(\.analyticsManager) private var analyticsManager
     @Injected(\.authenticationManager) private var authenticationManager
     @Injected(\.database) private var database
-    
+
     private let userSubject: CurrentValueSubject<User, Never>
 
     private var cancellables = Cancellables()
@@ -40,7 +40,7 @@ final class UserManager: UserManaging {
             .removeDuplicates()
             .share(replay: 1)
             .eraseToAnyPublisher()
-        
+
         appState.didBecomeActive
             .filter { $0 }
             .mapToVoid()

@@ -7,7 +7,7 @@ struct MedalsView: View {
         MedalView(title: "🥇 Gold medals", value: statistics.golds)
         MedalView(title: "🥈 Silver medals", value: statistics.silvers)
         MedalView(title: "🥉 Bronze medals", value: statistics.bronzes)
-    }   
+    }
 }
 
 struct MedalView: View {

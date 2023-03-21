@@ -12,50 +12,50 @@ import UIKit
 protocol PremiumManaging {
     var premium: AnyPublisher<Premium?, Never> { get }
     var products: AnyPublisher<[Product], Never> { get }
-    
+
     func purchase(_ product: Product) -> AnyPublisher<Void, Error>
     func restorePurchases() -> AnyPublisher<Void, Error>
     func manageSubscription()
 }
 
 final class PremiumManager: PremiumManaging {
-    
+
     enum PurchaseError: Error {
         case cancelled
     }
-    
+
     // MARK: - Public Properties
-    
+
     let premium: AnyPublisher<Premium?, Never>
     let products: AnyPublisher<[Product], Never>
-    
+
     // MARK: - Private Properties
-    
+
     @Injected(\.analyticsManager) private var analyticsManager
     @Injected(\.competitionsManager) private var competitionsManager
     @Injected(\.userManager) private var userManager
-    
+
     private let premiumSubject = ReplaySubject<Premium?, Never>(bufferSize: 1)
     private let productsSubject = ReplaySubject<[Product], Never>(bufferSize: 1)
     private var cancellables = Cancellables()
-    
+
     private let entitlementIdentifier = "Premium"
     private var currentOffering: Offering?
     private var customerInfoTask: Task<Void, Error>?
-    
+
     // MARK: - Lifecycle
-    
+
     init() {
         premium = premiumSubject.eraseToAnyPublisher()
         products = productsSubject.eraseToAnyPublisher()
-        
+
         login()
             .subscribe(on: DispatchQueue.global(qos: .background))
             .flatMapLatest(withUnretained: self) { $0.fetchStore() }
             .flatMapLatest(withUnretained: self) { $0.restorePurchases() }
             .sink()
             .store(in: &cancellables)
-        
+
         premiumSubject
             .unwrap()
             .compactMap { premium in
@@ -76,7 +76,7 @@ final class PremiumManager: PremiumManaging {
             .flatMapLatest(withUnretained: self) { $0.restorePurchases() }
             .sink()
             .store(in: &cancellables)
-        
+
         customerInfoTask = .init { [weak self] in
             for try await _ in Purchases.shared.customerInfoStream {
                 guard let strongSelf = self else { return }
@@ -86,25 +86,25 @@ final class PremiumManager: PremiumManaging {
             }
         }
     }
-    
+
     // MARK: - Public Methods
-    
+
     func purchase(_ product: Product) -> AnyPublisher<Void, Error> {
         analyticsManager.log(event: .premiumPurchaseStarted(id: product.id))
         guard let package = currentOffering?.package(identifier: product.id) else { return .just(()) }
         let subject = PassthroughSubject<Void, Error>()
-        Purchases.shared.purchase(package: package) { [weak self] transaction, customerInfo, error, cancelled in
+        Purchases.shared.purchase(package: package) { [weak self] _, customerInfo, error, cancelled in
             if let error = error {
                 subject.send(completion: .failure(error))
                 return
             }
-            
+
             guard !cancelled else {
                 self?.analyticsManager.log(event: .premiumPurchaseCancelled(id: product.id))
                 subject.send(completion: .failure(PurchaseError.cancelled))
                 return
             }
-            
+
             guard let strongSelf = self else { return }
             let entitlement = customerInfo?.entitlements[strongSelf.entitlementIdentifier]
             let premium = Premium(
@@ -121,17 +121,17 @@ final class PremiumManager: PremiumManaging {
         }
         return subject.eraseToAnyPublisher()
     }
-    
+
     func restorePurchases() -> AnyPublisher<Void, Error> {
         let subject = PassthroughSubject<Void, Error>()
-        
+
         Purchases.shared.restorePurchases { [weak self] customerInfo, error in
             if let error {
                 self?.premiumSubject.send(nil)
                 subject.send(completion: .failure(error))
                 return
             }
-            
+
             guard let strongSelf = self,
                   let entitlement = customerInfo?.entitlements[strongSelf.entitlementIdentifier],
                   entitlement.isActive,
@@ -142,7 +142,7 @@ final class PremiumManager: PremiumManaging {
                 subject.send(completion: .finished)
                 return
             }
-            
+
             let premium = Premium(
                 id: package.storeProduct.productIdentifier,
                 title: package.storeProduct.localizedTitle,
@@ -150,26 +150,26 @@ final class PremiumManager: PremiumManaging {
                 renews: entitlement.willRenew,
                 expiry: entitlement.expirationDate
             )
-            
+
             strongSelf.premiumSubject.send(premium)
             subject.send()
             subject.send(completion: .finished)
         }
         return subject.eraseToAnyPublisher()
     }
-    
+
     func manageSubscription() {
         guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene else { return }
         Task {
             try await AppStore.showManageSubscriptions(in: windowScene)
         }
     }
-    
+
     // MARK: - Private Methods
-    
+
     private func login() -> AnyPublisher<Void, Error> {
         let subject = PassthroughSubject<Void, Error>()
-        Purchases.shared.logIn(userManager.user.id) { customerInfo, created, error in
+        Purchases.shared.logIn(userManager.user.id) { _, _, error in
             if let error {
                 subject.send(completion: .failure(error))
                 return
@@ -179,7 +179,7 @@ final class PremiumManager: PremiumManaging {
         }
         return subject.eraseToAnyPublisher()
     }
-    
+
     private func fetchStore() -> AnyPublisher<Void, Error> {
         let subject = PassthroughSubject<Void, Error>()
         Purchases.shared.getOfferings { [weak self] offerings, error in
@@ -198,7 +198,7 @@ final class PremiumManager: PremiumManaging {
                 subject.send(completion: .finished)
                 return
             }
-            
+
             let productIDs = packages.map(\.storeProduct.productIdentifier)
             Purchases.shared.checkTrialOrIntroDiscountEligibility(productIdentifiers: productIDs) { result in
                 let products = packages.map { package in
@@ -209,7 +209,7 @@ final class PremiumManager: PremiumManaging {
                     default:
                         break
                     }
-                    
+
                     return Product(
                         id: package.identifier,
                         price: package.localizedPriceWithUnit,
@@ -218,7 +218,7 @@ final class PremiumManager: PremiumManaging {
                         description: package.storeProduct.localizedDescription
                     )
                 }
-                
+
                 strongSelf.productsSubject.send(products)
                 subject.send()
                 subject.send(completion: .finished)

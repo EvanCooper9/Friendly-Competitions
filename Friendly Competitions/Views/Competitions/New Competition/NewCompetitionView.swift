@@ -5,7 +5,7 @@ import SwiftUIX
 import HealthKit
 
 struct NewCompetitionView: View {
-    
+
     @StateObject private var viewModel = NewCompetitionViewModel()
     @Environment(\.dismiss) private var dismiss
     @State private var presentAddFriends = false
@@ -54,7 +54,7 @@ struct NewCompetitionView: View {
                 .contentShape(Rectangle())
                 .onTapGesture { friend.onTap() }
             }
-            
+
             if viewModel.friendRows.isEmpty {
                 HStack {
                     Text(L10n.NewCompetition.Friends.nothingHere)

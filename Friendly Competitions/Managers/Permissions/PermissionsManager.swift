@@ -21,7 +21,7 @@ final class PermissionsManager: PermissionsManaging {
             .receive(on: scheduler)
             .eraseToAnyPublisher()
     }
-    
+
     var permissionStatus: AnyPublisher<[Permission: PermissionStatus], Never> {
         permissionStatusSubject
             .receive(on: scheduler)
@@ -33,9 +33,9 @@ final class PermissionsManager: PermissionsManaging {
     @Injected(\.healthKitManager) private var healthKitManager
     @Injected(\.notificationsManager) private var notificationManager
     @Injected(\.scheduler) private var scheduler
-    
+
     private let permissionStatusSubject = ReplaySubject<[Permission: PermissionStatus], Never>(bufferSize: 1)
-    
+
     private var cancellables = Cancellables()
 
     // MARK: - Lifecycle

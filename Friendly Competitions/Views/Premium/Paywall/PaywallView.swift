@@ -3,7 +3,7 @@ import SwiftUI
 struct PaywallView: View {
 
     @StateObject private var viewModel = PaywallViewModel()
-    
+
     @State private var size: CGSize?
     private var detents: Set<PresentationDetent> {
         guard let size else { return [.large] }
@@ -21,9 +21,9 @@ struct PaywallView: View {
                     selectOffer: viewModel.selectOffer
                 )
             }
-            
+
             Divider()
-            
+
             VStack(spacing: 15) {
                 Button(action: viewModel.nextTapped) {
                     HStack {
@@ -36,9 +36,9 @@ struct PaywallView: View {
                     .foregroundColor(.white)
                     .clipShape(Capsule())
                 }
-                
+
                 Button(L10n.Premium.Paywall.restore, action: viewModel.restorePurchasesTapped)
-                
+
                 HStack(spacing: 4) {
                     Link(L10n.Premium.Paywall.tos, destination: .termsOfService)
                     Text(L10n.Generics.Symbols.apersand).foregroundColor(.secondaryLabel)
@@ -55,7 +55,7 @@ struct PaywallView: View {
 
 #if DEBUG
 struct PaywallView_Previews: PreviewProvider {
-    
+
     private struct Preview: View {
         @State private var showPaywall = true
         var body: some View {
@@ -63,7 +63,7 @@ struct PaywallView_Previews: PreviewProvider {
                 .sheet(isPresented: $showPaywall, content: PaywallView.init)
         }
     }
-    
+
     private static func setupMocks() {
         let products: [Product] = [
             .init(id: "1", price: "$0.99 / month", offer: "Free for 3 days", title: "Monthly", description: "Access premium features for one month"),
@@ -72,7 +72,7 @@ struct PaywallView_Previews: PreviewProvider {
         ]
         premiumManager.products = .just(products)
     }
-    
+
     static var previews: some View {
         Preview()
             .setupMocks(setupMocks)

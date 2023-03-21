@@ -1,12 +1,12 @@
 import SwiftUI
 
 struct CompetitionResultsDateRangeSelector: View {
-    
+
     let ranges: [CompetitionResultsDateRange]
     let select: (CompetitionResultsDateRange) -> Void
-    
+
     @Environment(\.colorScheme) private var colorScheme
-    
+
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             ScrollViewReader { proxy in
@@ -48,7 +48,7 @@ struct CompetitionResultsDateRangeSelector: View {
         }
         .padding(.vertical, -20)
     }
-    
+
     private var background: some View {
         switch colorScheme {
         case .dark:

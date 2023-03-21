@@ -12,15 +12,15 @@ typealias AnyHealthKitQuery = any HealthKitQuery
 // MARK: - HealthKit Implementations
 
 final class ActivitySummaryQuery: HealthKitQuery {
-    
+
     typealias Data = [ActivitySummary]
-    
+
     let resultsHandler: (Result<Data, Error>) -> Void
     let underlyingQuery: HKQuery
-    
+
     init(predicate: NSPredicate, resultsHandler: @escaping (Result<Data, Error>) -> Void) {
         self.resultsHandler = resultsHandler
-        
+
         underlyingQuery = HKActivitySummaryQuery(predicate: predicate, resultsHandler: { _, results, error in
             if let error {
                 resultsHandler(.failure(error))
@@ -33,15 +33,15 @@ final class ActivitySummaryQuery: HealthKitQuery {
 }
 
 final class WorkoutQuery: HealthKitQuery {
-    
+
     typealias Data = [HKWorkout]
-    
+
     let resultsHandler: (Result<Data, Error>) -> Void
     let underlyingQuery: HKQuery
-    
+
     init(predicate: NSPredicate, dateInterval: DateInterval, resultsHandler: @escaping (Result<Data, Error>) -> Void) {
         self.resultsHandler = resultsHandler
-        
+
         let sampleType = HKSampleType.workoutType()
         let startDateSort = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
         underlyingQuery = HKSampleQuery(sampleType: sampleType, predicate: predicate, limit: 0, sortDescriptors: [startDateSort]) { _, workouts, error in
@@ -58,15 +58,15 @@ final class WorkoutQuery: HealthKitQuery {
 }
 
 final class StepsQuery: HealthKitQuery {
-    
+
     typealias Data = Double
-    
+
     let resultsHandler: (Result<Data, Error>) -> Void
     let underlyingQuery: HKQuery
-    
+
     init(predicate: NSPredicate, resultsHandler: @escaping (Result<Data, Error>) -> Void) {
         self.resultsHandler = resultsHandler
-        
+
         underlyingQuery = HKStatisticsQuery(
             quantityType: HKQuantityType(.stepCount),
             quantitySamplePredicate: predicate) { _, stats, error in
@@ -81,15 +81,15 @@ final class StepsQuery: HealthKitQuery {
 }
 
 final class SampleQuery: HealthKitQuery {
-    
+
     typealias Data = [Date: Double]
-    
+
     let resultsHandler: (Result<Data, Error>) -> Void
     let underlyingQuery: HKQuery
-    
+
     init(sampleType: HKSampleType, unit: HKUnit, predicate: NSPredicate, resultsHandler: @escaping (Result<Data, Error>) -> Void) {
         self.resultsHandler = resultsHandler
-        
+
         underlyingQuery = HKSampleQuery(sampleType: sampleType, predicate: predicate, limit: 0, sortDescriptors: nil) { _, samples, error in
             if let error {
                 resultsHandler(.failure(error))
@@ -122,15 +122,15 @@ final class SampleQuery: HealthKitQuery {
 }
 
 final class ObserverQuery: HealthKitQuery {
-    
-    typealias Data = () -> ()
-    
+
+    typealias Data = () -> Void
+
     let resultsHandler: (Result<Data, Error>) -> Void
     let underlyingQuery: HKQuery
-    
+
     init(sampleType: HKSampleType, resultsHandler: @escaping (Result<Data, Error>) -> Void) {
         self.resultsHandler = resultsHandler
-        
+
         underlyingQuery = HKObserverQuery(sampleType: sampleType, predicate: nil) { _, completion, error in
             if let error {
                 resultsHandler(.failure(error))

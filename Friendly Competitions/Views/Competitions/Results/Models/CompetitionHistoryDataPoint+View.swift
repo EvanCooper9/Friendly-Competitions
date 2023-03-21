@@ -2,7 +2,7 @@ import ECKit
 import SwiftUI
 
 extension CompetitionResultsDataPoint {
-    
+
     @ViewBuilder
     var view: some View {
         VStack(alignment: .leading, spacing: 4) {
@@ -17,7 +17,7 @@ extension CompetitionResultsDataPoint {
             .aspectRatio(1, contentMode: .fill)
         }
     }
-    
+
     @ViewBuilder
     private var content: some View {
         switch self {
@@ -109,16 +109,16 @@ extension CompetitionResultsDataPoint {
             }
         }
     }
-    
+
     private enum Goal {
         case low
         case high
     }
-    
+
     @ViewBuilder
     private func trendIcon(current: Int, previous: Int?, goal: Goal) -> some View {
         if let previous {
-            
+
             let trendImage: String = {
                 if current > previous {
                     return goal == .low ? "chart.line.downtrend.xyaxis" : "chart.line.uptrend.xyaxis"
@@ -127,7 +127,7 @@ extension CompetitionResultsDataPoint {
                 }
                 return "chart.line.flattrend.xyaxis"
             }()
-            
+
             let trendColor: Color = {
                 if current > previous {
                     return goal == .low ? .red : .green
@@ -136,7 +136,7 @@ extension CompetitionResultsDataPoint {
                 }
                 return .gray
             }()
-            
+
             HStack {
                 Image(systemName: trendImage)
                 Text(abs(current - previous))
@@ -166,7 +166,7 @@ extension Int {
 
 #if DEBUG
 struct CompetitionResultsDataPoint_Previews: PreviewProvider {
-    
+
     private static let data: [CompetitionResultsDataPoint] = [
         .rank(current: 3, previous: 1),
 //        .rank(current: 5, previous: nil),
@@ -176,14 +176,14 @@ struct CompetitionResultsDataPoint_Previews: PreviewProvider {
                 .init(rank: 1, points: 600, isHighlighted: false),
                 .init(rank: 2, points: 500, isHighlighted: true),
                 .init(rank: 3, points: 400, isHighlighted: false),
-                .init(rank: 4, points: 300, isHighlighted: false),
+                .init(rank: 4, points: 300, isHighlighted: false)
             ]
         ),
         .workoutsBestDay(.init(type: .running, date: .now, points: [.distance: 100, .steps: 500])),
         .activitySummaryBestDay(.mock),
         .activitySummaryCloseCount(current: 34, previous: 20)
     ]
-    
+
     static var previews: some View {
         ScrollView {
             LazyVGrid(columns: [.flexible(), .flexible()]) {

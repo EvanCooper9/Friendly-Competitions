@@ -4,9 +4,9 @@ import SwiftUI
 import SwiftUIX
 
 struct About: View {
-    
+
     @StateObject private var viewModel = AboutViewModel()
-    
+
     var body: some View {
         List {
             Section {

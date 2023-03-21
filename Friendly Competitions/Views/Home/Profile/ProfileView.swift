@@ -2,18 +2,18 @@ import Factory
 import SwiftUI
 
 struct ProfileView: View {
-    
+
     @StateObject private var viewModel = ProfileViewModel()
-        
+
     var body: some View {
         Form {
             UserInfoSection(user: viewModel.user)
             Button(L10n.Profile.shareInviteLink, systemImage: .personCropCircleBadgePlus, action: viewModel.shareInviteLinkTapped)
-            
+
             Section(L10n.Profile.Medals.title) {
                 MedalsView(statistics: viewModel.user.statistics ?? .zero)
             }
-            
+
             if let premium = viewModel.premium {
                 Section(L10n.Profile.Premium.title) {
                     VStack(alignment: .leading) {
@@ -40,7 +40,7 @@ struct ProfileView: View {
                 Section(content: PremiumBanner.init)
                     .listRowInsets(.zero)
             }
-            
+
             Section {
                 Toggle(L10n.Profile.Privacy.Searchable.title, isOn: $viewModel.user.searchable ?? true)
             } header: {
@@ -48,13 +48,13 @@ struct ProfileView: View {
             } footer: {
                 Text(L10n.Profile.Privacy.Searchable.description)
             }
-            
+
             Section {
                 Toggle(L10n.Profile.Privacy.HideName.title, isOn: $viewModel.user.showRealName ?? true)
             } footer: {
                 Text(L10n.Profile.Privacy.HideName.description)
             }
-            
+
             Section(L10n.Profile.Session.title) {
                 Button(L10n.Profile.Session.signOut, systemImage: .personCropCircleBadgeMinus, action: viewModel.signOutTapped)
                 Button(action: viewModel.deleteAccountTapped) {

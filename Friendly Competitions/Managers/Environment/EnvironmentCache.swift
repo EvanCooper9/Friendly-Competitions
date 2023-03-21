@@ -6,11 +6,11 @@ protocol EnvironmentCache {
 }
 
 extension UserDefaults: EnvironmentCache {
-    
+
     private enum Constants {
         static var environmentKey: String { #function }
     }
-    
+
     var environment: FirestoreEnvironment? {
         get { decode(FirestoreEnvironment.self, forKey: Constants.environmentKey) }
         set { encode(newValue, forKey: Constants.environmentKey)}

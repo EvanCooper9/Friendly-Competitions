@@ -3,13 +3,13 @@ import Factory
 import SwiftUI
 
 struct InviteFriendsView: View {
-    
+
     @StateObject private var viewModel: InviteFriendsViewModel
-    
+
     init(action: InviteFriendsAction) {
         _viewModel = .init(wrappedValue: .init(action: action))
     }
-    
+
     var body: some View {
         List {
             Section {

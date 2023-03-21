@@ -33,7 +33,7 @@ final class FriendsManager: FriendsManaging {
     @Injected(\.database) private var database
     @Injected(\.userManager) private var userManager
     @Injected(\.usersCache) private var usersCache
-    
+
     let friendsSubject = ReplaySubject<[User], Never>(bufferSize: 1)
     let friendActivitySummariesSubject = ReplaySubject<[User.ID : ActivitySummary], Never>(bufferSize: 1)
     let friendRequestsSubject = ReplaySubject<[User], Never>(bufferSize: 1)
@@ -46,7 +46,7 @@ final class FriendsManager: FriendsManaging {
         friends = friendsSubject.eraseToAnyPublisher()
         friendActivitySummaries = friendActivitySummariesSubject.eraseToAnyPublisher()
         friendRequests = friendRequestsSubject.eraseToAnyPublisher()
-        
+
         appState.didBecomeActive
             .filter { $0 }
             .mapToVoid()
@@ -86,9 +86,9 @@ final class FriendsManager: FriendsManaging {
         database.document("users/\(id)")
             .getDocument(as: User.self)
     }
-    
+
     // MARK: - Private Methods
-    
+
     private func listenForFriends() {
         userManager.userPublisher
             .map(\.friends)
@@ -96,7 +96,7 @@ final class FriendsManager: FriendsManaging {
             .flatMapLatest(withUnretained: self) { $0.users(withIDs: $1) }
             .sink(withUnretained: self) { $0.friendsSubject.send($1) }
             .store(in: &cancellables)
-        
+
         userManager.userPublisher
             .map(\.incomingFriendRequests)
             .removeDuplicates()
@@ -113,13 +113,13 @@ final class FriendsManager: FriendsManaging {
                     guard let userID = activitySummary.userID else { return nil }
                     return (userID, activitySummary)
                 }
-                
+
                 return Dictionary(uniqueKeysWithValues: pairs)
             }
             .sink(withUnretained: self) { $0.friendActivitySummariesSubject.send($1) }
             .store(in: &cancellables)
     }
-    
+
     private func users(withIDs userIDs: [User.ID]) -> AnyPublisher<[User], Never> {
         var cached = [User]()
         var toFetch = [User.ID]()
@@ -130,7 +130,7 @@ final class FriendsManager: FriendsManaging {
                 toFetch.append(id)
             }
         }
-        
+
         return database.collection("users")
             .whereField("id", asArrayOf: User.self, in: toFetch)
             .catchErrorJustReturn([])
@@ -140,7 +140,7 @@ final class FriendsManager: FriendsManaging {
             .map { ($0 + cached).sorted(by: \.name) }
             .eraseToAnyPublisher()
     }
-    
+
     private func activitySummaries(for userIDs: [User.ID]) -> AnyPublisher<[ActivitySummary], Never> {
         database.collectionGroup("activitySummaries")
             .whereField("date", isEqualTo: DateFormatter.dateDashed.string(from: .now))

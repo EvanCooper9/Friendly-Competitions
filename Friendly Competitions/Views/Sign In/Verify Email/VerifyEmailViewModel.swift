@@ -9,13 +9,13 @@ final class VerifyEmailViewModel: ObservableObject {
     private enum Constants {
         static let resentEmailVerification = "Re-sent email verification. Check your inbox!"
     }
-    
+
     // MARK: - Public Properties
-    
+
     @Published var user: User!
 
     // MARK: - Private Properties
-    
+
     @Injected(\.appState) private var appState
     @Injected(\.authenticationManager) private var authenticationManager
     @Injected(\.userManager) private var userManager
@@ -24,10 +24,10 @@ final class VerifyEmailViewModel: ObservableObject {
     private let backSubject = PassthroughSubject<Void, Never>()
     private let resendSubject = PassthroughSubject<Void, Never>()
     private var cancellables = Cancellables()
-    
+
     init() {
         user = userManager.user
-        
+
         hudSubject
             .sink(withUnretained: self) { $0.appState.push(hud: $1) }
             .store(in: &cancellables)
@@ -52,7 +52,7 @@ final class VerifyEmailViewModel: ObservableObject {
                 }
             }
             .store(in: &cancellables)
-        
+
         Timer
             .publish(every: 5.seconds, on: .main, in: .default)
             .autoconnect()
@@ -67,11 +67,11 @@ final class VerifyEmailViewModel: ObservableObject {
             .sink()
             .store(in: &cancellables)
     }
-    
+
     func back() {
         backSubject.send()
     }
-    
+
     func resendVerification() {
         resendSubject.send()
     }

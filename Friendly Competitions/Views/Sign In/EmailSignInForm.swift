@@ -2,14 +2,14 @@ import SwiftUI
 import SwiftUIX
 
 struct EmailSignInForm: View {
-    
+
     private enum Field: Hashable {
         case name
         case email
         case password
         case passwordConfirmation
     }
-    
+
     let loading: Bool
     @Binding var signingInWithEmail: Bool
     @Binding var signUp: Bool
@@ -17,18 +17,18 @@ struct EmailSignInForm: View {
     @Binding var email: String
     @Binding var password: String
     @Binding var passwordConfirmation: String
-    
+
     var onSubmit: (() -> Void)
     var onForgot: (() -> Void)
-    
+
     @FocusState private var focus: Field?
-    
+
     private var submitDisabled: Bool {
         let signInConditions = email.isEmpty || password.isEmpty
         let signUpConditions = signInConditions || name.isEmpty || passwordConfirmation.isEmpty
         return loading || (signUp ? signUpConditions : signInConditions)
     }
-    
+
     var body: some View {
         VStack(alignment: .trailing) {
             HStack {
@@ -42,7 +42,7 @@ struct EmailSignInForm: View {
             .padding(.trailing)
             .font(.callout)
             .disabled(loading)
-            
+
             VStack(spacing: 5) {
                 if signUp {
                     inputField {
@@ -102,7 +102,7 @@ struct EmailSignInForm: View {
                     }
                 }
                 .frame(maxWidth: .infinity, minHeight: 20) // hmmm...minHeight required to avoid weird layout
-                
+
                 Button(action: onSubmit) {
                     Label(signUp ? "Sign up" : "Sign in", systemImage: .envelopeFill)
                         .font(.title2.weight(.semibold))
@@ -114,7 +114,7 @@ struct EmailSignInForm: View {
         }
         .onAppear { focus = .email }
     }
-    
+
     private func inputField<Content: View>(@ViewBuilder inputContent: () -> Content) -> some View {
         HStack {
             inputContent()

@@ -4,7 +4,7 @@ enum HUD: Equatable {
     case error(Error)
     case success(text: String)
     case neutral(text: String)
-    
+
     static func == (lhs: Self, rhs: Self) -> Bool {
         switch (lhs, rhs) {
         case (.error, .error):
@@ -20,9 +20,9 @@ enum HUD: Equatable {
 }
 
 struct HUDView: View {
-    
+
     let state: HUD
-    
+
     var body: some View {
         content
             .frame(maxWidth: .infinity, alignment: .leading)
@@ -34,7 +34,7 @@ struct HUDView: View {
             .shadow(color: .black.opacity(0.16), radius: 8, x: 0, y: 5)
             .cornerRadius(10)
     }
-    
+
     @ViewBuilder
     private var backgroundColor: some View {
         switch state {
@@ -46,7 +46,7 @@ struct HUDView: View {
             Color.white
         }
     }
-    
+
     private var foregroundColor: Color {
         switch state {
         case .error:
@@ -57,7 +57,7 @@ struct HUDView: View {
             return .black
         }
     }
-    
+
     @ViewBuilder
     private var content: some View {
         switch state {
@@ -72,14 +72,14 @@ struct HUDView: View {
 }
 
 struct HUDContainer<MainContent: View>: View {
-    
+
     let mainContent: MainContent
     @Binding var hud: HUD?
-    
+
     @State private var dismissTask: Task<Void, Error>? {
         willSet { dismissTask?.cancel() }
     }
-    
+
     var body: some View {
         ZStack(alignment: .top) {
             mainContent
@@ -97,7 +97,7 @@ struct HUDContainer<MainContent: View>: View {
             }
         }
     }
-    
+
     private func dismissAfterDelay() {
         dismissTask = Task(priority: .userInitiated) {
             try await Task.sleep(nanoseconds: 5_000_000_000)
@@ -119,16 +119,16 @@ extension View {
 
 #if DEBUG
 struct HUD_Previews: PreviewProvider {
-    
+
     private struct Container: View {
-        
+
         enum TestError: LocalizedError {
             case any
             var errorDescription: String? { "Bad error!" }
         }
-        
+
         @State private var hud: HUD?
-        
+
         var body: some View {
             VStack(spacing: 30) {
                 Spacer()
@@ -146,7 +146,7 @@ struct HUD_Previews: PreviewProvider {
             .hud(state: $hud)
         }
     }
-    
+
     static var previews: some View {
         Container()
     }

@@ -16,7 +16,7 @@ final class NotificationsManager: NSObject, NotificationsManaging {
     let permissionStatus: AnyPublisher<PermissionStatus, Never>
 
     // MARK: - Private Properties
-    
+
     @Injected(\.api) private var api
     @Injected(\.appState) private var appState
     @Injected(\.analyticsManager) private var analyticsManager
@@ -47,7 +47,7 @@ final class NotificationsManager: NSObject, NotificationsManaging {
     func requestPermissions() {
         UNUserNotificationCenter.current().requestAuthorization(
             options: [.alert, .badge, .sound],
-            completionHandler: { [weak self] authorized, error in
+            completionHandler: { [weak self] authorized, _ in
                 guard let self = self else { return }
                 self.analyticsManager.log(event: .notificationPermissions(authorized: authorized))
                 if authorized {
@@ -73,7 +73,7 @@ extension NotificationsManager: UNUserNotificationCenterDelegate {
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification) async -> UNNotificationPresentationOptions {
         [.sound, .banner, .badge, .list]
     }
-    
+
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         DispatchQueue.main.async { [weak self] in
             defer { completionHandler() }

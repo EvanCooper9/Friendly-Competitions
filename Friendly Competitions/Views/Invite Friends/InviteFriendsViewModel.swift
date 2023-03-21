@@ -5,7 +5,7 @@ import Factory
 import Foundation
 
 final class InviteFriendsViewModel: ObservableObject {
-    
+
     struct RowConfig: Identifiable {
         let id: String
         let name: String
@@ -14,16 +14,16 @@ final class InviteFriendsViewModel: ObservableObject {
         var buttonDisabled: Bool
         let buttonAction: () -> Void
     }
-    
+
     // MARK: - Public Properties
 
     @Published var loading = false
     @Published var footerText: String?
     @Published var rows = [RowConfig]()
     @Published var searchText = ""
-    
+
     // MARK: - Private Properties
-    
+
     @Injected(\.competitionsManager) private var competitionsManager
     @Injected(\.friendsManager) private var friendsManager
     @Injected(\.searchManager) private var searchManager
@@ -33,9 +33,9 @@ final class InviteFriendsViewModel: ObservableObject {
     private let inviteSubject = PassthroughSubject<User, Never>()
     private let shareSubject = PassthroughSubject<Void, Never>()
     private var cancellables = Cancellables()
-    
+
     // MARK: - Lifecycle
-    
+
     init(action: InviteFriendsAction) {
         let alreadyInvited: AnyPublisher<[User.ID], Never>
         let incomingRequests: AnyPublisher<[User.ID], Never>
@@ -82,9 +82,11 @@ final class InviteFriendsViewModel: ObservableObject {
                             guard let strongSelf = self else { return }
                             switch action {
                             case .addFriend:
-                                hasIncomingInvite ?
-                                    strongSelf.acceptSubject.send(friend) :
+                                if hasIncomingInvite {
+                                    strongSelf.acceptSubject.send(friend)
+                                } else {
                                     strongSelf.inviteSubject.send(friend)
+                                }
                             case .competitionInvite:
                                 strongSelf.inviteSubject.send(friend)
                             }
@@ -143,7 +145,7 @@ final class InviteFriendsViewModel: ObservableObject {
     }
 
     // MARK: - Publie Methods
-    
+
     func sendInviteLink() {
         shareSubject.send()
     }
