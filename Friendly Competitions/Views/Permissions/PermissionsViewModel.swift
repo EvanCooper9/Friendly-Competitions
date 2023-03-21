@@ -3,7 +3,7 @@ import CombineExt
 import Factory
 
 final class PermissionsViewModel: ObservableObject {
-        
+
     @Published private(set) var permissionStatuses = [(Permission, PermissionStatus)]()
 
     @Injected(\.permissionsManager) private var permissionsManager
@@ -17,7 +17,7 @@ final class PermissionsViewModel: ObservableObject {
             }
             .assign(to: &$permissionStatuses)
     }
-    
+
     func request(_ permission: Permission) {
         permissionsManager.request(permission)
     }

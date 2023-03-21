@@ -50,14 +50,14 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
 
     override init() {
         super.init()
-        
+
         emailVerifiedSubject = .init(auth.currentUser?.isEmailVerified ?? false)
         loggedInSubject = .init(currentUser != nil)
 
         if let currentUser {
             registerUserManager(with: currentUser)
         }
-        
+
         $currentUser
             .removeDuplicates { $0?.id == $1?.id }
             .dropFirst()
@@ -76,7 +76,7 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
     }
 
     // MARK: - Public Methods
-    
+
     func signIn(with signInMethod: SignInMethod) -> AnyPublisher<Void, Error> {
         switch signInMethod {
         case .apple:
@@ -88,7 +88,7 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
                 .eraseToAnyPublisher()
         }
     }
-    
+
     func signUp(name: String, email: String, password: String, passwordConfirmation: String) -> AnyPublisher<Void, Error> {
         guard password == passwordConfirmation else { return .error(SignUpError.passwordMatch) }
         return auth
@@ -104,7 +104,7 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
             }
             .eraseToAnyPublisher()
     }
-    
+
     func checkEmailVerification() -> AnyPublisher<Void, Error> {
         guard let firebaseUser = auth.currentUser else { return .just(()) }
         return .fromAsync { try await firebaseUser.reload() }
@@ -112,18 +112,18 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
             .handleEvents(withUnretained: self, receiveOutput: { $0.emailVerifiedSubject.send(firebaseUser.isEmailVerified) })
             .eraseToAnyPublisher()
     }
-    
+
     func resendEmailVerification() -> AnyPublisher<Void, Error> {
         guard let user = auth.currentUser else { return .just(()) }
         return user.sendEmailVerification().eraseToAnyPublisher()
     }
-    
+
     func sendPasswordReset(to email: String) -> AnyPublisher<Void, Error> {
         Auth.auth()
             .sendPasswordReset(withEmail: email)
             .eraseToAnyPublisher()
     }
-    
+
     func deleteAccount() -> AnyPublisher<Void, Error> {
         .fromAsync { [weak self] in
             try await self?.auth.currentUser?.delete()
@@ -133,9 +133,9 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
     func signOut() throws {
         try auth.signOut()
     }
-    
+
     // MARK: - Private Methods
-    
+
     private func signInWithApple() -> AnyPublisher<Void, Error> {
         let nonce = Nonce.randomNonceString()
         currentNonce = nonce
@@ -153,11 +153,11 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
         signInWithAppleSubject = subject
         return subject.eraseToAnyPublisher()
     }
-    
+
     private func signIn(email: String, password: String) async throws {
         try await Auth.auth().signIn(withEmail: email, password: password)
     }
-    
+
     private func listenForAuth() {
         Auth.auth()
             .authStateDidChangePublisher()
@@ -167,7 +167,7 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
                     self?.userListener = nil
                     return
                 }
-                
+
                 try await self?.updateFirestoreUserWithAuthUser(firebaseUser)
             }
             .store(in: &cancellables)
@@ -179,7 +179,7 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
             .joined()
     }
 
-    private func registerUserManager(with user: User) {        
+    private func registerUserManager(with user: User) {
         Container.shared.userManager.register { [weak self] in
             guard let strongSelf = self else { fatalError("This should not happen") }
             let userManager = UserManager(user: user)
@@ -190,7 +190,7 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
             return userManager
         }
     }
-    
+
     private func updateFirestoreUserWithAuthUser(_ firebaseUser: FirebaseAuth.User) async throws {
         guard let email = firebaseUser.email else { return }
         let name = firebaseUser.displayName ?? ""
@@ -199,7 +199,7 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
             "email": email,
             "name": name
         ]
-        
+
         do {
             try await database.document("users/\(firebaseUser.uid)").updateData(from: userJson).async()
         } catch {
@@ -207,7 +207,7 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
             let user = User(id: firebaseUser.uid, email: email, name: name)
             try await database.document("users/\(user.id)").setData(from: user).async()
         }
-        
+
         let user = try await self.database.document("users/\(firebaseUser.uid)").getDocument(as: User.self).async()
         DispatchQueue.main.async {
             self.currentUser = user
@@ -222,21 +222,21 @@ extension AuthenticationManager: ASAuthorizationControllerDelegate {
               let tokenData = appleIDCredential.identityToken,
               let idToken = String(data: tokenData, encoding: .utf8)
         else { return }
-        
+
         let appleIDName = [appleIDCredential.fullName?.givenName, appleIDCredential.fullName?.familyName]
             .compactMap { $0 }
             .joined(separator: " ")
 
         let credential = OAuthProvider.credential(withProviderID: "apple.com", idToken: idToken, rawNonce: currentNonce)
 
-        Auth.auth().signIn(with: credential) { [weak self] authResult, error in
+        Auth.auth().signIn(with: credential) { [weak self] authResult, _ in
             guard let firebaseUser = authResult?.user else { return }
             let displayName = appleIDName.nilIfEmpty ?? firebaseUser.displayName ?? ""
             guard firebaseUser.displayName != displayName else { return }
-            
+
             let changeRequest = firebaseUser.createProfileChangeRequest()
             changeRequest.displayName = displayName
-            changeRequest.commitChanges { [weak self] error in
+            changeRequest.commitChanges { [weak self] _ in
                 Task { [weak self] in
                     try await self?.updateFirestoreUserWithAuthUser(firebaseUser)
                 }

@@ -36,14 +36,14 @@ final class HealthKitManager: HealthKitManaging {
     }
 
     // MARK: - Private Properties
-    
+
     @Injected(\.analyticsManager) private var analyticsManager
     @Injected(\.healthStore) private var healthStore
     @Injected(\.healthKitManagerCache) private var cache
-    
+
     private let backgroundDeliveryReceivedSubject = PassthroughSubject<Void, Never>()
     private let permissionStatusSubject = ReplaySubject<[HealthKitPermissionType: PermissionStatus], Never>(bufferSize: 1)
-    
+
     private var cancellables = Cancellables()
 
     // MARK: - Initializers
@@ -77,7 +77,7 @@ final class HealthKitManager: HealthKitManaging {
             strongSelf.registerForBackgroundDelivery()
         }
     }
-    
+
     private var backgroundDeliveryPublishers = [AnyPublisher<Void, Never>]()
     func registerBackgroundDeliveryTask(_ publisher: AnyPublisher<Void, Never>) {
         backgroundDeliveryPublishers.append(publisher)
@@ -107,34 +107,6 @@ final class HealthKitManager: HealthKitManaging {
             }
             healthStore.execute(query)
             healthStore.enableBackgroundDelivery(for: sampleType)
-        }
-    }
-}
-
-extension Publishers {
-    struct ZipMany<Element, F: Error>: Publisher {
-        typealias Output = [Element]
-        typealias Failure = F
-
-        private let upstreams: [AnyPublisher<Element, F>]
-
-        init(_ upstreams: [AnyPublisher<Element, F>]) {
-            self.upstreams = upstreams
-        }
-
-        func receive<S: Subscriber>(subscriber: S) where Self.Failure == S.Failure, Self.Output == S.Input {
-            let initial = Just<[Element]>([])
-                .setFailureType(to: F.self)
-                .eraseToAnyPublisher()
-
-            let zipped = upstreams.reduce(into: initial) { result, upstream in
-                result = result.zip(upstream) { elements, element in
-                    elements + [element]
-                }
-                .eraseToAnyPublisher()
-            }
-
-            zipped.subscribe(subscriber)
         }
     }
 }

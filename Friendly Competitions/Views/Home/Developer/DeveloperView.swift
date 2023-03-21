@@ -36,7 +36,7 @@ struct DeveloperView: View {
                         }
                     }
                 }
-                
+
                 Button(L10n.Generics.save, action: viewModel.saveTapped)
             }
         }

@@ -1,20 +1,20 @@
 import SwiftUI
 
 struct PremiumBanner: View {
-    
+
     @StateObject private var viewModel = PremiumBannerViewModel()
-    
+
     var showPurchaseButton: Bool = true
-    
+
     var body: some View {
         VStack(alignment: .leading) {
             Text(L10n.Premium.Banner.title)
                 .bold()
                 .frame(maxWidth: .infinity, alignment: .leading)
-            
+
             Text(L10n.Premium.Banner.message)
                 .font(.footnote)
-            
+
             if showPurchaseButton {
                 Button(L10n.Premium.Banner.learnMore, action: viewModel.purchaseTapped)
                     .padding(.vertical, .small)

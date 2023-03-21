@@ -39,7 +39,7 @@
     /// The publisher will emit on the *main* thread.
     func authStateDidChangePublisher() -> AnyPublisher<FirebaseAuth.User?, Never> {
       let subject = PassthroughSubject<FirebaseAuth.User?, Never>()
-      let handle = addStateDidChangeListener { auth, user in
+      let handle = addStateDidChangeListener { _, user in
         subject.send(user)
       }
       return subject
@@ -65,7 +65,7 @@
     ///   The publisher will emit on the *main* thread.
     func idTokenDidChangePublisher() -> AnyPublisher<FirebaseAuth.User?, Never> {
       let subject = PassthroughSubject<FirebaseAuth.User?, Never>()
-      let handle = addIDTokenDidChangeListener { auth, user in
+      let handle = addIDTokenDidChangeListener { _, user in
         subject.send(user)
       }
       return subject
@@ -252,7 +252,7 @@
       }
     }
 
-    //  MARK: - Email-based Authentication Helpers
+    // MARK: - Email-based Authentication Helpers
 
     /// Fetches the list of all sign-in methods previously used for the provided email address.
     ///

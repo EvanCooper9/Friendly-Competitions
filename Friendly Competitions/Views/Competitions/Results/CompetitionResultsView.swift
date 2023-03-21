@@ -5,21 +5,21 @@ import SwiftUIX
 struct CompetitionResultsView: View {
 
     @StateObject private var viewModel: CompetitionResultsViewModel
-    
+
     init(competition: Competition) {
         _viewModel = .init(wrappedValue: .init(competition: competition))
     }
-    
+
     var body: some View {
         ScrollView {
             CompetitionResultsDateRangeSelector(
                 ranges: viewModel.ranges,
                 select: viewModel.select
             )
-            
+
             Divider()
                 .padding(.vertical, .small)
-            
+
             if viewModel.loading {
                 ProgressView()
             } else if viewModel.locked {
@@ -37,7 +37,7 @@ struct CompetitionResultsView: View {
         .sheet(isPresented: $viewModel.showPaywall, content: PaywallView.init)
         .registerScreenView(name: "Results")
     }
-    
+
     private var lockedView: some View {
         VStack(alignment: .leading, spacing: 15) {
             Text("You need Friendly Competitions Premium to see older results")
@@ -52,7 +52,7 @@ struct CompetitionResultsView: View {
 
 #if DEBUG
 struct CompetitionResultsView_Previews: PreviewProvider {
-    
+
     private static func setupMocks() {
         let results: [CompetitionResult] = [
             .init(id: "1", start: .now.advanced(by: -7.days), end: .now, participants: []),
@@ -63,7 +63,7 @@ struct CompetitionResultsView_Previews: PreviewProvider {
             .init(id: "6", start: .now.advanced(by: -42.days), end: .now.advanced(by: -43.days), participants: [])
         ]
         competitionsManager.resultsForReturnValue = .just(results)
-        
+
         let stats: [Competition.Standing] = [
             .init(rank: 1, userId: User.evan.id, points: 300),
             .init(rank: 2, userId: User.gabby.id, points: 200),
@@ -74,7 +74,7 @@ struct CompetitionResultsView_Previews: PreviewProvider {
         ]
         competitionsManager.standingsForResultIDReturnValue = .just(stats)
     }
-    
+
     static var previews: some View {
         CompetitionResultsView(competition: .mock)
             .embeddedInNavigationView()

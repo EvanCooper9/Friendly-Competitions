@@ -9,7 +9,7 @@ struct SignIn: View {
 
     var body: some View {
         VStack(spacing: 30) {
-            
+
             VStack {
                 Text(L10n.SignIn.title)
                     .font(.largeTitle)
@@ -19,7 +19,7 @@ struct SignIn: View {
                     .multilineTextAlignment(.center)
             }
             .padding(.vertical, 30)
-                    
+
             if viewModel.signingInWithEmail {
                 EmailSignInForm(
                     loading: viewModel.loading,
@@ -42,9 +42,9 @@ struct SignIn: View {
                         ActivityRingView()
                             .shadow(radius: 10)
                     }
-                
+
                 Spacer()
-                
+
                 VStack {
                     Button(action: viewModel.submit) {
                         Label(L10n.SignIn.apple, systemImage: "applelogo")
@@ -73,7 +73,7 @@ struct SignIn: View {
         .background(color.ignoresSafeArea())
         .registerScreenView(name: "Sign In")
     }
-    
+
     @ViewBuilder
     private var color: some View {
         switch colorScheme {

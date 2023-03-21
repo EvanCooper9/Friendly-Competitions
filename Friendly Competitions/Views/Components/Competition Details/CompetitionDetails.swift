@@ -8,9 +8,9 @@ struct CompetitionDetails: View {
     let isFeatured: Bool
 
     @Environment(\.colorScheme) private var colorScheme
-    
+
     @StateObject private var viewModel: CompetitionDetailsViewModel
-    
+
     init(competition: Competition, showParticipantCount: Bool, isFeatured: Bool) {
         _viewModel = .init(wrappedValue: .init(competition: competition))
         self.competition = competition
@@ -48,7 +48,7 @@ struct CompetitionDetails: View {
         .padding(.vertical, 2)
         .contentShape(Rectangle())
     }
-    
+
     private var subtitleColor: Color {
         guard isFeatured else { return .gray }
         return colorScheme == .light ? .gray : .white

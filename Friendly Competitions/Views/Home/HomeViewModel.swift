@@ -5,16 +5,16 @@ import Factory
 import Foundation
 
 final class HomeViewModel: ObservableObject {
-    
+
     struct FriendRow: Equatable, Identifiable {
         var id: String { "\(user.id) - \(isInvitation)" }
         let user: User
         let activitySummary: ActivitySummary?
         let isInvitation: Bool
     }
-    
+
     @Published var navigationDestinations = [NavigationDestination]()
-    
+
     @Published private(set) var activitySummary: ActivitySummary?
     @Published private(set) var competitions = [Competition]()
     @Published private(set) var friendRows = [FriendRow]()
@@ -25,9 +25,9 @@ final class HomeViewModel: ObservableObject {
     @Published private(set) var loadingDeepLink = false
     @Published private(set) var showPremiumBanner = false
     @Published var showPaywall = false
-    
+
     // MARK: - Private Properties
-    
+
     @Injected(\.appState) private var appState
     @Injected(\.activitySummaryManager) private var activitySummaryManager
     @Injected(\.analyticsManager) private var analyticsManager
@@ -36,12 +36,12 @@ final class HomeViewModel: ObservableObject {
     @Injected(\.permissionsManager) private var permissionsManager
     @Injected(\.premiumManager) private var premiumManager
     @Injected(\.userManager) private var userManager
-    
+
     @UserDefault("competitionsFiltered", defaultValue: false) var competitionsFiltered
     @UserDefault("dismissedPremiumBanner", defaultValue: false) private var dismissedPremiumBanner
-    
+
     private var cancellables = Cancellables()
-    
+
     // MARK: - Lifecycle
 
     init() {
@@ -53,7 +53,7 @@ final class HomeViewModel: ObservableObject {
             .map { ["evan.cooper@rogers.com", "evancmcooper@gmail.com"].contains($0.email) }
             .assign(to: &$showDeveloper)
         #endif
-        
+
         appState.deepLink
             .flatMapLatest(withUnretained: self) { strongSelf, deepLink -> AnyPublisher<[NavigationDestination], Never> in
                 switch deepLink {
@@ -84,7 +84,7 @@ final class HomeViewModel: ObservableObject {
         activitySummaryManager.activitySummary.assign(to: &$activitySummary)
         competitionsManager.competitions.assign(to: &$competitions)
         competitionsManager.invitedCompetitions.assign(to: &$invitedCompetitions)
-        
+
         Publishers
             .CombineLatest4($competitions, $invitedCompetitions, $friendRows, appState.deepLink)
             .map { [weak self] competitions, invitedCompetitions, friendRows, deepLink -> [NavigationDestination] in
@@ -112,7 +112,7 @@ final class HomeViewModel: ObservableObject {
                 }
             }
             .assign(to: &$navigationDestinations)
-        
+
         Publishers
             .CombineLatest(friendsManager.friends, friendsManager.friendRequests)
             .map { $0.with(false) + $1.with(true) }
@@ -131,7 +131,7 @@ final class HomeViewModel: ObservableObject {
         permissionsManager
             .requiresPermission
             .assign(to: &$requiresPermissions)
-        
+
         Publishers
             .CombineLatest3(
                 $dismissedPremiumBanner,
@@ -143,14 +143,14 @@ final class HomeViewModel: ObservableObject {
             }
             .receive(on: RunLoop.main)
             .assign(to: &$showPremiumBanner)
-        
+
         userManager.userPublisher
             .map { $0.name.ifEmpty(Bundle.main.name) }
             .assign(to: &$title)
     }
-    
+
     // MARK: - Public Methods
-    
+
     func dismissPremiumBannerTapped() {
         analyticsManager.log(event: .premiumBannerDismissed)
         dismissedPremiumBanner.toggle()

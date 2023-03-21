@@ -35,7 +35,7 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
     @Injected(\.workoutManager) private var workoutManager
 
     private var helper: HealthKitDataHelper<[ActivitySummary]>!
-    
+
     private var activitySummarySubject = ReplaySubject<ActivitySummary?, Never>(bufferSize: 1)
     private var cancellables = Cancellables()
 
@@ -47,7 +47,7 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
         } upload: { [weak self] in
             self?.upload(activitySummaries: $0) ?? .just(())
         }
-        
+
         let storedActivitySummary = cache.activitySummary
         activitySummarySubject.send(storedActivitySummary?.date.isToday == true ? storedActivitySummary : nil)
         activitySummary
@@ -56,9 +56,9 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
     }
 
     // MARK: - Public Methods
-    
+
     func activitySummaries(in dateInterval: DateInterval) -> AnyPublisher<[ActivitySummary], Error> {
-        Future() { [weak self] promise in
+        Future { [weak self] promise in
             let query = ActivitySummaryQuery(predicate: dateInterval.activitySummaryPredicate) { [weak self] result in
                 switch result {
                 case .failure(let error):
@@ -78,7 +78,7 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
     }
 
     // MARK: - Private Methods
-    
+
     private func upload(activitySummaries: [ActivitySummary]) -> AnyPublisher<Void, Error> {
         .fromAsync { [weak self] in
             guard let strongSelf = self else { return }

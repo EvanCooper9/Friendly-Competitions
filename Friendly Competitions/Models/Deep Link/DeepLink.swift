@@ -2,13 +2,13 @@ import ECKit
 import Foundation
 
 enum DeepLink: Equatable {
-    
+
     private enum Constants {
         static let baseURL = URL(string: "https://friendly-competitions.app")!
         static let user = "user"
         static let competition = "competition"
     }
-    
+
     case user(id: User.ID)
     case competition(id: Competition.ID)
     case competitionResults(id: Competition.ID)
@@ -30,7 +30,7 @@ enum DeepLink: Equatable {
         }
         return nil
     }
-    
+
     var url: URL {
         switch self {
         case .user(let id):
@@ -49,7 +49,6 @@ enum DeepLink: Equatable {
         }
     }
 }
-
 
 extension DeepLink: Sharable {
     var itemsForSharing: [Any] {

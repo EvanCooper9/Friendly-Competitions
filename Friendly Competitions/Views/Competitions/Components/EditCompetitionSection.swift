@@ -12,16 +12,16 @@ struct EditCompetitionSection: View {
         var id: RawValue { description }
         var description: String { rawValue }
     }
-    
+
     // MARK: - Public Properties
-    
+
     @Binding var name: String
     @Binding var scoringModel: Competition.ScoringModel
     @Binding var start: Date
     @Binding var end: Date
     @Binding var repeats: Bool
     @Binding var isPublic: Bool
-    
+
     // MARK: - Private Properties
 
     @State private var underlyingScoringModel: UnderlyingScoringModel?
@@ -50,9 +50,9 @@ struct EditCompetitionSection: View {
             if isPublic { L10n.Competition.Edit.Public.disclaimer }
         }
     }
-    
+
     // MARK: - Lifecycle
-    
+
     init(name: Binding<String>, scoringModel: Binding<Competition.ScoringModel>, start: Binding<Date>, end: Binding<Date>, repeats: Binding<Bool>, isPublic: Binding<Bool>) {
         _name = name
         _scoringModel = scoringModel
@@ -60,7 +60,7 @@ struct EditCompetitionSection: View {
         _end = end
         _repeats = repeats
         _isPublic = isPublic
-        
+
         switch scoringModel.wrappedValue {
         case .percentOfGoals:
             _underlyingScoringModel = .init(initialValue: .percentOfGoals)
@@ -72,13 +72,13 @@ struct EditCompetitionSection: View {
             _underlyingWorkoutMetrics = .init(initialValue: metrics)
         }
     }
-    
+
     // MARK: - View
-    
+
     var body: some View {
         Section {
             TextField(L10n.Competition.Edit.name, text: $name)
-            
+
             DatePicker(
                 L10n.Competition.Edit.starts,
                 selection: $start,

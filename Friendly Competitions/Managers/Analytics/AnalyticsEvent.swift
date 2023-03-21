@@ -12,7 +12,7 @@ enum AnalyticsEvent: Codable {
     // permissions
     case notificationPermissions(authorized: Bool)
     case healthKitPermissions(authorized: Bool)
-    
+
     // premium
     case premiumPaywallPrimerViewed
     case premiumPaywallViewed

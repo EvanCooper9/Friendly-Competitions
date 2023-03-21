@@ -2,7 +2,7 @@ import HealthKit
 
 struct ActivitySummary: Identifiable, Codable, Equatable {
     var id: String { date.encodedToString(with: .dateDashed) }
-    
+
     let activeEnergyBurned: Double
     let appleExerciseTime: Double
     let appleStandHours: Double
@@ -11,13 +11,13 @@ struct ActivitySummary: Identifiable, Codable, Equatable {
     let appleStandHoursGoal: Double
     let date: Date
     var userID: User.ID?
-    
+
     var closed: Bool {
         activeEnergyBurned >= activeEnergyBurnedGoal &&
         appleExerciseTime >= appleExerciseTimeGoal &&
         appleStandHours >= appleStandHoursGoal
     }
-    
+
     func points(from scoringModel: Competition.ScoringModel) -> Double {
         switch scoringModel {
         case .percentOfGoals:

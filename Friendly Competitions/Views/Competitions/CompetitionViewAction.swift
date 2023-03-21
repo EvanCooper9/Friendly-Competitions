@@ -11,7 +11,7 @@ enum CompetitionViewAction {
 }
 
 extension CompetitionViewAction {
-    
+
     var buttonTitle: String {
         switch self {
         case .acceptInvite:
@@ -30,7 +30,7 @@ extension CompetitionViewAction {
             return L10n.Competition.Action.Leave.buttonTitle
         }
     }
-    
+
     var confirmationTitle: String? {
         switch self {
         case .delete:
@@ -41,7 +41,7 @@ extension CompetitionViewAction {
             return nil
         }
     }
-    
+
     var systemImage: SFSymbolName {
         switch self {
         case .acceptInvite, .join:
@@ -58,7 +58,7 @@ extension CompetitionViewAction {
             return .personCropCircleBadgeCheckmark
         }
     }
-    
+
     var destructive: Bool {
         switch self {
         case .acceptInvite, .edit, .invite, .join:

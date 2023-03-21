@@ -4,9 +4,9 @@ import SwiftUIX
 struct FirebaseImage: View {
 
     @StateObject private var viewModel: FirebaseImageViewModel
-    
+
     var contentMode = ContentMode.fit
-    
+
     init(path: String) {
         _viewModel = .init(wrappedValue: .init(path: path))
     }
@@ -14,7 +14,7 @@ struct FirebaseImage: View {
     var body: some View {
         image.onAppear(perform: viewModel.downloadImage)
     }
-    
+
     @ViewBuilder
     private var image: some View {
         if let imageData = viewModel.imageData {

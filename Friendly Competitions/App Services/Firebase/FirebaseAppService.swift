@@ -3,16 +3,16 @@ import Firebase
 import FirebaseMessaging
 
 final class FirebaseAppService: NSObject, AppService {
-    
+
     // Needs to be lazy so that `FirebaseApp.configure()` is called first
     @LazyInjected(\.database) private var database
-    
+
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         FirebaseApp.configure()
         Messaging.messaging().delegate = self
         return true
     }
-    
+
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         Messaging.messaging().apnsToken = deviceToken
     }

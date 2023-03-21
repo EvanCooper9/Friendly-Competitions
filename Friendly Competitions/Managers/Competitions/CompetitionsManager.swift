@@ -27,18 +27,18 @@ protocol CompetitionsManaging {
     func results(for competitionID: Competition.ID) -> AnyPublisher<[CompetitionResult], Error>
     func standings(for competitionID: Competition.ID, resultID: CompetitionResult.ID) -> AnyPublisher<[Competition.Standing], Error>
     func participants(for competitionsID: Competition.ID) -> AnyPublisher<[User], Error>
-    
+
     func competitionPublisher(for competitionID: Competition.ID) -> AnyPublisher<Competition, Error>
     func standingsPublisher(for competitionID: Competition.ID) -> AnyPublisher<[Competition.Standing], Error>
 }
 
 final class CompetitionsManager: CompetitionsManaging {
-    
+
     private enum Constants {
         static var competitionsDateIntervalKey: String { #function }
         static var hasPremiumResultsKey: String { #function }
     }
-    
+
     // MARK: - Public Properties
 
     let competitions: AnyPublisher<[Competition], Never>
@@ -48,7 +48,7 @@ final class CompetitionsManager: CompetitionsManaging {
     let hasPremiumResults: AnyPublisher<Bool, Never>
 
     // MARK: - Private Properties
-    
+
     private let competitionsSubject = ReplaySubject<[Competition], Never>(bufferSize: 1)
     private let invitedCompetitionsSubject = ReplaySubject<[Competition], Never>(bufferSize: 1)
     private let appOwnedCompetitionsSubject = ReplaySubject<[Competition], Never>(bufferSize: 1)
@@ -71,7 +71,7 @@ final class CompetitionsManager: CompetitionsManaging {
         invitedCompetitions = invitedCompetitionsSubject.eraseToAnyPublisher()
         appOwnedCompetitions = appOwnedCompetitionsSubject.eraseToAnyPublisher()
         hasPremiumResults = hasPremiumResultsSubject.eraseToAnyPublisher()
-        
+
         competitions
             .filterMany(\.isActive)
             .map(\.dateInterval)
@@ -84,7 +84,7 @@ final class CompetitionsManager: CompetitionsManaging {
             .mapToVoid()
             .sink(withUnretained: self) { $0.listenForCompetitions() }
             .store(in: &cancellables)
-        
+
         competitions
             .map { competitions -> (id: String, competitions: [Competition]) in
                 let id = competitions
@@ -156,24 +156,24 @@ final class CompetitionsManager: CompetitionsManaging {
         database.document("competitions/\(competitionID)")
             .getDocument(as: Competition.self)
     }
-    
+
     func update(_ competition: Competition) -> AnyPublisher<Void, Error> {
         database.document("competitions/\(competition.id)")
             .setData(from: competition)
     }
-    
+
     func results(for competitionID: Competition.ID) -> AnyPublisher<[CompetitionResult], Error> {
         database.collection("competitions/\(competitionID)/results")
             .whereField("participants", arrayContains: userManager.user.id)
             .getDocuments(ofType: CompetitionResult.self)
     }
-    
+
     func standings(for competitionID: Competition.ID, resultID: CompetitionResult.ID) -> AnyPublisher<[Competition.Standing], Error> {
         database.collection("competitions/\(competitionID)/results/\(resultID)/standings")
             .getDocuments(ofType: Competition.Standing.self)
 //            .getDocumentsPreferCache() TODO: go back to cache
     }
-    
+
     func participants(for competitionsID: Competition.ID) -> AnyPublisher<[User], Error> {
         search(byID: competitionsID)
             .map(\.participants)
@@ -198,12 +198,12 @@ final class CompetitionsManager: CompetitionsManaging {
             }
             .eraseToAnyPublisher()
     }
-    
+
     func competitionPublisher(for competitionID: Competition.ID) -> AnyPublisher<Competition, Error> {
         database.document("competitions/\(competitionID)")
             .getDocumentPublisher(as: Competition.self)
     }
-    
+
     func standingsPublisher(for competitionID: Competition.ID) -> AnyPublisher<[Competition.Standing], Error> {
         database.collection("competitions/\(competitionID)/standings")
             .publisher(asArrayOf: Competition.Standing.self)
@@ -223,7 +223,7 @@ final class CompetitionsManager: CompetitionsManaging {
             .publisher(asArrayOf: Competition.self)
             .sink(withUnretained: self) { $0.invitedCompetitionsSubject.send($1) }
             .store(in: &cancellables)
-            
+
         database.collection("competitions")
             .whereField("isPublic", isEqualTo: true)
             .whereField("owner", isEqualTo: Bundle.main.id)
@@ -231,7 +231,7 @@ final class CompetitionsManager: CompetitionsManaging {
             .sink(withUnretained: self) { $0.appOwnedCompetitionsSubject.send($1) }
             .store(in: &cancellables)
     }
-    
+
     private func hasPremiumResults(for competitions: [Competition], id: String) -> AnyPublisher<Bool, Never> {
         if let container = cache.competitionsHasPremiumResults, container.id == id, container.hasPremiumResults {
             return .just(true)

@@ -3,11 +3,11 @@ import SwiftUI
 import SwiftUIX
 
 struct CompetitionView: View {
-    
+
     @StateObject private var viewModel: CompetitionViewModel
 
     @State private var canSaveEdits = true
-    
+
     init(competition: Competition) {
         _viewModel = .init(wrappedValue: .init(competition: competition))
     }
@@ -15,11 +15,11 @@ struct CompetitionView: View {
     var body: some View {
         List {
             standings
-            
+
             if viewModel.showResults {
                 results
             }
-            
+
             if viewModel.editing {
                 EditCompetitionSection(
                     name: $viewModel.competition.name,
@@ -34,7 +34,7 @@ struct CompetitionView: View {
                     ImmutableListItemView(value: detail.value, valueType: detail.valueType)
                 }
             }
-            
+
             actions
         }
         .navigationTitle(viewModel.competition.name)
@@ -80,7 +80,7 @@ struct CompetitionView: View {
             }
         }
     }
-    
+
     private var results: some View {
         Section {
             NavigationLink(L10n.Competition.Results.results, value: NavigationDestination.competitionResults(viewModel.competition))
@@ -124,7 +124,7 @@ struct CompetitionView_Previews: PreviewProvider {
             .init(rank: 3, userId: "Bob", points: 60),
             .init(rank: 4, userId: gabby.id, points: 50),
             .init(rank: 5, userId: evan.id, points: 20),
-            .init(rank: 6, userId: "Joe", points: 9),
+            .init(rank: 6, userId: "Joe", points: 9)
         ]
         let participants = [evan, gabby]
         competitionsManager.competitions = .just([competition])

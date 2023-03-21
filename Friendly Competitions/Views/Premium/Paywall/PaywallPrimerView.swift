@@ -12,13 +12,13 @@ struct PaywallPrimerView: View {
                 }
                 .clipped()
                 .cornerRadius(15)
-            
+
             VStack(spacing: 8) {
                 Text(L10n.Premium.Primer.title)
                     .font(.title)
                     .bold()
                     .maxWidth(.infinity)
-                
+
                 Text(L10n.Premium.Primer.message)
                     .foregroundColor(.secondaryLabel)
                     .multilineTextAlignment(.center)

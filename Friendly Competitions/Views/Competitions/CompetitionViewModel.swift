@@ -5,15 +5,15 @@ import Factory
 import Foundation
 
 final class CompetitionViewModel: ObservableObject {
-    
+
     private enum ActionRequiringConfirmation {
         case delete
         case edit
         case leave
     }
-    
+
     // MARK: - Public Properties
-    
+
     @Published private(set) var canEdit = false
     var confirmationTitle: String { actionRequiringConfirmation?.confirmationTitle ?? "" }
     @Published var confirmationRequired = false
@@ -28,7 +28,7 @@ final class CompetitionViewModel: ObservableObject {
     @Published private(set) var loading = false
     @Published private(set) var loadingStandings = false
     @Published private(set) var showShowMoreButton = false
-    
+
     var details: [(value: String, valueType: ImmutableListItemView.ValueType)] {
         [
             (
@@ -49,16 +49,16 @@ final class CompetitionViewModel: ObservableObject {
             )
         ]
     }
-    
+
     // MARK: - Private Properties
 
     private var competitionPreEdit: Competition
     @Published private var currentStandingsMaximum = 10
-    
+
     private var actionRequiringConfirmation: CompetitionViewAction? {
         didSet { confirmationRequired = actionRequiringConfirmation != nil }
     }
-    
+
     @Injected(\.api) private var api
     @Injected(\.competitionsManager) private var competitionsManager
     @Injected(\.userManager) private var userManager
@@ -68,9 +68,9 @@ final class CompetitionViewModel: ObservableObject {
     private let saveEditsSubject = PassthroughSubject<Void, Error>()
     private let recordResultsSubject = PassthroughSubject<Void, Never>()
     private var cancellables = Cancellables()
-    
+
     // MARK: - Lifecycle
-    
+
     init(competition: Competition) {
         self.competition = competition
         competitionPreEdit = competition
@@ -78,16 +78,16 @@ final class CompetitionViewModel: ObservableObject {
         userManager.userPublisher
             .map { $0.id == competition.owner }
             .assign(to: &$canEdit)
-        
+
         competitionsManager.results(for: competition.id)
             .map(\.isNotEmpty)
             .ignoreFailure()
             .assign(to: &$showResults)
-        
+
         $editing
             .map { $0  ? L10n.Generics.cancel : L10n.Competition.Action.Edit.buttonTitle }
             .assign(to: &$editButtonTitle)
-        
+
         $competition
             .combineLatest(userManager.userPublisher)
             .map { competition, user -> [CompetitionViewAction] in
@@ -109,7 +109,7 @@ final class CompetitionViewModel: ObservableObject {
                 }
             }
             .assign(to: &$actions)
-        
+
         let fetchParticipants = PassthroughSubject<Void, Never>()
         let participants = fetchParticipants
             .prepend(())
@@ -118,7 +118,7 @@ final class CompetitionViewModel: ObservableObject {
                     .participants(for: competition.id)
                     .catchErrorJustReturn([])
             }
-        
+
         $competition
             .map(\.participants)
             .removeDuplicates()
@@ -126,7 +126,7 @@ final class CompetitionViewModel: ObservableObject {
             .mapToVoid()
             .sink { fetchParticipants.send() }
             .store(in: &cancellables)
-        
+
         Publishers
             .CombineLatest(
                 competitionsManager.standingsPublisher(for: competition.id).catchErrorJustReturn([]),
@@ -167,11 +167,11 @@ final class CompetitionViewModel: ObservableObject {
                 receiveOutput: { strongSelf, _ in strongSelf.loadingStandings = false }
             )
             .assign(to: &$standings)
-        
+
         competitionsManager.competitionPublisher(for: competition.id)
             .ignoreFailure()
             .assign(to: &$competition)
-        
+
         Publishers.CombineLatest($standings, $currentStandingsMaximum)
             .map { $0.count >= $1 }
             .assign(to: &$showShowMoreButton)
@@ -246,16 +246,16 @@ final class CompetitionViewModel: ObservableObject {
             .sink()
             .store(in: &cancellables)
     }
-    
+
     // MARK: - Public Methods
-    
+
     func editTapped() {
         if editing { // cancelling edit
             competition = competitionPreEdit
         }
         editing.toggle()
     }
-    
+
     func saveTapped() {
         if competition.start != competitionPreEdit.start || competition.end != competitionPreEdit.end {
             actionRequiringConfirmation = .edit
@@ -263,15 +263,15 @@ final class CompetitionViewModel: ObservableObject {
             saveEditsSubject.send()
         }
     }
-    
+
     func confirm() {
         confirmActionSubject.send()
     }
-    
+
     func perform(_ action: CompetitionViewAction) {
         performActionSubject.send(action)
     }
-    
+
     func showMoreTapped() {
         currentStandingsMaximum += 10
     }
