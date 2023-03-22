@@ -1,6 +1,7 @@
 import Combine
 import CombineExt
 import FirebaseFirestore
+import FirebaseFirestoreCombineSwift
 
 fileprivate extension Firestore.Encoder {
     static let custom: Firestore.Encoder = {

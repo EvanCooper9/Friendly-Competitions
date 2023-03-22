@@ -4,8 +4,7 @@ import CryptoKit
 import ECKit
 import Factory
 import Firebase
-import FirebaseAuth
-import FirebaseFirestore
+import FirebaseAuthCombineSwift
 import SwiftUI
 
 // sourcery: AutoMockable
