@@ -1,5 +1,6 @@
 import Combine
 import CombineExt
+import FirebaseCrashlytics
 import FirebaseFirestore
 
 fileprivate extension Firestore.Encoder {
@@ -51,6 +52,11 @@ extension Query: Collection {
                 .whereFieldWithChunking(field, in: values)
                 .map { try $0.data(as: T.self, decoder: .custom) }
         }
+        .reportErrorToCrashlytics(userInfo: [
+            "field": field,
+            "values": values,
+            "type": String(describing: T.self)
+        ])
     }
 
     func whereField(_ field: String, arrayContains value: Any) -> any Collection {
@@ -65,16 +71,14 @@ extension Query: Collection {
 
     func publisher<T: Decodable>(asArrayOf type: T.Type) -> AnyPublisher<[T], Error> {
         snapshotPublisher()
-            .map(\.documents)
-            .tryMap { try $0.map { try $0.data(as: T.self, decoder: .custom) } }
-            .eraseToAnyPublisher()
+            .map { $0.documents.decoded(as: T.self) }
+            .reportErrorToCrashlytics()
     }
 
     func getDocuments<T: Decodable>(ofType type: T.Type) -> AnyPublisher<[T], Error> {
         getDocuments()
-            .map(\.documents)
-            .tryMap { try $0.map { try $0.data(as: T.self, decoder: .custom) } }
-            .eraseToAnyPublisher()
+            .map { $0.documents.decoded(as: T.self) }
+            .reportErrorToCrashlytics()
     }
 }
 
@@ -82,40 +86,50 @@ extension Query: Collection {
 
 extension DocumentReference: Document {
     func setData<T: Encodable>(from value: T) -> AnyPublisher<Void, Error> {
-        setData(from: value, encoder: .custom).eraseToAnyPublisher()
+        setData(from: value, encoder: .custom)
+            .reportErrorToCrashlytics(userInfo: [
+                "path": path,
+                "data": value
+            ])
     }
 
     func updateData(from data: [String : Any]) -> AnyPublisher<Void, Error> {
-        let subject = PassthroughSubject<Void, Error>()
-        updateData(data) { error in
-            if let error {
-                subject.send(completion: .failure(error))
-            } else {
-                subject.send(())
-                subject.send(completion: .finished)
+        Future { [weak self] promise in
+            guard let strongSelf = self else { return }
+            strongSelf.updateData(data) { error in
+                if let error {
+                    promise(.failure(error))
+                } else {
+                    promise(.success(()))
+                }
             }
         }
-        return subject.eraseToAnyPublisher()
+        .reportErrorToCrashlytics(userInfo: [
+            "path": path,
+            "data": data
+        ])
     }
 
     func getDocument<T: Decodable>(as type: T.Type) -> AnyPublisher<T, Error> {
-        let subject = PassthroughSubject<T, Error>()
-        getDocument(as: T.self, decoder: .custom) { result in
-            switch result {
-            case .failure(let error):
-                subject.send(completion: .failure(error))
-            case .success(let data):
-                subject.send(data)
-                subject.send(completion: .finished)
+        Future { [weak self] promise in
+            guard let strongSelf = self else { return }
+            strongSelf.getDocument(as: T.self, decoder: .custom) { result in
+                promise(result)
             }
         }
-        return subject.eraseToAnyPublisher()
+        .reportErrorToCrashlytics(userInfo: [
+            "path": path,
+            "type": String(describing: T.self)
+        ])
     }
 
     func getDocumentPublisher<T: Decodable>(as type: T.Type) -> AnyPublisher<T, Error> {
         snapshotPublisher()
             .tryMap { try $0.data(as: T.self, decoder: .custom) }
-            .eraseToAnyPublisher()
+            .reportErrorToCrashlytics(userInfo: [
+                "path": path,
+                "type": String(describing: T.self)
+            ])
     }
 }
 
@@ -125,5 +139,46 @@ extension WriteBatch: Batch {
     func setData<T: Encodable>(from value: T, forDocument document: Document) throws {
         guard let documentReference = document as? DocumentReference else { return }
         try setData(from: value, forDocument: documentReference, encoder: .custom)
+    }
+}
+
+// MARK: - Helpers
+
+fileprivate extension Publisher where Failure == Error {
+    func reportErrorToCrashlytics(userInfo: [String: Any] = [:]) -> AnyPublisher<Output, Failure> {
+        self.catch { error -> AnyPublisher<Output, Failure> in
+            error.reportToCrashlytics(userInfo: userInfo)
+            return .error(error)
+        }
+        .eraseToAnyPublisher()
+    }
+}
+
+fileprivate extension Array where Element == QueryDocumentSnapshot {
+    func decoded<T: Decodable>(as: T.Type) -> [T] {
+        compactMap { document in
+            do {
+                return try document.data(as: T.self, decoder: .custom)
+            } catch {
+                error.reportToCrashlytics(userInfo: [
+                    "path": document.reference.path,
+                    "data": document.data(),
+                    "type": String(describing: T.self)
+                ])
+                return nil
+            }
+        }
+    }
+}
+
+extension Error {
+    func reportToCrashlytics(userInfo: [String: Any] = [:]) {
+        var nsError = self as NSError
+        nsError = NSError(
+            domain: nsError.domain,
+            code: nsError.code,
+            userInfo: nsError.userInfo.merging(userInfo) { _, newKey in newKey }
+        )
+        Crashlytics.crashlytics().record(error: nsError)
     }
 }
