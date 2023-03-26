@@ -2,7 +2,6 @@ import Combine
 import ECKit
 import Factory
 import Firebase
-import FirebaseCrashlytics
 import FirebaseFirestore
 import FirebaseFunctions
 import UIKit
