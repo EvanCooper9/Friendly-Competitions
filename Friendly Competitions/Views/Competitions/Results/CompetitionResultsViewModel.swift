@@ -21,6 +21,7 @@ final class CompetitionResultsViewModel: ObservableObject {
     @Injected(\.activitySummaryManager) private var activitySummaryManager
     @Injected(\.competitionsManager) private var competitionsManager
     @Injected(\.premiumManager) private var premiumManager
+    @Injected(\.scheduler) private var scheduler
     @Injected(\.userManager) private var userManager
     @Injected(\.workoutManager) private var workoutManager
 
@@ -58,11 +59,12 @@ final class CompetitionResultsViewModel: ObservableObject {
                         )
                     }
             }
-            .receive(on: RunLoop.main)
+            .receive(on: scheduler)
             .assign(to: &$ranges)
 
         $ranges
             .map { $0.first(where: \.selected)?.locked ?? true }
+            .receive(on: scheduler)
             .assign(to: &$locked)
 
         let currentSelection = Publishers
@@ -76,6 +78,7 @@ final class CompetitionResultsViewModel: ObservableObject {
                 }
                 return (results[selectedIndex], nil)
             }
+            .receive(on: scheduler)
             .handleEvents(withUnretained: self, receiveSubscription: { strongSelf, _ in strongSelf.loading = true })
 
         Publishers
@@ -93,7 +96,7 @@ final class CompetitionResultsViewModel: ObservableObject {
                     .isLoading { strongSelf.loading = $0 }
                     .eraseToAnyPublisher()
             })
-            .receive(on: RunLoop.main)
+            .receive(on: scheduler)
             .assign(to: &$dataPoints)
     }
 
@@ -146,6 +149,7 @@ final class CompetitionResultsViewModel: ObservableObject {
                         .sorted(by: \.rank)
                         .map { standing in
                             .init(
+                                userId: standing.userId,
                                 rank: standing.rank,
                                 points: standing.points,
                                 isHighlighted: standing.userId == user.id

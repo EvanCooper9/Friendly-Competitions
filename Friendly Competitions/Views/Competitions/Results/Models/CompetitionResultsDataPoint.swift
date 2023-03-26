@@ -1,9 +1,12 @@
 enum CompetitionResultsDataPoint: Identifiable {
 
-    struct Standing {
+    struct Standing: Identifiable {
+        let userId: User.ID
         let rank: Int
         let points: Int
         let isHighlighted: Bool
+
+        var id: User.ID { userId }
     }
 
     case rank(current: Int, previous: Int?)

@@ -36,7 +36,7 @@ extension CompetitionResultsDataPoint {
         case .standings(let standings):
             ScrollViewReader { proxy in
                 ScrollView {
-                    ForEach(standings, id: \.rank) { standing in
+                    ForEach(standings) { standing in
                         HStack(spacing: 0) {
                             Text(standing.rank.ordinalString!)
                                 .lineLimit(1)
