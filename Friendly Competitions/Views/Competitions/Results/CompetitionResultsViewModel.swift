@@ -33,6 +33,11 @@ final class CompetitionResultsViewModel: ObservableObject {
 
         let results = competitionsManager
             .results(for: competition.id)
+            .map { results in
+                results
+                    .sorted(by: \.end)
+                    .reversed()
+            }
             .catchErrorJustReturn([])
 
         Publishers
@@ -43,8 +48,6 @@ final class CompetitionResultsViewModel: ObservableObject {
             )
             .map { results, hasPremium, selectedIndex in
                 results
-                    .sorted(by: \.end)
-                    .reversed()
                     .enumerated()
                     .map { offset, result in
                         CompetitionResultsDateRange(
@@ -63,7 +66,10 @@ final class CompetitionResultsViewModel: ObservableObject {
             .assign(to: &$locked)
 
         let currentSelection = Publishers
-            .CombineLatest(results, selectedIndex)
+            .CombineLatest(
+                results,
+                selectedIndex.removeDuplicates()
+            )
             .compactMap { results, selectedIndex -> (CompetitionResult, CompetitionResult?)? in
                 if let previousIndex = selectedIndex <= results.count - 2 ? selectedIndex + 1 : nil {
                     return (results[selectedIndex], results[previousIndex])
