@@ -1,7 +1,3 @@
-New features: 
-• View competition history
-• Opening notifications will take you to the right place
-• More reliable deep links
-
 Improvements:
 • Performance
+• Bug fixes

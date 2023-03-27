@@ -14,6 +14,7 @@ final class ActivitySummaryManagerTests: FCTestCase {
     private var competitionsManager: CompetitionsManagingMock!
     private var healthKitManager: HealthKitManagingMock!
     private var database: DatabaseMock!
+    private var permissionsManager: PermissionsManagingMock!
     private var scheduler: TestSchedulerOf<RunLoop>!
     private var userManager: UserManagingMock!
     private var workoutManager: WorkoutManagingMock!
@@ -25,6 +26,7 @@ final class ActivitySummaryManagerTests: FCTestCase {
         competitionsManager = .init()
         healthKitManager = .init()
         database = .init()
+        permissionsManager = .init()
         scheduler = .init(now: .init(.now))
         userManager = .init()
         workoutManager = .init()
@@ -33,6 +35,7 @@ final class ActivitySummaryManagerTests: FCTestCase {
         Container.shared.competitionsManager.register { self.competitionsManager }
         Container.shared.healthKitManager.register { self.healthKitManager }
         Container.shared.database.register { self.database }
+        Container.shared.permissionsManager.register { self.permissionsManager }
         Container.shared.scheduler.register { self.scheduler.eraseToAnyScheduler() }
         Container.shared.userManager.register { self.userManager }
         Container.shared.workoutManager.register { self.workoutManager }

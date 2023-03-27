@@ -35,6 +35,7 @@ final class HomeViewModel: ObservableObject {
     @Injected(\.friendsManager) private var friendsManager
     @Injected(\.permissionsManager) private var permissionsManager
     @Injected(\.premiumManager) private var premiumManager
+    @Injected(\.scheduler) private var scheduler
     @Injected(\.userManager) private var userManager
 
     @UserDefault("competitionsFiltered", defaultValue: false) var competitionsFiltered
@@ -79,11 +80,23 @@ final class HomeViewModel: ObservableObject {
                     return .just([])
                 }
             }
+            .receive(on: scheduler)
             .assign(to: &$navigationDestinations)
 
-        activitySummaryManager.activitySummary.assign(to: &$activitySummary)
-        competitionsManager.competitions.assign(to: &$competitions)
-        competitionsManager.invitedCompetitions.assign(to: &$invitedCompetitions)
+        activitySummaryManager.activitySummary
+            .removeDuplicates()
+            .receive(on: scheduler)
+            .assign(to: &$activitySummary)
+
+        competitionsManager.competitions
+            .removeDuplicates()
+            .receive(on: scheduler)
+            .assign(to: &$competitions)
+
+        competitionsManager.invitedCompetitions
+            .removeDuplicates()
+            .receive(on: scheduler)
+            .assign(to: &$invitedCompetitions)
 
         Publishers
             .CombineLatest4($competitions, $invitedCompetitions, $friendRows, appState.deepLink)
@@ -111,6 +124,7 @@ final class HomeViewModel: ObservableObject {
                     }
                 }
             }
+            .receive(on: scheduler)
             .assign(to: &$navigationDestinations)
 
         Publishers
@@ -126,10 +140,12 @@ final class HomeViewModel: ObservableObject {
                     )
                 }
             }
+            .receive(on: scheduler)
             .assign(to: &$friendRows)
 
         permissionsManager
             .requiresPermission
+            .receive(on: scheduler)
             .assign(to: &$requiresPermissions)
 
         Publishers
@@ -141,11 +157,12 @@ final class HomeViewModel: ObservableObject {
             .map { dismissedPremiumBanner, premium, hasPremiumResults in
                 !dismissedPremiumBanner && premium == nil && hasPremiumResults
             }
-            .receive(on: RunLoop.main)
+            .receive(on: scheduler)
             .assign(to: &$showPremiumBanner)
 
         userManager.userPublisher
             .map { $0.name.ifEmpty(Bundle.main.name) }
+            .receive(on: scheduler)
             .assign(to: &$title)
     }
 

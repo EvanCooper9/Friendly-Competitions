@@ -1,7 +1,6 @@
 import Combine
 import CombineExt
 import ECKit
-import FirebaseCrashlytics
 import Factory
 import Foundation
 import RevenueCat
@@ -92,70 +91,69 @@ final class PremiumManager: PremiumManaging {
     func purchase(_ product: Product) -> AnyPublisher<Void, Error> {
         analyticsManager.log(event: .premiumPurchaseStarted(id: product.id))
         guard let package = currentOffering?.package(identifier: product.id) else { return .just(()) }
-        let subject = PassthroughSubject<Void, Error>()
-        Purchases.shared.purchase(package: package) { [weak self] _, customerInfo, error, cancelled in
-            if let error = error {
-                subject.send(completion: .failure(error))
-                return
-            }
 
-            guard !cancelled else {
-                self?.analyticsManager.log(event: .premiumPurchaseCancelled(id: product.id))
-                subject.send(completion: .failure(PurchaseError.cancelled))
-                return
-            }
-
+        return Future { [weak self] promise in
             guard let strongSelf = self else { return }
-            let entitlement = customerInfo?.entitlements[strongSelf.entitlementIdentifier]
-            let premium = Premium(
-                id: product.id,
-                title: product.title,
-                price: product.price,
-                renews: entitlement?.willRenew ?? false,
-                expiry: entitlement?.expirationDate
-            )
-            strongSelf.analyticsManager.log(event: .premiumPurchased(id: premium.id))
-            strongSelf.premiumSubject.send(premium)
-            subject.send()
-            subject.send(completion: .finished)
+            Purchases.shared.purchase(package: package) { _, customerInfo, error, cancelled in
+                if let error = error {
+                    promise(.failure(error))
+                    return
+                }
+
+                guard !cancelled else {
+                    strongSelf.analyticsManager.log(event: .premiumPurchaseCancelled(id: product.id))
+                    promise(.failure(PurchaseError.cancelled))
+                    return
+                }
+
+                let entitlement = customerInfo?.entitlements[strongSelf.entitlementIdentifier]
+                let premium = Premium(
+                    id: product.id,
+                    title: product.title,
+                    price: product.price,
+                    renews: entitlement?.willRenew ?? false,
+                    expiry: entitlement?.expirationDate
+                )
+                strongSelf.analyticsManager.log(event: .premiumPurchased(id: premium.id))
+                strongSelf.premiumSubject.send(premium)
+                promise(.success(()))
+            }
         }
-        return subject.eraseToAnyPublisher()
+        .eraseToAnyPublisher()
     }
 
     func restorePurchases() -> AnyPublisher<Void, Error> {
-        let subject = PassthroughSubject<Void, Error>()
+        Future { [weak self] promise in
+            guard let strongSelf = self else { return }
+            Purchases.shared.restorePurchases { customerInfo, error in
+                if let error {
+                    self?.premiumSubject.send(nil)
+                    promise(.failure(error))
+                    return
+                }
 
-        Purchases.shared.restorePurchases { [weak self] customerInfo, error in
-            if let error {
-                self?.premiumSubject.send(nil)
-                subject.send(completion: .failure(error))
-                return
+                defer { promise(.success(())) }
+
+                guard let entitlement = customerInfo?.entitlements[strongSelf.entitlementIdentifier],
+                      entitlement.isActive,
+                      let package = strongSelf.currentOffering?.availablePackages.first(where: { $0.storeProduct.productIdentifier == entitlement.productIdentifier })
+                else {
+                    self?.premiumSubject.send(nil)
+                    return
+                }
+
+                let premium = Premium(
+                    id: package.storeProduct.productIdentifier,
+                    title: package.storeProduct.localizedTitle,
+                    price: package.localizedPriceWithUnit,
+                    renews: entitlement.willRenew,
+                    expiry: entitlement.expirationDate
+                )
+
+                strongSelf.premiumSubject.send(premium)
             }
-
-            guard let strongSelf = self,
-                  let entitlement = customerInfo?.entitlements[strongSelf.entitlementIdentifier],
-                  entitlement.isActive,
-                  let package = strongSelf.currentOffering?.availablePackages.first(where: { $0.storeProduct.productIdentifier == entitlement.productIdentifier })
-            else {
-                self?.premiumSubject.send(nil)
-                subject.send()
-                subject.send(completion: .finished)
-                return
-            }
-
-            let premium = Premium(
-                id: package.storeProduct.productIdentifier,
-                title: package.storeProduct.localizedTitle,
-                price: package.localizedPriceWithUnit,
-                renews: entitlement.willRenew,
-                expiry: entitlement.expirationDate
-            )
-
-            strongSelf.premiumSubject.send(premium)
-            subject.send()
-            subject.send(completion: .finished)
         }
-        return subject.eraseToAnyPublisher()
+        .eraseToAnyPublisher()
     }
 
     func manageSubscription() {
@@ -168,63 +166,59 @@ final class PremiumManager: PremiumManaging {
     // MARK: - Private Methods
 
     private func login() -> AnyPublisher<Void, Error> {
-        let subject = PassthroughSubject<Void, Error>()
-        Purchases.shared.logIn(userManager.user.id) { _, _, error in
-            if let error {
-                subject.send(completion: .failure(error))
-                return
+        Future { [weak self] promise in
+            guard let strongSelf = self else { return }
+            Purchases.shared.logIn(strongSelf.userManager.user.id) { _, _, error in
+                if let error {
+                    promise(.failure(error))
+                } else {
+                    promise(.success(()))
+                }
             }
-            subject.send()
-            subject.send(completion: .finished)
         }
-        return subject.eraseToAnyPublisher()
+        .eraseToAnyPublisher()
     }
 
     private func fetchStore() -> AnyPublisher<Void, Error> {
-        let subject = PassthroughSubject<Void, Error>()
-        Purchases.shared.getOfferings { [weak self] offerings, error in
-            if let error {
-                subject.send(completion: .failure(error))
-                return
-            }
-            guard let strongSelf = self else {
-                subject.send()
-                subject.send(completion: .finished)
-                return
-            }
-            strongSelf.currentOffering = offerings?.current
-            guard let packages = offerings?.current?.availablePackages else {
-                subject.send()
-                subject.send(completion: .finished)
-                return
-            }
-
-            let productIDs = packages.map(\.storeProduct.productIdentifier)
-            Purchases.shared.checkTrialOrIntroDiscountEligibility(productIdentifiers: productIDs) { result in
-                let products = packages.map { package in
-                    var offer: String?
-                    switch result[package.storeProduct.productIdentifier]?.status {
-                    case .eligible:
-                        offer = package.storeProduct.introductoryDiscount?.localizedDescription
-                    default:
-                        break
-                    }
-
-                    return Product(
-                        id: package.identifier,
-                        price: package.localizedPriceWithUnit,
-                        offer: offer,
-                        title: package.storeProduct.localizedTitle,
-                        description: package.storeProduct.localizedDescription
-                    )
+        Future { [weak self] promise in
+            guard let strongSelf = self else { return }
+            Purchases.shared.getOfferings { offerings, error in
+                if let error {
+                    promise(.failure(error))
+                    return
+                }
+                strongSelf.currentOffering = offerings?.current
+                guard let packages = offerings?.current?.availablePackages else {
+                    promise(.success(()))
+                    return
                 }
 
-                strongSelf.productsSubject.send(products)
-                subject.send()
-                subject.send(completion: .finished)
+                let productIDs = packages.map(\.storeProduct.productIdentifier)
+                Purchases.shared.checkTrialOrIntroDiscountEligibility(productIdentifiers: productIDs) { result in
+                    let products = packages.map { package in
+                        var offer: String?
+                        switch result[package.storeProduct.productIdentifier]?.status {
+                        case .eligible:
+                            offer = package.storeProduct.introductoryDiscount?.localizedDescription
+                        default:
+                            break
+                        }
+
+                        return Product(
+                            id: package.identifier,
+                            price: package.localizedPriceWithUnit,
+                            offer: offer,
+                            title: package.storeProduct.localizedTitle,
+                            description: package.storeProduct.localizedDescription
+                        )
+                    }
+
+                    strongSelf.productsSubject.send(products)
+                    promise(.success(()))
+                }
             }
         }
-        return subject.eraseToAnyPublisher()
+        .eraseToAnyPublisher()
     }
 }
 
