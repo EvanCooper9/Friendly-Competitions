@@ -1,10 +1,11 @@
-import * as admin from "firebase-admin";
 import { getFirestore } from "firebase-admin/firestore";
 import * as moment from "moment";
+import { sendNotificationsToUser } from "../Handlers/notifications/notifications";
 import { prepareForFirestore } from "../Utilities/prepareForFirestore";
 import { ActivitySummary } from "./ActivitySummary";
 import { ScoringModel } from "./ScoringModel";
 import { Standing } from "./Standing";
+import { User } from "./User";
 import { Workout } from "./Workout";
 
 const dateFormat = "YYYY-MM-DD";
@@ -52,13 +53,14 @@ class Competition {
      * Reset the scores of standings to 0
      */
     async resetStandings(): Promise<void> { 
-        const standingsRef = await admin.firestore().collection(`competitions/${this.id}/standings`).get();
+        const firestore = getFirestore();
+        const standingsRef = await firestore.collection(this.standingsPath()).get();
         const standings = standingsRef.docs.map(doc => new Standing(doc));
-        const batch = admin.firestore().batch();
+        const batch = firestore.batch();
         standings.forEach(standing => {
             standing.points = 0;
             standing.pointsBreakdown = {};
-            const ref = admin.firestore().doc(`competitions/${this.id}/standings/${standing.userId}`);
+            const ref = firestore.doc(`${this.path()}/standings/${standing.userId}`);
             batch.set(ref, prepareForFirestore(standing));
         });
         await batch.commit();
@@ -68,14 +70,15 @@ class Competition {
      * Updates the points and standings
      */
     async updateStandingRanks(): Promise<void> {
-        const standingsRef = await admin.firestore().collection(`competitions/${this.id}/standings`).get();
+        const firestore = getFirestore();
+        const standingsRef = await firestore.collection(this.standingsPath()).get();
         const standings = standingsRef.docs.map(doc => new Standing(doc));
-        const batch = admin.firestore().batch();
+        const batch = firestore.batch();
         standings
             .sort((a, b) => a.points - b.points)
             .forEach((standing, index) => {
                 standing.rank = standings.length - index;
-                const ref = admin.firestore().doc(`competitions/${this.id}/standings/${standing.userId}`);
+                const ref = firestore.doc(this.standingsPathForUser(standing.userId));
                 batch.set(ref, prepareForFirestore(standing));
             });
         await batch.commit();
@@ -87,7 +90,7 @@ class Competition {
      */
     async updateRepeatingCompetition(): Promise<void> {
         if (!this.repeats) return;
-
+        const firestore = getFirestore();
         const competitionStart = moment(this.start);
         const competitionEnd = moment(this.end);
         let newStart = competitionStart;
@@ -102,7 +105,48 @@ class Competition {
         }
 
         const obj = { start: newStart.format(dateFormat), end: newEnd.format(dateFormat) };
-        await admin.firestore().doc(`competitions/${this.id}`).update(obj);
+        await firestore.doc(`competitions/${this.id}`).update(obj);
+    }
+
+    async kickInactiveUsers(): Promise<void> {
+        const firestore = getFirestore();
+        const standingsRef = await firestore.collection(this.standingsPath()).get();
+        const standings = standingsRef.docs.map(doc => new Standing(doc));
+
+        const batch = firestore.batch();
+
+        const inactiveUserIds: string[] = [];
+        const activeUserIds: string[] = [];
+        
+        standings.forEach(standing => {
+            if (standing.points == 0) {
+                inactiveUserIds.push(standing.userId);
+                const standingDoc = firestore.doc(this.standingsPathForUser(standing.userId));
+                batch.delete(standingDoc);
+            } else {
+                activeUserIds.push(standing.userId);
+            }
+        });
+
+        if (inactiveUserIds.length == 0) return;
+
+        const obj = { participants: activeUserIds };
+        batch.update(firestore.doc(this.path()), obj);
+        await batch.commit();
+
+        const inactiveUsers = await firestore.collection(`users`)
+            .where("id", "in", inactiveUserIds)
+            .get()
+            .then(query => query.docs.map(doc => new User(doc)));
+
+        await Promise.allSettled(inactiveUsers.map(async user => {
+            await sendNotificationsToUser(
+                user,
+                `You have been kicked from ${this.name}`,
+                `Tap to rejoin`,
+                `https://friendly-competitions.app/competition/${this.id}`
+            )
+        }));
     }
 
     /**
@@ -110,13 +154,13 @@ class Competition {
      */
     async recordResults(): Promise<void> {
         const firestore = getFirestore();
-        const standingsRef = await firestore.collection(`competitions/${this.id}/standings`).get();
+        const standingsRef = await firestore.collection(this.standingsPath()).get();
         const standings = standingsRef.docs.map(doc => new Standing(doc));
 
         const batch = firestore.batch();
         
         const end = moment(this.end).format(dateFormat);
-        const resultsRef = firestore.doc(`competitions/${this.id}/results/${end}`);
+        const resultsRef = firestore.doc(`${this.resultsPath()}/${end}`);
         const resultsObj = {
             id: end, 
             start: moment(this.start).format(dateFormat), 
@@ -126,7 +170,7 @@ class Competition {
         batch.set(resultsRef, resultsObj);
 
         standings.forEach(standing => {
-            const ref = firestore.doc(`competitions/${this.id}/results/${end}/standings/${standing.userId}`);
+            const ref = firestore.doc(`${this.resultsPath()}/${end}/standings/${standing.userId}`);
             batch.set(ref, prepareForFirestore(standing));
         });
         await batch.commit();
@@ -149,7 +193,7 @@ class Competition {
      * @return {Promise<ActivitySummary[]>} A promise of activity summaries
      */
     async activitySummaries(userID: string): Promise<ActivitySummary[]> {
-        return await admin.firestore().collection(`users/${userID}/activitySummaries`)
+        return await getFirestore().collection(`users/${userID}/activitySummaries`)
             .get()
             .then(query => query.docs.map(doc => new ActivitySummary(doc)))
             .then(activitySummaries => activitySummaries.filter(x => x.isIncludedInCompetition(this)));
@@ -161,10 +205,26 @@ class Competition {
      * @return {Promise<ActivitySummary[]>} A promise of workouts
      */
     async workouts(userID: string): Promise<Workout[]> {
-        return await admin.firestore().collection(`users/${userID}/workouts`)
+        return await getFirestore().collection(`users/${userID}/workouts`)
             .get()
             .then(query => query.docs.map(doc => new Workout(doc)))
             .then(workouts => workouts.filter(x => x.isIncludedInCompetition(this)));
+    }
+    
+    path(): string {
+        return `competitions/${this.id}`
+    }
+
+    standingsPath(): string {
+        return `${this.path()}/standings`
+    }
+
+    standingsPathForUser(userID: string): string {
+        return `${this.standingsPath()}/${userID}`
+    }
+
+    resultsPath(): string {
+        return `${this.path()}/results`
     }
 }
 

@@ -65,6 +65,7 @@ async function completeCompetition(competition: Competition): Promise<void> {
     }));
 
     await competition.recordResults();
+    await competition.kickInactiveUsers();
     await competition.resetStandings();
     await competition.updateRepeatingCompetition();
 }
