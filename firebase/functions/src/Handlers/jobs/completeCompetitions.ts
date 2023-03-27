@@ -35,7 +35,7 @@ async function completeCompetitionsForDate(date: string): Promise<void> {
         .where("end", "==", date)
         .get()
         .then(query => query.docs.map(doc => new Competition(doc)));
-    await Promise.all(competitions.map(async competition => await completeCompetition(competition)));
+    await Promise.allSettled(competitions.map(async competition => await completeCompetition(competition)));
 }
 
 /**
@@ -45,12 +45,12 @@ async function completeCompetitionsForDate(date: string): Promise<void> {
  * - Updating history
  * - Resetting standings
  * - Resetting dates (if repeating)
- * @param {Compeittion} competition The competition to complete
+ * @param {Competition} competition The competition to complete
  * @return {Promise<void>} A promise that resolves when complete
  */
 async function completeCompetition(competition: Competition): Promise<void> {
     const firestore = getFirestore();
-    const notificationPromises = Promise.all(competition.participants.map(async userID => {
+    await Promise.allSettled(competition.participants.map(async userID => {
         const user = await firestore.doc(`users/${userID}`).get().then(doc => new User(doc));
         const standing = await firestore.doc(`competitions/${competition.id}/standings/${userID}`).get().then(doc => new Standing(doc));
         const rank = standing.rank;
@@ -64,10 +64,9 @@ async function completeCompetition(competition: Competition): Promise<void> {
         await user.updateStatisticsWithNewRank(rank);
     }));
 
-    await notificationPromises
-        .then(async () => await competition.recordResults())
-        .then(async () => await competition.resetStandings())
-        .then(async () => await competition.updateRepeatingCompetition());
+    await competition.recordResults();
+    await competition.resetStandings();
+    await competition.updateRepeatingCompetition();
 }
 
 export {

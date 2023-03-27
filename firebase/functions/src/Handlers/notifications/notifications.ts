@@ -11,18 +11,21 @@ import { User } from "../../Models/User";
 async function sendNotificationsToUser(user: User, title: string, body: string, deepLink?: string): Promise<void> {
     const tokens = user.notificationTokens;
     if (tokens === undefined) return;
+
+    const tokensToDelete: string[] = [];
     const notifications = tokens.map(async token => {
         try {
-            return await sendNotification(token, title, body, deepLink);
-        } catch {
+            await sendNotification(token, title, body, deepLink);
+        } catch (error) {
             // error likely due to invalid token... so remove it.
             // not the end of the world if the error is something else, 
             // token will be re-uploaded from the app at some point.
-            return token;
+            console.error(`error sending notification to user ${user.id}: ${error}`);
+            tokensToDelete.push(token);
         }
     });
 
-    const tokensToDelete = await Promise.all(notifications);
+    await Promise.allSettled(notifications);
     const activeTokens = tokens.filter(t => !tokensToDelete.includes(t));
     await admin.firestore().doc(`users/${user.id}`).update({ notificationTokens: activeTokens });
 }
