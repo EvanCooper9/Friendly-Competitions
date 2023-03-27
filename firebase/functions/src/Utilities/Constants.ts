@@ -1,0 +1,3 @@
+export class Constants {
+    static NOTIFICATION_URL = "https://friendly-competitions.app"
+}

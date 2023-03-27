@@ -1,6 +1,7 @@
 import { User } from "../../Models/User";
 import { sendNotificationsToUser } from "../notifications/notifications";
 import { getFirestore } from "../../Utilities/firstore";
+import { Constants } from "../../Utilities/Constants";
 
 /**
  * FriendRequestAction
@@ -79,7 +80,7 @@ async function handleFriendRequest(callerID: string, requesteeID: string, action
     await batch.commit();
 
     const title = "Friendly Competitions";
-    const url = `https://friendly-competitions.app/user/${caller.id}`;
+    const url = `${Constants.NOTIFICATION_URL}/user/${caller.id}`;
     switch (action) {
     case FriendRequestAction.create:
         await sendNotificationsToUser(

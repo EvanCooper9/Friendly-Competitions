@@ -1,6 +1,7 @@
 import { getFirestore } from "firebase-admin/firestore";
 import { Competition } from "../../Models/Competition";
 import { User } from "../../Models/User";
+import { Constants } from "../../Utilities/Constants";
 import { sendNotificationsToUser } from "../notifications/notifications";
 
 /**
@@ -18,7 +19,7 @@ async function sendNewCompetitionInvites(competitionID: string): Promise<void> {
             user,
             "Friendly Competitions",
             `${owner.name} invited you to a competition`,
-            `https://friendly-competitions.app/competition/${competition.id}`
+            `${Constants.NOTIFICATION_URL}/competition/${competition.id}`
         );
     }));
 }

@@ -2,6 +2,7 @@ import moment = require("moment");
 import { Competition } from "../../Models/Competition";
 import { Standing } from "../../Models/Standing";
 import { User } from "../../Models/User";
+import { Constants } from "../../Utilities/Constants";
 import { getFirestore } from "../../Utilities/firstore";
 import * as notifications from "../notifications/notifications";
 
@@ -59,7 +60,7 @@ async function completeCompetition(competition: Competition): Promise<void> {
             user,
             "Competition complete!",
             `You placed ${rank}${ordinal} in ${competition.name}. Tap to see your results.`,
-            `https://friendly-competitions.app/competition/${competition.id}/results`
+            `${Constants.NOTIFICATION_URL}/competition/${competition.id}/results`
         );
         await user.updateStatisticsWithNewRank(rank);
     }));

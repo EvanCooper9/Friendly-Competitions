@@ -1,6 +1,7 @@
 import { getFirestore } from "firebase-admin/firestore";
 import * as moment from "moment";
 import { sendNotificationsToUser } from "../Handlers/notifications/notifications";
+import { Constants } from "../Utilities/Constants";
 import { prepareForFirestore } from "../Utilities/prepareForFirestore";
 import { ActivitySummary } from "./ActivitySummary";
 import { ScoringModel } from "./ScoringModel";
@@ -23,6 +24,10 @@ class Competition {
     pendingParticipants: string[];
     repeats: boolean;
     scoringModel: ScoringModel;
+
+    private path: string;
+    private standingsPath: string;
+    private resultsPath: string; 
 
     /**
      * Builds a competition from a firestore document
@@ -47,6 +52,10 @@ class Competition {
         const endDateString: string = document.get("end");
         this.start = new Date(startDateString);
         this.end = new Date(endDateString);
+
+        this.path = `competitions/${this.id}`;
+        this.standingsPath = `${this.path}/standings`;
+        this.resultsPath = `${this.path}/results`;
     }
 
     /**
@@ -54,13 +63,13 @@ class Competition {
      */
     async resetStandings(): Promise<void> { 
         const firestore = getFirestore();
-        const standingsRef = await firestore.collection(this.standingsPath()).get();
+        const standingsRef = await firestore.collection(this.standingsPath).get();
         const standings = standingsRef.docs.map(doc => new Standing(doc));
         const batch = firestore.batch();
         standings.forEach(standing => {
             standing.points = 0;
             standing.pointsBreakdown = {};
-            const ref = firestore.doc(`${this.path()}/standings/${standing.userId}`);
+            const ref = firestore.doc(this.standingsPathForUser(standing.userId));
             batch.set(ref, prepareForFirestore(standing));
         });
         await batch.commit();
@@ -71,7 +80,7 @@ class Competition {
      */
     async updateStandingRanks(): Promise<void> {
         const firestore = getFirestore();
-        const standingsRef = await firestore.collection(this.standingsPath()).get();
+        const standingsRef = await firestore.collection(this.standingsPath).get();
         const standings = standingsRef.docs.map(doc => new Standing(doc));
         const batch = firestore.batch();
         standings
@@ -110,7 +119,7 @@ class Competition {
 
     async kickInactiveUsers(): Promise<void> {
         const firestore = getFirestore();
-        const standingsRef = await firestore.collection(this.standingsPath()).get();
+        const standingsRef = await firestore.collection(this.standingsPath).get();
         const standings = standingsRef.docs.map(doc => new Standing(doc));
 
         const batch = firestore.batch();
@@ -131,7 +140,7 @@ class Competition {
         if (inactiveUserIds.length == 0) return;
 
         const obj = { participants: activeUserIds };
-        batch.update(firestore.doc(this.path()), obj);
+        batch.update(firestore.doc(this.path), obj);
         await batch.commit();
 
         const inactiveUsers = await firestore.collection(`users`)
@@ -144,7 +153,7 @@ class Competition {
                 user,
                 `You have been kicked from ${this.name}`,
                 `Tap to rejoin`,
-                `https://friendly-competitions.app/competition/${this.id}`
+                `${Constants.NOTIFICATION_URL}/competition/${this.id}`
             )
         }));
     }
@@ -154,13 +163,13 @@ class Competition {
      */
     async recordResults(): Promise<void> {
         const firestore = getFirestore();
-        const standingsRef = await firestore.collection(this.standingsPath()).get();
+        const standingsRef = await firestore.collection(this.standingsPath).get();
         const standings = standingsRef.docs.map(doc => new Standing(doc));
 
         const batch = firestore.batch();
         
         const end = moment(this.end).format(dateFormat);
-        const resultsRef = firestore.doc(`${this.resultsPath()}/${end}`);
+        const resultsRef = firestore.doc(`${this.resultsPath}/${end}`);
         const resultsObj = {
             id: end, 
             start: moment(this.start).format(dateFormat), 
@@ -170,7 +179,7 @@ class Competition {
         batch.set(resultsRef, resultsObj);
 
         standings.forEach(standing => {
-            const ref = firestore.doc(`${this.resultsPath()}/${end}/standings/${standing.userId}`);
+            const ref = firestore.doc(`${this.resultsPath}/${end}/standings/${standing.userId}`);
             batch.set(ref, prepareForFirestore(standing));
         });
         await batch.commit();
@@ -210,21 +219,14 @@ class Competition {
             .then(query => query.docs.map(doc => new Workout(doc)))
             .then(workouts => workouts.filter(x => x.isIncludedInCompetition(this)));
     }
-    
-    path(): string {
-        return `competitions/${this.id}`
-    }
 
-    standingsPath(): string {
-        return `${this.path()}/standings`
-    }
-
+    /**
+     * Get the document path for the standings of a given user
+     * @param {string} userID the ID of the user
+     * @return {string} The document path
+     */
     standingsPathForUser(userID: string): string {
-        return `${this.standingsPath()}/${userID}`
-    }
-
-    resultsPath(): string {
-        return `${this.path()}/results`
+        return `${this.standingsPath}/${userID}`
     }
 }
 
