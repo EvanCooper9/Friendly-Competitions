@@ -12,17 +12,15 @@ async function sendNotificationsToUser(user: User, title: string, body: string, 
     const tokens = user.notificationTokens;
     if (tokens === undefined) return;
 
-    console.log(`sending notifications to user ${user.id}`);
     const tokensToDelete: string[] = [];
     const notifications = tokens.map(async token => {
         try {
             await sendNotification(token, title, body, deepLink);
-            console.log(`successfully sent notification to user ${user.id} - ${token}`);
         } catch (error) {
             // error likely due to invalid token... so remove it.
             // not the end of the world if the error is something else, 
             // token will be re-uploaded from the app at some point.
-            console.error(`error sending notification: ${error}`);
+            console.error(`error sending notification to user ${user.id}: ${error}`);
             tokensToDelete.push(token);
         }
     });
@@ -48,7 +46,6 @@ async function sendNotification(fcmToken: string, title: string, body: string, d
             body: body
         }
     };
-    console.log(`sending notification payload: ${JSON.stringify(notificationPayload)}`);
     if (deepLink != null) notificationPayload.data = { link: deepLink };
     await admin.messaging().send(notificationPayload);
 }
