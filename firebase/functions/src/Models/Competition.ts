@@ -117,6 +117,9 @@ class Competition {
         await firestore.doc(`competitions/${this.id}`).update(obj);
     }
 
+    /**
+     * Kicks and notifies users who scored 0 points in a competition.
+     */
     async kickInactiveUsers(): Promise<void> {
         const firestore = getFirestore();
         const standingsRef = await firestore.collection(this.standingsPath).get();
@@ -143,7 +146,7 @@ class Competition {
         batch.update(firestore.doc(this.path), obj);
         await batch.commit();
 
-        const inactiveUsers = await firestore.collection(`users`)
+        const inactiveUsers = await firestore.collection("users")
             .where("id", "in", inactiveUserIds)
             .get()
             .then(query => query.docs.map(doc => new User(doc)));
@@ -152,9 +155,9 @@ class Competition {
             await sendNotificationsToUser(
                 user,
                 `You have been kicked from ${this.name}`,
-                `Tap to rejoin`,
+                "Tap to rejoin",
                 `${Constants.NOTIFICATION_URL}/competition/${this.id}`
-            )
+            );
         }));
     }
 
@@ -226,7 +229,7 @@ class Competition {
      * @return {string} The document path
      */
     standingsPathForUser(userID: string): string {
-        return `${this.standingsPath}/${userID}`
+        return `${this.standingsPath}/${userID}`;
     }
 }
 
