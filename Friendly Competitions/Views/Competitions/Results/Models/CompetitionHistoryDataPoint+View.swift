@@ -36,7 +36,7 @@ extension CompetitionResultsDataPoint {
         case .standings(let standings):
             ScrollViewReader { proxy in
                 ScrollView {
-                    ForEach(standings, id: \.rank) { standing in
+                    ForEach(standings) { standing in
                         HStack(spacing: 0) {
                             Text(standing.rank.ordinalString!)
                                 .lineLimit(1)
@@ -173,10 +173,10 @@ struct CompetitionResultsDataPoint_Previews: PreviewProvider {
         .points(current: 500, previous: 447),
         .standings(
             [
-                .init(rank: 1, points: 600, isHighlighted: false),
-                .init(rank: 2, points: 500, isHighlighted: true),
-                .init(rank: 3, points: 400, isHighlighted: false),
-                .init(rank: 4, points: 300, isHighlighted: false)
+                .init(userId: "1", rank: 1, points: 600, isHighlighted: false),
+                .init(userId: "2", rank: 2, points: 500, isHighlighted: true),
+                .init(userId: "3", rank: 3, points: 400, isHighlighted: false),
+                .init(userId: "4", rank: 4, points: 300, isHighlighted: false)
             ]
         ),
         .workoutsBestDay(.init(type: .running, date: .now, points: [.distance: 100, .steps: 500])),

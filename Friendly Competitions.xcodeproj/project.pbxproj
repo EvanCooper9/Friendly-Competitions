@@ -220,6 +220,7 @@
 		EDA61C0D2977276F00370C5C /* RootViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA61C0C2977276F00370C5C /* RootViewModel.swift */; };
 		EDA61C0F2977317E00370C5C /* FriendlyCompetitionsAppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA61C0E2977317E00370C5C /* FriendlyCompetitionsAppModel.swift */; };
 		EDAF6C47285277FF002BC0DD /* Nonce.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDAF6C46285277FF002BC0DD /* Nonce.swift */; };
+		EDBDFB4D29D0AED7003E6278 /* CompetitionResultsViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBDFB4C29D0AED7003E6278 /* CompetitionResultsViewModelTests.swift */; };
 		EDBEA170281459D200058A47 /* EditCompetitionSection.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBEA16F281459D200058A47 /* EditCompetitionSection.swift */; };
 		EDC373D027FB39A500318245 /* EmailSignInForm.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC373CF27FB39A500318245 /* EmailSignInForm.swift */; };
 		EDC5FC3F27FA7C1B00F2882D /* View+HUD.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC5FC3E27FA7C1B00F2882D /* View+HUD.swift */; };
@@ -440,6 +441,7 @@
 		EDA61C0C2977276F00370C5C /* RootViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewModel.swift; sourceTree = "<group>"; };
 		EDA61C0E2977317E00370C5C /* FriendlyCompetitionsAppModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FriendlyCompetitionsAppModel.swift; sourceTree = "<group>"; };
 		EDAF6C46285277FF002BC0DD /* Nonce.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Nonce.swift; sourceTree = "<group>"; };
+		EDBDFB4C29D0AED7003E6278 /* CompetitionResultsViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionResultsViewModelTests.swift; sourceTree = "<group>"; };
 		EDBEA16F281459D200058A47 /* EditCompetitionSection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditCompetitionSection.swift; sourceTree = "<group>"; };
 		EDC373CF27FB39A500318245 /* EmailSignInForm.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailSignInForm.swift; sourceTree = "<group>"; };
 		EDC5FC3E27FA7C1B00F2882D /* View+HUD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+HUD.swift"; sourceTree = "<group>"; };
@@ -992,6 +994,7 @@
 			isa = PBXGroup;
 			children = (
 				ED58C99729ABB2C200393468 /* RootViewModelTests.swift */,
+				EDBDFB4B29D0AEC9003E6278 /* Competitions */,
 				ED1CFA992864AF1400192E49 /* Home */,
 				ED3D5F2E295E471600211E86 /* Sign In */,
 			);
@@ -1388,6 +1391,14 @@
 			path = "Deep Link";
 			sourceTree = "<group>";
 		};
+		EDBDFB4B29D0AEC9003E6278 /* Competitions */ = {
+			isa = PBXGroup;
+			children = (
+				EDBDFB4C29D0AED7003E6278 /* CompetitionResultsViewModelTests.swift */,
+			);
+			path = Competitions;
+			sourceTree = "<group>";
+		};
 		EDBEA16E281459C000058A47 /* Components */ = {
 			isa = PBXGroup;
 			children = (
@@ -1724,6 +1735,7 @@
 				C1E35D4227B45D6300833EB2 /* CompetitionTests.swift in Sources */,
 				ED879C0529A088780007DB91 /* Container+SetupMocks.swift in Sources */,
 				ED58C99129AAA22C00393468 /* SearchManagerTests.swift in Sources */,
+				EDBDFB4D29D0AED7003E6278 /* CompetitionResultsViewModelTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

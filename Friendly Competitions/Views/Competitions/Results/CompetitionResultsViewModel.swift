@@ -21,6 +21,7 @@ final class CompetitionResultsViewModel: ObservableObject {
     @Injected(\.activitySummaryManager) private var activitySummaryManager
     @Injected(\.competitionsManager) private var competitionsManager
     @Injected(\.premiumManager) private var premiumManager
+    @Injected(\.scheduler) private var scheduler
     @Injected(\.userManager) private var userManager
     @Injected(\.workoutManager) private var workoutManager
 
@@ -33,6 +34,11 @@ final class CompetitionResultsViewModel: ObservableObject {
 
         let results = competitionsManager
             .results(for: competition.id)
+            .map { results in
+                results
+                    .sorted(by: \.end)
+                    .reversed()
+            }
             .catchErrorJustReturn([])
 
         Publishers
@@ -43,8 +49,6 @@ final class CompetitionResultsViewModel: ObservableObject {
             )
             .map { results, hasPremium, selectedIndex in
                 results
-                    .sorted(by: \.end)
-                    .reversed()
                     .enumerated()
                     .map { offset, result in
                         CompetitionResultsDateRange(
@@ -55,21 +59,26 @@ final class CompetitionResultsViewModel: ObservableObject {
                         )
                     }
             }
-            .receive(on: RunLoop.main)
+            .receive(on: scheduler)
             .assign(to: &$ranges)
 
         $ranges
             .map { $0.first(where: \.selected)?.locked ?? true }
+            .receive(on: scheduler)
             .assign(to: &$locked)
 
         let currentSelection = Publishers
-            .CombineLatest(results, selectedIndex)
+            .CombineLatest(
+                results,
+                selectedIndex.removeDuplicates()
+            )
             .compactMap { results, selectedIndex -> (CompetitionResult, CompetitionResult?)? in
                 if let previousIndex = selectedIndex <= results.count - 2 ? selectedIndex + 1 : nil {
                     return (results[selectedIndex], results[previousIndex])
                 }
                 return (results[selectedIndex], nil)
             }
+            .receive(on: scheduler)
             .handleEvents(withUnretained: self, receiveSubscription: { strongSelf, _ in strongSelf.loading = true })
 
         Publishers
@@ -87,7 +96,7 @@ final class CompetitionResultsViewModel: ObservableObject {
                     .isLoading { strongSelf.loading = $0 }
                     .eraseToAnyPublisher()
             })
-            .receive(on: RunLoop.main)
+            .receive(on: scheduler)
             .assign(to: &$dataPoints)
     }
 
@@ -140,6 +149,7 @@ final class CompetitionResultsViewModel: ObservableObject {
                         .sorted(by: \.rank)
                         .map { standing in
                             .init(
+                                userId: standing.userId,
                                 rank: standing.rank,
                                 points: standing.points,
                                 isHighlighted: standing.userId == user.id
