@@ -24,7 +24,6 @@ final class FriendsManagerTests: FCTestCase {
         usersCache = .init()
         userManager = .init()
         
-        container = Container()
         container.api.register { self.api }
         container.appState.register { self.appState }
         container.database.register { self.database }
