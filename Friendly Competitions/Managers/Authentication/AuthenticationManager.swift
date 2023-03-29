@@ -105,10 +105,10 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
     }
 
     func checkEmailVerification() -> AnyPublisher<Void, Error> {
-        guard let firebaseUser = auth.currentUser else { return .just(()) }
-        return .fromAsync { try await firebaseUser.reload() }
+        guard let user = auth.currentUser else { return .just(()) }
+        return .fromAsync { try await user.reload() }
             .receive(on: RunLoop.main)
-            .handleEvents(withUnretained: self, receiveOutput: { $0.emailVerifiedSubject.send(firebaseUser.isEmailVerified) })
+            .handleEvents(withUnretained: self, receiveOutput: { $0.emailVerifiedSubject.send(user.isEmailVerified) })
             .eraseToAnyPublisher()
     }
 
@@ -118,7 +118,7 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
     }
 
     func sendPasswordReset(to email: String) -> AnyPublisher<Void, Error> {
-        Auth.auth()
+        auth
             .sendPasswordReset(withEmail: email)
             .eraseToAnyPublisher()
     }
@@ -158,7 +158,7 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
     }
 
     private func listenForAuth() {
-        Auth.auth()
+        auth
             .authStateDidChangePublisher()
             .sinkAsync { [weak self] firebaseUser in
                 guard let firebaseUser = firebaseUser else {
@@ -180,12 +180,11 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
 
     private func registerUserManager(with user: User) {
         Container.shared.userManager.register { [weak self] in
-            guard let strongSelf = self else { fatalError("This should not happen") }
             let userManager = UserManager(user: user)
-            strongSelf.userListener = userManager.userPublisher
+            self?.userListener = userManager.userPublisher
                 .receive(on: RunLoop.main)
                 .map(User?.init)
-                .assign(to: \.currentUser, on: strongSelf, ownership: .weak)
+                .sink { self?.currentUser = $0 }
             return userManager
         }
     }
@@ -199,15 +198,15 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
             "name": name
         ]
 
-        do {
-            try await database.document("users/\(firebaseUser.uid)").updateData(from: userJson).async()
-        } catch {
-            guard let nsError = error as NSError?, nsError.domain == "FIRFirestoreErrorDomain", nsError.code == 5 else { return }
+        let document = database.document("users/\(firebaseUser.uid)")
+        if try await document.exists.async() {
+            try await document.updateData(from: userJson).async()
+        } else {
             let user = User(id: firebaseUser.uid, email: email, name: name)
-            try await database.document("users/\(user.id)").setData(from: user).async()
+            try await document.setData(from: user).async()
         }
 
-        let user = try await self.database.document("users/\(firebaseUser.uid)").getDocument(as: User.self).async()
+        let user = try await document.getDocument(as: User.self).async()
         DispatchQueue.main.async {
             self.currentUser = user
             self.emailVerifiedSubject.send(firebaseUser.isEmailVerified || firebaseUser.email == "review@apple.com")
