@@ -16,8 +16,8 @@ final class SearchManagerTests: FCTestCase {
         super.setUp()
         searchClient = .init()
         userManager = .init()
-        Container.shared.searchClient.register { self.searchClient }
-        Container.shared.userManager.register { self.userManager }
+        container.searchClient.register { self.searchClient }
+        container.userManager.register { self.userManager }
         cancellables = .init()
     }
     

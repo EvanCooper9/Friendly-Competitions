@@ -13,7 +13,7 @@ final class RootViewModelTests: FCTestCase {
     override func setUp() {
         super.setUp()
         appState = .init()
-        Container.shared.appState.register { self.appState }
+        container.appState.register { self.appState }
         cancellables = .init()
     }
     

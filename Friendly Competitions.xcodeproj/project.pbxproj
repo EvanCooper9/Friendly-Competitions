@@ -81,6 +81,9 @@
 		ED07573329CA65FC00141AD4 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = ED07573229CA65FC00141AD4 /* FirebaseMessaging */; };
 		ED07573529CA65FC00141AD4 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = ED07573429CA65FC00141AD4 /* FirebaseStorage */; };
 		ED07573729CA65FC00141AD4 /* FirebaseStorageCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = ED07573629CA65FC00141AD4 /* FirebaseStorageCombine-Community */; };
+		ED0C4BE029D31068003485CF /* FirestoreEncoderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED0C4BDF29D31068003485CF /* FirestoreEncoderTests.swift */; };
+		ED0C4BE229D31262003485CF /* DatabaseTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED0C4BE129D31262003485CF /* DatabaseTests.swift */; };
+		ED0C4BE429D315C0003485CF /* NewCompetitionViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED0C4BE329D315C0003485CF /* NewCompetitionViewModelTests.swift */; };
 		ED130764295FFA5C00E0AC87 /* CompetitionResultsDataPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED130763295FFA5C00E0AC87 /* CompetitionResultsDataPoint.swift */; };
 		ED19724C283803850018FDFF /* WorkoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED19724B283803850018FDFF /* WorkoutTests.swift */; };
 		ED19724E283803F60018FDFF /* WorkoutTypeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED19724D283803F60018FDFF /* WorkoutTypeTests.swift */; };
@@ -310,6 +313,9 @@
 		C1F9D7CC26FF871A00B25651 /* NotificationsManaging.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsManaging.swift; sourceTree = "<group>"; };
 		ED039766295F5458003D4D80 /* CompetitionResultsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionResultsView.swift; sourceTree = "<group>"; };
 		ED039767295F5458003D4D80 /* CompetitionResultsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionResultsViewModel.swift; sourceTree = "<group>"; };
+		ED0C4BDF29D31068003485CF /* FirestoreEncoderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreEncoderTests.swift; sourceTree = "<group>"; };
+		ED0C4BE129D31262003485CF /* DatabaseTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseTests.swift; sourceTree = "<group>"; };
+		ED0C4BE329D315C0003485CF /* NewCompetitionViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCompetitionViewModelTests.swift; sourceTree = "<group>"; };
 		ED130763295FFA5C00E0AC87 /* CompetitionResultsDataPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionResultsDataPoint.swift; sourceTree = "<group>"; };
 		ED19724B283803850018FDFF /* WorkoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutTests.swift; sourceTree = "<group>"; };
 		ED19724D283803F60018FDFF /* WorkoutTypeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutTypeTests.swift; sourceTree = "<group>"; };
@@ -630,21 +636,13 @@
 		C155CA5827AB989D005F49F4 /* Friendly Competitions Tests */ = {
 			isa = PBXGroup;
 			children = (
-				C155CA6027AB997D005F49F4 /* Extensions */,
+				ED0C4BDE29D31041003485CF /* Database */,
 				ED9F255E29A4366C008C9967 /* Managers */,
 				C155CA6F27AC1245005F49F4 /* Models */,
 				ED277B1B2838001A00DDF29A /* Views */,
 				C1300FDD27C96422002E2C52 /* Util */,
 			);
 			path = "Friendly Competitions Tests";
-			sourceTree = "<group>";
-		};
-		C155CA6027AB997D005F49F4 /* Extensions */ = {
-			isa = PBXGroup;
-			children = (
-				C155CA6C27AC0BF8005F49F4 /* Foundation */,
-			);
-			path = Extensions;
 			sourceTree = "<group>";
 		};
 		C155CA6C27AC0BF8005F49F4 /* Foundation */ = {
@@ -876,6 +874,15 @@
 			path = Results;
 			sourceTree = "<group>";
 		};
+		ED0C4BDE29D31041003485CF /* Database */ = {
+			isa = PBXGroup;
+			children = (
+				ED0C4BE129D31262003485CF /* DatabaseTests.swift */,
+				ED0C4BDF29D31068003485CF /* FirestoreEncoderTests.swift */,
+			);
+			path = Database;
+			sourceTree = "<group>";
+		};
 		ED19724A2838036A0018FDFF /* Workouts */ = {
 			isa = PBXGroup;
 			children = (
@@ -1080,6 +1087,7 @@
 			children = (
 				ED58C99229ABAE7300393468 /* ActivitySummary+Extensions.swift */,
 				ED58C99529ABAEA500393468 /* User+Extensions.swift */,
+				C155CA6C27AC0BF8005F49F4 /* Foundation */,
 			);
 			path = Extensions;
 			sourceTree = "<group>";
@@ -1395,6 +1403,7 @@
 			isa = PBXGroup;
 			children = (
 				EDBDFB4C29D0AED7003E6278 /* CompetitionResultsViewModelTests.swift */,
+				ED0C4BE329D315C0003485CF /* NewCompetitionViewModelTests.swift */,
 			);
 			path = Competitions;
 			sourceTree = "<group>";
@@ -1719,6 +1728,7 @@
 				C155CA7227AC126E005F49F4 /* UserTests.swift in Sources */,
 				ED58C99329ABAE7300393468 /* ActivitySummary+Extensions.swift in Sources */,
 				C1EBB16727AD7AF600376E59 /* UserDefaultsTests.swift in Sources */,
+				ED0C4BE029D31068003485CF /* FirestoreEncoderTests.swift in Sources */,
 				ED58C99829ABB2C200393468 /* RootViewModelTests.swift in Sources */,
 				C1E35D4A27B4600D00833EB2 /* Competition+StandingTests.swift in Sources */,
 				ED9F256129A4366C008C9967 /* CompetitionsManagerTests.swift in Sources */,
@@ -1727,8 +1737,10 @@
 				C1300FDC27C83E3B002E2C52 /* BundleTests.swift in Sources */,
 				ED9F256229A4366C008C9967 /* ActivitySummaryManagerTests.swift in Sources */,
 				ED1CFA9B2864AF1D00192E49 /* HomeViewModelTests.swift in Sources */,
+				ED0C4BE429D315C0003485CF /* NewCompetitionViewModelTests.swift in Sources */,
 				ED19724E283803F60018FDFF /* WorkoutTypeTests.swift in Sources */,
 				ED3D5F30295E472500211E86 /* SignInViewModelTests.swift in Sources */,
+				ED0C4BE229D31262003485CF /* DatabaseTests.swift in Sources */,
 				ED58C98F29AAA1A600393468 /* SearchIndex+Mock.swift in Sources */,
 				ED879C0929A1494A0007DB91 /* MockError.swift in Sources */,
 				C1E35D4C27B4606200833EB2 /* Competition+ScoringModelTests.swift in Sources */,

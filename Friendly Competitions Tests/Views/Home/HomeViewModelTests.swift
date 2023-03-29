@@ -46,15 +46,15 @@ final class HomeViewModelTests: FCTestCase {
         premiumManager.premium = .never()
         userManager.userPublisher = .just(.evan)
         
-        Container.shared.activitySummaryManager.register { self.activitySummaryManager }
-        Container.shared.analyticsManager.register { self.analyticsManager }
-        Container.shared.appState.register { self.appState }
-        Container.shared.competitionsManager.register { self.competitionsManager }
-        Container.shared.friendsManager.register { self.friendsManager }
-        Container.shared.permissionsManager.register { self.permissionsManager }
-        Container.shared.premiumManager.register { self.premiumManager }
-        Container.shared.scheduler.register { self.scheduler.eraseToAnyScheduler() }
-        Container.shared.userManager.register { self.userManager }
+        container.activitySummaryManager.register { self.activitySummaryManager }
+        container.analyticsManager.register { self.analyticsManager }
+        container.appState.register { self.appState }
+        container.competitionsManager.register { self.competitionsManager }
+        container.friendsManager.register { self.friendsManager }
+        container.permissionsManager.register { self.permissionsManager }
+        container.premiumManager.register { self.premiumManager }
+        container.scheduler.register { self.scheduler.eraseToAnyScheduler() }
+        container.userManager.register { self.userManager }
     }
 
     override func tearDown() {

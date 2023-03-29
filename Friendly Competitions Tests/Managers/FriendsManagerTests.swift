@@ -24,11 +24,11 @@ final class FriendsManagerTests: FCTestCase {
         usersCache = .init()
         userManager = .init()
         
-        Container.shared = Container()
-        Container.shared.api.register { self.api }
-        Container.shared.appState.register { self.appState }
-        Container.shared.database.register { self.database }
-        Container.shared.userManager.register { self.userManager }
+        container = Container()
+        container.api.register { self.api }
+        container.appState.register { self.appState }
+        container.database.register { self.database }
+        container.userManager.register { self.userManager }
         
         cancellables = .init()
     }
