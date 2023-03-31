@@ -14,8 +14,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/algolia/algoliasearch-client-swift",
       "state" : {
-        "revision" : "6bcb6cf5417b8f423e3170b4993e47513cb40d4d",
-        "version" : "8.17.0"
+        "revision" : "3ae3deec2fedc375047bf789983c3d608c861dcd",
+        "version" : "8.18.0"
       }
     },
     {
@@ -59,8 +59,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/hmlongco/Factory",
       "state" : {
-        "revision" : "df622bf129ceb0915319a9651174800cfda87b2c",
-        "version" : "2.0.3"
+        "revision" : "86c72fccbc8b4f978b46c629c46038d2e59a62f1",
+        "version" : "2.1.2"
       }
     },
     {
@@ -77,8 +77,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/firebase/firebase-ios-sdk",
       "state" : {
-        "revision" : "76de51f0e2be35ecb6ce05ed1ad0a73669b05a11",
-        "version" : "10.7.0"
+        "branch" : "master",
+        "revision" : "92ac9fcf0fa7bde483da142e894c3681b6abf9d4"
       }
     },
     {
@@ -213,7 +213,7 @@
       "location" : "https://github.com/SwiftUIX/SwiftUIX",
       "state" : {
         "branch" : "master",
-        "revision" : "ce5fad60556f6de71f452033a61f43466bce297b"
+        "revision" : "94335c9f823e7353c15dacd298f79b6338860c8e"
       }
     },
     {
