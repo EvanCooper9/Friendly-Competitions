@@ -153,7 +153,7 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
                         return document.getDocument(as: User.self)
                     } else {
                         /// This is a new user, the signup methods are responsible for creating the user
-                        /// in the database.
+                        /// in the database. Listen for that update here.
                         return strongSelf.createdUserSubject.eraseToAnyPublisher()
                     }
                 }
@@ -163,7 +163,11 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
             }
             .sink(withUnretained: self) { strongSelf, user in
                 strongSelf.authenticationCache.user = user
-                strongSelf.userListener = nil
+                if let user {
+                    strongSelf.registerUserManager(with: user)
+                } else {
+                    Container.shared.userManager.reset()
+                }
             }
             .store(in: &cancellables)
     }
