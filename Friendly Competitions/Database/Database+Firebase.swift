@@ -4,7 +4,7 @@ import FirebaseCrashlytics
 import FirebaseFirestore
 import FirebaseFirestoreCombineSwift
 
-fileprivate extension Firestore.Encoder {
+extension Firestore.Encoder {
     static let custom: Firestore.Encoder = {
         let encoder = Firestore.Encoder()
         encoder.dateEncodingStrategy = .formatted(.dateDashed)
@@ -12,7 +12,7 @@ fileprivate extension Firestore.Encoder {
     }()
 }
 
-fileprivate extension Firestore.Decoder {
+extension Firestore.Decoder {
     static let custom: Firestore.Decoder = {
         let decoder = Firestore.Decoder()
         decoder.dateDecodingStrategy = .formatted(.dateDashed)
@@ -86,6 +86,24 @@ extension Query: Collection {
 // MARK: Document
 
 extension DocumentReference: Document {
+
+    var exists: AnyPublisher<Bool, Error> {
+        Future { [weak self] promise in
+            guard let strongSelf = self else {
+                promise(.success(false))
+                return
+            }
+            strongSelf.getDocument { document, error in
+                if let error {
+                    promise(.failure(error))
+                } else {
+                    promise(.success(document?.exists ?? false))
+                }
+            }
+        }
+        .eraseToAnyPublisher()
+    }
+
     func setData<T: Encodable>(from value: T) -> AnyPublisher<Void, Error> {
         setData(from: value, encoder: .custom)
             .reportErrorToCrashlytics(userInfo: [

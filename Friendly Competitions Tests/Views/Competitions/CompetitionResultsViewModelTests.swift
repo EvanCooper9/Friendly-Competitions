@@ -29,12 +29,12 @@ final class CompetitionResultsViewModelTests: FCTestCase {
 
         cancellables = .init()
 
-        Container.shared.activitySummaryManager.register { self.activitySummaryManager }
-        Container.shared.competitionsManager.register { self.competitionsManager }
-        Container.shared.premiumManager.register { self.premiumManager }
-        Container.shared.scheduler.register { self.scheduler.eraseToAnyScheduler() }
-        Container.shared.userManager.register { self.userManager }
-        Container.shared.workoutManager.register { self.workoutManager }
+        container.activitySummaryManager.register { self.activitySummaryManager }
+        container.competitionsManager.register { self.competitionsManager }
+        container.premiumManager.register { self.premiumManager }
+        container.scheduler.register { self.scheduler.eraseToAnyScheduler() }
+        container.userManager.register { self.userManager }
+        container.workoutManager.register { self.workoutManager }
 
         activitySummaryManager.activitySummariesInReturnValue = .just([])
         premiumManager.premium = .just(nil)

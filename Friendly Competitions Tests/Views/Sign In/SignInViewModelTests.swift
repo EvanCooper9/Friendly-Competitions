@@ -17,8 +17,8 @@ final class SignInViewModelTests: FCTestCase {
         authenticationManager = .init()
         cancellables = .init()
         
-        Container.shared.appState.register { self.appState }
-        Container.shared.authenticationManager.register { self.authenticationManager }
+        container.appState.register { self.appState }
+        container.authenticationManager.register { self.authenticationManager }
     }
 
     override func tearDown() {
