@@ -6,9 +6,9 @@ import Foundation
 
 // sourcery: AutoMockable
 protocol EnvironmentManaging {
-    var firestoreEnvironment: FirestoreEnvironment { get }
-    var firestoreEnvironmentDidChange: AnyPublisher<Void, Never> { get }
-    func set(_ environment: FirestoreEnvironment)
+    var environment: FCEnvironment { get }
+    var environmentPublisher: AnyPublisher<FCEnvironment, Never> { get }
+    func set(_ environment: FCEnvironment)
 }
 
 final class EnvironmentManager: EnvironmentManaging {
@@ -19,42 +19,40 @@ final class EnvironmentManager: EnvironmentManaging {
 
     // MARK: - Public Properties
 
-    var firestoreEnvironment: FirestoreEnvironment { firestoreEnvironmentSubject.value }
-    let firestoreEnvironmentDidChange: AnyPublisher<Void, Never>
+    var environment: FCEnvironment {
+        environmentSubject.value
+    }
+
+    var environmentPublisher: AnyPublisher<FCEnvironment, Never> {
+        environmentSubject.eraseToAnyPublisher()
+    }
 
     // MARK: - Private Properties
 
     @Injected(\.environmentCache) private var environmentCache
 
-    private let firestoreEnvironmentSubject: CurrentValueSubject<FirestoreEnvironment, Never>
-
+    private let environmentSubject = CurrentValueSubject<FCEnvironment, Never>(.prod)
     private var cancellables = Cancellables()
 
     // MARK: - Lifecycle
 
     init() {
-        if let environment = UserDefaults.standard.decode(FirestoreEnvironment.self, forKey: Constants.environmentKey) {
-            firestoreEnvironmentSubject = .init(environment)
+        if let environment = environmentCache.environment {
+            environmentSubject.send(environment)
         } else {
             #if targetEnvironment(simulator)
-            firestoreEnvironmentSubject = .init(.init(type: .debug, emulationType: .localhost, emulationDestination: nil))
-            #else
-            firestoreEnvironmentSubject = .init(.default)
+            environmentSubject.send(.debugLocal)
             #endif
         }
 
-        firestoreEnvironmentDidChange = firestoreEnvironmentSubject
-            .mapToVoid()
-            .eraseToAnyPublisher()
-
-        firestoreEnvironmentSubject
+        environmentSubject
             .sink { UserDefaults.standard.encode($0, forKey: Constants.environmentKey) }
             .store(in: &cancellables)
     }
 
     // MARK: - Public Methods
 
-    func set(_ environment: FirestoreEnvironment) {
-        firestoreEnvironmentSubject.send(environment)
+    func set(_ environment: FCEnvironment) {
+        environmentSubject.send(environment)
     }
 }
