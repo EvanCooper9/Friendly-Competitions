@@ -45,6 +45,11 @@ struct SignIn: View {
 
                 Spacer()
 
+                DeveloperMenu()
+                    .font(.largeTitle)
+
+                Spacer()
+
                 VStack {
                     Button(action: viewModel.submit) {
                         Label(L10n.SignIn.apple, systemImage: "applelogo")

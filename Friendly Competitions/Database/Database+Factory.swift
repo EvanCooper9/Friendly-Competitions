@@ -4,22 +4,21 @@ import FirebaseFirestore
 extension Container {
     var database: Factory<Database> {
         Factory(self) {
-            let environment = self.environmentManager().firestoreEnvironment
+            let environment = self.environmentManager().environment
             let firestore = Firestore.firestore()
             let settings = firestore.settings
 
-            switch environment.type {
+            switch environment {
             case .prod:
                 break
-            case .debug:
+            case .debugLocal:
                 settings.isPersistenceEnabled = false
                 settings.isSSLEnabled = false
-                switch environment.emulationType {
-                case .localhost:
-                    settings.host = "localhost:\(8080)"
-                case .custom:
-                    settings.host = (environment.emulationDestination ?? "localhost") + ":\(8080)"
-                }
+                settings.host = "localhost:\(8080)"
+            case .debugRemote(let destination):
+                settings.isPersistenceEnabled = false
+                settings.isSSLEnabled = false
+                settings.host = "\(destination):\(8080)"
             }
 
             firestore.settings = settings

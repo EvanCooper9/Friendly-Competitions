@@ -104,8 +104,8 @@
 		ED1B85AC29C9049E008DB1F6 /* ExploreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1B85A629C9049E008DB1F6 /* ExploreView.swift */; };
 		ED1B85AD29C9049E008DB1F6 /* ExploreViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1B85A729C9049E008DB1F6 /* ExploreViewModel.swift */; };
 		ED1B85AE29C9049E008DB1F6 /* FeaturedCompetition.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1B85A829C9049E008DB1F6 /* FeaturedCompetition.swift */; };
-		ED1B85C029C904CC008DB1F6 /* DeveloperView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1B85B129C904CC008DB1F6 /* DeveloperView.swift */; };
-		ED1B85C129C904CC008DB1F6 /* DeveloperViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1B85B229C904CC008DB1F6 /* DeveloperViewModel.swift */; };
+		ED1B85C029C904CC008DB1F6 /* DeveloperMenu.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1B85B129C904CC008DB1F6 /* DeveloperMenu.swift */; };
+		ED1B85C129C904CC008DB1F6 /* DeveloperMenuViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1B85B229C904CC008DB1F6 /* DeveloperMenuViewModel.swift */; };
 		ED1B85C229C904CC008DB1F6 /* HomeViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1B85B329C904CC008DB1F6 /* HomeViewModel.swift */; };
 		ED1B85C329C904CC008DB1F6 /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1B85B429C904CC008DB1F6 /* HomeView.swift */; };
 		ED1B85C429C904CC008DB1F6 /* UserViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1B85B629C904CC008DB1F6 /* UserViewModel.swift */; };
@@ -235,6 +235,7 @@
 		EDD8950029634043009636E6 /* FirestoreEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD894FF29634043009636E6 /* FirestoreEnvironment.swift */; };
 		EDDB923D2965D2B0006AEE72 /* CompetitionHistoryDataPoint+View.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDDB923C2965D2B0006AEE72 /* CompetitionHistoryDataPoint+View.swift */; };
 		EDDF77D828BA82E000BB8B97 /* HealthKitPermissionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDDF77D728BA82E000BB8B97 /* HealthKitPermissionType.swift */; };
+		EDFA2CD829D6796500768D0E /* EnvironmentManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDFA2CD729D6796500768D0E /* EnvironmentManagerTests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -334,8 +335,8 @@
 		ED1B85A629C9049E008DB1F6 /* ExploreView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExploreView.swift; sourceTree = "<group>"; };
 		ED1B85A729C9049E008DB1F6 /* ExploreViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ExploreViewModel.swift; sourceTree = "<group>"; };
 		ED1B85A829C9049E008DB1F6 /* FeaturedCompetition.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FeaturedCompetition.swift; sourceTree = "<group>"; };
-		ED1B85B129C904CC008DB1F6 /* DeveloperView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeveloperView.swift; sourceTree = "<group>"; };
-		ED1B85B229C904CC008DB1F6 /* DeveloperViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeveloperViewModel.swift; sourceTree = "<group>"; };
+		ED1B85B129C904CC008DB1F6 /* DeveloperMenu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeveloperMenu.swift; sourceTree = "<group>"; };
+		ED1B85B229C904CC008DB1F6 /* DeveloperMenuViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeveloperMenuViewModel.swift; sourceTree = "<group>"; };
 		ED1B85B329C904CC008DB1F6 /* HomeViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeViewModel.swift; sourceTree = "<group>"; };
 		ED1B85B429C904CC008DB1F6 /* HomeView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		ED1B85B629C904CC008DB1F6 /* UserViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserViewModel.swift; sourceTree = "<group>"; };
@@ -459,6 +460,7 @@
 		EDD894FF29634043009636E6 /* FirestoreEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreEnvironment.swift; sourceTree = "<group>"; };
 		EDDB923C2965D2B0006AEE72 /* CompetitionHistoryDataPoint+View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CompetitionHistoryDataPoint+View.swift"; sourceTree = "<group>"; };
 		EDDF77D728BA82E000BB8B97 /* HealthKitPermissionType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitPermissionType.swift; sourceTree = "<group>"; };
+		EDFA2CD729D6796500768D0E /* EnvironmentManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentManagerTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -790,6 +792,7 @@
 				ED3C09DF29626A1D00ED4ACC /* NavigationDestination.swift */,
 				C1F7DFF226D7F77900B46F91 /* Competitions */,
 				C119B03026FE610100B56703 /* Components */,
+				ED1B85B029C904CC008DB1F6 /* Developer */,
 				ED1B85A529C9049E008DB1F6 /* Explore */,
 				ED1B85AF29C904CC008DB1F6 /* Home */,
 				ED48782C282747B100AC1E2C /* Invite Friends */,
@@ -936,7 +939,6 @@
 				ED1B85B429C904CC008DB1F6 /* HomeView.swift */,
 				ED1B85B329C904CC008DB1F6 /* HomeViewModel.swift */,
 				ED1B85B929C904CC008DB1F6 /* About */,
-				ED1B85B029C904CC008DB1F6 /* Developer */,
 				ED1B85BC29C904CC008DB1F6 /* Profile */,
 				ED1B85B529C904CC008DB1F6 /* User */,
 			);
@@ -946,8 +948,8 @@
 		ED1B85B029C904CC008DB1F6 /* Developer */ = {
 			isa = PBXGroup;
 			children = (
-				ED1B85B129C904CC008DB1F6 /* DeveloperView.swift */,
-				ED1B85B229C904CC008DB1F6 /* DeveloperViewModel.swift */,
+				ED1B85B129C904CC008DB1F6 /* DeveloperMenu.swift */,
+				ED1B85B229C904CC008DB1F6 /* DeveloperMenuViewModel.swift */,
 			);
 			path = Developer;
 			sourceTree = "<group>";
@@ -1109,8 +1111,8 @@
 		ED7881A52850380700C7F6CB /* Utility */ = {
 			isa = PBXGroup;
 			children = (
-				ED879C6329A417670007DB91 /* Utility+Factory.swift */,
 				ED58C99929ABCCA300393468 /* UsersCache.swift */,
+				ED879C6329A417670007DB91 /* Utility+Factory.swift */,
 				ED9F255929A4352A008C9967 /* Post Decoded */,
 				C11193AD26E7C5C6003B7EB3 /* Extensions */,
 			);
@@ -1376,6 +1378,7 @@
 			children = (
 				ED9F256029A4366C008C9967 /* ActivitySummaryManagerTests.swift */,
 				ED9F255F29A4366C008C9967 /* CompetitionsManagerTests.swift */,
+				EDFA2CD729D6796500768D0E /* EnvironmentManagerTests.swift */,
 				ED58C98629AA805A00393468 /* FriendsManagerTests.swift */,
 				ED58C99029AAA22C00393468 /* SearchManagerTests.swift */,
 			);
@@ -1717,6 +1720,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				ED58C99629ABAEA500393468 /* User+Extensions.swift in Sources */,
+				EDFA2CD829D6796500768D0E /* EnvironmentManagerTests.swift in Sources */,
 				ED879BFB29A06AAB0007DB91 /* ActivitySummaryTests.swift in Sources */,
 				C1E35D4427B45ECE00833EB2 /* PermissionTests.swift in Sources */,
 				C1E35D4627B45F6C00833EB2 /* PermissionStatusTests.swift in Sources */,
@@ -1816,7 +1820,7 @@
 				ED879C5229A412120007DB91 /* PermissionsManager+Factory.swift in Sources */,
 				ED879C2929A40D180007DB91 /* ActivitySummaryCache.swift in Sources */,
 				C16CC40927A73E6E00C26208 /* User+Statistics.swift in Sources */,
-				ED1B85C129C904CC008DB1F6 /* DeveloperViewModel.swift in Sources */,
+				ED1B85C129C904CC008DB1F6 /* DeveloperMenuViewModel.swift in Sources */,
 				ED65D3BD280CF36C00B38486 /* WorkoutType.swift in Sources */,
 				EDA035CC291860090091E7A6 /* PremiumManager.swift in Sources */,
 				ED879C3529A410540007DB91 /* CompetitionsManager+Factory.swift in Sources */,
@@ -1907,7 +1911,7 @@
 				ED48783228295A2100AC1E2C /* InviteFriendsAction.swift in Sources */,
 				C1C8B24326F3FB47008D6B1B /* ActivitySummaryManager.swift in Sources */,
 				ED879C2329A407E30007DB91 /* Query+Extensions.swift in Sources */,
-				ED1B85C029C904CC008DB1F6 /* DeveloperView.swift in Sources */,
+				ED1B85C029C904CC008DB1F6 /* DeveloperMenu.swift in Sources */,
 				ED9F255D29A43544008C9967 /* DateToStartOfDay.swift in Sources */,
 				ED1B85C829C904CC008DB1F6 /* AboutViewModel.swift in Sources */,
 				ED879C4529A4116C0007DB91 /* PremiumManager+Factory.swift in Sources */,
