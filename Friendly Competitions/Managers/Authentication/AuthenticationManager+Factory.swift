@@ -2,6 +2,9 @@ import Factory
 import FirebaseAuth
 
 extension Container {
+    var authenticationCache: Factory<AuthenticationCache> {
+        Factory(self) { UserDefaults.standard }.scope(.shared)
+    }
     var authenticationManager: Factory<AuthenticationManaging> {
         Factory(self) { AuthenticationManager() }.scope(.shared)
     }
