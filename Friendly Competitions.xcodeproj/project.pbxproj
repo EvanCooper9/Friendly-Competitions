@@ -2250,8 +2250,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
 			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = 10.0.0;
+				branch = master;
+				kind = branch;
 			};
 		};
 		ED1B5CED296B574B00122D7E /* XCRemoteSwiftPackageReference "purchases-ios" */ = {
