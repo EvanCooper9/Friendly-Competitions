@@ -88,7 +88,7 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
                 var activitySummary = activitySummary
                 activitySummary.userID = userID
                 let document = strongSelf.database.document("users/\(userID)/activitySummaries/\(activitySummary.id)")
-                try batch.setData(from: activitySummary, forDocument: document)
+                try batch.set(value: activitySummary, forDocument: document)
             }
             try await batch.commit()
         }

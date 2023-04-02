@@ -203,7 +203,7 @@ final class CompetitionViewModel: ObservableObject {
             .store(in: &cancellables)
 
         saveEditsSubject
-            .flatMapLatest(withUnretained: self) { strongSelf -> AnyPublisher<Void, Error> in
+            .flatMapLatest(withUnretained: self) { strongSelf in
                 strongSelf.editing.toggle()
                 strongSelf.competitionPreEdit = strongSelf.competition
                 return strongSelf.competitionsManager

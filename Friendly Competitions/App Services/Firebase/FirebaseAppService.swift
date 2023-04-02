@@ -4,6 +4,8 @@ import FirebaseMessaging
 
 final class FirebaseAppService: NSObject, AppService {
 
+    @LazyInjected(\.auth) private var auth
+    @LazyInjected(\.userManager) private var userManager
     // Needs to be lazy so that `FirebaseApp.configure()` is called first
     @LazyInjected(\.database) private var database
 
@@ -19,17 +21,17 @@ final class FirebaseAppService: NSObject, AppService {
 
 extension FirebaseAppService: MessagingDelegate {
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-        guard let fcmToken = fcmToken, let userId = Auth.auth().currentUser?.uid else { return }
+        guard let fcmToken = fcmToken, let userId = auth.user?.id else { return }
 
         Task {
             let tokens = try await database.document("users/\(userId)")
-                .getDocument(as: User.self, source: .cacheFirst)
+                .get(as: User.self, source: .cacheFirst)
                 .async()
                 .notificationTokens ?? []
 
             guard !tokens.contains(fcmToken) else { return }
             try await database.document("users/\(userId)")
-                .updateData(from: ["notificationTokens": tokens.appending(fcmToken)])
+                .update(fields: ["notificationTokens": tokens.appending(fcmToken)])
                 .async()
         }
     }

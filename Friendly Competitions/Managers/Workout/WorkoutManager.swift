@@ -86,7 +86,7 @@ final class WorkoutManager: WorkoutManaging {
             let batch = strongSelf.database.batch()
             try workouts.forEach { workout in
                 let document = strongSelf.database.document("users/\(userID)/workouts/\(workout.id)")
-                try batch.setData(from: workout, forDocument: document)
+                try batch.set(value: workout, forDocument: document)
             }
             try await batch.commit()
         }

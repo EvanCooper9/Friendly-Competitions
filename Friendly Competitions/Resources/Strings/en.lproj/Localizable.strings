@@ -174,3 +174,7 @@
 "Generics.continue" = "Continue";
 "Generics.save" = "Save";
 "Generics.Symbols.apersand" = "&";
+
+// Authentication
+"AuthenticationError.missingEmail" = "Missing email";
+"AuthenticationError.passwordMatch" = "Passwords don't match";

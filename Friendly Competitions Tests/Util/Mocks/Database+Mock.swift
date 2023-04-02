@@ -51,19 +51,19 @@ final class DocumentMock<Model: Codable>: Document {
     }
 
     var updateDataClosure: (([String: Any]) -> AnyPublisher<Void, Error>)?
-    func updateData(from data: [String: Any]) -> AnyPublisher<Void, Error> {
+    func update(fields data: [String: Any]) -> AnyPublisher<Void, Error> {
         updateDataClosure!(data)
     }
 
     var getDocumentClosure: ((Model.Type, DatabaseSource) -> AnyPublisher<Model, Error>)?
-    func getDocument<T>(as type: T.Type, source: DatabaseSource) -> AnyPublisher<T, Error> where T : Decodable {
+    func get<T: Decodable>(as type: T.Type, source: DatabaseSource) -> AnyPublisher<T, Error> {
         getDocumentClosure!(T.self as! Model.Type, source)
             .map { $0 as! T }
             .eraseToAnyPublisher()
     }
 
     var getDocumentPublisherClosure: ((Model.Type) -> AnyPublisher<Model, Error>)?
-    func getDocumentPublisher<T: Decodable>(as type: T.Type) -> AnyPublisher<T, Error> {
+    func publisher<T: Decodable>(as type: T.Type) -> AnyPublisher<T, Error> {
         getDocumentPublisherClosure!(T.self as! Model.Type)
             .map { $0 as! T }
             .eraseToAnyPublisher()

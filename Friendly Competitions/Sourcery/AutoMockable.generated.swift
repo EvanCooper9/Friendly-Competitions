@@ -198,6 +198,235 @@ class AppStateProvidingMock: AppStateProviding {
     }
 
 }
+class AuthProvidingMock: AuthProviding {
+
+
+    var user: AuthUser?
+
+
+    //MARK: - userPublisher
+
+    var userPublisherCallsCount = 0
+    var userPublisherCalled: Bool {
+        return userPublisherCallsCount > 0
+    }
+    var userPublisherReturnValue: AnyPublisher<AuthUser?, Never>!
+    var userPublisherClosure: (() -> AnyPublisher<AuthUser?, Never>)?
+
+    func userPublisher() -> AnyPublisher<AuthUser?, Never> {
+        userPublisherCallsCount += 1
+        if let userPublisherClosure = userPublisherClosure {
+            return userPublisherClosure()
+        } else {
+            return userPublisherReturnValue
+        }
+    }
+
+    //MARK: - signIn
+
+    var signInWithEmailPasswordCallsCount = 0
+    var signInWithEmailPasswordCalled: Bool {
+        return signInWithEmailPasswordCallsCount > 0
+    }
+    var signInWithEmailPasswordReceivedArguments: (email: String, password: String)?
+    var signInWithEmailPasswordReceivedInvocations: [(email: String, password: String)] = []
+    var signInWithEmailPasswordReturnValue: AnyPublisher<Void, Error>!
+    var signInWithEmailPasswordClosure: ((String, String) -> AnyPublisher<Void, Error>)?
+
+    func signIn(withEmail email: String, password: String) -> AnyPublisher<Void, Error> {
+        signInWithEmailPasswordCallsCount += 1
+        signInWithEmailPasswordReceivedArguments = (email: email, password: password)
+        signInWithEmailPasswordReceivedInvocations.append((email: email, password: password))
+        if let signInWithEmailPasswordClosure = signInWithEmailPasswordClosure {
+            return signInWithEmailPasswordClosure(email, password)
+        } else {
+            return signInWithEmailPasswordReturnValue
+        }
+    }
+
+    //MARK: - signIn
+
+    var signInWithCallsCount = 0
+    var signInWithCalled: Bool {
+        return signInWithCallsCount > 0
+    }
+    var signInWithReceivedCredential: AuthCredential?
+    var signInWithReceivedInvocations: [AuthCredential] = []
+    var signInWithReturnValue: AnyPublisher<AuthUser, Error>!
+    var signInWithClosure: ((AuthCredential) -> AnyPublisher<AuthUser, Error>)?
+
+    func signIn(with credential: AuthCredential) -> AnyPublisher<AuthUser, Error> {
+        signInWithCallsCount += 1
+        signInWithReceivedCredential = credential
+        signInWithReceivedInvocations.append(credential)
+        if let signInWithClosure = signInWithClosure {
+            return signInWithClosure(credential)
+        } else {
+            return signInWithReturnValue
+        }
+    }
+
+    //MARK: - signUp
+
+    var signUpWithEmailPasswordCallsCount = 0
+    var signUpWithEmailPasswordCalled: Bool {
+        return signUpWithEmailPasswordCallsCount > 0
+    }
+    var signUpWithEmailPasswordReceivedArguments: (email: String, password: String)?
+    var signUpWithEmailPasswordReceivedInvocations: [(email: String, password: String)] = []
+    var signUpWithEmailPasswordReturnValue: AnyPublisher<AuthUser, Error>!
+    var signUpWithEmailPasswordClosure: ((String, String) -> AnyPublisher<AuthUser, Error>)?
+
+    func signUp(withEmail email: String, password: String) -> AnyPublisher<AuthUser, Error> {
+        signUpWithEmailPasswordCallsCount += 1
+        signUpWithEmailPasswordReceivedArguments = (email: email, password: password)
+        signUpWithEmailPasswordReceivedInvocations.append((email: email, password: password))
+        if let signUpWithEmailPasswordClosure = signUpWithEmailPasswordClosure {
+            return signUpWithEmailPasswordClosure(email, password)
+        } else {
+            return signUpWithEmailPasswordReturnValue
+        }
+    }
+
+    //MARK: - signOut
+
+    var signOutThrowableError: Error?
+    var signOutCallsCount = 0
+    var signOutCalled: Bool {
+        return signOutCallsCount > 0
+    }
+    var signOutClosure: (() throws -> Void)?
+
+    func signOut() throws {
+        if let error = signOutThrowableError {
+            throw error
+        }
+        signOutCallsCount += 1
+        try signOutClosure?()
+    }
+
+    //MARK: - sendPasswordReset
+
+    var sendPasswordResetWithEmailCallsCount = 0
+    var sendPasswordResetWithEmailCalled: Bool {
+        return sendPasswordResetWithEmailCallsCount > 0
+    }
+    var sendPasswordResetWithEmailReceivedEmail: String?
+    var sendPasswordResetWithEmailReceivedInvocations: [String] = []
+    var sendPasswordResetWithEmailReturnValue: AnyPublisher<Void, Error>!
+    var sendPasswordResetWithEmailClosure: ((String) -> AnyPublisher<Void, Error>)?
+
+    func sendPasswordReset(withEmail email: String) -> AnyPublisher<Void, Error> {
+        sendPasswordResetWithEmailCallsCount += 1
+        sendPasswordResetWithEmailReceivedEmail = email
+        sendPasswordResetWithEmailReceivedInvocations.append(email)
+        if let sendPasswordResetWithEmailClosure = sendPasswordResetWithEmailClosure {
+            return sendPasswordResetWithEmailClosure(email)
+        } else {
+            return sendPasswordResetWithEmailReturnValue
+        }
+    }
+
+}
+class AuthUserMock: AuthUser {
+
+
+    var id: String {
+        get { return underlyingId }
+        set(value) { underlyingId = value }
+    }
+    var underlyingId: String!
+    var displayName: String?
+    var email: String?
+    var isEmailVerified: Bool {
+        get { return underlyingIsEmailVerified }
+        set(value) { underlyingIsEmailVerified = value }
+    }
+    var underlyingIsEmailVerified: Bool!
+
+
+    //MARK: - sendEmailVerification
+
+    var sendEmailVerificationCallsCount = 0
+    var sendEmailVerificationCalled: Bool {
+        return sendEmailVerificationCallsCount > 0
+    }
+    var sendEmailVerificationReturnValue: AnyPublisher<Void, Error>!
+    var sendEmailVerificationClosure: (() -> AnyPublisher<Void, Error>)?
+
+    func sendEmailVerification() -> AnyPublisher<Void, Error> {
+        sendEmailVerificationCallsCount += 1
+        if let sendEmailVerificationClosure = sendEmailVerificationClosure {
+            return sendEmailVerificationClosure()
+        } else {
+            return sendEmailVerificationReturnValue
+        }
+    }
+
+    //MARK: - set
+
+    var setDisplayNameCallsCount = 0
+    var setDisplayNameCalled: Bool {
+        return setDisplayNameCallsCount > 0
+    }
+    var setDisplayNameReceivedDisplayName: String?
+    var setDisplayNameReceivedInvocations: [String] = []
+    var setDisplayNameReturnValue: AnyPublisher<AuthUser, Error>!
+    var setDisplayNameClosure: ((String) -> AnyPublisher<AuthUser, Error>)?
+
+    func set(displayName: String) -> AnyPublisher<AuthUser, Error> {
+        setDisplayNameCallsCount += 1
+        setDisplayNameReceivedDisplayName = displayName
+        setDisplayNameReceivedInvocations.append(displayName)
+        if let setDisplayNameClosure = setDisplayNameClosure {
+            return setDisplayNameClosure(displayName)
+        } else {
+            return setDisplayNameReturnValue
+        }
+    }
+
+    //MARK: - reload
+
+    var reloadThrowableError: Error?
+    var reloadCallsCount = 0
+    var reloadCalled: Bool {
+        return reloadCallsCount > 0
+    }
+    var reloadClosure: (() async throws -> Void)?
+
+    func reload() async throws {
+        if let error = reloadThrowableError {
+            throw error
+        }
+        reloadCallsCount += 1
+        try await reloadClosure?()
+    }
+
+    //MARK: - delete
+
+    var deleteThrowableError: Error?
+    var deleteCallsCount = 0
+    var deleteCalled: Bool {
+        return deleteCallsCount > 0
+    }
+    var deleteClosure: (() async throws -> Void)?
+
+    func delete() async throws {
+        if let error = deleteThrowableError {
+            throw error
+        }
+        deleteCallsCount += 1
+        try await deleteClosure?()
+    }
+
+}
+class AuthenticationCacheMock: AuthenticationCache {
+
+
+    var user: User?
+
+
+}
 class AuthenticationManagingMock: AuthenticationManaging {
 
 
@@ -219,17 +448,17 @@ class AuthenticationManagingMock: AuthenticationManaging {
     var signInWithCalled: Bool {
         return signInWithCallsCount > 0
     }
-    var signInWithReceivedSignInMethod: SignInMethod?
-    var signInWithReceivedInvocations: [SignInMethod] = []
+    var signInWithReceivedAuthenticationMethod: AuthenticationMethod?
+    var signInWithReceivedInvocations: [AuthenticationMethod] = []
     var signInWithReturnValue: AnyPublisher<Void, Error>!
-    var signInWithClosure: ((SignInMethod) -> AnyPublisher<Void, Error>)?
+    var signInWithClosure: ((AuthenticationMethod) -> AnyPublisher<Void, Error>)?
 
-    func signIn(with signInMethod: SignInMethod) -> AnyPublisher<Void, Error> {
+    func signIn(with authenticationMethod: AuthenticationMethod) -> AnyPublisher<Void, Error> {
         signInWithCallsCount += 1
-        signInWithReceivedSignInMethod = signInMethod
-        signInWithReceivedInvocations.append(signInMethod)
+        signInWithReceivedAuthenticationMethod = authenticationMethod
+        signInWithReceivedInvocations.append(authenticationMethod)
         if let signInWithClosure = signInWithClosure {
-            return signInWithClosure(signInMethod)
+            return signInWithClosure(authenticationMethod)
         } else {
             return signInWithReturnValue
         }
@@ -1285,6 +1514,30 @@ class SearchManagingMock: SearchManaging {
             return searchForUsersByNameClosure(name)
         } else {
             return searchForUsersByNameReturnValue
+        }
+    }
+
+}
+class SignInWithAppleProvidingMock: SignInWithAppleProviding {
+
+
+
+
+    //MARK: - signIn
+
+    var signInCallsCount = 0
+    var signInCalled: Bool {
+        return signInCallsCount > 0
+    }
+    var signInReturnValue: AnyPublisher<SignInWithAppleResult, Error>!
+    var signInClosure: (() -> AnyPublisher<SignInWithAppleResult, Error>)?
+
+    func signIn() -> AnyPublisher<SignInWithAppleResult, Error> {
+        signInCallsCount += 1
+        if let signInClosure = signInClosure {
+            return signInClosure()
+        } else {
+            return signInReturnValue
         }
     }
 

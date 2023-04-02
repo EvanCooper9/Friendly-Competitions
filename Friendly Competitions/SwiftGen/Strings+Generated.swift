@@ -44,6 +44,12 @@ internal enum L10n {
       internal static let empty = L10n.tr("Localizable", "ActivitySummaryInfo.Value.empty", fallback: "-")
     }
   }
+  internal enum AuthenticationError {
+    /// Missing email
+    internal static let missingEmail = L10n.tr("Localizable", "AuthenticationError.missingEmail", fallback: "Missing email")
+    /// Passwords don't match
+    internal static let passwordMatch = L10n.tr("Localizable", "AuthenticationError.passwordMatch", fallback: "Passwords don't match")
+  }
   internal enum Competition {
     internal enum Action {
       internal enum AcceptInvite {

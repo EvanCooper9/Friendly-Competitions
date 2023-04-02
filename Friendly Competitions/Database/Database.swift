@@ -32,15 +32,15 @@ protocol Document {
 
     var exists: AnyPublisher<Bool, Error> { get }
 
-    func setData<T: Encodable>(from value: T) -> AnyPublisher<Void, Error>
-    func updateData(from data: [String: Any]) -> AnyPublisher<Void, Error>
-    func getDocument<T: Decodable>(as type: T.Type, source: DatabaseSource) -> AnyPublisher<T, Error>
-    func getDocumentPublisher<T: Decodable>(as type: T.Type) -> AnyPublisher<T, Error>
+    func set<T: Encodable>(value: T) -> AnyPublisher<Void, Error>
+    func update(fields data: [String: Any]) -> AnyPublisher<Void, Error>
+    func get<T: Decodable>(as type: T.Type, source: DatabaseSource) -> AnyPublisher<T, Error>
+    func publisher<T: Decodable>(as type: T.Type) -> AnyPublisher<T, Error>
 }
 
 extension Document {
-    func getDocument<T: Decodable>(as type: T.Type, source: DatabaseSource = .server) -> AnyPublisher<T, Error> {
-        getDocument(as: T.self, source: source)
+    func get<T: Decodable>(as type: T.Type, source: DatabaseSource = .server) -> AnyPublisher<T, Error> {
+        get(as: T.self, source: source)
     }
 }
 
@@ -48,7 +48,7 @@ extension Document {
 
 protocol Batch {
     func commit() async throws
-    func setData<T: Encodable>(from value: T, forDocument document: Document) throws
+    func set<T: Encodable>(value: T, forDocument document: Document) throws
 }
 
 // MARK: Source

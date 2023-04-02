@@ -84,7 +84,7 @@ final class FriendsManager: FriendsManaging {
 
     func user(withId id: String) -> AnyPublisher<User, Error> {
         database.document("users/\(id)")
-            .getDocument(as: User.self)
+            .get(as: User.self)
     }
 
     // MARK: - Private Methods
@@ -142,7 +142,7 @@ final class FriendsManager: FriendsManaging {
             .eraseToAnyPublisher()
     }
 
-    private func activitySummaries(for userIDs: [User.ID]) -> AnyPublisher<[ActivitySummary], Never> {
+    private func activitySummaries(for userIDs: [User.ID]) -> some Publisher<[ActivitySummary], Never> {
         database.collectionGroup("activitySummaries")
             .whereField("date", isEqualTo: DateFormatter.dateDashed.string(from: .now))
             .whereField("userID", asArrayOf: ActivitySummary.self, in: userIDs)

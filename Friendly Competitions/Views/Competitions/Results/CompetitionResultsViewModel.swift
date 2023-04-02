@@ -85,7 +85,7 @@ final class CompetitionResultsViewModel: ObservableObject {
             .CombineLatest(currentSelection, $locked)
             .flatMapLatest(withUnretained: self, { strongSelf, input in
                 let (currentSelection, locked) = input
-                guard !locked else { return .just([]) }
+                guard !locked else { return AnyPublisher<[CompetitionResultsDataPoint], Never>.just([]) }
                 return Publishers
                     .CombineLatest(
                         strongSelf.standingsDataPoints(currentResult: currentSelection.0, previousResult: currentSelection.1),

@@ -62,7 +62,6 @@ final class VerifyEmailViewModel: ObservableObject {
                 strongSelf.authenticationManager
                     .checkEmailVerification()
                     .ignoreFailure()
-                    .eraseToAnyPublisher()
             }
             .sink()
             .store(in: &cancellables)

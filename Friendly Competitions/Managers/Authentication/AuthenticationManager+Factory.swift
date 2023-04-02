@@ -5,11 +5,12 @@ extension Container {
     var authenticationCache: Factory<AuthenticationCache> {
         Factory(self) { UserDefaults.standard }.scope(.shared)
     }
+
     var authenticationManager: Factory<AuthenticationManaging> {
         Factory(self) { AuthenticationManager() }.scope(.shared)
     }
 
-    var auth: Factory<Auth> {
+    var auth: Factory<AuthProviding> {
         Factory(self) {
             let environment = self.environmentManager().environment
             let auth = Auth.auth()
@@ -25,5 +26,9 @@ extension Container {
 
             return auth
         }.scope(.shared)
+    }
+
+    var signInWithAppleProvider: Factory<SignInWithAppleProviding> {
+        Factory(self) { SignInWithAppleProvider() }
     }
 }
