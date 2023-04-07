@@ -29,9 +29,9 @@ final class CollectionMock<Model: Decodable>: Collection {
             .eraseToAnyPublisher()
     }
 
-    var getDocumentsClosure: (() -> AnyPublisher<[Model], Error>)?
-    func getDocuments<T>(ofType type: T.Type) -> AnyPublisher<[T], Error> {
-        getDocumentsClosure!()
+    var getDocumentsClosure: ((Model.Type, DatabaseSource) -> AnyPublisher<[Model], Error>)?
+    func getDocuments<T>(ofType type: T.Type, source: DatabaseSource) -> AnyPublisher<[T], Error> where T : Decodable {
+        getDocumentsClosure!(T.self as! Model.Type, source)
             .map { $0 as! [T] }
             .eraseToAnyPublisher()
     }
@@ -55,9 +55,9 @@ final class DocumentMock<Model: Codable>: Document {
         updateDataClosure!(data)
     }
 
-    var getDocumentClosure: ((Model.Type) -> AnyPublisher<Model, Error>)?
-    func getDocument<T: Decodable>(as type: T.Type) -> AnyPublisher<T, Error> {
-        getDocumentClosure!(T.self as! Model.Type)
+    var getDocumentClosure: ((Model.Type, DatabaseSource) -> AnyPublisher<Model, Error>)?
+    func getDocument<T>(as type: T.Type, source: DatabaseSource) -> AnyPublisher<T, Error> where T : Decodable {
+        getDocumentClosure!(T.self as! Model.Type, source)
             .map { $0 as! T }
             .eraseToAnyPublisher()
     }

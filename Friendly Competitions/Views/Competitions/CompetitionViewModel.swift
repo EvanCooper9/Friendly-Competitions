@@ -117,7 +117,6 @@ final class CompetitionViewModel: ObservableObject {
             .flatMapLatest(withUnretained: self) { strongSelf in
                 strongSelf.competitionsManager
                     .participants(for: competition.id)
-                    .print("participants")
                     .catchErrorJustReturn([])
             }
 

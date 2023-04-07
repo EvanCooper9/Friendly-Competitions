@@ -24,7 +24,7 @@ extension FirebaseAppService: MessagingDelegate {
 
         Task {
             let tokens = try await database.document("users/\(userId)")
-                .getDocument(as: User.self) // TODO: fetch from cache sources
+                .getDocument(as: User.self, source: .cacheFirst)
                 .async()
                 .notificationTokens ?? []
 

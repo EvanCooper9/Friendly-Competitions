@@ -76,9 +76,13 @@ extension Query: Collection {
             .reportErrorToCrashlytics()
     }
 
-    func getDocuments<T: Decodable>(ofType type: T.Type) -> AnyPublisher<[T], Error> {
-        getDocuments()
+    func getDocuments<T>(ofType type: T.Type, source: DatabaseSource) -> AnyPublisher<[T], Error> where T : Decodable {
+        getDocuments(source: source.firestoreSource)
             .map { $0.documents.decoded(as: T.self) }
+            .flatMapLatest(withUnretained: self) { strongSelf, results in
+                guard results.isEmpty, source == .cacheFirst else { return .just(results) }
+                return strongSelf.getDocuments(ofType: T.self, source: .server)
+            }
             .reportErrorToCrashlytics()
     }
 }
@@ -129,12 +133,27 @@ extension DocumentReference: Document {
         ])
     }
 
-    func getDocument<T: Decodable>(as type: T.Type) -> AnyPublisher<T, Error> {
+    func getDocument<T>(as type: T.Type, source: DatabaseSource) -> AnyPublisher<T, Error> where T : Decodable {
         Future { [weak self] promise in
-            guard let strongSelf = self else { return }
-            strongSelf.getDocument(as: T.self, decoder: .custom) { result in
-                promise(result)
+            guard let self else { return }
+            self.getDocument(source: source.firestoreSource) { snapshot, error in
+                if let error {
+                    promise(.failure(error))
+                    return
+                } else if let snapshot {
+                    do {
+                        let data = try snapshot.data(as: T.self, decoder: .custom)
+                        promise(.success(data))
+                    } catch {
+                        promise(.failure(error))
+                    }
+                }
             }
+        }
+        .catch { [weak self] error -> AnyPublisher<T, Error> in
+            guard let self else { return .never() }
+            guard source == .cacheFirst else { return .error(error) }
+            return self.getDocument(as: T.self, source: .server)
         }
         .reportErrorToCrashlytics(userInfo: [
             "path": path,
@@ -158,6 +177,21 @@ extension WriteBatch: Batch {
     func setData<T: Encodable>(from value: T, forDocument document: Document) throws {
         guard let documentReference = document as? DocumentReference else { return }
         try setData(from: value, forDocument: documentReference, encoder: .custom)
+    }
+}
+
+// MARK: Database Source
+
+fileprivate extension DatabaseSource {
+    var firestoreSource: FirestoreSource {
+        switch self {
+        case .cache:
+            return .cache
+        case .cacheFirst:
+            return .cache
+        case .server:
+            return .server
+        }
     }
 }
 
