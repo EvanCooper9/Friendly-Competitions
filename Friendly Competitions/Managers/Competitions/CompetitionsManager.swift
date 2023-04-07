@@ -45,7 +45,23 @@ final class CompetitionsManager: CompetitionsManaging {
     let invitedCompetitions: AnyPublisher<[Competition], Never>
     let appOwnedCompetitions: AnyPublisher<[Competition], Never>
     var competitionsDateInterval: DateInterval { cache.competitionsDateInterval }
-    let hasPremiumResults: AnyPublisher<Bool, Never>
+
+    private(set) lazy var hasPremiumResults: AnyPublisher<Bool, Never> = {
+        competitions
+            .map { competitions -> (id: String, competitions: [Competition]) in
+                let id = competitions
+                    .map { competition in
+                        let start = DateFormatter.dateDashed.string(from: competition.start)
+                        let end = DateFormatter.dateDashed.string(from: competition.end)
+                        return "\(competition.id)-\(start)-\(end)"
+                    }
+                    .joined(separator: "_")
+                return (id: id, competitions: competitions)
+            }
+            .removeDuplicates { $0.id == $1.id }
+            .flatMapLatest(withUnretained: self) { $0.hasPremiumResults(for: $1.competitions, id: $1.id) }
+            .eraseToAnyPublisher()
+    }()
 
     // MARK: - Private Properties
 
@@ -70,7 +86,6 @@ final class CompetitionsManager: CompetitionsManaging {
         competitions = competitionsSubject.eraseToAnyPublisher()
         invitedCompetitions = invitedCompetitionsSubject.eraseToAnyPublisher()
         appOwnedCompetitions = appOwnedCompetitionsSubject.eraseToAnyPublisher()
-        hasPremiumResults = hasPremiumResultsSubject.eraseToAnyPublisher()
 
         competitions
             .filterMany(\.isActive)
@@ -83,22 +98,6 @@ final class CompetitionsManager: CompetitionsManaging {
             .filter { $0 }
             .mapToVoid()
             .sink(withUnretained: self) { $0.listenForCompetitions() }
-            .store(in: &cancellables)
-
-        competitions
-            .map { competitions -> (id: String, competitions: [Competition]) in
-                let id = competitions
-                    .map { competition in
-                        let start = DateFormatter.dateDashed.string(from: competition.start)
-                        let end = DateFormatter.dateDashed.string(from: competition.end)
-                        return "\(competition.id)-\(start)-\(end)"
-                    }
-                    .joined(separator: "_")
-                return (id: id, competitions: competitions)
-            }
-            .removeDuplicates { $0.id == $1.id }
-            .flatMapLatest(withUnretained: self) { $0.hasPremiumResults(for: $1.competitions, id: $1.id) }
-            .sink(withUnretained: self) { $0.hasPremiumResultsSubject.send($1) }
             .store(in: &cancellables)
     }
 
@@ -172,8 +171,7 @@ final class CompetitionsManager: CompetitionsManaging {
 
     func standings(for competitionID: Competition.ID, resultID: CompetitionResult.ID) -> AnyPublisher<[Competition.Standing], Error> {
         database.collection("competitions/\(competitionID)/results/\(resultID)/standings")
-            .getDocuments(ofType: Competition.Standing.self)
-//            .getDocumentsPreferCache() TODO: go back to cache
+            .getDocuments(ofType: Competition.Standing.self, source: .cacheFirst)
     }
 
     func participants(for competitionsID: Competition.ID) -> AnyPublisher<[User], Error> {
