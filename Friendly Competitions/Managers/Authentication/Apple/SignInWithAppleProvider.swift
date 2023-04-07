@@ -11,12 +11,16 @@ protocol SignInWithAppleProviding {
 
 final class SignInWithAppleProvider: NSObject, SignInWithAppleProviding {
 
+    // MARK: - Private Properties
+
     private var nonce: String?
 
     @Injected(\.auth) private var auth
 
     private var signedInSubject: PassthroughSubject<SignInWithAppleResult, Error>?
     private var cancellables = Cancellables()
+
+    // MARK: - Public Methods
 
     func signIn() -> AnyPublisher<SignInWithAppleResult, Error> {
         let subject = PassthroughSubject<SignInWithAppleResult, Error>()
