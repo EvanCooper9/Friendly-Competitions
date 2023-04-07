@@ -38,6 +38,13 @@ final class CollectionMock<Model: Decodable>: Collection {
 }
 
 final class DocumentMock<Model: Codable>: Document {
+
+    private var underlyingExists: AnyPublisher<Bool, Error>!
+    var exists: AnyPublisher<Bool, Error> {
+        get { underlyingExists }
+        set { underlyingExists = newValue }
+    }
+
     var setDataClosure: ((Model) -> AnyPublisher<Void, Error>)?
     func setData<T: Encodable>(from value: T) -> AnyPublisher<Void, Error> {
         setDataClosure!(value as! Model)

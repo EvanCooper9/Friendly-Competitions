@@ -31,14 +31,14 @@ final class ActivitySummaryManagerTests: FCTestCase {
         userManager = .init()
         workoutManager = .init()
         
-        Container.shared.activitySummaryCache.register { self.cache }
-        Container.shared.competitionsManager.register { self.competitionsManager }
-        Container.shared.healthKitManager.register { self.healthKitManager }
-        Container.shared.database.register { self.database }
-        Container.shared.permissionsManager.register { self.permissionsManager }
-        Container.shared.scheduler.register { self.scheduler.eraseToAnyScheduler() }
-        Container.shared.userManager.register { self.userManager }
-        Container.shared.workoutManager.register { self.workoutManager }
+        container.activitySummaryCache.register { self.cache }
+        container.competitionsManager.register { self.competitionsManager }
+        container.healthKitManager.register { self.healthKitManager }
+        container.database.register { self.database }
+        container.permissionsManager.register { self.permissionsManager }
+        container.scheduler.register { self.scheduler.eraseToAnyScheduler() }
+        container.userManager.register { self.userManager }
+        container.workoutManager.register { self.workoutManager }
         cancellables = .init()
         
         competitionsManager.competitions = .just([])

@@ -795,23 +795,23 @@ class DatabaseMock: Database {
 class EnvironmentCacheMock: EnvironmentCache {
 
 
-    var environment: FirestoreEnvironment?
+    var environment: FCEnvironment?
 
 
 }
 class EnvironmentManagingMock: EnvironmentManaging {
 
 
-    var firestoreEnvironment: FirestoreEnvironment {
-        get { return underlyingFirestoreEnvironment }
-        set(value) { underlyingFirestoreEnvironment = value }
+    var environment: FCEnvironment {
+        get { return underlyingEnvironment }
+        set(value) { underlyingEnvironment = value }
     }
-    var underlyingFirestoreEnvironment: FirestoreEnvironment!
-    var firestoreEnvironmentDidChange: AnyPublisher<Void, Never> {
-        get { return underlyingFirestoreEnvironmentDidChange }
-        set(value) { underlyingFirestoreEnvironmentDidChange = value }
+    var underlyingEnvironment: FCEnvironment!
+    var environmentPublisher: AnyPublisher<FCEnvironment, Never> {
+        get { return underlyingEnvironmentPublisher }
+        set(value) { underlyingEnvironmentPublisher = value }
     }
-    var underlyingFirestoreEnvironmentDidChange: AnyPublisher<Void, Never>!
+    var underlyingEnvironmentPublisher: AnyPublisher<FCEnvironment, Never>!
 
 
     //MARK: - set
@@ -820,11 +820,11 @@ class EnvironmentManagingMock: EnvironmentManaging {
     var setCalled: Bool {
         return setCallsCount > 0
     }
-    var setReceivedEnvironment: FirestoreEnvironment?
-    var setReceivedInvocations: [FirestoreEnvironment] = []
-    var setClosure: ((FirestoreEnvironment) -> Void)?
+    var setReceivedEnvironment: FCEnvironment?
+    var setReceivedInvocations: [FCEnvironment] = []
+    var setClosure: ((FCEnvironment) -> Void)?
 
-    func set(_ environment: FirestoreEnvironment) {
+    func set(_ environment: FCEnvironment) {
         setCallsCount += 1
         setReceivedEnvironment = environment
         setReceivedInvocations.append(environment)

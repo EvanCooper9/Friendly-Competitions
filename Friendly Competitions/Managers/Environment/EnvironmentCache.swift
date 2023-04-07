@@ -2,7 +2,7 @@ import Foundation
 
 // sourcery: AutoMockable
 protocol EnvironmentCache {
-    var environment: FirestoreEnvironment? { get set }
+    var environment: FCEnvironment? { get set }
 }
 
 extension UserDefaults: EnvironmentCache {
@@ -11,8 +11,8 @@ extension UserDefaults: EnvironmentCache {
         static var environmentKey: String { #function }
     }
 
-    var environment: FirestoreEnvironment? {
-        get { decode(FirestoreEnvironment.self, forKey: Constants.environmentKey) }
+    var environment: FCEnvironment? {
+        get { decode(FCEnvironment.self, forKey: Constants.environmentKey) }
         set { encode(newValue, forKey: Constants.environmentKey)}
     }
 }

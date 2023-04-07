@@ -6,7 +6,6 @@ struct HomeView: View {
     @StateObject private var viewModel = HomeViewModel()
 
     @State private var presentAbout = false
-    @State private var presentDeveloper = false
     @State private var presentPermissions = false
     @State private var presentNewCompetition = false
     @State private var presentSearchFriendsSheet = false
@@ -28,7 +27,7 @@ struct HomeView: View {
             .toolbar {
                 HStack {
                     if viewModel.showDeveloper {
-                        Button(systemImage: .hammer) { presentDeveloper.toggle() }
+                        DeveloperMenu()
                     }
                     Button(systemImage: .questionmarkCircle) { presentAbout.toggle() }
 
@@ -41,7 +40,6 @@ struct HomeView: View {
             .sheet(isPresented: $presentSearchFriendsSheet) { InviteFriendsView(action: .addFriend) }
             .sheet(isPresented: $presentNewCompetition, content: NewCompetitionView.init)
             .sheet(isPresented: $viewModel.requiresPermissions, content: PermissionsView.init)
-            .sheet(isPresented: $presentDeveloper, content: DeveloperView.init)
             .sheet(isPresented: $viewModel.showPaywall, content: PaywallView.init)
             .withLoadingOverlay(isLoading: viewModel.loadingDeepLink)
             .navigationDestination(for: NavigationDestination.self) { $0.view }

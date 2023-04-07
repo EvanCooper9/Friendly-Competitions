@@ -8,22 +8,18 @@ extension Container {
 
     var auth: Factory<Auth> {
         Factory(self) {
-            let environment = self.environmentManager().firestoreEnvironment
+            let environment = self.environmentManager().environment
             let auth = Auth.auth()
-            let settings = AuthSettings()
-            switch environment.type {
+
+            switch environment {
             case .prod:
                 break
-            case .debug:
-                switch environment.emulationType {
-                case .localhost:
-                    auth.useEmulator(withHost: "localhost", port: 9099)
-                case .custom:
-                    auth.useEmulator(withHost: (environment.emulationDestination ?? "localhost"), port: 9099)
-                }
+            case .debugLocal:
+                auth.useEmulator(withHost: "localhost", port: 9099)
+            case .debugRemote(let destination):
+                auth.useEmulator(withHost: destination, port: 9099)
             }
 
-            auth.settings = settings
             return auth
         }.scope(.shared)
     }

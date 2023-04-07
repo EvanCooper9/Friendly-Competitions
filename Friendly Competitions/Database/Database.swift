@@ -23,6 +23,9 @@ protocol Collection {
 // MARK: Document
 
 protocol Document {
+
+    var exists: AnyPublisher<Bool, Error> { get }
+
     func setData<T: Encodable>(from value: T) -> AnyPublisher<Void, Error>
     func updateData(from data: [String: Any]) -> AnyPublisher<Void, Error>
     func getDocument<T: Decodable>(as type: T.Type) -> AnyPublisher<T, Error>

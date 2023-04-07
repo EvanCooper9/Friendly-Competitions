@@ -25,12 +25,12 @@ final class CompetitionsManagerTests: FCTestCase {
         database = .init()
         userManager = .init()
         
-        Container.shared.api.register { self.api }
-        Container.shared.appState.register { self.appState }
-        Container.shared.analyticsManager.register { self.analyticsManager }
-        Container.shared.competitionCache.register { self.cache }
-        Container.shared.database.register { self.database }
-        Container.shared.userManager.register { self.userManager }
+        container.api.register { self.api }
+        container.appState.register { self.appState }
+        container.analyticsManager.register { self.analyticsManager }
+        container.competitionCache.register { self.cache }
+        container.database.register { self.database }
+        container.userManager.register { self.userManager }
         cancellables = .init()
         
         appState.didBecomeActive = .never()
