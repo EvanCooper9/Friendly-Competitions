@@ -8,7 +8,6 @@ import { deleteFriend } from "./Handlers/friends/deleteFriend";
 import { FriendRequestAction, handleFriendRequest } from "./Handlers/friends/handleFriendRequest";
 import { joinCompetition } from "./Handlers/competitions/joinCompetition";
 import { leaveCompetition } from "./Handlers/competitions/leaveCompetition";
-import { cleanupActivitySummaries } from "./Handlers/jobs/cleanupActivitySummaries";
 import { completeCompetitionsForDate, completeCompetitionsForYesterday } from "./Handlers/jobs/completeCompetitions";
 import { sendNewCompetitionInvites } from "./Handlers/competitions/sendNewCompetitionInvites";
 import { updateCompetitionRanks } from "./Handlers/competitions/updateCompetitionRanks";
@@ -16,7 +15,6 @@ import { updateUserCompetitionStandingsLEGACY, updateCompetitionStandingsLEGACY 
 import { updateActivitySummaryScores } from "./Handlers/jobs/updateActivitySummaryScores";
 import { updateWorkoutScores } from "./Handlers/jobs/updateWorkoutScores";
 import { handleCompetitionUpdate } from "./Handlers/jobs/updateCompetitionStandings";
-import { cleanupWorkouts } from "./Handlers/jobs/cleanupWorkouts";
 
 admin.initializeApp();
 
@@ -143,12 +141,12 @@ exports.onCompetitionUpdate = functions.firestore
 
 // Jobs
 
-exports.cleanScoringData = functions.pubsub.schedule("every day 02:00")
-    .timeZone("America/Toronto")
-    .onRun(async () => {
-        await cleanupActivitySummaries();
-        await cleanupWorkouts();
-    });
+// exports.cleanScoringData = functions.pubsub.schedule("every day 02:00")
+//     .timeZone("America/Toronto")
+//     .onRun(async () => {
+//         await cleanupActivitySummaries();
+//         await cleanupWorkouts();
+//     });
 
 exports.completeCompetitions = functions.pubsub.schedule("every day 12:00")
     .timeZone("America/Toronto")
