@@ -143,12 +143,12 @@ exports.onCompetitionUpdate = functions.firestore
 
 // Jobs
 
-exports.cleanScoringData = functions.pubsub.schedule("every day 02:00")
-    .timeZone("America/Toronto")
-    .onRun(async () => {
-        await cleanupActivitySummaries();
-        await cleanupWorkouts();
-    });
+// exports.cleanScoringData = functions.pubsub.schedule("every day 02:00")
+//     .timeZone("America/Toronto")
+//     .onRun(async () => {
+//         await cleanupActivitySummaries();
+//         await cleanupWorkouts();
+//     });
 
 exports.completeCompetitions = functions.pubsub.schedule("every day 12:00")
     .timeZone("America/Toronto")
