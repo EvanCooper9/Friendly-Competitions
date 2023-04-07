@@ -14,7 +14,7 @@ async function calculateCompetitionScores(): Promise<void> {
     
     const firestore = getFirestore();
     const now = moment();
-    const updateThresholdSeconds = JSON.parse(updateThresholdSecondsValue.value);
+    const updateThresholdSeconds: number = JSON.parse(updateThresholdSecondsValue.value);
     const updateCutoff = now.add(-updateThresholdSeconds, "seconds").toDate();
 
     const competitions = await firestore.collection("competitions")
@@ -26,13 +26,11 @@ async function calculateCompetitionScores(): Promise<void> {
         if (competition.oldestStandingUpdate != null && competition.oldestStandingUpdate > updateCutoff) return;
         if (competition.oldestStandingUpdate == null) return;
 
-        console.log(`updating standing ranks for competition: ${competition.name} - ${competition.id}`);
-
+        console.log(`updating standing points for competition: ${competition.name} - ${competition.id}`);
+        const batch = firestore.batch();
         const standings = await firestore.collection(`competitions/${competition.id}/standings`)
             .get()
             .then(query => query.docs.map(doc => new Standing(doc)));
-
-        const batch = firestore.batch();
         await Promise.allSettled(standings.map(async standing => {
             const pointsBreakdown = standing.pointsBreakdown || {};
             let points = 0;
@@ -42,7 +40,9 @@ async function calculateCompetitionScores(): Promise<void> {
         }));
         await batch.commit();
 
+        console.log(`updating standing ranks for competition: ${competition.name} - ${competition.id}`);
         await competition.updateStandingRanks();
+
         const obj = { oldestStandingUpdate: null };
         await firestore.doc(`competitions/${competition.id}`).update(obj);
     }));

@@ -3,15 +3,8 @@ import CombineExt
 import ECKit
 import Factory
 import Foundation
-import SwiftUI
 
 final class CompetitionViewModel: ObservableObject {
-
-    private enum ActionRequiringConfirmation {
-        case delete
-        case edit
-        case leave
-    }
 
     // MARK: - Public Properties
 
