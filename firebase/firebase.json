@@ -12,6 +12,10 @@
       "port": 5001,
       "host": "0.0.0.0"
     },
+    "pubsub": {
+      "port": 8085,
+      "host": "0.0.0.0"
+    },
     "ui": {
       "enabled": true
     },
@@ -28,5 +32,8 @@
     ],
     "source": "functions",
     "runtime": "nodejs16"
+  },
+  "remoteconfig": {
+    "template": "remoteconfig.template.json"
   }
 }

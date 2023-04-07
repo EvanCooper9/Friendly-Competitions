@@ -241,6 +241,10 @@
 		EDD8950029634043009636E6 /* FirestoreEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD894FF29634043009636E6 /* FirestoreEnvironment.swift */; };
 		EDDB923D2965D2B0006AEE72 /* CompetitionHistoryDataPoint+View.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDDB923C2965D2B0006AEE72 /* CompetitionHistoryDataPoint+View.swift */; };
 		EDDF77D828BA82E000BB8B97 /* HealthKitPermissionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDDF77D728BA82E000BB8B97 /* HealthKitPermissionType.swift */; };
+		EDF55EE329E09878003FA20C /* FirebaseRemoteConfigSwift in Frameworks */ = {isa = PBXBuildFile; productRef = EDF55EE229E09878003FA20C /* FirebaseRemoteConfigSwift */; };
+		EDF55EE629E098B1003FA20C /* FeatureFlagManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDF55EE529E098B1003FA20C /* FeatureFlagManager.swift */; };
+		EDF55EE829E09A6C003FA20C /* FeatureFlagManager+Factory.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDF55EE729E09A6C003FA20C /* FeatureFlagManager+Factory.swift */; };
+		EDF55EEB29E0AADE003FA20C /* FeatureFlagAppService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDF55EEA29E0AADE003FA20C /* FeatureFlagAppService.swift */; };
 		EDFA2CD829D6796500768D0E /* EnvironmentManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDFA2CD729D6796500768D0E /* EnvironmentManagerTests.swift */; };
 /* End PBXBuildFile section */
 
@@ -472,6 +476,9 @@
 		EDD894FF29634043009636E6 /* FirestoreEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreEnvironment.swift; sourceTree = "<group>"; };
 		EDDB923C2965D2B0006AEE72 /* CompetitionHistoryDataPoint+View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CompetitionHistoryDataPoint+View.swift"; sourceTree = "<group>"; };
 		EDDF77D728BA82E000BB8B97 /* HealthKitPermissionType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitPermissionType.swift; sourceTree = "<group>"; };
+		EDF55EE529E098B1003FA20C /* FeatureFlagManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureFlagManager.swift; sourceTree = "<group>"; };
+		EDF55EE729E09A6C003FA20C /* FeatureFlagManager+Factory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FeatureFlagManager+Factory.swift"; sourceTree = "<group>"; };
+		EDF55EEA29E0AADE003FA20C /* FeatureFlagAppService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureFlagAppService.swift; sourceTree = "<group>"; };
 		EDFA2CD729D6796500768D0E /* EnvironmentManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentManagerTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -512,6 +519,7 @@
 				ED07573729CA65FC00141AD4 /* FirebaseStorageCombine-Community in Frameworks */,
 				ED1B5CF1296B574B00122D7E /* RevenueCat in Frameworks */,
 				ED07572529CA65FC00141AD4 /* FirebaseAuthCombine-Community in Frameworks */,
+				EDF55EE329E09878003FA20C /* FirebaseRemoteConfigSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -834,6 +842,7 @@
 				ED7881A92850F6B400C7F6CB /* Authentication */,
 				ED879C2A29A40D660007DB91 /* Competitions */,
 				EDD894FE29634038009636E6 /* Environment */,
+				EDF55EE429E0989C003FA20C /* Feature Flags */,
 				ED879C4629A4118C0007DB91 /* Friends */,
 				ED6CB45A28BA829000436BBD /* HealthKit */,
 				ED879C4729A411930007DB91 /* Notifications */,
@@ -1093,6 +1102,7 @@
 				ED4F721729C92FCB007C5864 /* AppService.swift */,
 				ED4F721929C93025007C5864 /* AppServices+Factory.swift */,
 				ED1F8DEC29E3932F0009B986 /* Developer */,
+				EDF55EE929E0AAD6003FA20C /* Feature Flag */,
 				ED4F721B29C93044007C5864 /* Firebase */,
 				ED4F722029C93101007C5864 /* Revenue Cat */,
 			);
@@ -1502,6 +1512,23 @@
 			path = Firebase;
 			sourceTree = "<group>";
 		};
+		EDF55EE429E0989C003FA20C /* Feature Flags */ = {
+			isa = PBXGroup;
+			children = (
+				EDF55EE529E098B1003FA20C /* FeatureFlagManager.swift */,
+				EDF55EE729E09A6C003FA20C /* FeatureFlagManager+Factory.swift */,
+			);
+			path = "Feature Flags";
+			sourceTree = "<group>";
+		};
+		EDF55EE929E0AAD6003FA20C /* Feature Flag */ = {
+			isa = PBXGroup;
+			children = (
+				EDF55EEA29E0AADE003FA20C /* FeatureFlagAppService.swift */,
+			);
+			path = "Feature Flag";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1564,6 +1591,7 @@
 				ED07573229CA65FC00141AD4 /* FirebaseMessaging */,
 				ED07573429CA65FC00141AD4 /* FirebaseStorage */,
 				ED07573629CA65FC00141AD4 /* FirebaseStorageCombine-Community */,
+				EDF55EE229E09878003FA20C /* FirebaseRemoteConfigSwift */,
 			);
 			productName = CompyBoi;
 			productReference = C1691DC326D55FCF006FFA30 /* Friendly Competitions.app */;
@@ -1848,6 +1876,7 @@
 				ED901B4F280249B000FE619E /* CompetitionViewModel.swift in Sources */,
 				ED879C6229A416B40007DB91 /* AppState+Factory.swift in Sources */,
 				ED879C5829A4124C0007DB91 /* UserManager+Factory.swift in Sources */,
+				EDF55EEB29E0AADE003FA20C /* FeatureFlagAppService.swift in Sources */,
 				ED879C5629A412350007DB91 /* StorageManager+Factory.swift in Sources */,
 				ED1B85C729C904CC008DB1F6 /* About.swift in Sources */,
 				ED32B87A29D694CF005C917B /* AuthenticationCache.swift in Sources */,
@@ -1878,6 +1907,7 @@
 				ED1B85C329C904CC008DB1F6 /* HomeView.swift in Sources */,
 				ED1B85CD29C90D1D008DB1F6 /* EnvironmentCache.swift in Sources */,
 				C1F9D7CD26FF871A00B25651 /* NotificationsManaging.swift in Sources */,
+				EDF55EE829E09A6C003FA20C /* FeatureFlagManager+Factory.swift in Sources */,
 				EDC7849D28035A67001FE005 /* HKWorkoutActivityType+Extensions.swift in Sources */,
 				ED1B85A929C9049E008DB1F6 /* PermissionsViewModel.swift in Sources */,
 				ED879C4329A411550007DB91 /* HealthKitManager+Factory.swift in Sources */,
@@ -1913,6 +1943,7 @@
 				ED130764295FFA5C00E0AC87 /* CompetitionResultsDataPoint.swift in Sources */,
 				ED58C98929AA89CC00393468 /* HealthKitManagerCache.swift in Sources */,
 				C1930E4527C55EF500DB45C1 /* AppState.swift in Sources */,
+				EDF55EE629E098B1003FA20C /* FeatureFlagManager.swift in Sources */,
 				ED879C3B29A410D70007DB91 /* API+Factory.swift in Sources */,
 				EDAF6C47285277FF002BC0DD /* Nonce.swift in Sources */,
 				ED879C3F29A4112D0007DB91 /* AnalyticsManager+Factory.swift in Sources */,
@@ -2469,6 +2500,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = ED74033A28FF7297005BD155 /* XCRemoteSwiftPackageReference "ECKit" */;
 			productName = ECKit;
+		};
+		EDF55EE229E09878003FA20C /* FirebaseRemoteConfigSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ED07571D29CA65FC00141AD4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseRemoteConfigSwift;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

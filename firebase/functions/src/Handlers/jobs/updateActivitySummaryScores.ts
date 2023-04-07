@@ -32,27 +32,26 @@ async function updateActivitySummaryScores(userID: string, before: DocumentSnaps
     
             const pointsBreakdown = standing.pointsBreakdown ?? {};
             if (Object.keys(pointsBreakdown).length == 0) {
+                // no score history, go back and calculate all of them
                 const activitySummaries = await competition.activitySummaries(userID);
                 activitySummaries.forEach(activitySummary => {
                     const points = activitySummary.pointsForScoringModel(competition.scoringModel);
                     pointsBreakdown[activitySummary.id] = points;
                 });
             } else {
-                if (after.exists) { // created or updated
+                if (after.exists) { // activity summary created or updated
                     const activitySummary = new ActivitySummary(after);
                     pointsBreakdown[activitySummary.id] = activitySummary.pointsForScoringModel(competition.scoringModel);
-                } else { // deleted
+                } else { // activity summary deleted
                     pointsBreakdown[before.id] = 0;
                 }
             }
             
             standing.pointsBreakdown = pointsBreakdown;
-            standing.points = 0;
-            Object.keys(pointsBreakdown).forEach(key => standing.points += pointsBreakdown[key]);
             transaction.set(standingRef, prepareForFirestore(standing));
         });
         
-        await competition.updateStandingRanks();
+        await competition.updateOldestStandingUpdate();
     }));
 }
 

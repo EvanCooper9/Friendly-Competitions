@@ -36,8 +36,6 @@ final class DeveloperMenuViewModel: ObservableObject {
 
     @Injected(\.environmentManager) private var environmentManager
 
-    private let saveSubject = PassthroughSubject<Void, Never>()
-
     private var cancellables = Cancellables()
 
     // MARK: - Lifecycle
@@ -74,10 +72,6 @@ final class DeveloperMenuViewModel: ObservableObject {
     }
 
     // MARK: - Public Methods
-
-    func saveTapped() {
-        saveSubject.send()
-    }
 
     func text(for environment: UnderlyingEnvironment) -> String {
         var text = environment.rawValue

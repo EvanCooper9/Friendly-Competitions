@@ -15,6 +15,7 @@ import { updateUserCompetitionStandingsLEGACY, updateCompetitionStandingsLEGACY 
 import { updateActivitySummaryScores } from "./Handlers/jobs/updateActivitySummaryScores";
 import { updateWorkoutScores } from "./Handlers/jobs/updateWorkoutScores";
 import { handleCompetitionUpdate } from "./Handlers/jobs/updateCompetitionStandings";
+import { calculateCompetitionScores } from "./Handlers/jobs/calculateCompetitionScores";
 
 admin.initializeApp();
 
@@ -151,6 +152,10 @@ exports.onCompetitionUpdate = functions.firestore
 exports.completeCompetitions = functions.pubsub.schedule("every day 12:00")
     .timeZone("America/Toronto")
     .onRun(async () => await completeCompetitionsForYesterday());
+
+exports.calculateCompetitionScores = functions.pubsub.schedule("every 15 minutes")
+    .timeZone("America/Toronto")
+    .onRun(async () => await calculateCompetitionScores());
 
 // Developer
 

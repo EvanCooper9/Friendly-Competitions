@@ -158,6 +158,12 @@ internal enum L10n {
       }
     }
     internal enum Standings {
+      /// Standings may be delayed.
+      internal static let delay = L10n.tr("Localizable", "Competition.Standings.delay", fallback: "Standings may be delayed.")
+      /// Standings may be delayed up to %@.
+      internal static func delayedBy(_ p1: Any) -> String {
+        return L10n.tr("Localizable", "Competition.Standings.delayedBy", String(describing: p1), fallback: "Standings may be delayed up to %@.")
+      }
       /// Nothing here, yet.
       internal static let empty = L10n.tr("Localizable", "Competition.Standings.empty", fallback: "Nothing here, yet.")
       /// Show more

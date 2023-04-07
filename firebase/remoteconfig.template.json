@@ -1,0 +1,12 @@
+{
+    "parameters": {
+      "standings_rank_update_interval": {
+        "defaultValue": {
+          "value": "3600"
+        },
+        "description": "The minimum amount of time (in seconds) between standings rank updates",
+        "valueType": "STRING"
+      }
+    }
+}
+  

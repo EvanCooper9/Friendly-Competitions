@@ -3,6 +3,7 @@ import CombineExt
 import ECKit
 import Factory
 import Foundation
+import SwiftUI
 
 final class CompetitionViewModel: ObservableObject {
 
@@ -28,6 +29,16 @@ final class CompetitionViewModel: ObservableObject {
     @Published private(set) var loading = false
     @Published private(set) var loadingStandings = false
     @Published private(set) var showShowMoreButton = false
+
+    lazy var delayText: String? = {
+        guard let delay = featureFlagManager.value(for: .standingsRankUpdateInterval) else { return nil }
+        let formatter = DateComponentsFormatter()
+        formatter.unitsStyle = .spellOut
+        if delay > 0, let delayText = formatter.string(from: TimeInterval(delay)) {
+            return L10n.Competition.Standings.delayedBy(delayText)
+        }
+        return L10n.Competition.Standings.delay
+    }()
 
     var details: [(value: String, valueType: ImmutableListItemView.ValueType)] {
         [
@@ -61,6 +72,7 @@ final class CompetitionViewModel: ObservableObject {
 
     @Injected(\.api) private var api
     @Injected(\.competitionsManager) private var competitionsManager
+    @Injected(\.featureFlagManager) private var featureFlagManager
     @Injected(\.scheduler) private var scheduler
     @Injected(\.userManager) private var userManager
 

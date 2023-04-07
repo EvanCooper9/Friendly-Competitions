@@ -5,6 +5,7 @@ extension Container {
         self {
             .build {
                 FirebaseAppService()
+                FeatureFlagAppService()
                 RevenueCatAppService()
                 DeveloperAppService()
             }

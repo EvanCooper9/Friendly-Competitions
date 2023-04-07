@@ -1039,6 +1039,47 @@ class EnvironmentManagingMock: EnvironmentManaging {
     }
 
 }
+class FeatureFlagManagingMock: FeatureFlagManaging {
+
+
+
+
+    //MARK: - activate
+
+    var activateCallsCount = 0
+    var activateCalled: Bool {
+        return activateCallsCount > 0
+    }
+    var activateClosure: (() -> Void)?
+
+    func activate() {
+        activateCallsCount += 1
+        activateClosure?()
+    }
+
+    //MARK: - value
+
+    var valueForCallsCount = 0
+    var valueForCalled: Bool {
+        return valueForCallsCount > 0
+    }
+    var valueForReceivedFlag: IntFeatureFlag?
+    var valueForReceivedInvocations: [IntFeatureFlag] = []
+    var valueForReturnValue: Int?
+    var valueForClosure: ((IntFeatureFlag) -> Int?)?
+
+    func value(for flag: IntFeatureFlag) -> Int? {
+        valueForCallsCount += 1
+        valueForReceivedFlag = flag
+        valueForReceivedInvocations.append(flag)
+        if let valueForClosure = valueForClosure {
+            return valueForClosure(flag)
+        } else {
+            return valueForReturnValue
+        }
+    }
+
+}
 class FriendsManagingMock: FriendsManaging {
 
 

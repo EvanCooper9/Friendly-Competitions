@@ -46,12 +46,10 @@ async function updateWorkoutScores(userID: string, before: DocumentSnapshot, aft
             }
 
             standing.pointsBreakdown = pointsBreakdown;
-            standing.points = 0;
-            Object.keys(pointsBreakdown).forEach(key => standing.points += pointsBreakdown[key]);
             await transaction.set(standingRef, prepareForFirestore(standing));
         });
 
-        await competition.updateStandingRanks();
+        await competition.updateOldestStandingUpdate();
     }));
 }
 

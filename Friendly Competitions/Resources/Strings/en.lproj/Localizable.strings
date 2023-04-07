@@ -80,6 +80,8 @@
 "Competition.Standings.title" = "Standings";
 "Competition.Standings.showMore" = "Show more";
 "Competition.Standings.empty" = "Nothing here, yet.";
+"Competition.Standings.delayedBy" = "Standings may be delayed up to %@.";
+"Competition.Standings.delay" = "Standings may be delayed.";
 "Competition.Results.results" = "Results";
 
 "Competition.Action.AcceptInvite.buttonTitle" = "Accept invite";

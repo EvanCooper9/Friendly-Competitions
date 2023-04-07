@@ -24,6 +24,7 @@ class Competition {
     pendingParticipants: string[];
     repeats: boolean;
     scoringModel: ScoringModel;
+    oldestStandingUpdate?: Date;
 
     private path: string;
     private standingsPath: string;
@@ -53,6 +54,11 @@ class Competition {
         this.start = new Date(startDateString);
         this.end = new Date(endDateString);
 
+        const oldestStandingUpdateString: string | null = document.get("oldestStandingUpdate");
+        if (oldestStandingUpdateString != null) {
+            this.oldestStandingUpdate = new Date(oldestStandingUpdateString);
+        }
+
         this.path = `competitions/${this.id}`;
         this.standingsPath = `${this.path}/standings`;
         this.resultsPath = `${this.path}/results`;
@@ -76,7 +82,7 @@ class Competition {
     }
 
     /**
-     * Updates the points and standings
+     * Updates the ranks for each standing. Assumes points of each standing has been updated.
      */
     async updateStandingRanks(): Promise<void> {
         const firestore = getFirestore();
@@ -234,6 +240,17 @@ class Competition {
      */
     standingsPathForUser(userID: string): string {
         return `${this.standingsPath}/${userID}`;
+    }
+
+    /**
+     * Sets oldestStandingUpdate to the current date if it doesn't already exist.
+     */
+    async updateOldestStandingUpdate(): Promise<void> {
+        const firestore = getFirestore();
+        if (this.oldestStandingUpdate == null) {
+            const obj = { oldestStandingUpdate: new Date().toISOString() }
+            await firestore.doc(`competitions/${this.id}`).update(obj);
+        }
     }
 }
 

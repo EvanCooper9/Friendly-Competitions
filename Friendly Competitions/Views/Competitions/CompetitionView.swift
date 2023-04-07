@@ -77,6 +77,8 @@ struct CompetitionView: View {
         } footer: {
             if viewModel.standings.isEmpty && !viewModel.loadingStandings {
                 Text(L10n.Competition.Standings.empty)
+            } else if let delayText = viewModel.delayText {
+                Text(delayText)
             }
         }
     }
