@@ -67,7 +67,7 @@ final class CompetitionsManagerTests: FCTestCase {
         }
         collection.whereFieldArrayContainsClosure = { collection }
         collection.whereFieldIsEqualToClosure = { collection }
-        collection.getDocumentsClosure = { .never() }
+        collection.getDocumentsClosure = { _, _ in .never() }
         
         database.collectionReturnValue = collection
         
@@ -419,15 +419,25 @@ final class CompetitionsManagerTests: FCTestCase {
             CurrentValueSubject<[Competition], Error>(expectedCompetitions[i])
         }
         
-        let collection = CollectionMock<Competition>()
-        collection.publisherClosure = {
-            return competitionSourcesSubjects[collection.publisherCallCount - 1].eraseToAnyPublisher()
+        let competitionsCollection = CollectionMock<Competition>()
+        competitionsCollection.publisherClosure = {
+            return competitionSourcesSubjects[competitionsCollection.publisherCallCount - 1].eraseToAnyPublisher()
         }
-        collection.whereFieldArrayContainsClosure = { collection }
-        collection.whereFieldIsEqualToClosure = { collection }
-        collection.getDocumentsClosure = { .never() }
-        
-        database.collectionReturnValue = collection
+        competitionsCollection.whereFieldArrayContainsClosure = { competitionsCollection }
+        competitionsCollection.whereFieldIsEqualToClosure = { competitionsCollection }
+        competitionsCollection.getDocumentsClosure = { _, _ in .never() }
+
+        let resultsCollection = CollectionMock<CompetitionResult>()
+        resultsCollection.whereFieldArrayContainsClosure = { resultsCollection }
+        resultsCollection.getDocumentsClosure = { _, _ in .never() }
+
+        database.collectionClosure = { path in
+            if path.hasSuffix("results") {
+                return resultsCollection
+            } else {
+                return competitionsCollection
+            }
+        }
         
         userManager.user = .evan
     }
