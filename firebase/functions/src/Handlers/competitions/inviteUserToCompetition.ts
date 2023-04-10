@@ -2,6 +2,7 @@ import { Competition } from "../../Models/Competition";
 import { User } from "../../Models/User";
 import { sendNotificationsToUser } from "../notifications/notifications";
 import { getFirestore } from "../../Utilities/firstore";
+import { Constants } from "../../Utilities/Constants";
 
 /**
  * Invites a user to a competition and sends a notification
@@ -25,7 +26,7 @@ async function inviteUserToCompetition(competitionID: string, callerID: string, 
         requestee,
         "Friendly Competitions",
         `${caller.name} invited you to a competition`,
-        `https://friendly-competitions.app/competition/${competition.id}`
+        `${Constants.NOTIFICATION_URL}/competition/${competition.id}`
     );
 }
 
