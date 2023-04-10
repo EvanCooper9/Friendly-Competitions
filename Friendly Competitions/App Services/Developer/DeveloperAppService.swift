@@ -4,7 +4,7 @@ import UIKit
 
 final class DeveloperAppService: AppService {
 
-    @LazyInjected(\.api) private var api
+    @Injected(\.api) private var api
 
     private var cancellables = Cancellables()
 
