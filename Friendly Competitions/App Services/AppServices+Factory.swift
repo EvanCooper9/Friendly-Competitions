@@ -3,10 +3,11 @@ import Factory
 extension Container {
     var appServices: Factory<[AppService]> {
         Factory(self) {
-            [
-                FirebaseAppService(),
+            .build {
+                FirebaseAppService()
                 RevenueCatAppService()
-            ]
+                DeveloperAppService()
+            }
         }
         .scope(.singleton)
     }

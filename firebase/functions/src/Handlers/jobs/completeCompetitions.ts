@@ -51,6 +51,10 @@ async function completeCompetitionsForDate(date: string): Promise<void> {
  */
 async function completeCompetition(competition: Competition): Promise<void> {
     const firestore = getFirestore();
+
+    await competition.recordResults();
+    await competition.kickInactiveUsers();
+
     await Promise.allSettled(competition.participants.map(async userID => {
         const user = await firestore.doc(`users/${userID}`).get().then(doc => new User(doc));
         const standing = await firestore.doc(`competitions/${competition.id}/standings/${userID}`).get().then(doc => new Standing(doc));
@@ -65,8 +69,6 @@ async function completeCompetition(competition: Competition): Promise<void> {
         await user.updateStatisticsWithNewRank(rank);
     }));
 
-    await competition.recordResults();
-    await competition.kickInactiveUsers();
     await competition.resetStandings();
     await competition.updateRepeatingCompetition();
 }

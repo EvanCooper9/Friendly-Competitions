@@ -2,7 +2,7 @@ import RevenueCat
 import UIKit
 
 final class RevenueCatAppService: AppService {
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
+    func didFinishLaunching() {
         let apiKey: String
         #if DEBUG
         apiKey = "appl_REFBiyXbqcpKtUtawSUJezooOfQ"
@@ -11,6 +11,5 @@ final class RevenueCatAppService: AppService {
         #endif
         Purchases.logLevel = .warn
         Purchases.configure(with: .init(withAPIKey: apiKey).with(usesStoreKit2IfAvailable: true))
-        return true
     }
 }

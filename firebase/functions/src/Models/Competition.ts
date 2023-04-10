@@ -140,6 +140,8 @@ class Competition {
             }
         });
 
+        this.participants = activeUserIds;
+
         if (inactiveUserIds.length == 0) return;
 
         const obj = { participants: activeUserIds };
@@ -155,7 +157,7 @@ class Competition {
             await sendNotificationsToUser(
                 user,
                 `You have been kicked from ${this.name}`,
-                "Tap to rejoin",
+                "No points were scored. Tap to rejoin.",
                 `${Constants.NOTIFICATION_URL}/competition/${this.id}`
             );
         }));
