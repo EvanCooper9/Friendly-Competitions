@@ -307,23 +307,23 @@ class AuthProvidingMock: AuthProviding {
 
     //MARK: - sendPasswordReset
 
-    var sendPasswordResetWithEmailCallsCount = 0
-    var sendPasswordResetWithEmailCalled: Bool {
-        return sendPasswordResetWithEmailCallsCount > 0
+    var sendPasswordResetToCallsCount = 0
+    var sendPasswordResetToCalled: Bool {
+        return sendPasswordResetToCallsCount > 0
     }
-    var sendPasswordResetWithEmailReceivedEmail: String?
-    var sendPasswordResetWithEmailReceivedInvocations: [String] = []
-    var sendPasswordResetWithEmailReturnValue: AnyPublisher<Void, Error>!
-    var sendPasswordResetWithEmailClosure: ((String) -> AnyPublisher<Void, Error>)?
+    var sendPasswordResetToReceivedEmail: String?
+    var sendPasswordResetToReceivedInvocations: [String] = []
+    var sendPasswordResetToReturnValue: AnyPublisher<Void, Error>!
+    var sendPasswordResetToClosure: ((String) -> AnyPublisher<Void, Error>)?
 
-    func sendPasswordReset(withEmail email: String) -> AnyPublisher<Void, Error> {
-        sendPasswordResetWithEmailCallsCount += 1
-        sendPasswordResetWithEmailReceivedEmail = email
-        sendPasswordResetWithEmailReceivedInvocations.append(email)
-        if let sendPasswordResetWithEmailClosure = sendPasswordResetWithEmailClosure {
-            return sendPasswordResetWithEmailClosure(email)
+    func sendPasswordReset(to email: String) -> AnyPublisher<Void, Error> {
+        sendPasswordResetToCallsCount += 1
+        sendPasswordResetToReceivedEmail = email
+        sendPasswordResetToReceivedInvocations.append(email)
+        if let sendPasswordResetToClosure = sendPasswordResetToClosure {
+            return sendPasswordResetToClosure(email)
         } else {
-            return sendPasswordResetWithEmailReturnValue
+            return sendPasswordResetToReturnValue
         }
     }
 

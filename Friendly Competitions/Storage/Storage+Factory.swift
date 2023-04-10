@@ -3,7 +3,7 @@ import FirebaseStorage
 
 extension Container {
     var storage: Factory<Storage> {
-        Factory(self) {
+        self {
             let environment = self.environmentManager().environment
             let storage = FirebaseStorage.Storage.storage()
 

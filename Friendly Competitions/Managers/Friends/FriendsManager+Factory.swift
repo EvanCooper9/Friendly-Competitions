@@ -2,6 +2,6 @@ import Factory
 
 extension Container {
     var friendsManager: Factory<FriendsManaging> {
-        Factory(self) { FriendsManager() }.scope(.shared)
+        self { FriendsManager() }.scope(.shared)
     }
 }

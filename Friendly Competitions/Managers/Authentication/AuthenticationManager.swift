@@ -1,11 +1,6 @@
-import AuthenticationServices
 import Combine
-import CryptoKit
 import ECKit
 import Factory
-import Firebase
-import FirebaseAuthCombineSwift
-import SwiftUI
 
 // sourcery: AutoMockable
 protocol AuthenticationManaging {
@@ -22,7 +17,7 @@ protocol AuthenticationManaging {
     func sendPasswordReset(to email: String) -> AnyPublisher<Void, Error>
 }
 
-final class AuthenticationManager: NSObject, AuthenticationManaging {
+final class AuthenticationManager: AuthenticationManaging {
 
     // MARK: - Public Properties
 
@@ -48,16 +43,14 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
 
     // MARK: - Lifecycle
 
-    override init() {
-        super.init()
-
+    init() {
         emailVerifiedSubject = .init(auth.user?.isEmailVerified ?? false)
-        loggedInSubject = .init(authenticationCache.user != nil)
-
         if let user = authenticationCache.user {
             registerUserManager(with: user)
+            loggedInSubject = .init(true)
+        } else {
+            loggedInSubject = .init(false)
         }
-
         listenForAuth()
     }
 
@@ -78,7 +71,6 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
                             .mapToVoid()
                             .eraseToAnyPublisher()
                     }
-                    .eraseToAnyPublisher()
                 }
                 .mapToVoid()
                 .eraseToAnyPublisher()
@@ -100,9 +92,9 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
     }
 
     func checkEmailVerification() -> AnyPublisher<Void, Error> {
-        guard let firebaseUser = auth.user else { return .just(()) }
-        return .fromAsync { try await firebaseUser.reload() }
-            .handleEvents(withUnretained: self, receiveOutput: { $0.emailVerifiedSubject.send(firebaseUser.isEmailVerified) })
+        guard let authUser = auth.user else { return .just(()) }
+        return .fromAsync { try await authUser.reload() }
+            .handleEvents(withUnretained: self, receiveOutput: { $0.emailVerifiedSubject.send(authUser.isEmailVerified) })
             .eraseToAnyPublisher()
     }
 
@@ -113,7 +105,7 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
 
     func sendPasswordReset(to email: String) -> AnyPublisher<Void, Error> {
         auth
-            .sendPasswordReset(withEmail: email)
+            .sendPasswordReset(to: email)
             .eraseToAnyPublisher()
     }
 
@@ -177,7 +169,7 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
     /// - Note: The published result should be passed into`createUser(from:)`
     /// - Parameters:
     ///   - displayName: the display name to set
-    ///   - firebaseUser: the auth user
+    ///   - authUser: the auth user
     /// - Returns: A publisher that emits the updated auth user
     private func update(displayName: String, for authUser: AuthUser) -> AnyPublisher<AuthUser, Error> {
         guard !displayName.isEmpty, displayName != authUser.displayName else { return .just(authUser) }
@@ -185,7 +177,7 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
     }
 
     /// Creates a user in the database based on the auth user
-    /// - Parameter firebaseUser: the auth user
+    /// - Parameter authUser: the auth user
     /// - Returns: A publisher that emits the user that was created in the database
     private func createUser(from authUser: AuthUser) -> AnyPublisher<User, Error> {
         guard let email = authUser.email else {

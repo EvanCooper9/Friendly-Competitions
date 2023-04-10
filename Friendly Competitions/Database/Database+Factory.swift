@@ -3,7 +3,7 @@ import FirebaseFirestore
 
 extension Container {
     var database: Factory<Database> {
-        Factory(self) {
+        self {
             let environment = self.environmentManager().environment
             let firestore = Firestore.firestore()
             let settings = firestore.settings

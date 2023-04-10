@@ -3,7 +3,7 @@ import FirebaseFunctions
 
 extension Container {
     var api: Factory<API> {
-        Factory(self) {
+        self {
             let environment = self.environmentManager().environment
             let functions = Functions.functions()
 

@@ -43,9 +43,9 @@ extension Auth: AuthProviding {
             .eraseToAnyPublisher()
     }
 
-    func sendPasswordReset(withEmail email: String) -> AnyPublisher<Void, Error> {
-        let future: Future<Void, Error> = sendPasswordReset(withEmail: email)
-        return future.eraseToAnyPublisher()
+    func sendPasswordReset(to email: String) -> AnyPublisher<Void, Error> {
+        sendPasswordReset(withEmail: email)
+            .eraseToAnyPublisher()
     }
 }
 
@@ -70,12 +70,12 @@ extension FirebaseAuth.User: AuthUser {
         let change = createProfileChangeRequest()
         change.displayName = displayName
         return Future { [weak self] promise in
-            guard let strongSelf = self else { return }
+            guard let self else { return }
             change.commitChanges { error in
                 if let error {
                     promise(.failure(error))
                 } else {
-                    let user = Auth.auth().currentUser ?? strongSelf
+                    let user = Auth.auth().currentUser ?? self
                     promise(.success(user))
                 }
             }

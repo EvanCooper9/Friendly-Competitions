@@ -9,7 +9,7 @@ protocol AuthProviding {
     func signIn(with credential: AuthCredential) -> AnyPublisher<AuthUser, Error>
     func signUp(withEmail email: String, password: String) -> AnyPublisher<AuthUser, Error>
     func signOut() throws
-    func sendPasswordReset(withEmail email: String) -> AnyPublisher<Void, Error>
+    func sendPasswordReset(to email: String) -> AnyPublisher<Void, Error>
 }
 
 // sourcery: AutoMockable
