@@ -9,22 +9,22 @@ extension Competition {
         var displayName: String {
             switch self {
             case .percentOfGoals:
-                return "Percent of Goals"
+                return L10n.Competition.ScoringModel.PercentOfGoals.displayName
             case .rawNumbers:
-                return "Raw numbers"
+                return L10n.Competition.ScoringModel.RawNumbers.displayName
             case .workout(let workoutType, _):
-                return "\(workoutType.description) workout"
+                return L10n.Competition.ScoringModel.Workout.displayNameWithType(workoutType.description)
             }
         }
 
         var description: String {
             switch self {
             case .percentOfGoals:
-                return "Every percent of an activity ring filled gains 1 point. Daily max of 600 points."
+                return L10n.Competition.ScoringModel.PercentOfGoals.description
             case .rawNumbers:
-                return "Every calorie, minute and hour gains 1 point. No daily max."
+                return L10n.Competition.ScoringModel.RawNumbers.description
             case .workout(let workoutType, _):
-                return "Only \(workoutType) workouts will count towards points."
+                return L10n.Competition.ScoringModel.Workout.description(workoutType.description)
             }
         }
     }

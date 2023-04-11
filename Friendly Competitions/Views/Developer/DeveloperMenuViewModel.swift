@@ -67,6 +67,7 @@ final class DeveloperMenuViewModel: ObservableObject {
                     return .debugRemote(destination: destination)
                 }
             }
+            .dropFirst()
             .sink(withUnretained: self) { $0.environmentManager.set($1) }
             .store(in: &cancellables)
     }

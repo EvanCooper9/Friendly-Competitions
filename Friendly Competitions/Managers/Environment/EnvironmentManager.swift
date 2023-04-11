@@ -46,7 +46,7 @@ final class EnvironmentManager: EnvironmentManaging {
         }
 
         environmentSubject
-            .sink { UserDefaults.standard.encode($0, forKey: Constants.environmentKey) }
+            .sink(withUnretained: self) { $0.environmentCache.environment = $1 }
             .store(in: &cancellables)
     }
 

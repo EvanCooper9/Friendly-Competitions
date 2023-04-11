@@ -1,6 +1,8 @@
 import Factory
 import XCTest
 
+@testable import Friendly_Competitions
+
 class FCTestCase: XCTestCase {
 
     private var _container = Container()
@@ -10,5 +12,9 @@ class FCTestCase: XCTestCase {
         super.setUp()
         _container = .init()
         Container.shared = _container
+
+//        container.environmentManager.onTest {
+//            fatalError("not registered")
+//        }
     }
 }

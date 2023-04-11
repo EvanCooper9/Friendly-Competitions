@@ -13,6 +13,6 @@ extension UserDefaults: EnvironmentCache {
 
     var environment: FCEnvironment? {
         get { decode(FCEnvironment.self, forKey: Constants.environmentKey) }
-        set { encode(newValue, forKey: Constants.environmentKey)}
+        set { encode(newValue, forKey: Constants.environmentKey) }
     }
 }

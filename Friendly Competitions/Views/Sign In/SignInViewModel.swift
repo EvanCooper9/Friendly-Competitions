@@ -6,19 +6,15 @@ import Foundation
 
 final class SignInViewModel: ObservableObject {
 
-    private enum Constants {
-        static let checkEmail = "Follow the instructions in your email to reset your password"
-    }
-
     // MARK: - Public Properties
 
     @Published var loading = false
     @Published var signingInWithEmail = false
     @Published var isSigningUp = false
-    @Published var name = "Evan"
-    @Published var email = "evan1@test.com"
-    @Published var password = "Password"
-    @Published var passwordConfirmation = "Password"
+    @Published var name = ""
+    @Published var email = ""
+    @Published var password = ""
+    @Published var passwordConfirmation = ""
 
     // MARK: - Private Properties
 
@@ -50,7 +46,7 @@ final class SignInViewModel: ObservableObject {
                 case .failure(let error):
                     strongSelf.hudSubject.send(.error(error))
                 case .success:
-                    strongSelf.hudSubject.send(.success(text: Constants.checkEmail))
+                    strongSelf.hudSubject.send(.success(text: L10n.SignIn.checkEmail))
                 }
             })
             .store(in: &cancellables)

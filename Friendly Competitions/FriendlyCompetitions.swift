@@ -1,6 +1,5 @@
 import SwiftUI
 
-@main
 struct FriendlyCompetitions: App {
 
     @UIApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
@@ -21,6 +20,15 @@ struct FriendlyCompetitions: App {
             }
             .hud(state: $appModel.hud)
             .onOpenURL(perform: appModel.handle)
+        }
+    }
+
+}
+
+struct FriendlyCompetitionsTest: App {
+    var body: some Scene {
+        WindowGroup {
+            Text("Running Unit Tests")
         }
     }
 }

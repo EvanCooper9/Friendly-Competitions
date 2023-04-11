@@ -123,6 +123,7 @@
 		ED1CFAA22864FF0000192E49 /* WorkoutMetric.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1CFAA12864FF0000192E49 /* WorkoutMetric.swift */; };
 		ED1E08D728DF4C6600497E20 /* View+RemovingMargin.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1E08D628DF4C6600497E20 /* View+RemovingMargin.swift */; };
 		ED1F8DEE29E3933A0009B986 /* DeveloperAppService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1F8DED29E3933A0009B986 /* DeveloperAppService.swift */; };
+		ED1F8DF229E5F7A20009B986 /* AppLauncher.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1F8DF129E5F7A20009B986 /* AppLauncher.swift */; };
 		ED31825A29899E640091EE8C /* AlgoliaSearchClient in Frameworks */ = {isa = PBXBuildFile; productRef = ED31825929899E640091EE8C /* AlgoliaSearchClient */; };
 		ED31825C29899E9D0091EE8C /* SearchManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED31825B29899E9D0091EE8C /* SearchManager.swift */; };
 		ED32B87A29D694CF005C917B /* AuthenticationCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED32B87929D694CF005C917B /* AuthenticationCache.swift */; };
@@ -359,6 +360,7 @@
 		ED1CFAA12864FF0000192E49 /* WorkoutMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutMetric.swift; sourceTree = "<group>"; };
 		ED1E08D628DF4C6600497E20 /* View+RemovingMargin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+RemovingMargin.swift"; sourceTree = "<group>"; };
 		ED1F8DED29E3933A0009B986 /* DeveloperAppService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperAppService.swift; sourceTree = "<group>"; };
+		ED1F8DF129E5F7A20009B986 /* AppLauncher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLauncher.swift; sourceTree = "<group>"; };
 		ED31825B29899E9D0091EE8C /* SearchManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchManager.swift; sourceTree = "<group>"; };
 		ED32B87929D694CF005C917B /* AuthenticationCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationCache.swift; sourceTree = "<group>"; };
 		ED32B87B29D69B84005C917B /* AuthProviding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthProviding.swift; sourceTree = "<group>"; };
@@ -704,6 +706,7 @@
 			children = (
 				C163E30026F2344D00C9EC30 /* Info.plist */,
 				C1E6406226F4395200E3E70A /* FriendlyCompetitions.entitlements */,
+				ED1F8DF129E5F7A20009B986 /* AppLauncher.swift */,
 				C1691DC626D55FCF006FFA30 /* FriendlyCompetitions.swift */,
 				EDA61C0E2977317E00370C5C /* FriendlyCompetitionsAppModel.swift */,
 				C1B2F4E3272B505C0028449F /* AppDelegate.swift */,
@@ -1825,6 +1828,7 @@
 				C123C9C927A74F3500375F73 /* PermissionsManager.swift in Sources */,
 				7CBF67E827F4BA910047DC81 /* User+Visibility.swift in Sources */,
 				ED901B4D280247E600FE619E /* CompetitionDetailsViewModel.swift in Sources */,
+				ED1F8DF229E5F7A20009B986 /* AppLauncher.swift in Sources */,
 				ED7881AD2850F6DF00C7F6CB /* AuthenticationError.swift in Sources */,
 				ED901B6B2802525700FE619E /* FirebaseImageViewModel.swift in Sources */,
 				ED802B58298CB8B200155B8B /* Strings+Generated.swift in Sources */,

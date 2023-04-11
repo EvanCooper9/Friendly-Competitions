@@ -35,11 +35,11 @@ extension WorkoutMetric: CustomStringConvertible {
     var description: String {
         switch self {
         case .distance:
-            return "Distance"
+            return L10n.WorkoutMetric.Distance.description
         case .heartRate:
-            return "Heart rate"
+            return L10n.WorkoutMetric.HeartRate.description
         case .steps:
-            return "Steps"
+            return L10n.WorkoutMetric.Steps.description
         }
     }
 }

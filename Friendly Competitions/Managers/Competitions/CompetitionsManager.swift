@@ -243,9 +243,9 @@ final class CompetitionsManager: CompetitionsManaging {
                 }
                 .combineLatest()
                 .map { $0.contains(true) }
-                .handleEvents(receiveOutput: { hasPremiumResults in
+                .handleEvents(withUnretained: self, receiveOutput: { strongSelf, hasPremiumResults in
                     let container = HasPremiumResultsContainerCache(id: id, hasPremiumResults: hasPremiumResults)
-                    UserDefaults.standard.encode(container, forKey: Constants.hasPremiumResultsKey)
+                    strongSelf.cache.competitionsHasPremiumResults = container
                 })
                 .eraseToAnyPublisher()
         }
