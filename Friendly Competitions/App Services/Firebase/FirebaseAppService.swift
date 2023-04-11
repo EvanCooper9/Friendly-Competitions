@@ -5,7 +5,7 @@ import FirebaseMessaging
 final class FirebaseAppService: NSObject, AppService {
 
     @LazyInjected(\.auth) private var auth
-    @LazyInjected(\.userManager) private var userManager
+
     // Needs to be lazy so that `FirebaseApp.configure()` is called first
     @LazyInjected(\.database) private var database
 
@@ -21,7 +21,7 @@ final class FirebaseAppService: NSObject, AppService {
 
 extension FirebaseAppService: MessagingDelegate {
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-        guard let fcmToken = fcmToken, let userId = auth.user?.id else { return }
+        guard let fcmToken, let userId = auth.user?.id else { return }
 
         Task {
             let tokens = try await database.document("users/\(userId)")

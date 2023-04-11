@@ -359,7 +359,6 @@
 		ED1CFAA12864FF0000192E49 /* WorkoutMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutMetric.swift; sourceTree = "<group>"; };
 		ED1E08D628DF4C6600497E20 /* View+RemovingMargin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+RemovingMargin.swift"; sourceTree = "<group>"; };
 		ED1F8DED29E3933A0009B986 /* DeveloperAppService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperAppService.swift; sourceTree = "<group>"; };
-		ED1F8DEF29E4E8DC0009B986 /* ECKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = ECKit; path = ../ECKit; sourceTree = "<group>"; };
 		ED31825B29899E9D0091EE8C /* SearchManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchManager.swift; sourceTree = "<group>"; };
 		ED32B87929D694CF005C917B /* AuthenticationCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationCache.swift; sourceTree = "<group>"; };
 		ED32B87B29D69B84005C917B /* AuthProviding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthProviding.swift; sourceTree = "<group>"; };
@@ -684,7 +683,6 @@
 		C1691DBA26D55FCF006FFA30 = {
 			isa = PBXGroup;
 			children = (
-				ED1F8DEF29E4E8DC0009B986 /* ECKit */,
 				C1691DC526D55FCF006FFA30 /* Friendly Competitions */,
 				C155CA5827AB989D005F49F4 /* Friendly Competitions Tests */,
 				C1691DC426D55FCF006FFA30 /* Products */,

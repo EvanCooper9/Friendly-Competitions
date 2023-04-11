@@ -154,7 +154,6 @@ final class CompetitionsManager: CompetitionsManaging {
     func search(byID competitionID: Competition.ID) -> AnyPublisher<Competition, Error> {
         database.document("competitions/\(competitionID)")
             .get(as: Competition.self)
-            .print("search competition \(competitionID)")
             .eraseToAnyPublisher()
     }
 

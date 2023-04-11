@@ -33,10 +33,6 @@ final class SignInViewModel: ObservableObject {
 
     // MARK: - Lifecycle
 
-    deinit {
-        print(#function)
-    }
-
     init() {
         hudSubject
             .sink(withUnretained: self) { $0.appState.push(hud: $1) }

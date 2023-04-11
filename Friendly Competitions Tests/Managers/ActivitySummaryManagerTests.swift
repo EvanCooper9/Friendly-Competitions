@@ -72,7 +72,6 @@ final class ActivitySummaryManagerTests: FCTestCase {
         let manager = ActivitySummaryManager()
         manager.activitySummary
             .dropFirst()
-            .print("activitySummary")
             .sink { activitySummary in
                 XCTAssertEqual(activitySummary, expected.first)
                 expectation.fulfill()
@@ -80,7 +79,6 @@ final class ActivitySummaryManagerTests: FCTestCase {
             .store(in: &cancellables)
         
         manager.activitySummaries(in: .init())
-            .print("fetch")
             .ignoreFailure()
             .sink { activitySummaries in
                 XCTAssertEqual(activitySummaries, expected)

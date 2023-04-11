@@ -64,7 +64,7 @@ final class UserManager: UserManaging {
     private func listenForUser() {
         database.document("users/\(user.id)")
             .publisher(as: User.self)
-            .receive(on: RunLoop.main)
+            .removeDuplicates()
             .sink(withUnretained: self) { strongSelf, user in
                 strongSelf.analyticsManager.set(userId: user.id)
                 strongSelf.userSubject.send(user)
