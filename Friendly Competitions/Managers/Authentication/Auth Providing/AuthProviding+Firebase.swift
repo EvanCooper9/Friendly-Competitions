@@ -4,6 +4,7 @@ import FirebaseAuth
 import FirebaseAuthCombineSwift
 
 extension Auth: AuthProviding {
+
     var user: AuthUser? {
         currentUser
     }
@@ -15,32 +16,32 @@ extension Auth: AuthProviding {
     }
 
     func signIn(with credential: AuthCredential) -> AnyPublisher<AuthUser, Error> {
-        let oAuthCredential: OAuthCredential
         switch credential {
         case let .apple(id, nonce, fullName):
-            oAuthCredential = OAuthProvider.appleCredential(
+            let oAuthCredential = OAuthProvider.appleCredential(
                 withIDToken: id,
                 rawNonce: nonce,
                 fullName: fullName
             )
+            return signIn(with: oAuthCredential)
+                .map { result -> AuthUser in result.user }
+                .eraseToAnyPublisher()
+        case let .email(email, password):
+            return signIn(withEmail: email, password: password)
+                .map { result -> AuthUser in result.user }
+                .eraseToAnyPublisher()
         }
-
-        return signIn(with: oAuthCredential)
-            .compactMap { $0 as? AuthUser }
-            .eraseToAnyPublisher()
     }
 
-    func signIn(withEmail email: String, password: String) -> AnyPublisher<Void, Error> {
-        let future: Future<AuthDataResult, Error> = signIn(withEmail: email, password: password)
-        return future
-            .mapToVoid()
-            .eraseToAnyPublisher()
-    }
-
-    func signUp(withEmail email: String, password: String) -> AnyPublisher<AuthUser, Error> {
-        createUser(withEmail: email, password: password)
-            .compactMap { $0 as? AuthUser }
-            .eraseToAnyPublisher()
+    func signUp(with credential: AuthCredential) -> AnyPublisher<AuthUser, Error> {
+        switch credential {
+        case .apple:
+            return .never()
+        case .email(let email, let password):
+            return createUser(withEmail: email, password: password)
+                .map { result -> AuthUser in result.user }
+                .eraseToAnyPublisher()
+        }
     }
 
     func sendPasswordReset(to email: String) -> AnyPublisher<Void, Error> {

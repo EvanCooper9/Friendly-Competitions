@@ -157,7 +157,7 @@ final class CompetitionsManagerTests: FCTestCase {
         let competition = Competition.mock
         
         let document = DocumentMock<Competition>()
-        document.setDataClosure = { data in
+        document.setClosure = { data in
             XCTAssertEqual(data, competition)
             expectation.fulfill()
             return .just(())
@@ -181,7 +181,7 @@ final class CompetitionsManagerTests: FCTestCase {
         let competition = Competition.mock
         
         let document = DocumentMock<Competition>()
-        document.setDataClosure = { data in
+        document.setClosure = { data in
             XCTAssertEqual(data, competition)
             expectation.fulfill()
             return .error(error)

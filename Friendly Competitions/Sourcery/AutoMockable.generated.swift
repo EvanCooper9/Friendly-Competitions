@@ -224,28 +224,6 @@ class AuthProvidingMock: AuthProviding {
 
     //MARK: - signIn
 
-    var signInWithEmailPasswordCallsCount = 0
-    var signInWithEmailPasswordCalled: Bool {
-        return signInWithEmailPasswordCallsCount > 0
-    }
-    var signInWithEmailPasswordReceivedArguments: (email: String, password: String)?
-    var signInWithEmailPasswordReceivedInvocations: [(email: String, password: String)] = []
-    var signInWithEmailPasswordReturnValue: AnyPublisher<Void, Error>!
-    var signInWithEmailPasswordClosure: ((String, String) -> AnyPublisher<Void, Error>)?
-
-    func signIn(withEmail email: String, password: String) -> AnyPublisher<Void, Error> {
-        signInWithEmailPasswordCallsCount += 1
-        signInWithEmailPasswordReceivedArguments = (email: email, password: password)
-        signInWithEmailPasswordReceivedInvocations.append((email: email, password: password))
-        if let signInWithEmailPasswordClosure = signInWithEmailPasswordClosure {
-            return signInWithEmailPasswordClosure(email, password)
-        } else {
-            return signInWithEmailPasswordReturnValue
-        }
-    }
-
-    //MARK: - signIn
-
     var signInWithCallsCount = 0
     var signInWithCalled: Bool {
         return signInWithCallsCount > 0
@@ -268,23 +246,23 @@ class AuthProvidingMock: AuthProviding {
 
     //MARK: - signUp
 
-    var signUpWithEmailPasswordCallsCount = 0
-    var signUpWithEmailPasswordCalled: Bool {
-        return signUpWithEmailPasswordCallsCount > 0
+    var signUpWithCallsCount = 0
+    var signUpWithCalled: Bool {
+        return signUpWithCallsCount > 0
     }
-    var signUpWithEmailPasswordReceivedArguments: (email: String, password: String)?
-    var signUpWithEmailPasswordReceivedInvocations: [(email: String, password: String)] = []
-    var signUpWithEmailPasswordReturnValue: AnyPublisher<AuthUser, Error>!
-    var signUpWithEmailPasswordClosure: ((String, String) -> AnyPublisher<AuthUser, Error>)?
+    var signUpWithReceivedCredential: AuthCredential?
+    var signUpWithReceivedInvocations: [AuthCredential] = []
+    var signUpWithReturnValue: AnyPublisher<AuthUser, Error>!
+    var signUpWithClosure: ((AuthCredential) -> AnyPublisher<AuthUser, Error>)?
 
-    func signUp(withEmail email: String, password: String) -> AnyPublisher<AuthUser, Error> {
-        signUpWithEmailPasswordCallsCount += 1
-        signUpWithEmailPasswordReceivedArguments = (email: email, password: password)
-        signUpWithEmailPasswordReceivedInvocations.append((email: email, password: password))
-        if let signUpWithEmailPasswordClosure = signUpWithEmailPasswordClosure {
-            return signUpWithEmailPasswordClosure(email, password)
+    func signUp(with credential: AuthCredential) -> AnyPublisher<AuthUser, Error> {
+        signUpWithCallsCount += 1
+        signUpWithReceivedCredential = credential
+        signUpWithReceivedInvocations.append(credential)
+        if let signUpWithClosure = signUpWithClosure {
+            return signUpWithClosure(credential)
         } else {
-            return signUpWithEmailPasswordReturnValue
+            return signUpWithReturnValue
         }
     }
 
@@ -1529,10 +1507,10 @@ class SignInWithAppleProvidingMock: SignInWithAppleProviding {
     var signInCalled: Bool {
         return signInCallsCount > 0
     }
-    var signInReturnValue: AnyPublisher<SignInWithAppleResult, Error>!
-    var signInClosure: (() -> AnyPublisher<SignInWithAppleResult, Error>)?
+    var signInReturnValue: AnyPublisher<AuthUser, Error>!
+    var signInClosure: (() -> AnyPublisher<AuthUser, Error>)?
 
-    func signIn() -> AnyPublisher<SignInWithAppleResult, Error> {
+    func signIn() -> AnyPublisher<AuthUser, Error> {
         signInCallsCount += 1
         if let signInClosure = signInClosure {
             return signInClosure()

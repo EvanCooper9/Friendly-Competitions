@@ -1,5 +1,6 @@
-import AuthenticationServices
 import CryptoKit
+import Foundation
+import Security
 
 enum Nonce {
     // Adapted from https://auth0.com/docs/api-auth/tutorials/nonce#generate-a-cryptographically-random-nonce

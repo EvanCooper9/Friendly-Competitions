@@ -7,6 +7,6 @@ extension Container {
     }
 
     var environmentManager: Factory<EnvironmentManaging> {
-        self { EnvironmentManager() }.scope(.shared)
+        self { EnvironmentManager() }.scope(.singleton)
     }
 }

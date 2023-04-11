@@ -15,10 +15,10 @@ final class SignInViewModel: ObservableObject {
     @Published var loading = false
     @Published var signingInWithEmail = false
     @Published var isSigningUp = false
-    @Published var name = ""
-    @Published var email = ""
-    @Published var password = ""
-    @Published var passwordConfirmation = ""
+    @Published var name = "Evan"
+    @Published var email = "evan1@test.com"
+    @Published var password = "Password"
+    @Published var passwordConfirmation = "Password"
 
     // MARK: - Private Properties
 
@@ -32,6 +32,10 @@ final class SignInViewModel: ObservableObject {
     private var cancellables = Cancellables()
 
     // MARK: - Lifecycle
+
+    deinit {
+        print(#function)
+    }
 
     init() {
         hudSubject

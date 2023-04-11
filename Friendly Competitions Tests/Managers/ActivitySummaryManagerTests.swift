@@ -142,8 +142,8 @@ final class ActivitySummaryManagerTests: FCTestCase {
         
         let batchMock = BatchMock<ActivitySummary>()
         batchMock.commitClosure = expectation.fulfill
-        batchMock.setDataClosure = { activitySummary, document in
-            let expectedActivitySummary = expected[batchMock.setDataCallCount - 1]
+        batchMock.setClosure = { activitySummary, document in
+            let expectedActivitySummary = expected[batchMock.setCallCount - 1]
             XCTAssertEqual(activitySummary, expectedActivitySummary)
             expectation.fulfill()
         }

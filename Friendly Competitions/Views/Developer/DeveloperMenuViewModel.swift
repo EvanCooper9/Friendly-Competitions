@@ -55,7 +55,7 @@ final class DeveloperMenuViewModel: ObservableObject {
             .map { $0 == .debugRemote }
             .assign(to: &$showDestinationAlert)
 
-        let fcEnvironment = Publishers
+        Publishers
             .CombineLatest($environment, $destination)
             .map { environment, destination -> FCEnvironment in
                 switch environment {
@@ -67,9 +67,6 @@ final class DeveloperMenuViewModel: ObservableObject {
                     return .debugRemote(destination: destination)
                 }
             }
-
-        saveSubject
-            .withLatestFrom(fcEnvironment)
             .sink(withUnretained: self) { $0.environmentManager.set($1) }
             .store(in: &cancellables)
     }

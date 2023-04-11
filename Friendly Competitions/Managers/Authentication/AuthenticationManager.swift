@@ -1,4 +1,5 @@
 import Combine
+import CombineExt
 import ECKit
 import Factory
 
@@ -29,15 +30,14 @@ final class AuthenticationManager: AuthenticationManaging {
     @Injected(\.auth) private var auth
     @Injected(\.authenticationCache) private var authenticationCache
     @Injected(\.database) private var database
+    @Injected(\.scheduler) private var scheduler
     @Injected(\.signInWithAppleProvider) private var signInWithAppleProvider
 
     private var emailVerifiedSubject: CurrentValueSubject<Bool, Never>!
     private var loggedInSubject: CurrentValueSubject<Bool, Never>!
 
-    private var currentNonce: String?
     private var userListener: AnyCancellable?
-    private var signInWithAppleSubject: PassthroughSubject<Void, Error>?
-    private let createdUserSubject = PassthroughSubject<User, Error>()
+    private var createdUserSubject = ReplaySubject<User, Error>(bufferSize: 1)
 
     private var cancellables = Cancellables()
 
@@ -59,8 +59,8 @@ final class AuthenticationManager: AuthenticationManaging {
     func signIn(with authenticationMethod: AuthenticationMethod) -> AnyPublisher<Void, Error> {
         switch authenticationMethod {
         case .apple:
+            createdUserSubject = .init(bufferSize: 1)
             return signInWithAppleProvider.signIn()
-                .flatMapLatest(withUnretained: self) { $0.update(displayName: $1.displayName, for: $1.user) }
                 .flatMapLatest(withUnretained: self) { strongSelf, authUser in
                     let document = strongSelf.database.document("users/\(authUser.id)")
                     return document.exists.flatMap { exists -> AnyPublisher<Void, Error> in
@@ -75,7 +75,7 @@ final class AuthenticationManager: AuthenticationManaging {
                 .mapToVoid()
                 .eraseToAnyPublisher()
         case .email(let email, let password):
-            return auth.signIn(withEmail: email, password: password)
+            return auth.signIn(with: .email(email: email, password: password))
                 .mapToVoid()
                 .eraseToAnyPublisher()
         }
@@ -83,8 +83,9 @@ final class AuthenticationManager: AuthenticationManaging {
 
     func signUp(name: String, email: String, password: String, passwordConfirmation: String) -> AnyPublisher<Void, Error> {
         guard password == passwordConfirmation else { return .error(AuthenticationError.passwordMatch) }
-        return auth.signUp(withEmail: email, password: password)
-            .flatMapLatest(withUnretained: self) { $0.update(displayName: name, for: $1) }
+        createdUserSubject = .init(bufferSize: 1)
+        return auth.signUp(with: .email(email: email, password: password))
+            .flatMapLatest { $0.set(displayName: name) }
             .flatMapLatest { $0.sendEmailVerification().mapToValue($0) }
             .flatMapLatest(withUnretained: self) { $0.createUser(from: $1) }
             .mapToVoid()
@@ -94,6 +95,7 @@ final class AuthenticationManager: AuthenticationManaging {
     func checkEmailVerification() -> AnyPublisher<Void, Error> {
         guard let authUser = auth.user else { return .just(()) }
         return .fromAsync { try await authUser.reload() }
+            .receive(on: scheduler)
             .handleEvents(withUnretained: self, receiveOutput: { $0.emailVerifiedSubject.send(authUser.isEmailVerified) })
             .eraseToAnyPublisher()
     }
@@ -163,17 +165,6 @@ final class AuthenticationManager: AuthenticationManaging {
             self?.userListener = userManager.userPublisher.sink { self?.authenticationCache.user = $0 }
             return userManager
         }
-    }
-
-    /// Updates the auth user with the provided dipslay name
-    /// - Note: The published result should be passed into`createUser(from:)`
-    /// - Parameters:
-    ///   - displayName: the display name to set
-    ///   - authUser: the auth user
-    /// - Returns: A publisher that emits the updated auth user
-    private func update(displayName: String, for authUser: AuthUser) -> AnyPublisher<AuthUser, Error> {
-        guard !displayName.isEmpty, displayName != authUser.displayName else { return .just(authUser) }
-        return authUser.set(displayName: displayName)
     }
 
     /// Creates a user in the database based on the auth user

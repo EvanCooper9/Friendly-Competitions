@@ -5,9 +5,8 @@ import Combine
 protocol AuthProviding {
     var user: AuthUser? { get }
     func userPublisher() -> AnyPublisher<AuthUser?, Never>
-    func signIn(withEmail email: String, password: String) -> AnyPublisher<Void, Error>
     func signIn(with credential: AuthCredential) -> AnyPublisher<AuthUser, Error>
-    func signUp(withEmail email: String, password: String) -> AnyPublisher<AuthUser, Error>
+    func signUp(with credential: AuthCredential) -> AnyPublisher<AuthUser, Error>
     func signOut() throws
     func sendPasswordReset(to email: String) -> AnyPublisher<Void, Error>
 }
@@ -26,4 +25,5 @@ protocol AuthUser {
 
 enum AuthCredential {
     case apple(id: String, nonce: String?, fullName: PersonNameComponents?)
+    case email(email: String, password: String)
 }

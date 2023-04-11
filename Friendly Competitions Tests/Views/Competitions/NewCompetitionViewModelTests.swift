@@ -29,7 +29,7 @@ final class NewCompetitionViewModelTests: FCTestCase {
         let expectedEnd = Date.now
 
         let document = DocumentMock<Competition>()
-        document.setDataClosure = { competition in
+        document.setClosure = { competition in
             XCTAssertEqual(competition.start, expectedStart)
             XCTAssertEqual(competition.end, expectedEnd)
             return .just(())

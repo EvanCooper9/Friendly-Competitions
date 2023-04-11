@@ -128,7 +128,6 @@
 		ED32B87A29D694CF005C917B /* AuthenticationCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED32B87929D694CF005C917B /* AuthenticationCache.swift */; };
 		ED32B87C29D69B84005C917B /* AuthProviding.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED32B87B29D69B84005C917B /* AuthProviding.swift */; };
 		ED32B87E29D718A8005C917B /* SignInWithAppleProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED32B87D29D718A8005C917B /* SignInWithAppleProvider.swift */; };
-		ED32B88A29D9F1EE005C917B /* SignInWithAppleResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED32B88929D9F1EE005C917B /* SignInWithAppleResult.swift */; };
 		ED32B88D29D9F65D005C917B /* AuthProviding+Firebase.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED32B88C29D9F65D005C917B /* AuthProviding+Firebase.swift */; };
 		ED3868DE29677F8100522722 /* PaywallPurchaseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3868DC29677F8100522722 /* PaywallPurchaseView.swift */; };
 		ED3C09E029626A1D00ED4ACC /* NavigationDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3C09DF29626A1D00ED4ACC /* NavigationDestination.swift */; };
@@ -360,11 +359,11 @@
 		ED1CFAA12864FF0000192E49 /* WorkoutMetric.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutMetric.swift; sourceTree = "<group>"; };
 		ED1E08D628DF4C6600497E20 /* View+RemovingMargin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+RemovingMargin.swift"; sourceTree = "<group>"; };
 		ED1F8DED29E3933A0009B986 /* DeveloperAppService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperAppService.swift; sourceTree = "<group>"; };
+		ED1F8DEF29E4E8DC0009B986 /* ECKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = ECKit; path = ../ECKit; sourceTree = "<group>"; };
 		ED31825B29899E9D0091EE8C /* SearchManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchManager.swift; sourceTree = "<group>"; };
 		ED32B87929D694CF005C917B /* AuthenticationCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationCache.swift; sourceTree = "<group>"; };
 		ED32B87B29D69B84005C917B /* AuthProviding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthProviding.swift; sourceTree = "<group>"; };
 		ED32B87D29D718A8005C917B /* SignInWithAppleProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInWithAppleProvider.swift; sourceTree = "<group>"; };
-		ED32B88929D9F1EE005C917B /* SignInWithAppleResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInWithAppleResult.swift; sourceTree = "<group>"; };
 		ED32B88C29D9F65D005C917B /* AuthProviding+Firebase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AuthProviding+Firebase.swift"; sourceTree = "<group>"; };
 		ED3868DC29677F8100522722 /* PaywallPurchaseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallPurchaseView.swift; sourceTree = "<group>"; };
 		ED3C09DF29626A1D00ED4ACC /* NavigationDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationDestination.swift; sourceTree = "<group>"; };
@@ -685,6 +684,7 @@
 		C1691DBA26D55FCF006FFA30 = {
 			isa = PBXGroup;
 			children = (
+				ED1F8DEF29E4E8DC0009B986 /* ECKit */,
 				C1691DC526D55FCF006FFA30 /* Friendly Competitions */,
 				C155CA5827AB989D005F49F4 /* Friendly Competitions Tests */,
 				C1691DC426D55FCF006FFA30 /* Products */,
@@ -1011,6 +1011,14 @@
 			path = Developer;
 			sourceTree = "<group>";
 		};
+		ED1F8DF029E5A9AF0009B986 /* Nonce */ = {
+			isa = PBXGroup;
+			children = (
+				EDAF6C46285277FF002BC0DD /* Nonce.swift */,
+			);
+			path = Nonce;
+			sourceTree = "<group>";
+		};
 		ED26F7642871CAA2003EEE17 /* Activity Summary */ = {
 			isa = PBXGroup;
 			children = (
@@ -1028,16 +1036,6 @@
 				ED3D5F2E295E471600211E86 /* Sign In */,
 			);
 			path = Views;
-			sourceTree = "<group>";
-		};
-		ED32B88629D793B6005C917B /* Apple */ = {
-			isa = PBXGroup;
-			children = (
-				ED32B87D29D718A8005C917B /* SignInWithAppleProvider.swift */,
-				ED32B88929D9F1EE005C917B /* SignInWithAppleResult.swift */,
-				EDAF6C46285277FF002BC0DD /* Nonce.swift */,
-			);
-			path = Apple;
 			sourceTree = "<group>";
 		};
 		ED32B88B29D9F640005C917B /* Auth Providing */ = {
@@ -1155,6 +1153,7 @@
 				ED879C6329A417670007DB91 /* Utility+Factory.swift */,
 				ED9F255929A4352A008C9967 /* Post Decoded */,
 				C11193AD26E7C5C6003B7EB3 /* Extensions */,
+				ED1F8DF029E5A9AF0009B986 /* Nonce */,
 			);
 			path = Utility;
 			sourceTree = "<group>";
@@ -1167,8 +1166,8 @@
 				C1E4C7C227B6EB400090239A /* AuthenticationManager.swift */,
 				ED879C3C29A411090007DB91 /* AuthenticationManager+Factory.swift */,
 				ED7881AA2850F6C400C7F6CB /* AuthenticationMethod.swift */,
+				ED32B87D29D718A8005C917B /* SignInWithAppleProvider.swift */,
 				ED32B88B29D9F640005C917B /* Auth Providing */,
-				ED32B88629D793B6005C917B /* Apple */,
 			);
 			path = Authentication;
 			sourceTree = "<group>";
@@ -1885,7 +1884,6 @@
 				C1E4C7C327B6EB400090239A /* AuthenticationManager.swift in Sources */,
 				ED1B5CF3296C7A4F00122D7E /* Premium.swift in Sources */,
 				ED1B5D01296DBD3100122D7E /* PaywallStep.swift in Sources */,
-				ED32B88A29D9F1EE005C917B /* SignInWithAppleResult.swift in Sources */,
 				ED3D85F7295F676800C3D152 /* CompetitionResult.swift in Sources */,
 				C1D0177D273F63CF00C9EEAE /* PermissionStatus.swift in Sources */,
 				ED1B5CEA296A574800122D7E /* URL+Extensions.swift in Sources */,

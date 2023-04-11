@@ -6,7 +6,7 @@ import FirebaseAuth
 
 // sourcery: AutoMockable
 protocol SignInWithAppleProviding {
-    func signIn() -> AnyPublisher<SignInWithAppleResult, Error>
+    func signIn() -> AnyPublisher<AuthUser, Error>
 }
 
 final class SignInWithAppleProvider: NSObject, SignInWithAppleProviding {
@@ -16,14 +16,15 @@ final class SignInWithAppleProvider: NSObject, SignInWithAppleProviding {
     private var nonce: String?
 
     @Injected(\.auth) private var auth
+    @Injected(\.environmentManager) private var environmentManager
 
-    private var signedInSubject: PassthroughSubject<SignInWithAppleResult, Error>?
+    private var signedInSubject: PassthroughSubject<AuthUser, Error>?
     private var cancellables = Cancellables()
 
     // MARK: - Public Methods
 
-    func signIn() -> AnyPublisher<SignInWithAppleResult, Error> {
-        let subject = PassthroughSubject<SignInWithAppleResult, Error>()
+    func signIn() -> AnyPublisher<AuthUser, Error> {
+        let subject = PassthroughSubject<AuthUser, Error>()
         signedInSubject = subject
         return subject
             .first()
@@ -61,13 +62,26 @@ extension SignInWithAppleProvider: ASAuthorizationControllerDelegate {
         let credential = AuthCredential.apple(id: idToken, nonce: nonce, fullName: appleIDCredential.fullName)
 
         auth.signIn(with: credential)
-            .sink(withUnretained: self) { strongSelf, authUser in
+            .flatMapLatest(withUnretained: self) { strongSelf, authUser -> AnyPublisher<AuthUser, Error> in
+
+                // For some reason, the firebase auth emulator doesn't handle the fullName passed to the
+                // credential when signing in with Apple (above). This is handled correctly in prod.
+                // Assuming this is just a lack of feature parity since the iOS SDK had this API added in 10.7.0.
+                // https://firebase.google.com/support/release-notes/ios#10.7.0
+                guard strongSelf.environmentManager.environment.isDebug else { return .just(authUser) }
+
                 let displayName = [appleIDCredential.fullName?.givenName, appleIDCredential.fullName?.familyName]
                     .compactMap { $0 }
                     .joined(separator: " ")
-                let result = SignInWithAppleResult(user: authUser, displayName: displayName)
-                strongSelf.signedInSubject?.send(result)
+
+                // The display name will be empty after the first sign in. Make sure not to update
+                // the auth user's display name if empty (or the same).
+                // https://firebase.google.com/docs/auth/ios/apple
+                guard !displayName.isEmpty, displayName != authUser.displayName else { return .just(authUser) }
+                return authUser.set(displayName: displayName)
             }
+            .first()
+            .sink(withUnretained: self) { $0.signedInSubject?.send($1) }
             .store(in: &cancellables)
     }
 

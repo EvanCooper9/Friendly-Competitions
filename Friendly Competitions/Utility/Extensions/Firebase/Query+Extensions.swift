@@ -16,11 +16,6 @@ public extension Query {
         try await whereFieldWithChunkingHelper(field, values: values, contains: true)
     }
 
-    // TODO: Figure out how to paginate `not-in` queries
-//    func whereFieldWithChunking(_ field: String, notIn values: [Any]) async throws -> [QueryDocumentSnapshot] {
-//        try await whereFieldWithChunkingHelper(field, values: values, contains: false)
-//    }
-
     private func whereFieldWithChunkingHelper(_ field: String, values: [Any], contains: Bool) async throws -> [QueryDocumentSnapshot] {
         try await withThrowingTaskGroup(of: [QueryDocumentSnapshot].self) { group -> [QueryDocumentSnapshot] in
             values.chunks(ofCount: Constants.chunkSize).forEach { chunk in
