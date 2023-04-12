@@ -227,7 +227,10 @@ class Competition {
      * @return {Promise<ActivitySummary[]>} A promise of workouts
      */
     async workouts(userID: string): Promise<Workout[]> {
+        const workoutType = this.scoringModel.workoutType;
+        if (workoutType == null) return Promise.resolve([]);
         return await getFirestore().collection(`users/${userID}/workouts`)
+            .where("type", "==", workoutType)
             .get()
             .then(query => query.docs.map(doc => new Workout(doc)))
             .then(workouts => workouts.filter(x => x.isIncludedInCompetition(this)));

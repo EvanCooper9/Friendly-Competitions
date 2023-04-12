@@ -33,18 +33,9 @@ class Workout {
      * @return {boolean} true if the workout falls within the competition window
      */
     isIncludedInCompetition(competition: Competition): boolean {
-        return this.date >= competition.start && this.date <= competition.end;
-    }
-
-    /**
-     * Calculate how many points are earned based on metrics from a scoring model
-     * @param {WorkoutMetric[]} workoutMetrics The metrics to filter points by
-     * @return {number} Total points based on metrics
-     */
-    pointsForMetrics(workoutMetrics: WorkoutMetric[]): number {
-        const total = 0;
-        workoutMetrics.forEach(workoutMetric => this.points[workoutMetric]);
-        return total;
+        const type = competition.scoringModel.workoutType == this.type;
+        const date = this.date >= competition.start && this.date <= competition.end;
+        return type && date;
     }
 
     /**
@@ -62,7 +53,11 @@ class Workout {
         }
         case RawScoringModel.workout: {
             let total = 0;
-            scoringModel.workoutMetrics?.forEach(workoutMetric => total += this.points[workoutMetric]);
+            scoringModel.workoutMetrics?.forEach(workoutMetric => {
+                const points = this.points[workoutMetric];
+                if (points == undefined) return;
+                total += points;
+            });
             return Math.round(total);
         }
         }
