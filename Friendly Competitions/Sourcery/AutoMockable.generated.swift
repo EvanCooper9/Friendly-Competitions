@@ -146,11 +146,6 @@ class AnalyticsManagingMock: AnalyticsManaging {
 class AppStateProvidingMock: AppStateProviding {
 
 
-    var deepLink: AnyPublisher<DeepLink?, Never> {
-        get { return underlyingDeepLink }
-        set(value) { underlyingDeepLink = value }
-    }
-    var underlyingDeepLink: AnyPublisher<DeepLink?, Never>!
     var hud: AnyPublisher<HUD?, Never> {
         get { return underlyingHud }
         set(value) { underlyingHud = value }
@@ -178,23 +173,6 @@ class AppStateProvidingMock: AppStateProviding {
         pushHudReceivedHud = hud
         pushHudReceivedInvocations.append(hud)
         pushHudClosure?(hud)
-    }
-
-    //MARK: - push
-
-    var pushDeepLinkCallsCount = 0
-    var pushDeepLinkCalled: Bool {
-        return pushDeepLinkCallsCount > 0
-    }
-    var pushDeepLinkReceivedDeepLink: DeepLink?
-    var pushDeepLinkReceivedInvocations: [DeepLink] = []
-    var pushDeepLinkClosure: ((DeepLink) -> Void)?
-
-    func push(deepLink: DeepLink) {
-        pushDeepLinkCallsCount += 1
-        pushDeepLinkReceivedDeepLink = deepLink
-        pushDeepLinkReceivedInvocations.append(deepLink)
-        pushDeepLinkClosure?(deepLink)
     }
 
 }
@@ -996,6 +974,51 @@ class DatabaseMock: Database {
         } else {
             return documentReturnValue
         }
+    }
+
+}
+class DeepLinkManagingMock: DeepLinkManaging {
+
+
+    var deepLink: AnyPublisher<DeepLink?, Never> {
+        get { return underlyingDeepLink }
+        set(value) { underlyingDeepLink = value }
+    }
+    var underlyingDeepLink: AnyPublisher<DeepLink?, Never>!
+
+
+    //MARK: - handle
+
+    var handleUrlCallsCount = 0
+    var handleUrlCalled: Bool {
+        return handleUrlCallsCount > 0
+    }
+    var handleUrlReceivedUrl: URL?
+    var handleUrlReceivedInvocations: [URL] = []
+    var handleUrlClosure: ((URL) -> Void)?
+
+    func handle(url: URL) {
+        handleUrlCallsCount += 1
+        handleUrlReceivedUrl = url
+        handleUrlReceivedInvocations.append(url)
+        handleUrlClosure?(url)
+    }
+
+    //MARK: - push
+
+    var pushDeepLinkCallsCount = 0
+    var pushDeepLinkCalled: Bool {
+        return pushDeepLinkCallsCount > 0
+    }
+    var pushDeepLinkReceivedDeepLink: DeepLink?
+    var pushDeepLinkReceivedInvocations: [DeepLink] = []
+    var pushDeepLinkClosure: ((DeepLink) -> Void)?
+
+    func push(deepLink: DeepLink) {
+        pushDeepLinkCallsCount += 1
+        pushDeepLinkReceivedDeepLink = deepLink
+        pushDeepLinkReceivedInvocations.append(deepLink)
+        pushDeepLinkClosure?(deepLink)
     }
 
 }

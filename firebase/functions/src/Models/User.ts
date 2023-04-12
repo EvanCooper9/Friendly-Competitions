@@ -1,4 +1,4 @@
-import * as admin from "firebase-admin";
+import { getFirestore } from "../Utilities/firstore";
 
 interface Statistics {
     golds: number;
@@ -38,6 +38,7 @@ class User {
      * @return {Promise<void>} A promise that completes when the update is finished
      */
     async updateStatisticsWithNewRank(rank: number): Promise<void> {
+        const firestore = getFirestore();
         let statistics = this.statistics;
         if (statistics == null) statistics = {golds: 0, silvers: 0, bronzes: 0};
         
@@ -53,7 +54,7 @@ class User {
         }
 
         this.statistics = statistics;
-        return admin.firestore().doc(`users/${this.id}`)
+        return firestore.doc(`users/${this.id}`)
             .update({statistics: statistics})
             .then();
     }

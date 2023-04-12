@@ -9,13 +9,14 @@ import { FriendRequestAction, handleFriendRequest } from "./Handlers/friends/han
 import { joinCompetition } from "./Handlers/competitions/joinCompetition";
 import { leaveCompetition } from "./Handlers/competitions/leaveCompetition";
 import { completeCompetitionsForDate, completeCompetitionsForYesterday } from "./Handlers/jobs/completeCompetitions";
-import { sendNewCompetitionInvites } from "./Handlers/competitions/sendNewCompetitionInvites";
-import { updateUserCompetitionStandingsLEGACY, updateCompetitionStandingsLEGACY } from "./Handlers/competitions/updateCompetitionStandingsLEGACY";
-import { updateActivitySummaryScores } from "./Handlers/jobs/updateActivitySummaryScores";
-import { updateWorkoutScores } from "./Handlers/jobs/updateWorkoutScores";
-import { handleCompetitionUpdate } from "./Handlers/jobs/updateCompetitionStandings";
-import { calculateCompetitionScores } from "./Handlers/jobs/calculateCompetitionScores";
 import { updateCompetitionRanks } from "./Handlers/competitions/updateCompetitionRanks";
+import { updateUserCompetitionStandingsLEGACY, updateCompetitionStandingsLEGACY } from "./Handlers/competitions/updateCompetitionStandingsLEGACY";
+import { updateActivitySummaryScores } from "./Handlers/jobs/scores/updateActivitySummaryScores";
+import { updateWorkoutScores } from "./Handlers/jobs/scores/updateWorkoutScores";
+import { handleCompetitionUpdate } from "./Handlers/jobs/handleCompetitionUpdate";
+import { calculateCompetitionScores } from "./Handlers/jobs/scores/calculateCompetitionScores";
+import { handleCompetitionCreate } from "./Handlers/jobs/handleCompetitionCreate";
+import { InvocationCache, InvocationCacheContainer } from "./Utilities/Cache";
 
 admin.initializeApp();
 
@@ -81,11 +82,18 @@ exports.leaveCompetition = functions.https.onCall(async (data, context) => {
     await leaveCompetition(competitionID, userID);
 });
 
-exports.sendNewCompetitionInvites = functions.firestore
+exports.onCompetitionCreate = functions.firestore
     .document("competitions/{competitionID}")
-    .onCreate(async (_snapshot, context) => {
-        const competitionID: string = context.params.competitionID;
-        await sendNewCompetitionInvites(competitionID);
+    .onCreate(async snapshot => {
+        await handleCompetitionCreate(snapshot);
+    });
+
+exports.onCompetitionUpdate = functions.firestore
+    .document("competitions/{competitionID}")
+    .onUpdate(async snapshot => {
+        const before = snapshot.before;
+        const after = snapshot.after;
+        await handleCompetitionUpdate(before, after);
     });
 
 // Friends
@@ -132,14 +140,6 @@ exports.updateWorkoutScores = functions.firestore
         await updateWorkoutScores(userID, before, after);
     });
 
-exports.onCompetitionUpdate = functions.firestore
-    .document("competitions/{competitionID}")
-    .onUpdate(async snapshot => {
-        const before = snapshot.before;
-        const after = snapshot.after;
-        await handleCompetitionUpdate(before, after);
-    });
-
 // Jobs
 
 // exports.cleanScoringData = functions.pubsub.schedule("every day 02:00")
@@ -155,7 +155,12 @@ exports.completeCompetitions = functions.pubsub.schedule("every day 12:00")
 
 exports.calculateCompetitionScores = functions.pubsub.schedule("every 15 minutes")
     .timeZone("America/Toronto")
-    .onRun(async () => await calculateCompetitionScores());
+    .onRun(async context => {
+        const cache = InvocationCacheContainer.getInstance();
+        cache.invocationCaches.set(context.eventId, new InvocationCache());
+        await calculateCompetitionScores();
+        cache.invocationCaches.delete(context.eventId);
+    });
 
 // Developer
 

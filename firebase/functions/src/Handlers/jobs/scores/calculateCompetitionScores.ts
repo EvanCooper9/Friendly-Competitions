@@ -1,8 +1,8 @@
 import moment = require("moment");
-import { getFirestore } from "../../Utilities/firstore";
-import { Competition } from "../../Models/Competition";
+import { getFirestore } from "../../../Utilities/firstore";
+import { Competition } from "../../../Models/Competition";
 import { remoteConfig } from "firebase-admin";
-import { Standing } from "../../Models/Standing";
+import { Standing } from "../../../Models/Standing";
 
 /**
  * Calculates competition scores

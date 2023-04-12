@@ -11,12 +11,12 @@ final class RootViewModel: ObservableObject {
 
     // MARK: - Private Properties
 
-    @Injected(\.appState) private var appState
+    @Injected(\.deepLinkManager) private var deepLinkManager
 
     // MARK: - Lifecycle
 
     init() {
-        appState.deepLink
+        deepLinkManager.deepLink
             .unwrap()
             .removeDuplicates()
             .mapToValue(.home)

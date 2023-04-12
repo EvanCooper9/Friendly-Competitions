@@ -13,6 +13,7 @@ final class HomeViewModelTests: FCTestCase {
     private var analyticsManager: AnalyticsManagingMock!
     private var appState: AppStateProvidingMock!
     private var competitionsManager: CompetitionsManagingMock!
+    private var deepLinkManager: DeepLinkManagingMock!
     private var friendsManager: FriendsManagingMock!
     private var permissionsManager: PermissionsManagingMock!
     private var premiumManager: PremiumManagingMock!
@@ -27,6 +28,7 @@ final class HomeViewModelTests: FCTestCase {
         analyticsManager = .init()
         appState = .init()
         competitionsManager = .init()
+        deepLinkManager = .init()
         friendsManager = .init()
         permissionsManager = .init()
         premiumManager = .init()
@@ -35,10 +37,10 @@ final class HomeViewModelTests: FCTestCase {
         cancellables = .init()
 
         activitySummaryManager.activitySummary = .never()
-        appState.deepLink = .never()
         competitionsManager.competitions = .never()
         competitionsManager.invitedCompetitions = .never()
         competitionsManager.hasPremiumResults = .never()
+        deepLinkManager.deepLink = .never()
         friendsManager.friends = .never()
         friendsManager.friendRequests = .never()
         friendsManager.friendActivitySummaries = .never()
@@ -55,17 +57,6 @@ final class HomeViewModelTests: FCTestCase {
         container.premiumManager.register { self.premiumManager }
         container.scheduler.register { self.scheduler.eraseToAnyScheduler() }
         container.userManager.register { self.userManager }
-    }
-
-    override func tearDown() {
-        super.tearDown()
-        activitySummaryManager = nil
-        competitionsManager = nil
-        friendsManager = nil
-        permissionsManager = nil
-        scheduler = nil
-        userManager = nil
-        cancellables = nil
     }
 
     func testThatActivitySummaryUpdates() {

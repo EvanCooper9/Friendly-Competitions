@@ -14,6 +14,7 @@ final class FriendlyCompetitionsAppModel: ObservableObject {
 
     @Injected(\.appState) private var appState
     @Injected(\.authenticationManager) private var authenticationManager
+    @Injected(\.deepLinkManager) private var deepLinkManager
 
     // MARK: - Lifecycle
 
@@ -26,7 +27,6 @@ final class FriendlyCompetitionsAppModel: ObservableObject {
     // MARK: - Public Methods
 
     func handle(url: URL) {
-        guard let deepLink = DeepLink(from: url) else { return }
-        appState.push(deepLink: deepLink)
+        deepLinkManager.handle(url: url)
     }
 }

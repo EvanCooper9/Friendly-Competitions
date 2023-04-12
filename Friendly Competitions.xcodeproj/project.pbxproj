@@ -136,6 +136,8 @@
 		ED3D85F7295F676800C3D152 /* CompetitionResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3D85F6295F676800C3D152 /* CompetitionResult.swift */; };
 		ED3EAB7929E758DE0047C43E /* HideNameLearnMoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3EAB7829E758DE0047C43E /* HideNameLearnMoreView.swift */; };
 		ED3EAB7729E746B90047C43E /* FirebasePerformance in Frameworks */ = {isa = PBXBuildFile; productRef = ED3EAB7629E746B90047C43E /* FirebasePerformance */; };
+		ED3EAB7129E667970047C43E /* DeepLinkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3EAB7029E667970047C43E /* DeepLinkManager.swift */; };
+		ED3EAB7329E668620047C43E /* DeepLinkManager+Factory.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3EAB7229E668620047C43E /* DeepLinkManager+Factory.swift */; };
 		ED3ED8F7284F951800B5100F /* AutoMockable.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3ED8F6284F951800B5100F /* AutoMockable.generated.swift */; };
 		ED438FF727F7B3B600D72F99 /* View+ConfirmationDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED438FF627F7B3B600D72F99 /* View+ConfirmationDialog.swift */; };
 		ED438FF927F7C2B900D72F99 /* View+Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED438FF827F7C2B900D72F99 /* View+Analytics.swift */; };
@@ -377,6 +379,8 @@
 		ED3D5F2F295E472500211E86 /* SignInViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInViewModelTests.swift; sourceTree = "<group>"; };
 		ED3D85F6295F676800C3D152 /* CompetitionResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionResult.swift; sourceTree = "<group>"; };
 		ED3EAB7829E758DE0047C43E /* HideNameLearnMoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HideNameLearnMoreView.swift; sourceTree = "<group>"; };
+		ED3EAB7029E667970047C43E /* DeepLinkManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeepLinkManager.swift; sourceTree = "<group>"; };
+		ED3EAB7229E668620047C43E /* DeepLinkManager+Factory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DeepLinkManager+Factory.swift"; sourceTree = "<group>"; };
 		ED3ED8F6284F951800B5100F /* AutoMockable.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AutoMockable.generated.swift; sourceTree = "<group>"; };
 		ED438FF627F7B3B600D72F99 /* View+ConfirmationDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+ConfirmationDialog.swift"; sourceTree = "<group>"; };
 		ED438FF827F7C2B900D72F99 /* View+Analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Analytics.swift"; sourceTree = "<group>"; };
@@ -718,10 +722,10 @@
 			children = (
 				C163E30026F2344D00C9EC30 /* Info.plist */,
 				C1E6406226F4395200E3E70A /* FriendlyCompetitions.entitlements */,
+				C1B2F4E3272B505C0028449F /* AppDelegate.swift */,
 				ED1F8DF129E5F7A20009B986 /* AppLauncher.swift */,
 				C1691DC626D55FCF006FFA30 /* FriendlyCompetitions.swift */,
 				EDA61C0E2977317E00370C5C /* FriendlyCompetitionsAppModel.swift */,
-				C1B2F4E3272B505C0028449F /* AppDelegate.swift */,
 				ED879C1B29A3BB580007DB91 /* API */,
 				ED4F721629C92FBE007C5864 /* App Services */,
 				ED879C6029A416A70007DB91 /* App State */,
@@ -845,6 +849,7 @@
 				ED7881AE2850F70C00C7F6CB /* Analytics */,
 				ED7881A92850F6B400C7F6CB /* Authentication */,
 				ED879C2A29A40D660007DB91 /* Competitions */,
+				ED3EAB6F29E667890047C43E /* Deep Link */,
 				EDD894FE29634038009636E6 /* Environment */,
 				EDF55EE429E0989C003FA20C /* Feature Flags */,
 				ED879C4629A4118C0007DB91 /* Friends */,
@@ -1089,6 +1094,14 @@
 				ED1B85BE29C904CC008DB1F6 /* MedalsView.swift */,
 			);
 			path = Components;
+		};
+		ED3EAB6F29E667890047C43E /* Deep Link */ = {
+			isa = PBXGroup;
+			children = (
+				ED3EAB7029E667970047C43E /* DeepLinkManager.swift */,
+				ED3EAB7229E668620047C43E /* DeepLinkManager+Factory.swift */,
+			);
+			path = "Deep Link";
 			sourceTree = "<group>";
 		};
 		ED3ED8F5284F951800B5100F /* Sourcery */ = {
@@ -1845,6 +1858,7 @@
 			files = (
 				ED879C3D29A411090007DB91 /* AuthenticationManager+Factory.swift in Sources */,
 				ED1B85C629C904CC008DB1F6 /* UserView.swift in Sources */,
+				ED3EAB7329E668620047C43E /* DeepLinkManager+Factory.swift in Sources */,
 				ED879C5F29A414AB0007DB91 /* Storage+Factory.swift in Sources */,
 				EDDB923D2965D2B0006AEE72 /* CompetitionHistoryDataPoint+View.swift in Sources */,
 				ED1E08D728DF4C6600497E20 /* View+RemovingMargin.swift in Sources */,
@@ -1945,6 +1959,7 @@
 				C1EA986926D6E8C900219E84 /* CompetitionView.swift in Sources */,
 				ED1CFA9F2864E58300192E49 /* PostDecoded.swift in Sources */,
 				ED31825C29899E9D0091EE8C /* SearchManager.swift in Sources */,
+				ED3EAB7129E667970047C43E /* DeepLinkManager.swift in Sources */,
 				ED901B712802618700FE619E /* NewCompetitionViewModel.swift in Sources */,
 				EDD894FA2962A0E2009636E6 /* Product.swift in Sources */,
 				C1185A2526D6717C002E2377 /* ActivitySummary.swift in Sources */,

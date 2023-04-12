@@ -18,8 +18,8 @@ final class NotificationsManager: NSObject, NotificationsManaging {
     // MARK: - Private Properties
 
     @Injected(\.api) private var api
-    @Injected(\.appState) private var appState
     @Injected(\.analyticsManager) private var analyticsManager
+    @Injected(\.deepLinkManager) private var deepLinkManager
 
     private let _permissionStatus: CurrentValueSubject<PermissionStatus, Never>
 
@@ -81,7 +81,7 @@ extension NotificationsManager: UNUserNotificationCenterDelegate {
                   let url = URL(string: link),
                   let deepLink = DeepLink(from: url)
             else { return }
-            self?.appState.push(deepLink: deepLink)
+            self?.deepLinkManager.push(deepLink: deepLink)
         }
     }
 }

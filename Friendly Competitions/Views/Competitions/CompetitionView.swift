@@ -133,6 +133,12 @@ struct CompetitionView_Previews: PreviewProvider {
         competitionsManager.competitionPublisherForReturnValue = .just(competition)
         competitionsManager.standingsPublisherForReturnValue = .just(standings)
         competitionsManager.participantsForReturnValue = .just(participants)
+        featureFlagManager.valueForClosure = { flag in
+            switch flag {
+            case .standingsRankUpdateInterval:
+                return 7200
+            }
+        }
     }
 
     static var previews: some View {

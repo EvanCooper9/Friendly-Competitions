@@ -7,27 +7,21 @@ import XCTest
 
 final class RootViewModelTests: FCTestCase {
     
-    private var appState: AppStateProvidingMock!
+    private var deepLinkManager: DeepLinkManagingMock!
     private var cancellables: Cancellables!
     
     override func setUp() {
         super.setUp()
-        appState = .init()
-        container.appState.register { self.appState }
+        deepLinkManager = .init()
+        container.deepLinkManager.register { self.deepLinkManager }
         cancellables = .init()
-    }
-    
-    override func tearDown() {
-        super.tearDown()
-        appState = nil
-        cancellables = nil
     }
     
     func testThatTabChangesToHomeOnDeepLink() {
         let expectation = self.expectation(description: #function)
         
         let deepLinkPublisher = PassthroughSubject<DeepLink?, Never>()
-        appState.deepLink = deepLinkPublisher.eraseToAnyPublisher()
+        deepLinkManager.deepLink = deepLinkPublisher.eraseToAnyPublisher()
         
         let viewModel = RootViewModel()
         viewModel.tab = .explore
@@ -38,11 +32,5 @@ final class RootViewModelTests: FCTestCase {
         deepLinkPublisher.send(.user(id: User.evan.id))
         
         waitForExpectations(timeout: 1)
-    }
-
-    // MARK: - Private Methods
-
-    private func registerDependencies() {
-
     }
 }

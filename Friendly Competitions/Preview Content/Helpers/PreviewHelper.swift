@@ -10,6 +10,7 @@ private enum Dependencies {
     static let analyticsManager = AnalyticsManagingMock()
     static let authenticationManager = AuthenticationManagingMock()
     static let competitionsManager = CompetitionsManagingMock()
+    static let deepLinkManager = DeepLinkManagingMock()
     static let featureFlagManager = FeatureFlagManagingMock()
     static let friendsManager = FriendsManagingMock()
     static let healthKitManager = HealthKitManagingMock()
@@ -29,6 +30,7 @@ private enum Dependencies {
         Container.shared.analyticsManager.register { analyticsManager }
         Container.shared.authenticationManager.register { authenticationManager }
         Container.shared.competitionsManager.register { competitionsManager }
+        Container.shared.deepLinkManager.register { deepLinkManager }
         Container.shared.featureFlagManager.register { featureFlagManager }
         Container.shared.friendsManager.register { friendsManager }
         Container.shared.healthKitManager.register { healthKitManager }
@@ -44,8 +46,6 @@ private enum Dependencies {
         activitySummaryManager.activitySummary = .just(nil)
         activitySummaryManager.activitySummariesInReturnValue = .just([])
 
-        appState.deepLink = .just(nil)
-
         authenticationManager.emailVerified = .just(true)
         authenticationManager.loggedIn = .just(true)
 
@@ -58,6 +58,8 @@ private enum Dependencies {
         competitionsManager.appOwnedCompetitions = .just([.mockPublic])
         competitionsManager.resultsForReturnValue = .just([])
         competitionsManager.hasPremiumResults = .just(false)
+
+        deepLinkManager.deepLink = .just(nil)
 
         featureFlagManager.valueForReturnValue = nil
 
@@ -89,6 +91,7 @@ extension PreviewProvider {
     static var analyticsManager: AnalyticsManagingMock { Dependencies.analyticsManager }
     static var authenticationManager: AuthenticationManagingMock { Dependencies.authenticationManager }
     static var competitionsManager: CompetitionsManagingMock { Dependencies.competitionsManager }
+    static var deepLinkManager: DeepLinkManagingMock { Dependencies.deepLinkManager }
     static var featureFlagManager: FeatureFlagManagingMock { Dependencies.featureFlagManager }
     static var friendsManager: FriendsManagingMock { Dependencies.friendsManager }
     static var healthKitManager: HealthKitManagingMock { Dependencies.healthKitManager }

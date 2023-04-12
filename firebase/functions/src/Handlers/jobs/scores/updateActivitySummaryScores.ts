@@ -1,9 +1,9 @@
 import { DocumentSnapshot } from "firebase-admin/firestore";
-import { ActivitySummary } from "../../Models/ActivitySummary";
-import { Competition } from "../../Models/Competition";
-import { Standing } from "../../Models/Standing";
-import { getFirestore } from "../../Utilities/firstore";
-import { prepareForFirestore } from "../../Utilities/prepareForFirestore";
+import { ActivitySummary } from "../../../Models/ActivitySummary";
+import { Competition } from "../../../Models/Competition";
+import { Standing } from "../../../Models/Standing";
+import { getFirestore } from "../../../Utilities/firstore";
+import { prepareForFirestore } from "../../../Utilities/prepareForFirestore";
 
 /**
  * Updates all competition standings for the activity summary that has changed

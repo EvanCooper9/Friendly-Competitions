@@ -1,5 +1,6 @@
 import * as admin from "firebase-admin";
 import { User } from "../../Models/User";
+import { getFirestore } from "../../Utilities/firstore";
 
 /**
  * Sends a notification to all of a user's notification tokens
@@ -9,6 +10,7 @@ import { User } from "../../Models/User";
  * @param {string?} deepLink (Optional) A deep link for navigation when interacting with a notification
  */
 async function sendNotificationsToUser(user: User, title: string, body: string, deepLink?: string): Promise<void> {
+    const firestore = getFirestore();
     const tokens = user.notificationTokens;
     if (tokens === undefined) return;
 
@@ -27,7 +29,7 @@ async function sendNotificationsToUser(user: User, title: string, body: string, 
 
     await Promise.allSettled(notifications);
     const activeTokens = tokens.filter(t => !tokensToDelete.includes(t));
-    await admin.firestore().doc(`users/${user.id}`).update({ notificationTokens: activeTokens });
+    await firestore.doc(`users/${user.id}`).update({ notificationTokens: activeTokens });
 }
 
 /**

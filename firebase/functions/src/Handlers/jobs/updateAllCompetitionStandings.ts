@@ -1,4 +1,3 @@
-import { DocumentSnapshot } from "firebase-admin/firestore";
 import { Competition } from "../../Models/Competition";
 import { StringKeyDictionary } from "../../Models/Helpers/EnumDictionary";
 import { RawScoringModel, ScoringModel } from "../../Models/ScoringModel";
@@ -10,24 +9,6 @@ interface Scoring {
     id: string;
     date: Date;
     pointsForScoringModel(scoringModel: ScoringModel): number;
-}
-
-/**
- * Updates all standings for a competition
- * @param {DocumentSnapshot} before the competition document before the change
- * @param {DocumentSnapshot} after the competition document after the change
- * @return {Promise<void>} A promise that resolves when complete
- */
-async function handleCompetitionUpdate(before: DocumentSnapshot, after: DocumentSnapshot): Promise<void> {
-    const competition = new Competition(after);
-    const competitionBefore = new Competition(before);
- 
-    const scoringModelChanged = competition.scoringModel != competitionBefore.scoringModel;
-    const startDateChanged = competition.start != competitionBefore.start;
-    const endDateChanged = competition.end != competitionBefore.end;
-    if (scoringModelChanged || startDateChanged || endDateChanged) {
-        await updateAllCompetitionStandings(competition);
-    }
 }
 
 /**
@@ -71,5 +52,5 @@ async function updateAllCompetitionStandings(competition: Competition): Promise<
 }
 
 export {
-    handleCompetitionUpdate
+    updateAllCompetitionStandings
 };

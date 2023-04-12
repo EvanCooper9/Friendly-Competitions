@@ -38,7 +38,9 @@ final class NewCompetitionViewModel: ObservableObject {
     // MARK: - Private Properties
 
     @Injected(\.competitionsManager) private var competitionsManager
+    @Injected(\.deepLinkManager) private var deepLinkManager
     @Injected(\.friendsManager) private var friendsManager
+    @Injected(\.scheduler) private var scheduler
     @Injected(\.userManager) private var userManager
 
     private let createSubject = PassthroughSubject<Void, Never>()
@@ -105,10 +107,14 @@ final class NewCompetitionViewModel: ObservableObject {
                 strongSelf.competitionsManager
                     .create(competition)
                     .isLoading { strongSelf.loading = $0 }
+                    .mapToValue(competition)
                     .eraseToAnyPublisher()
             }
-            .receive(on: RunLoop.main)
-            .sink(withUnretained: self) { $0.dismiss = true }
+            .receive(on: scheduler)
+            .sink(withUnretained: self) { strongSelf, competition in
+                strongSelf.dismiss = true
+                strongSelf.deepLinkManager.push(deepLink: .competition(id: competition.id))
+            }
             .store(in: &cancellables)
     }
 

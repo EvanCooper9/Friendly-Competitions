@@ -5,6 +5,7 @@ import { User } from "../../Models/User";
 import { Constants } from "../../Utilities/Constants";
 import { getFirestore } from "../../Utilities/firstore";
 import * as notifications from "../notifications/notifications";
+import { updateAllCompetitionStandings } from "./updateAllCompetitionStandings";
 
 /**
  * Completes all competitions that ended yesterday
@@ -52,6 +53,8 @@ async function completeCompetitionsForDate(date: string): Promise<void> {
 async function completeCompetition(competition: Competition): Promise<void> {
     const firestore = getFirestore();
 
+    await updateAllCompetitionStandings(competition);
+    
     await competition.recordResults();
     await competition.kickInactiveUsers();
 

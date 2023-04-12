@@ -28,10 +28,10 @@ final class HomeViewModel: ObservableObject {
 
     // MARK: - Private Properties
 
-    @Injected(\.appState) private var appState
     @Injected(\.activitySummaryManager) private var activitySummaryManager
     @Injected(\.analyticsManager) private var analyticsManager
     @Injected(\.competitionsManager) private var competitionsManager
+    @Injected(\.deepLinkManager) private var deepLinkManager
     @Injected(\.friendsManager) private var friendsManager
     @Injected(\.permissionsManager) private var permissionsManager
     @Injected(\.premiumManager) private var premiumManager
@@ -55,7 +55,7 @@ final class HomeViewModel: ObservableObject {
             .assign(to: &$showDeveloper)
         #endif
 
-        appState.deepLink
+        deepLinkManager.deepLink
             .flatMapLatest(withUnretained: self) { strongSelf, deepLink -> AnyPublisher<[NavigationDestination], Never> in
                 switch deepLink {
                 case .user(let id):
@@ -99,7 +99,7 @@ final class HomeViewModel: ObservableObject {
             .assign(to: &$invitedCompetitions)
 
         Publishers
-            .CombineLatest4($competitions, $invitedCompetitions, $friendRows, appState.deepLink)
+            .CombineLatest4($competitions, $invitedCompetitions, $friendRows, deepLinkManager.deepLink)
             .map { [weak self] competitions, invitedCompetitions, friendRows, deepLink -> [NavigationDestination] in
                 guard let strongSelf = self else { return [] }
                 let homeScreenCompetitionIDs = Set(competitions.map(\.id) + invitedCompetitions.map(\.id))

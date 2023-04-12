@@ -9,7 +9,7 @@ final class CompetitionViewModel: ObservableObject {
     // MARK: - Public Properties
 
     @Published private(set) var canEdit = false
-    var confirmationTitle: String { actionRequiringConfirmation?.confirmationTitle ?? "" }
+    var confirmationTitle: String { actionRequiringConfirmation?.confirmationTitle ?? L10n.Confirmation.areYouSure }
     @Published var confirmationRequired = false
     @Published var competition: Competition
     @Published var editButtonTitle = L10n.Competition.Action.Edit.buttonTitle
@@ -22,6 +22,7 @@ final class CompetitionViewModel: ObservableObject {
     @Published private(set) var loading = false
     @Published private(set) var loadingStandings = false
     @Published private(set) var showShowMoreButton = false
+    @Published var showStandingsDelayExplanation = false
 
     lazy var delayText: String? = {
         guard let delay = featureFlagManager.value(for: .standingsRankUpdateInterval) else { return nil }
@@ -281,6 +282,10 @@ final class CompetitionViewModel: ObservableObject {
 
     func showMoreTapped() {
         currentStandingsMaximum += 10
+    }
+
+    func standingsDelayMoreInfoTapped() {
+        showStandingsDelayExplanation.toggle()
     }
 }
 

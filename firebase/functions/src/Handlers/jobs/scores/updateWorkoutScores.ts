@@ -1,9 +1,9 @@
 import { DocumentSnapshot } from "firebase-admin/firestore";
-import { Competition } from "../../Models/Competition";
-import { Standing } from "../../Models/Standing";
-import { Workout } from "../../Models/Workout";
-import { getFirestore } from "../../Utilities/firstore";
-import { prepareForFirestore } from "../../Utilities/prepareForFirestore";
+import { Competition } from "../../../Models/Competition";
+import { Standing } from "../../../Models/Standing";
+import { Workout } from "../../../Models/Workout";
+import { getFirestore } from "../../../Utilities/firstore";
+import { prepareForFirestore } from "../../../Utilities/prepareForFirestore";
 
 /**
  * Updates all competition standings for the workout that has changed
