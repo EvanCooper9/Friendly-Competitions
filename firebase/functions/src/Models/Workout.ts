@@ -39,17 +39,6 @@ class Workout {
     }
 
     /**
-     * Calculate how many points are earned based on metrics from a scoring model
-     * @param {WorkoutMetric[]} workoutMetrics The metrics to filter points by
-     * @return {number} Total points based on metrics
-     */
-    pointsForMetrics(workoutMetrics: WorkoutMetric[]): number {
-        const total = 0;
-        workoutMetrics.forEach(workoutMetric => this.points[workoutMetric]);
-        return total;
-    }
-
-    /**
      * Calculate how many points are earned based on a scoring model
      * @param {ScoringModel} scoringModel the scoring model for a given competition
      * @return {number} the amount of points
@@ -64,7 +53,11 @@ class Workout {
         }
         case RawScoringModel.workout: {
             let total = 0;
-            scoringModel.workoutMetrics?.forEach(workoutMetric => total += this.points[workoutMetric]);
+            scoringModel.workoutMetrics?.forEach(workoutMetric => {
+                const points = this.points[workoutMetric];
+                if (points == undefined) return;
+                total += points;
+            });
             return Math.round(total);
         }
         }
