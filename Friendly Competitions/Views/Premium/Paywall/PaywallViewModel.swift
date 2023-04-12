@@ -66,7 +66,6 @@ final class PaywallViewModel: ObservableObject {
             .flatMapLatest(withUnretained: self) { strongSelf in
                 strongSelf.premiumManager.premium
                     .map(\.isNil.not)
-                    .eraseToAnyPublisher()
             }
             .receive(on: RunLoop.main)
             .sink(withUnretained: self) { strongSelf, hasPremium in

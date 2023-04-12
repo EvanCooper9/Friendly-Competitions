@@ -39,4 +39,10 @@ final class RootViewModelTests: FCTestCase {
         
         waitForExpectations(timeout: 1)
     }
+
+    // MARK: - Private Methods
+
+    private func registerDependencies() {
+
+    }
 }

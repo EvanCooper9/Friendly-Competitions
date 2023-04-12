@@ -2,12 +2,16 @@ import Factory
 import FirebaseAuth
 
 extension Container {
-    var authenticationManager: Factory<AuthenticationManaging> {
-        Factory(self) { AuthenticationManager() }.scope(.shared)
+    var authenticationCache: Factory<AuthenticationCache> {
+        self { UserDefaults.standard }.scope(.shared)
     }
 
-    var auth: Factory<Auth> {
-        Factory(self) {
+    var authenticationManager: Factory<AuthenticationManaging> {
+        self { AuthenticationManager() }.scope(.shared)
+    }
+
+    var auth: Factory<AuthProviding> {
+        self {
             let environment = self.environmentManager().environment
             let auth = Auth.auth()
 
@@ -22,5 +26,9 @@ extension Container {
 
             return auth
         }.scope(.shared)
+    }
+
+    var signInWithAppleProvider: Factory<SignInWithAppleProviding> {
+        self { SignInWithAppleProvider() }
     }
 }

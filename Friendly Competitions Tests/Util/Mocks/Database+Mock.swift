@@ -45,25 +45,25 @@ final class DocumentMock<Model: Codable>: Document {
         set { underlyingExists = newValue }
     }
 
-    var setDataClosure: ((Model) -> AnyPublisher<Void, Error>)?
-    func setData<T: Encodable>(from value: T) -> AnyPublisher<Void, Error> {
-        setDataClosure!(value as! Model)
+    var setClosure: ((Model) -> AnyPublisher<Void, Error>)?
+    func set<T: Encodable>(value: T) -> AnyPublisher<Void, Error> {
+        setClosure!(value as! Model)
     }
 
     var updateDataClosure: (([String: Any]) -> AnyPublisher<Void, Error>)?
-    func updateData(from data: [String: Any]) -> AnyPublisher<Void, Error> {
+    func update(fields data: [String: Any]) -> AnyPublisher<Void, Error> {
         updateDataClosure!(data)
     }
 
-    var getDocumentClosure: ((Model.Type, DatabaseSource) -> AnyPublisher<Model, Error>)?
-    func getDocument<T>(as type: T.Type, source: DatabaseSource) -> AnyPublisher<T, Error> where T : Decodable {
-        getDocumentClosure!(T.self as! Model.Type, source)
+    var getClosure: ((Model.Type, DatabaseSource) -> AnyPublisher<Model, Error>)?
+    func get<T: Decodable>(as type: T.Type, source: DatabaseSource) -> AnyPublisher<T, Error> {
+        getClosure!(T.self as! Model.Type, source)
             .map { $0 as! T }
             .eraseToAnyPublisher()
     }
 
     var getDocumentPublisherClosure: ((Model.Type) -> AnyPublisher<Model, Error>)?
-    func getDocumentPublisher<T: Decodable>(as type: T.Type) -> AnyPublisher<T, Error> {
+    func publisher<T: Decodable>(as type: T.Type) -> AnyPublisher<T, Error> {
         getDocumentPublisherClosure!(T.self as! Model.Type)
             .map { $0 as! T }
             .eraseToAnyPublisher()
@@ -77,10 +77,10 @@ final class BatchMock<Model: Decodable>: Batch {
         commitClosure!()
     }
 
-    var setDataCallCount = 0
-    var setDataClosure: ((Model, Document) -> Void)?
-    func setData<T: Encodable>(from value: T, forDocument document: Document) throws {
-        setDataCallCount += 1
-        setDataClosure!(value as! Model, document)
+    var setCallCount = 0
+    var setClosure: ((Model, Document) -> Void)?
+    func set<T: Encodable>(value: T, forDocument document: Document) throws {
+        setCallCount += 1
+        setClosure!(value as! Model, document)
     }
 }

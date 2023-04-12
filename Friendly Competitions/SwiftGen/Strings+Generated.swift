@@ -44,6 +44,12 @@ internal enum L10n {
       internal static let empty = L10n.tr("Localizable", "ActivitySummaryInfo.Value.empty", fallback: "-")
     }
   }
+  internal enum AuthenticationError {
+    /// Missing email
+    internal static let missingEmail = L10n.tr("Localizable", "AuthenticationError.missingEmail", fallback: "Missing email")
+    /// Passwords don't match
+    internal static let passwordMatch = L10n.tr("Localizable", "AuthenticationError.passwordMatch", fallback: "Passwords don't match")
+  }
   internal enum Competition {
     internal enum Action {
       internal enum AcceptInvite {
@@ -125,6 +131,32 @@ internal enum L10n {
       /// Results
       internal static let results = L10n.tr("Localizable", "Competition.Results.results", fallback: "Results")
     }
+    internal enum ScoringModel {
+      internal enum PercentOfGoals {
+        /// Every percent of an activity ring filled gains 1 point. Daily max of 600 points.
+        internal static let description = L10n.tr("Localizable", "Competition.ScoringModel.PercentOfGoals.description", fallback: "Every percent of an activity ring filled gains 1 point. Daily max of 600 points.")
+        /// Percent of Goals
+        internal static let displayName = L10n.tr("Localizable", "Competition.ScoringModel.PercentOfGoals.displayName", fallback: "Percent of Goals")
+      }
+      internal enum RawNumbers {
+        /// Every calorie, minute and hour gains 1 point. No daily max.
+        internal static let description = L10n.tr("Localizable", "Competition.ScoringModel.RawNumbers.description", fallback: "Every calorie, minute and hour gains 1 point. No daily max.")
+        /// Raw numbers
+        internal static let displayName = L10n.tr("Localizable", "Competition.ScoringModel.RawNumbers.displayName", fallback: "Raw numbers")
+      }
+      internal enum Workout {
+        /// Only %@ workouts will count towards points.
+        internal static func description(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Competition.ScoringModel.Workout.description", String(describing: p1), fallback: "Only %@ workouts will count towards points.")
+        }
+        /// Workout
+        internal static let displayName = L10n.tr("Localizable", "Competition.ScoringModel.Workout.displayName", fallback: "Workout")
+        /// %@ workout
+        internal static func displayNameWithType(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Competition.ScoringModel.Workout.displayNameWithType", String(describing: p1), fallback: "%@ workout")
+        }
+      }
+    }
     internal enum Standings {
       /// Nothing here, yet.
       internal static let empty = L10n.tr("Localizable", "Competition.Standings.empty", fallback: "Nothing here, yet.")
@@ -139,6 +171,16 @@ internal enum L10n {
     internal static let areYouSure = L10n.tr("Localizable", "Confirmation.areYouSure", fallback: "Are you sure?")
     /// Are you sure? This cannot be undone.
     internal static let areYouSureCannotBeUndone = L10n.tr("Localizable", "Confirmation.areYouSureCannotBeUndone", fallback: "Are you sure? This cannot be undone.")
+  }
+  internal enum DeepLink {
+    internal enum Competition {
+      /// Compete against me in Friendly Competitions!
+      internal static let title = L10n.tr("Localizable", "DeepLink.Competition.title", fallback: "Compete against me in Friendly Competitions!")
+    }
+    internal enum User {
+      /// Add me in Friendly Competitions!
+      internal static let title = L10n.tr("Localizable", "DeepLink.User.title", fallback: "Add me in Friendly Competitions!")
+    }
   }
   internal enum Developer {
     /// Developer
@@ -401,6 +443,8 @@ internal enum L10n {
   internal enum SignIn {
     /// Sign in with Apple
     internal static let apple = L10n.tr("Localizable", "SignIn.apple", fallback: "Sign in with Apple")
+    /// Follow the instructions in your email to reset your password.
+    internal static let checkEmail = L10n.tr("Localizable", "SignIn.checkEmail", fallback: "Follow the instructions in your email to reset your password.")
     /// Sign in with Email
     internal static let email = L10n.tr("Localizable", "SignIn.email", fallback: "Sign in with Email")
     /// Compete against groups of friends in fitness
@@ -409,6 +453,24 @@ internal enum L10n {
     internal static let title = L10n.tr("Localizable", "SignIn.title", fallback: "Friendly Compeittions")
   }
   internal enum User {
+    internal enum Action {
+      internal enum AcceptFriendRequest {
+        /// Accept invite
+        internal static let title = L10n.tr("Localizable", "User.Action.AcceptFriendRequest.title", fallback: "Accept invite")
+      }
+      internal enum DeclineFriendRequest {
+        /// Decline invite
+        internal static let title = L10n.tr("Localizable", "User.Action.DeclineFriendRequest.title", fallback: "Decline invite")
+      }
+      internal enum DeleteFriend {
+        /// Remove friend
+        internal static let title = L10n.tr("Localizable", "User.Action.DeleteFriend.title", fallback: "Remove friend")
+      }
+      internal enum RequestFriend {
+        /// Add as friend
+        internal static let title = L10n.tr("Localizable", "User.Action.RequestFriend.title", fallback: "Add as friend")
+      }
+    }
     internal enum Activity {
       /// Today's activity
       internal static let title = L10n.tr("Localizable", "User.Activity.title", fallback: "Today's activity")
@@ -429,6 +491,38 @@ internal enum L10n {
     internal static let signIn = L10n.tr("Localizable", "VerifyEmail.signIn", fallback: "Sign in")
     /// Verify your account
     internal static let title = L10n.tr("Localizable", "VerifyEmail.title", fallback: "Verify your account")
+  }
+  internal enum WorkoutMetric {
+    internal enum Distance {
+      /// Distance
+      internal static let description = L10n.tr("Localizable", "WorkoutMetric.Distance.description", fallback: "Distance")
+    }
+    internal enum HeartRate {
+      /// Heart rate
+      internal static let description = L10n.tr("Localizable", "WorkoutMetric.HeartRate.description", fallback: "Heart rate")
+    }
+    internal enum Steps {
+      /// Steps
+      internal static let description = L10n.tr("Localizable", "WorkoutMetric.Steps.description", fallback: "Steps")
+    }
+  }
+  internal enum WorkoutType {
+    internal enum Cycling {
+      /// Cycling
+      internal static let description = L10n.tr("Localizable", "WorkoutType.Cycling.description", fallback: "Cycling")
+    }
+    internal enum Running {
+      /// Running
+      internal static let description = L10n.tr("Localizable", "WorkoutType.Running.description", fallback: "Running")
+    }
+    internal enum Swimming {
+      /// Swimming
+      internal static let description = L10n.tr("Localizable", "WorkoutType.Swimming.description", fallback: "Swimming")
+    }
+    internal enum Walking {
+      /// Walking
+      internal static let description = L10n.tr("Localizable", "WorkoutType.Walking.description", fallback: "Walking")
+    }
   }
 }
 // swiftlint:enable explicit_type_interface function_parameter_count identifier_name line_length

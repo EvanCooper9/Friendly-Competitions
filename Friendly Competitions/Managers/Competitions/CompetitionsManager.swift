@@ -113,7 +113,7 @@ final class CompetitionsManager: CompetitionsManaging {
 
     func create(_ competition: Competition) -> AnyPublisher<Void, Error> {
         database.document("competitions/\(competition.id)")
-            .setData(from: competition)
+            .set(value: competition)
             .handleEvents(withUnretained: self, receiveOutput: {
                 $0.analyticsManager.log(event: .createCompetition(name: competition.name))
             })
@@ -153,14 +153,13 @@ final class CompetitionsManager: CompetitionsManaging {
 
     func search(byID competitionID: Competition.ID) -> AnyPublisher<Competition, Error> {
         database.document("competitions/\(competitionID)")
-            .getDocument(as: Competition.self)
-            .print("search competition \(competitionID)")
+            .get(as: Competition.self)
             .eraseToAnyPublisher()
     }
 
     func update(_ competition: Competition) -> AnyPublisher<Void, Error> {
         database.document("competitions/\(competition.id)")
-            .setData(from: competition)
+            .set(value: competition)
     }
 
     func results(for competitionID: Competition.ID) -> AnyPublisher<[CompetitionResult], Error> {
@@ -187,7 +186,7 @@ final class CompetitionsManager: CompetitionsManaging {
                         participantIDsToFetch.append(participantID)
                     }
                 }
-                guard participantIDsToFetch.isNotEmpty else { return .just(cached) }
+                guard participantIDsToFetch.isNotEmpty else { return AnyPublisher<[User], Error>.just(cached) }
                 return strongSelf.database.collection("users")
                     .whereField("id", asArrayOf: User.self, in: participantIDsToFetch)
                     .handleEvents(receiveOutput: { users in
@@ -201,7 +200,7 @@ final class CompetitionsManager: CompetitionsManaging {
 
     func competitionPublisher(for competitionID: Competition.ID) -> AnyPublisher<Competition, Error> {
         database.document("competitions/\(competitionID)")
-            .getDocumentPublisher(as: Competition.self)
+            .publisher(as: Competition.self)
     }
 
     func standingsPublisher(for competitionID: Competition.ID) -> AnyPublisher<[Competition.Standing], Error> {
@@ -237,17 +236,16 @@ final class CompetitionsManager: CompetitionsManaging {
             return .just(true)
         } else {
             return competitions
-                .compactMap { [weak self] competition -> AnyPublisher<Bool, Never>? in
-                    guard let strongSelf = self else { return nil }
-                    return strongSelf.results(for: competition.id)
+                .compactMap { [weak self] competition in
+                    self?.results(for: competition.id)
                         .map { $0.count > 1 }
                         .catchErrorJustReturn(false)
                 }
                 .combineLatest()
                 .map { $0.contains(true) }
-                .handleEvents(receiveOutput: { hasPremiumResults in
+                .handleEvents(withUnretained: self, receiveOutput: { strongSelf, hasPremiumResults in
                     let container = HasPremiumResultsContainerCache(id: id, hasPremiumResults: hasPremiumResults)
-                    UserDefaults.standard.encode(container, forKey: Constants.hasPremiumResultsKey)
+                    strongSelf.cache.competitionsHasPremiumResults = container
                 })
                 .eraseToAnyPublisher()
         }

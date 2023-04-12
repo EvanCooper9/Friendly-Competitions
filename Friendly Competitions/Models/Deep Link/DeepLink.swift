@@ -55,9 +55,9 @@ extension DeepLink: Sharable {
         let text: String
         switch self {
         case .user:
-            text = "Add me in Friendly Competitions!"
+            text = L10n.DeepLink.User.title
         case .competition:
-            text = "Compete against me in Friendly Competitions!"
+            text = L10n.DeepLink.User.title
         case .competitionResults:
             return []
         }

@@ -4,10 +4,10 @@ import Foundation
 
 extension Container {
     var scheduler: Factory<AnySchedulerOf<RunLoop>> {
-        Factory(self) { AnySchedulerOf<RunLoop>.main }
+        self { AnySchedulerOf<RunLoop>.main }
     }
 
     var usersCache: Factory<UsersCache> {
-        Factory(self) { UsersStore() }.scope(.shared)
+        self { UsersStore() }.scope(.shared)
     }
 }

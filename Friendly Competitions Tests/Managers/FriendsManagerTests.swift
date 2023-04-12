@@ -60,7 +60,6 @@ final class FriendsManagerTests: FCTestCase {
         
         let manager = FriendsManager()
         manager.friends
-            .print(#function)
             .expect([], [.andrew], expectation: expectation)
             .store(in: &cancellables)
         

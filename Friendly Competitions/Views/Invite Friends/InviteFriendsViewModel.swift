@@ -65,6 +65,7 @@ final class InviteFriendsViewModel: ObservableObject {
                     .searchForUsers(byName: searchText)
                     .isLoading { strongSelf.loading = $0 }
                     .catchErrorJustReturn([])
+                    .eraseToAnyPublisher()
             }
             .combineLatest(alreadyInvited, incomingRequests)
             .map { [weak self] users, alreadyInvited, incomingRequests -> [RowConfig] in

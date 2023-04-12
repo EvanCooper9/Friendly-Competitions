@@ -6,10 +6,6 @@ import Foundation
 
 final class SignInViewModel: ObservableObject {
 
-    private enum Constants {
-        static let checkEmail = "Follow the instructions in your email to reset your password"
-    }
-
     // MARK: - Public Properties
 
     @Published var loading = false
@@ -26,7 +22,7 @@ final class SignInViewModel: ObservableObject {
     @Injected(\.authenticationManager) private var authenticationManager
 
     private let forgotSubject = PassthroughSubject<Void, Never>()
-    private let signInSubject = PassthroughSubject<SignInMethod, Never>()
+    private let signInSubject = PassthroughSubject<AuthenticationMethod, Never>()
     private let signUpSubject = PassthroughSubject<Void, Never>()
     private let hudSubject = PassthroughSubject<HUD, Never>()
     private var cancellables = Cancellables()
@@ -50,18 +46,17 @@ final class SignInViewModel: ObservableObject {
                 case .failure(let error):
                     strongSelf.hudSubject.send(.error(error))
                 case .success:
-                    strongSelf.hudSubject.send(.success(text: Constants.checkEmail))
+                    strongSelf.hudSubject.send(.success(text: L10n.SignIn.checkEmail))
                 }
             })
             .store(in: &cancellables)
 
         signInSubject
-            .flatMapLatest(withUnretained: self) { strongSelf, signInMethod in
+            .flatMapLatest(withUnretained: self) { strongSelf, authenticationMethod in
                 strongSelf.authenticationManager
-                    .signIn(with: signInMethod)
+                    .signIn(with: authenticationMethod)
                     .isLoading { strongSelf.loading = $0 }
                     .mapToResult()
-                    .eraseToAnyPublisher()
             }
             .receive(on: RunLoop.main)
             .sink(withUnretained: self, receiveValue: { strongSelf, result in

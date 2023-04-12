@@ -1,18 +1,14 @@
-import AuthenticationServices
 import Combine
-import CryptoKit
+import CombineExt
 import ECKit
 import Factory
-import Firebase
-import FirebaseAuthCombineSwift
-import SwiftUI
 
 // sourcery: AutoMockable
 protocol AuthenticationManaging {
     var emailVerified: AnyPublisher<Bool, Never> { get }
     var loggedIn: AnyPublisher<Bool, Never> { get }
 
-    func signIn(with signInMethod: SignInMethod) -> AnyPublisher<Void, Error>
+    func signIn(with authenticationMethod: AuthenticationMethod) -> AnyPublisher<Void, Error>
     func signUp(name: String, email: String, password: String, passwordConfirmation: String) -> AnyPublisher<Void, Error>
     func deleteAccount() -> AnyPublisher<Void, Error>
     func signOut() throws
@@ -22,7 +18,7 @@ protocol AuthenticationManaging {
     func sendPasswordReset(to email: String) -> AnyPublisher<Void, Error>
 }
 
-final class AuthenticationManager: NSObject, AuthenticationManaging {
+final class AuthenticationManager: AuthenticationManaging {
 
     // MARK: - Public Properties
 
@@ -32,100 +28,92 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
     // MARK: - Private Properties
 
     @Injected(\.auth) private var auth
+    @Injected(\.authenticationCache) private var authenticationCache
     @Injected(\.database) private var database
-
-    @UserDefault("current_user") private var currentUser: User?
+    @Injected(\.scheduler) private var scheduler
+    @Injected(\.signInWithAppleProvider) private var signInWithAppleProvider
 
     private var emailVerifiedSubject: CurrentValueSubject<Bool, Never>!
     private var loggedInSubject: CurrentValueSubject<Bool, Never>!
 
-    private var currentNonce: String?
     private var userListener: AnyCancellable?
-    private var signInWithAppleSubject: PassthroughSubject<Void, Error>?
+    private var createdUserSubject = ReplaySubject<User, Error>(bufferSize: 1)
 
     private var cancellables = Cancellables()
 
     // MARK: - Lifecycle
 
-    override init() {
-        super.init()
-
-        emailVerifiedSubject = .init(auth.currentUser?.isEmailVerified ?? false)
-        loggedInSubject = .init(currentUser != nil)
-
-        if let currentUser {
-            registerUserManager(with: currentUser)
+    init() {
+        emailVerifiedSubject = .init(auth.user?.isEmailVerified ?? false)
+        if let user = authenticationCache.user {
+            registerUserManager(with: user)
+            loggedInSubject = .init(true)
+        } else {
+            loggedInSubject = .init(false)
         }
-
-        $currentUser
-            .removeDuplicates { $0?.id == $1?.id }
-            .dropFirst()
-            .receive(on: RunLoop.main)
-            .sink(withUnretained: self) { strongSelf, user in
-                if let user = user {
-                    strongSelf.registerUserManager(with: user)
-                } else {
-                    Container.shared.userManager.reset()
-                }
-                strongSelf.loggedInSubject.send(user != nil)
-            }
-            .store(in: &cancellables)
-
         listenForAuth()
     }
 
     // MARK: - Public Methods
 
-    func signIn(with signInMethod: SignInMethod) -> AnyPublisher<Void, Error> {
-        switch signInMethod {
+    func signIn(with authenticationMethod: AuthenticationMethod) -> AnyPublisher<Void, Error> {
+        switch authenticationMethod {
         case .apple:
-            return signInWithApple()
+            createdUserSubject = .init(bufferSize: 1)
+            return signInWithAppleProvider.signIn()
+                .flatMapLatest(withUnretained: self) { strongSelf, authUser in
+                    let document = strongSelf.database.document("users/\(authUser.id)")
+                    return document.exists.flatMap { exists -> AnyPublisher<Void, Error> in
+                        guard !exists else { return .just(()) }
+
+                        // This is a new user, we need to create them in the database
+                        return strongSelf.createUser(from: authUser)
+                            .mapToVoid()
+                            .eraseToAnyPublisher()
+                    }
+                }
+                .mapToVoid()
+                .eraseToAnyPublisher()
         case .email(let email, let password):
-            return auth
-                .signIn(withEmail: email, password: password)
+            return auth.signIn(with: .email(email: email, password: password))
                 .mapToVoid()
                 .eraseToAnyPublisher()
         }
     }
 
     func signUp(name: String, email: String, password: String, passwordConfirmation: String) -> AnyPublisher<Void, Error> {
-        guard password == passwordConfirmation else { return .error(SignUpError.passwordMatch) }
-        return auth
-            .createUser(withEmail: email, password: password)
-            .map(\.user)
-            .flatMapAsync { [weak self] user in
-                guard let strongSelf = self else { return }
-                let changeRequest = user.createProfileChangeRequest()
-                changeRequest.displayName = name
-                try await changeRequest.commitChanges()
-                try await strongSelf.updateFirestoreUserWithAuthUser(user)
-                try await user.sendEmailVerification()
-            }
+        guard password == passwordConfirmation else { return .error(AuthenticationError.passwordMatch) }
+        createdUserSubject = .init(bufferSize: 1)
+        return auth.signUp(with: .email(email: email, password: password))
+            .flatMapLatest { $0.set(displayName: name) }
+            .flatMapLatest { $0.sendEmailVerification().mapToValue($0) }
+            .flatMapLatest(withUnretained: self) { $0.createUser(from: $1) }
+            .mapToVoid()
             .eraseToAnyPublisher()
     }
 
     func checkEmailVerification() -> AnyPublisher<Void, Error> {
-        guard let firebaseUser = auth.currentUser else { return .just(()) }
-        return .fromAsync { try await firebaseUser.reload() }
-            .receive(on: RunLoop.main)
-            .handleEvents(withUnretained: self, receiveOutput: { $0.emailVerifiedSubject.send(firebaseUser.isEmailVerified) })
+        guard let authUser = auth.user else { return .just(()) }
+        return .fromAsync { try await authUser.reload() }
+            .receive(on: scheduler)
+            .handleEvents(withUnretained: self, receiveOutput: { $0.emailVerifiedSubject.send(authUser.isEmailVerified) })
             .eraseToAnyPublisher()
     }
 
     func resendEmailVerification() -> AnyPublisher<Void, Error> {
-        guard let user = auth.currentUser else { return .just(()) }
+        guard let user = auth.user else { return .just(()) }
         return user.sendEmailVerification().eraseToAnyPublisher()
     }
 
     func sendPasswordReset(to email: String) -> AnyPublisher<Void, Error> {
-        Auth.auth()
-            .sendPasswordReset(withEmail: email)
+        auth
+            .sendPasswordReset(to: email)
             .eraseToAnyPublisher()
     }
 
     func deleteAccount() -> AnyPublisher<Void, Error> {
         .fromAsync { [weak self] in
-            try await self?.auth.currentUser?.delete()
+            try await self?.auth.user?.delete()
         }
     }
 
@@ -135,121 +123,63 @@ final class AuthenticationManager: NSObject, AuthenticationManaging {
 
     // MARK: - Private Methods
 
-    private func signInWithApple() -> AnyPublisher<Void, Error> {
-        let nonce = Nonce.randomNonceString()
-        currentNonce = nonce
-        let appleIDProvider = ASAuthorizationAppleIDProvider()
-        let request = appleIDProvider.createRequest()
-        request.requestedScopes = [.fullName, .email]
-        request.nonce = sha256(nonce)
-
-        let authorizationController = ASAuthorizationController(authorizationRequests: [request])
-        authorizationController.delegate = self
-        authorizationController.presentationContextProvider = self
-        authorizationController.performRequests()
-
-        let subject = PassthroughSubject<Void, Error>()
-        signInWithAppleSubject = subject
-        return subject.eraseToAnyPublisher()
-    }
-
-    private func signIn(email: String, password: String) async throws {
-        try await Auth.auth().signIn(withEmail: email, password: password)
-    }
-
+    /// Listen for sign in/out, and handle the associated user.
+    /// - Set the email verification state
+    /// - Register the user manager for the rest of the app
+    /// - Set the logged in state
     private func listenForAuth() {
-        Auth.auth()
-            .authStateDidChangePublisher()
-            .sinkAsync { [weak self] firebaseUser in
-                guard let firebaseUser = firebaseUser else {
-                    self?.currentUser = nil
-                    self?.userListener = nil
-                    return
+        auth.userPublisher()
+            .handleEvents(withUnretained: self, receiveOutput: { strongSelf, authUser in
+                strongSelf.emailVerifiedSubject.send(authUser?.isEmailVerified ?? false)
+            })
+            .flatMapLatest(withUnretained: self) { (strongSelf: AuthenticationManager, authUser) -> AnyPublisher<User?, Never> in
+                guard let authUser else { return .just(nil) }
+                let document = strongSelf.database.document("users/\(authUser.id)")
+                return document.exists.flatMap { exists in
+                    if exists {
+                        return document.get(as: User.self)
+                    } else {
+                        /// This is a new user, the signup methods are responsible for creating the user
+                        /// in the database. Listen for that update here.
+                        return strongSelf.createdUserSubject.eraseToAnyPublisher()
+                    }
                 }
-
-                try await self?.updateFirestoreUserWithAuthUser(firebaseUser)
+                .asOptional()
+                .catchErrorJustReturn(nil)
+                .eraseToAnyPublisher()
+            }
+            .sink(withUnretained: self) { strongSelf, user in
+                if let user {
+                    strongSelf.registerUserManager(with: user)
+                } else {
+                    Container.shared.userManager.reset()
+                }
+                strongSelf.loggedInSubject.send(user != nil)
             }
             .store(in: &cancellables)
     }
 
-    private func sha256(_ input: String) -> String {
-        SHA256.hash(data: Data(input.utf8))
-            .compactMap { String(format: "%02x", $0) }
-            .joined()
-    }
-
     private func registerUserManager(with user: User) {
         Container.shared.userManager.register { [weak self] in
-            guard let strongSelf = self else { fatalError("This should not happen") }
             let userManager = UserManager(user: user)
-            strongSelf.userListener = userManager.userPublisher
-                .receive(on: RunLoop.main)
-                .map(User?.init)
-                .assign(to: \.currentUser, on: strongSelf, ownership: .weak)
+            self?.userListener = userManager.userPublisher.sink { self?.authenticationCache.user = $0 }
             return userManager
         }
     }
 
-    private func updateFirestoreUserWithAuthUser(_ firebaseUser: FirebaseAuth.User) async throws {
-        guard let email = firebaseUser.email else { return }
-        let name = firebaseUser.displayName ?? ""
-        let userJson = [
-            "id": firebaseUser.uid,
-            "email": email,
-            "name": name
-        ]
-
-        do {
-            try await database.document("users/\(firebaseUser.uid)").updateData(from: userJson).async()
-        } catch {
-            guard let nsError = error as NSError?, nsError.domain == "FIRFirestoreErrorDomain", nsError.code == 5 else { return }
-            let user = User(id: firebaseUser.uid, email: email, name: name)
-            try await database.document("users/\(user.id)").setData(from: user).async()
+    /// Creates a user in the database based on the auth user
+    /// - Parameter authUser: the auth user
+    /// - Returns: A publisher that emits the user that was created in the database
+    private func createUser(from authUser: AuthUser) -> AnyPublisher<User, Error> {
+        guard let email = authUser.email else {
+            return .error(AuthenticationError.missingEmail)
         }
 
-        let user = try await self.database.document("users/\(firebaseUser.uid)").getDocument(as: User.self).async()
-        DispatchQueue.main.async {
-            self.currentUser = user
-            self.emailVerifiedSubject.send(firebaseUser.isEmailVerified || firebaseUser.email == "review@apple.com")
-        }
-    }
-}
-
-extension AuthenticationManager: ASAuthorizationControllerDelegate {
-    func authorizationController(controller: ASAuthorizationController, didCompleteWithAuthorization authorization: ASAuthorization) {
-        guard let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential,
-              let tokenData = appleIDCredential.identityToken,
-              let idToken = String(data: tokenData, encoding: .utf8)
-        else { return }
-
-        let appleIDName = [appleIDCredential.fullName?.givenName, appleIDCredential.fullName?.familyName]
-            .compactMap { $0 }
-            .joined(separator: " ")
-
-        let credential = OAuthProvider.credential(withProviderID: "apple.com", idToken: idToken, rawNonce: currentNonce)
-
-        Auth.auth().signIn(with: credential) { [weak self] authResult, _ in
-            guard let firebaseUser = authResult?.user else { return }
-            let displayName = appleIDName.nilIfEmpty ?? firebaseUser.displayName ?? ""
-            guard firebaseUser.displayName != displayName else { return }
-
-            let changeRequest = firebaseUser.createProfileChangeRequest()
-            changeRequest.displayName = displayName
-            changeRequest.commitChanges { [weak self] _ in
-                Task { [weak self] in
-                    try await self?.updateFirestoreUserWithAuthUser(firebaseUser)
-                }
-            }
-        }
-    }
-
-    func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
-        signInWithAppleSubject?.send(completion: .failure(error))
-    }
-}
-
-extension AuthenticationManager: ASAuthorizationControllerPresentationContextProviding {
-    func presentationAnchor(for controller: ASAuthorizationController) -> ASPresentationAnchor {
-        .init()
+        let user = User(id: authUser.id, email: email, name: authUser.displayName ?? "")
+        return database.document("users/\(user.id)")
+            .set(value: user)
+            .mapToValue(user)
+            .handleEvents(withUnretained: self, receiveOutput: { $0.createdUserSubject.send($1) })
+            .eraseToAnyPublisher()
     }
 }

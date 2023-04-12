@@ -36,14 +36,16 @@ final class HealthKitDataHelper<Data> {
         // Ignore errors from fetchClosure & uploadClosure so that finished is still trigered
         fetchAndUpload
             .debounce(for: .seconds(1), scheduler: scheduler)
-            .flatMapLatest { dateInterval -> AnyPublisher<Data?, Never> in
+            .flatMapLatest { dateInterval in
                 fetchClosure(dateInterval)
                     .map { $0 as Data? }
                     .catchErrorJustReturn(nil)
             }
             .flatMapLatest { data -> AnyPublisher<Void, Never> in
                 guard let data else { return .just(()) }
-                return uploadClosure(data).catchErrorJustReturn(())
+                return uploadClosure(data)
+                    .catchErrorJustReturn(())
+                    .eraseToAnyPublisher()
             }
             .mapToVoid()
             .sink(withUnretained: self, receiveValue: { $0.fetchAndUploadFinished.send() })

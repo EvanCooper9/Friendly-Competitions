@@ -13,13 +13,13 @@ extension UserViewAction {
     var buttonTitle: String {
         switch self {
         case .acceptFriendRequest:
-            return "Accept invite"
+            return L10n.User.Action.AcceptFriendRequest.title
         case .denyFriendRequest:
-            return "Decline invite"
+            return L10n.User.Action.DeclineFriendRequest.title
         case .request:
-            return "Add as friend"
+            return L10n.User.Action.RequestFriend.title
         case .deleteFriend:
-            return "Remove friend"
+            return L10n.User.Action.DeleteFriend.title
         }
     }
 

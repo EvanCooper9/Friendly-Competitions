@@ -54,6 +54,10 @@
 // User
 "User.Activity.title" = "Today's activity";
 "User.Medals.title" = "Medals";
+"User.Action.AcceptFriendRequest.title" = "Accept invite";
+"User.Action.DeclineFriendRequest.title" = "Decline invite";
+"User.Action.RequestFriend.title" = "Add as friend";
+"User.Action.DeleteFriend.title" = "Remove friend";
 
 // Explore
 "Explore.title" = "Explore";
@@ -66,6 +70,13 @@
 "Competition.Details.ends" = "Ends";
 "Competition.Details.scoringModel" = "Scoring model";
 "Competition.Details.repeats" = "Repeats";
+"Competition.ScoringModel.PercentOfGoals.displayName" = "Percent of Goals";
+"Competition.ScoringModel.RawNumbers.displayName" = "Raw numbers";
+"Competition.ScoringModel.Workout.displayName" = "Workout";
+"Competition.ScoringModel.Workout.displayNameWithType" = "%@ workout";
+"Competition.ScoringModel.PercentOfGoals.description" = "Every percent of an activity ring filled gains 1 point. Daily max of 600 points.";
+"Competition.ScoringModel.RawNumbers.description" = "Every calorie, minute and hour gains 1 point. No daily max.";
+"Competition.ScoringModel.Workout.description" = "Only %@ workouts will count towards points.";
 "Competition.Standings.title" = "Standings";
 "Competition.Standings.showMore" = "Show more";
 "Competition.Standings.empty" = "Nothing here, yet.";
@@ -156,6 +167,7 @@
 "SignIn.subTitle" = "Compete against groups of friends in fitness";
 "SignIn.apple" = "Sign in with Apple";
 "SignIn.email" = "Sign in with Email";
+"SignIn.checkEmail" = "Follow the instructions in your email to reset your password.";
 
 // Verify Email
 "VerifyEmail.signIn" = "Sign in";
@@ -174,3 +186,20 @@
 "Generics.continue" = "Continue";
 "Generics.save" = "Save";
 "Generics.Symbols.apersand" = "&";
+
+// Authentication
+"AuthenticationError.missingEmail" = "Missing email";
+"AuthenticationError.passwordMatch" = "Passwords don't match";
+
+// Deep Link
+"DeepLink.User.title" = "Add me in Friendly Competitions!";
+"DeepLink.Competition.title" = "Compete against me in Friendly Competitions!";
+
+// Workout
+"WorkoutType.Cycling.description" = "Cycling";
+"WorkoutType.Running.description" = "Running";
+"WorkoutType.Swimming.description" = "Swimming";
+"WorkoutType.Walking.description" = "Walking";
+"WorkoutMetric.Distance.description" = "Distance";
+"WorkoutMetric.HeartRate.description" = "Heart rate";
+"WorkoutMetric.Steps.description" = "Steps";

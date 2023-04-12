@@ -63,3 +63,12 @@ identifier_name:
     - URL
     - GlobalAPIKey
 reporter: "xcode" # reporter type (xcode, json, csv, checkstyle, codeclimate, junit, html, emoji, sonarqube, markdown, github-actions-logging)
+
+custom_rules:
+  user_defaults:
+    excluded:
+      - ".*Cache\\.swift"
+      - ".*Factory\\.swift"
+    name: "User defaults"
+    regex: "(UserDefaults)"
+    message: "User defaults should be abstracted behind a cache protocol"

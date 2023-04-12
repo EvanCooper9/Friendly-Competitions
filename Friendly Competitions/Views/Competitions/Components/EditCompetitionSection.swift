@@ -4,13 +4,23 @@ import SwiftUIX
 
 struct EditCompetitionSection: View {
 
-    private enum UnderlyingScoringModel: String, CaseIterable, CustomStringConvertible, Identifiable {
-        case percentOfGoals = "Percent of Goals"
-        case rawNumbers = "Raw Numbers"
-        case workout = "Workout"
+    private enum UnderlyingScoringModel: CaseIterable, CustomStringConvertible, Identifiable {
+        case percentOfGoals
+        case rawNumbers
+        case workout
 
-        var id: RawValue { description }
-        var description: String { rawValue }
+        var id: String { description }
+
+        var description: String {
+            switch self {
+            case .percentOfGoals:
+                return L10n.Competition.ScoringModel.PercentOfGoals.displayName
+            case .rawNumbers:
+                return L10n.Competition.ScoringModel.RawNumbers.displayName
+            case .workout:
+                return L10n.Competition.ScoringModel.Workout.displayName
+            }
+        }
     }
 
     // MARK: - Public Properties

@@ -1,13 +1,16 @@
 import Foundation
 
-enum SignUpError: LocalizedError {
+enum AuthenticationError: LocalizedError {
+    case missingEmail
     case passwordMatch
 
     var errorDescription: String? { localizedDescription }
     var localizedDescription: String {
         switch self {
+        case .missingEmail:
+            return L10n.AuthenticationError.missingEmail
         case .passwordMatch:
-            return "Passwords do not match"
+            return L10n.AuthenticationError.passwordMatch
         }
     }
 }

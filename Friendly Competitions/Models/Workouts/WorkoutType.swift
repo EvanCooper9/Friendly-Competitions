@@ -9,13 +9,13 @@ enum WorkoutType: String, CaseIterable, Codable, CustomStringConvertible, Hashab
     var description: String {
         switch self {
         case .cycling:
-            return "Cycling"
+            return L10n.WorkoutType.Cycling.description
         case .running:
-            return "Running"
+            return L10n.WorkoutType.Running.description
         case .swimming:
-            return "Swimming"
+            return L10n.WorkoutType.Swimming.description
         case .walking:
-            return "Walking"
+            return L10n.WorkoutType.Walking.description
         }
     }
 }

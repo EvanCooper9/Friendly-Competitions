@@ -56,15 +56,15 @@ final class UserManager: UserManaging {
 
     func update(with user: User) -> AnyPublisher<Void, Error> {
         database.document("users/\(user.id)")
-            .setData(from: user)
+            .set(value: user)
     }
 
     // MARK: - Private Methods
 
     private func listenForUser() {
         database.document("users/\(user.id)")
-            .getDocumentPublisher(as: User.self)
-            .receive(on: RunLoop.main)
+            .publisher(as: User.self)
+            .removeDuplicates()
             .sink(withUnretained: self) { strongSelf, user in
                 strongSelf.analyticsManager.set(userId: user.id)
                 strongSelf.userSubject.send(user)
