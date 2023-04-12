@@ -52,6 +52,7 @@ final class DeveloperMenuViewModel: ObservableObject {
         }
 
         $environment
+            .dropFirst()
             .map { $0 == .debugRemote }
             .assign(to: &$showDestinationAlert)
 
