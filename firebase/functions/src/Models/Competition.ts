@@ -221,7 +221,7 @@ class Competition {
      * @return {Promise<ActivitySummary[]>} A promise of workouts
      */
     async workouts(userID: string): Promise<Workout[]> {
-        let workoutType = this.scoringModel.workoutType;
+        const workoutType = this.scoringModel.workoutType;
         if (workoutType == null) return Promise.resolve([]);
         return await getFirestore().collection(`users/${userID}/workouts`)
             .where("type", "==", workoutType)
