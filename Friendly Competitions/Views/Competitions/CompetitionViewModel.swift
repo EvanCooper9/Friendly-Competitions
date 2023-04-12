@@ -286,8 +286,8 @@ private extension CompetitionParticipantRow.Config {
             id: standing.id,
             rank: standing.rank.ordinalString ?? "?",
             name: user?.name ?? standing.userId,
-            idPillText: visibility == .visible ? user?.hashId : nil,
-            blurred: visibility == .hidden,
+            idPillText: "#LQFH", // visibility == .visible ? user?.hashId : nil,
+            blurred: false, // visibility == .hidden,
             points: standing.points,
             highlighted: standing.userId == currentUser.id
         )

@@ -36,6 +36,11 @@ internal enum Asset {
       internal static let health = ImageAsset(name: "health")
       internal static let notifications = ImageAsset(name: "notifications")
     }
+    internal enum Privacy {
+      internal static let nameHidden = ImageAsset(name: "nameHidden")
+      internal static let nameShown = ImageAsset(name: "nameShown")
+    }
+    internal static let device = ImageAsset(name: "device")
     internal static let logo = ImageAsset(name: "logo")
     internal static let premium = ImageAsset(name: "premium")
   }
