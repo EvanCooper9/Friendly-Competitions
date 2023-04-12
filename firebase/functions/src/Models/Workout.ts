@@ -33,7 +33,9 @@ class Workout {
      * @return {boolean} true if the workout falls within the competition window
      */
     isIncludedInCompetition(competition: Competition): boolean {
-        return this.date >= competition.start && this.date <= competition.end;
+        const type = competition.scoringModel.workoutType == this.type
+        const date = this.date >= competition.start && this.date <= competition.end;
+        return type && date;
     }
 
     /**
