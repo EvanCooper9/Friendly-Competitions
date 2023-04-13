@@ -45,8 +45,8 @@
 "Profile.Privacy.title" = "Privacy";
 "Profile.Privacy.Searchable.title" = "Searchable";
 "Profile.Privacy.Searchable.description" = "Turn this off to prevent your account from showing up in search. Other people will not be able to add you as a friend.";
-"Profile.Privacy.HideName.title" = "Hide name";
-"Profile.Privacy.HideName.description" = "Turn this off to hide your name in competitions that you join. You will still earn medals, and friends will still see your real name.";
+"Profile.Privacy.HideName.title" = "Show name";
+"Profile.Privacy.HideName.description" = "Turn this off to hide your name in competitions. Your friends will still see your name.";
 "Profile.Session.title" = "Session";
 "Profile.Session.signOut" = "Sign out";
 "Profile.Session.deleteAccount" = "Delete account";

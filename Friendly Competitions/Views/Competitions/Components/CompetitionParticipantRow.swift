@@ -5,6 +5,7 @@ struct CompetitionParticipantRow: View {
     struct Config: Identifiable {
         let id: String
         let rank: String?
+        let isTie: Bool
         let name: String
         let idPillText: String?
         let blurred: Bool

@@ -379,10 +379,10 @@ internal enum L10n {
       /// Privacy
       internal static let title = L10n.tr("Localizable", "Profile.Privacy.title", fallback: "Privacy")
       internal enum HideName {
-        /// Turn this off to hide your name in competitions that you join. You will still earn medals, and friends will still see your real name.
-        internal static let description = L10n.tr("Localizable", "Profile.Privacy.HideName.description", fallback: "Turn this off to hide your name in competitions that you join. You will still earn medals, and friends will still see your real name.")
-        /// Hide name
-        internal static let title = L10n.tr("Localizable", "Profile.Privacy.HideName.title", fallback: "Hide name")
+        /// Turn this off to hide your name in competitions. Your friends will still see your name.
+        internal static let description = L10n.tr("Localizable", "Profile.Privacy.HideName.description", fallback: "Turn this off to hide your name in competitions. Your friends will still see your name.")
+        /// Show name
+        internal static let title = L10n.tr("Localizable", "Profile.Privacy.HideName.title", fallback: "Show name")
       }
       internal enum Searchable {
         /// Turn this off to prevent your account from showing up in search. Other people will not be able to add you as a friend.

@@ -9,6 +9,7 @@ class Standing {
     userId: string;
     date?: string;
     pointsBreakdown?: StringKeyDictionary<string, number>;
+    isTie?: boolean
 
     /**
      * Builds a standing record from a firestore document
@@ -20,6 +21,7 @@ class Standing {
         this.userId = document.get("userId");
         this.date = document.get("date");
         this.pointsBreakdown = document.get("pointsBreakdown");
+        this.isTie = document.get("isTie") ?? false;
     }
 
     /**

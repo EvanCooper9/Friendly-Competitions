@@ -5,7 +5,6 @@ import { RawScoringModel, ScoringModel } from "../../Models/ScoringModel";
 import { Standing } from "../../Models/Standing";
 import { getFirestore } from "../../Utilities/firstore";
 import { prepareForFirestore } from "../../Utilities/prepareForFirestore";
-import { updateCompetitionRanks } from "../competitions/updateCompetitionRanks";
 
 interface Scoring {
     id: string;
@@ -68,7 +67,7 @@ async function updateAllCompetitionStandings(competition: Competition): Promise<
         batch.set(standingRef, prepareForFirestore(standing));
     }));
     await batch.commit();
-    await updateCompetitionRanks(competition.id);
+    await competition.updateStandingRanks();
 }
 
 export {

@@ -9,6 +9,7 @@ final class ProfileViewModel: ObservableObject {
     @Published var premium: Premium?
     @Published var confirmationRequired = false
     @Published var loading = false
+    @Published var showHideNameLearnMore = false
 
     // MARK: - Private Properties
 
@@ -78,5 +79,9 @@ final class ProfileViewModel: ObservableObject {
 
     func signOutTapped() {
         signOutSubject.send()
+    }
+
+    func hideNameLearnMoreTapped() {
+        showHideNameLearnMore.toggle()
     }
 }
