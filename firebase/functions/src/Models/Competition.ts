@@ -80,16 +80,28 @@ class Competition {
      */
     async updateStandingRanks(): Promise<void> {
         const firestore = getFirestore();
-        const standingsRef = await firestore.collection(this.standingsPath).get();
-        const standings = standingsRef.docs.map(doc => new Standing(doc));
+        
+        const standings = await firestore.collection(this.standingsPath)
+            .orderBy("points", "desc")
+            .get()
+            .then(query => query.docs.map(doc => new Standing(doc)));
+
         const batch = firestore.batch();
-        standings
-            .sort((a, b) => a.points - b.points)
-            .forEach((standing, index) => {
-                standing.rank = standings.length - index;
-                const ref = firestore.doc(this.standingsPathForUser(standing.userId));
-                batch.set(ref, prepareForFirestore(standing));
-            });
+
+        let currentRank = 1;
+        standings.forEach((standing, index) => {
+            const isSameAsPrevious = index - 1 >= 0 && standings[index - 1].points == standing.points;
+            const isSameAsNext = index + 1 < standings.length && standings[index + 1].points == standing.points;
+            if (isSameAsPrevious || isSameAsNext) {
+                standing.isTie = true;
+            } else {
+                currentRank = index + 1;
+            }
+            standing.rank = currentRank;
+
+            const ref = firestore.doc(this.standingsPathForUser(standing.userId));
+            batch.set(ref, prepareForFirestore(standing));
+        });
         await batch.commit();
     }
 

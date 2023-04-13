@@ -10,11 +10,11 @@ import { joinCompetition } from "./Handlers/competitions/joinCompetition";
 import { leaveCompetition } from "./Handlers/competitions/leaveCompetition";
 import { completeCompetitionsForDate, completeCompetitionsForYesterday } from "./Handlers/jobs/completeCompetitions";
 import { sendNewCompetitionInvites } from "./Handlers/competitions/sendNewCompetitionInvites";
-import { updateCompetitionRanks } from "./Handlers/competitions/updateCompetitionRanks";
 import { updateUserCompetitionStandingsLEGACY, updateCompetitionStandingsLEGACY } from "./Handlers/competitions/updateCompetitionStandingsLEGACY";
 import { updateActivitySummaryScores } from "./Handlers/jobs/updateActivitySummaryScores";
 import { updateWorkoutScores } from "./Handlers/jobs/updateWorkoutScores";
 import { handleCompetitionUpdate } from "./Handlers/jobs/updateCompetitionStandings";
+import { updateCompetitionRanks } from "./Handlers/competitions/updateCompetitionRanks";
 
 admin.initializeApp();
 
@@ -155,10 +155,10 @@ exports.completeCompetitions = functions.pubsub.schedule("every day 12:00")
 // Developer
 
 exports.dev_sendCompetitionCompleteNotification = functions.https.onCall(async (data, context) => {
-    // const userID = context.auth?.uid;
-    // if (userID != "LqfhMHfQ97b0s9vaQdWyf8jqvSa2" && userID != "o2E4T1HS9tUqCYfrm7qPd3TuryE2") {
-    //     console.log(`Unauthorized access to developer function from user ID: ${userID}`);
-    //     return;
-    // }
+    const userID = context.auth?.uid;
+    if (userID != "LqfhMHfQ97b0s9vaQdWyf8jqvSa2" && userID != "o2E4T1HS9tUqCYfrm7qPd3TuryE2") {
+        console.log(`Unauthorized access to developer function from user ID: ${userID}`);
+        return;
+    }
     await completeCompetitionsForDate(data.date);
 });
