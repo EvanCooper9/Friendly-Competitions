@@ -1,5 +1,6 @@
 import Factory
 import SwiftUI
+import SwiftUIX
 
 struct ProfileView: View {
 
@@ -10,12 +11,14 @@ struct ProfileView: View {
             UserInfoSection(user: viewModel.user)
             Button(L10n.Profile.shareInviteLink, systemImage: .personCropCircleBadgePlus, action: viewModel.shareInviteLinkTapped)
 
-            Section(L10n.Profile.Medals.title) {
+            Section {
                 MedalsView(statistics: viewModel.user.statistics ?? .zero)
+            } header: {
+                Text(L10n.Profile.Medals.title)
             }
 
             if let premium = viewModel.premium {
-                Section(L10n.Profile.Premium.title) {
+                Section {
                     VStack(alignment: .leading) {
                         HStack {
                             Text(premium.title)
@@ -35,6 +38,8 @@ struct ProfileView: View {
                     }
                     .padding(.vertical, .extraSmall)
                     Button(L10n.Profile.Premium.manage, action: viewModel.manageSubscriptionTapped)
+                } header: {
+                    Text(L10n.Profile.Premium.title)
                 }
             } else {
                 Section(content: PremiumBanner.init)
@@ -52,15 +57,25 @@ struct ProfileView: View {
             Section {
                 Toggle(L10n.Profile.Privacy.HideName.title, isOn: $viewModel.user.showRealName ?? true)
             } footer: {
-                Text(L10n.Profile.Privacy.HideName.description)
+                Group {
+                    Text(L10n.Profile.Privacy.HideName.description) +
+                    Text(" Learn more")
+                        .foregroundColor(.accentColor)
+                }
+                .onTapGesture(perform: viewModel.hideNameLearnMoreTapped)
+            }
+            .sheet(isPresented: $viewModel.showHideNameLearnMore) {
+                HideNameLearnMoreView(showName: $viewModel.user.showRealName ?? true)
             }
 
-            Section(L10n.Profile.Session.title) {
+            Section {
                 Button(L10n.Profile.Session.signOut, systemImage: .personCropCircleBadgeMinus, action: viewModel.signOutTapped)
                 Button(action: viewModel.deleteAccountTapped) {
                     Label(L10n.Profile.Session.deleteAccount, systemImage: .trash)
                         .foregroundColor(.red)
                 }
+            } header: {
+                Text(L10n.Profile.Session.title)
             }
         }
         .navigationTitle(L10n.Profile.title)
