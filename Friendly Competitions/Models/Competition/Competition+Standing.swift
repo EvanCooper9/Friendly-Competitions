@@ -4,5 +4,6 @@ extension Competition {
         let rank: Int
         let userId: String
         let points: Int
+        var isTie: Bool? = false
     }
 }

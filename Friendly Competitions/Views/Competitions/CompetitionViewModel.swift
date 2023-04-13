@@ -282,9 +282,11 @@ final class CompetitionViewModel: ObservableObject {
 private extension CompetitionParticipantRow.Config {
     init(user: User?, currentUser: User, standing: Competition.Standing) {
         let visibility = user?.visibility(by: currentUser) ?? .hidden
+        let rank = standing.isTie == true ? "T\(standing.rank)" : standing.rank.ordinalString
         self.init(
             id: standing.id,
-            rank: standing.rank.ordinalString ?? "?",
+            rank: rank,
+            isTie: standing.isTie ?? false,
             name: user?.name ?? standing.userId,
             idPillText: visibility == .visible ? user?.hashId : nil,
             blurred: visibility == .hidden,
