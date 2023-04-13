@@ -155,10 +155,10 @@ exports.completeCompetitions = functions.pubsub.schedule("every day 12:00")
 // Developer
 
 exports.dev_sendCompetitionCompleteNotification = functions.https.onCall(async (data, context) => {
-    // const userID = context.auth?.uid;
-    // if (userID != "LqfhMHfQ97b0s9vaQdWyf8jqvSa2" && userID != "o2E4T1HS9tUqCYfrm7qPd3TuryE2") {
-    //     console.log(`Unauthorized access to developer function from user ID: ${userID}`);
-    //     return;
-    // }
+    const userID = context.auth?.uid;
+    if (userID != "LqfhMHfQ97b0s9vaQdWyf8jqvSa2" && userID != "o2E4T1HS9tUqCYfrm7qPd3TuryE2") {
+        console.log(`Unauthorized access to developer function from user ID: ${userID}`);
+        return;
+    }
     await completeCompetitionsForDate(data.date);
 });

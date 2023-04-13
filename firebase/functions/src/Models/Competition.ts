@@ -90,8 +90,8 @@ class Competition {
 
         let currentRank = 1;
         standings.forEach((standing, index) => {
-            const isSameAsPrevious = index - 1 >= 0 && standings[index - 1].points == standing.points
-            const isSameAsNext = index + 1 < standings.length && standings[index + 1].points == standing.points
+            const isSameAsPrevious = index - 1 >= 0 && standings[index - 1].points == standing.points;
+            const isSameAsNext = index + 1 < standings.length && standings[index + 1].points == standing.points;
             if (isSameAsPrevious || isSameAsNext) {
                 standing.isTie = true;
             } else {
