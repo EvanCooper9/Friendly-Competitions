@@ -10,11 +10,11 @@ import { joinCompetition } from "./Handlers/competitions/joinCompetition";
 import { leaveCompetition } from "./Handlers/competitions/leaveCompetition";
 import { completeCompetitionsForDate, completeCompetitionsForYesterday } from "./Handlers/jobs/completeCompetitions";
 import { sendNewCompetitionInvites } from "./Handlers/competitions/sendNewCompetitionInvites";
-import { updateCompetitionRanks } from "./Handlers/competitions/updateCompetitionRanks";
 import { updateUserCompetitionStandingsLEGACY, updateCompetitionStandingsLEGACY } from "./Handlers/competitions/updateCompetitionStandingsLEGACY";
 import { updateActivitySummaryScores } from "./Handlers/jobs/updateActivitySummaryScores";
 import { updateWorkoutScores } from "./Handlers/jobs/updateWorkoutScores";
 import { handleCompetitionUpdate } from "./Handlers/jobs/updateCompetitionStandings";
+import { updateCompetitionRanks } from "./Handlers/competitions/updateCompetitionRanks";
 
 admin.initializeApp();
 
