@@ -134,8 +134,8 @@
 		ED3C09E029626A1D00ED4ACC /* NavigationDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3C09DF29626A1D00ED4ACC /* NavigationDestination.swift */; };
 		ED3D5F30295E472500211E86 /* SignInViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3D5F2F295E472500211E86 /* SignInViewModelTests.swift */; };
 		ED3D85F7295F676800C3D152 /* CompetitionResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3D85F6295F676800C3D152 /* CompetitionResult.swift */; };
-		ED3EAB7929E758DE0047C43E /* HideNameLearnMoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3EAB7829E758DE0047C43E /* HideNameLearnMoreView.swift */; };
 		ED3EAB7729E746B90047C43E /* FirebasePerformance in Frameworks */ = {isa = PBXBuildFile; productRef = ED3EAB7629E746B90047C43E /* FirebasePerformance */; };
+		ED3EAB7929E758DE0047C43E /* HideNameLearnMoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3EAB7829E758DE0047C43E /* HideNameLearnMoreView.swift */; };
 		ED3ED8F7284F951800B5100F /* AutoMockable.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3ED8F6284F951800B5100F /* AutoMockable.generated.swift */; };
 		ED438FF727F7B3B600D72F99 /* View+ConfirmationDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED438FF627F7B3B600D72F99 /* View+ConfirmationDialog.swift */; };
 		ED438FF927F7C2B900D72F99 /* View+Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED438FF827F7C2B900D72F99 /* View+Analytics.swift */; };
@@ -2317,8 +2317,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
 			requirement = {
-				branch = master;
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 10.8.0;
 			};
 		};
 		ED1B5CED296B574B00122D7E /* XCRemoteSwiftPackageReference "purchases-ios" */ = {
