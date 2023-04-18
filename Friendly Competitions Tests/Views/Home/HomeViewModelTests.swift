@@ -52,6 +52,7 @@ final class HomeViewModelTests: FCTestCase {
         container.analyticsManager.register { self.analyticsManager }
         container.appState.register { self.appState }
         container.competitionsManager.register { self.competitionsManager }
+        container.deepLinkManager.register { self.deepLinkManager }
         container.friendsManager.register { self.friendsManager }
         container.permissionsManager.register { self.permissionsManager }
         container.premiumManager.register { self.premiumManager }

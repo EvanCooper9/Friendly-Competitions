@@ -75,7 +75,6 @@ final class CompetitionsManager: CompetitionsManaging {
     @Injected(\.competitionCache) private var cache
     @Injected(\.database) private var database
     @Injected(\.userManager) private var userManager
-    @Injected(\.usersCache) private var usersCache
 
     private var cancellables = Cancellables()
 

@@ -7,6 +7,7 @@ final class NewCompetitionViewModelTests: FCTestCase {
 
     private var competitionsManager: CompetitionsManagingMock!
     private var database: DatabaseMock!
+    private var deepLinkManager: DeepLinkManagingMock!
     private var friendsManager: FriendsManagingMock!
     private var userManager: UserManagingMock!
 
@@ -14,11 +15,13 @@ final class NewCompetitionViewModelTests: FCTestCase {
         super.setUp()
         competitionsManager = .init()
         database = .init()
+        deepLinkManager = .init()
         friendsManager = .init()
         userManager = .init()
 
         container.competitionsManager.register { self.competitionsManager }
         container.database.register { self.database }
+        container.deepLinkManager.register { self.deepLinkManager }
         container.friendsManager.register { self.friendsManager }
         container.userManager.register { self.userManager }
 

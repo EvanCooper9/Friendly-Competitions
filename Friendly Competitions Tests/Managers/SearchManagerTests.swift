@@ -6,25 +6,25 @@ import XCTest
 @testable import Friendly_Competitions
 
 final class SearchManagerTests: FCTestCase {
-    
+
+    private var database: DatabaseMock!
     private var searchClient: SearchClientMock!
+    private var usersCache: UsersCacheMock!
     private var userManager: UserManagingMock!
     
     private var cancellables: Cancellables!
     
     override func setUp() {
         super.setUp()
+        database = .init()
         searchClient = .init()
+        usersCache = .init()
         userManager = .init()
+        container.database.register { self.database }
         container.searchClient.register { self.searchClient }
+        container.usersCache.register { self.usersCache }
         container.userManager.register { self.userManager }
         cancellables = .init()
-    }
-    
-    override func tearDown() {
-        super.tearDown()
-        searchClient = nil
-        cancellables = nil
     }
     
     func testThatSearchForCompetitionsSucceeds() {
@@ -140,6 +140,41 @@ final class SearchManagerTests: FCTestCase {
             }
             .store(in: &cancellables)
         
+        waitForExpectations(timeout: 1)
+    }
+
+    func testThatSearchForUsersWithIDsSucceeds() {
+        let expectation = self.expectation(description: #function)
+        let expected = [User.andrew]
+
+        userManager.user = .evan
+
+        let collection = CollectionMock<User>()
+        collection.whereFieldInClosure = {
+            .just(expected)
+        }
+        database.collectionReturnValue = collection
+
+        let manager = SearchManager()
+        manager.searchForUsers(withIDs: expected.map(\.id))
+            .expect(expected, expectation: expectation)
+            .store(in: &cancellables)
+
+        waitForExpectations(timeout: 1)
+    }
+
+    func testThatSearchFoUsersWithIDsFetchesFromCache() {
+        let expectation = self.expectation(description: #function)
+        let expectedUser = User.andrew
+
+        userManager.user = .evan
+        usersCache.users = [expectedUser.id: expectedUser]
+
+        let manager = SearchManager()
+        manager.searchForUsers(withIDs: [expectedUser.id])
+            .expect([expectedUser], expectation: expectation)
+            .store(in: &cancellables)
+
         waitForExpectations(timeout: 1)
     }
 }
