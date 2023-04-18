@@ -140,6 +140,7 @@
 		ED3EAB7129E667970047C43E /* DeepLinkManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3EAB7029E667970047C43E /* DeepLinkManager.swift */; };
 		ED3EAB7329E668620047C43E /* DeepLinkManager+Factory.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3EAB7229E668620047C43E /* DeepLinkManager+Factory.swift */; };
 		ED3EAB7729E746B90047C43E /* FirebasePerformance in Frameworks */ = {isa = PBXBuildFile; productRef = ED3EAB7629E746B90047C43E /* FirebasePerformance */; };
+		ED3EAB7929E758DE0047C43E /* HideNameLearnMoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3EAB7829E758DE0047C43E /* HideNameLearnMoreView.swift */; };
 		ED3ED8F7284F951800B5100F /* AutoMockable.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3ED8F6284F951800B5100F /* AutoMockable.generated.swift */; };
 		ED438FF727F7B3B600D72F99 /* View+ConfirmationDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED438FF627F7B3B600D72F99 /* View+ConfirmationDialog.swift */; };
 		ED438FF927F7C2B900D72F99 /* View+Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED438FF827F7C2B900D72F99 /* View+Analytics.swift */; };
@@ -2372,8 +2373,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
 			requirement = {
-				branch = master;
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 10.8.0;
 			};
 		};
 		ED1B5CED296B574B00122D7E /* XCRemoteSwiftPackageReference "purchases-ios" */ = {
