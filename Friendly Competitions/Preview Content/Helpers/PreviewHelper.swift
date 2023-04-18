@@ -54,7 +54,6 @@ private enum Dependencies {
         competitionsManager.invitedCompetitions = .just([])
         competitionsManager.standingsPublisherForReturnValue = .just([])
         competitionsManager.standingsForResultIDReturnValue = .just([])
-        competitionsManager.participantsForReturnValue = .just([])
         competitionsManager.appOwnedCompetitions = .just([.mockPublic])
         competitionsManager.resultsForReturnValue = .just([])
         competitionsManager.hasPremiumResults = .just(false)
@@ -69,6 +68,7 @@ private enum Dependencies {
 
         searchManager.searchForCompetitionsByNameReturnValue = .just([])
         searchManager.searchForUsersByNameReturnValue = .just([])
+        searchManager.searchForUsersWithIDsReturnValue = .just([])
 
         storageManager.dataForReturnValue = .just(.init())
 
@@ -96,6 +96,7 @@ extension PreviewProvider {
     static var friendsManager: FriendsManagingMock { Dependencies.friendsManager }
     static var healthKitManager: HealthKitManagingMock { Dependencies.healthKitManager }
     static var permissionsManager: PermissionsManagingMock { Dependencies.permissionsManager }
+    static var searchManager: SearchManagingMock { Dependencies.searchManager }
     static var storageManager: StorageManagingMock { Dependencies.storageManager }
     static var premiumManager: PremiumManagingMock { Dependencies.premiumManager }
     static var userManager: UserManagingMock { Dependencies.userManager }

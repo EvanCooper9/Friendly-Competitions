@@ -26,7 +26,6 @@ protocol CompetitionsManaging {
     func search(byID competitionID: Competition.ID) -> AnyPublisher<Competition, Error>
     func results(for competitionID: Competition.ID) -> AnyPublisher<[CompetitionResult], Error>
     func standings(for competitionID: Competition.ID, resultID: CompetitionResult.ID) -> AnyPublisher<[Competition.Standing], Error>
-    func participants(for competitionsID: Competition.ID) -> AnyPublisher<[User], Error>
 
     func competitionPublisher(for competitionID: Competition.ID) -> AnyPublisher<Competition, Error>
     func standingsPublisher(for competitionID: Competition.ID) -> AnyPublisher<[Competition.Standing], Error>
@@ -171,31 +170,6 @@ final class CompetitionsManager: CompetitionsManaging {
     func standings(for competitionID: Competition.ID, resultID: CompetitionResult.ID) -> AnyPublisher<[Competition.Standing], Error> {
         database.collection("competitions/\(competitionID)/results/\(resultID)/standings")
             .getDocuments(ofType: Competition.Standing.self, source: .cacheFirst)
-    }
-
-    func participants(for competitionsID: Competition.ID) -> AnyPublisher<[User], Error> {
-        search(byID: competitionsID)
-            .map(\.participants)
-            .flatMapLatest(withUnretained: self) { strongSelf, participantIDs in
-                var cached = [User]()
-                var participantIDsToFetch = [String]()
-                participantIDs.forEach { participantID in
-                    if let user = strongSelf.usersCache.users[participantID] {
-                        cached.append(user)
-                    } else {
-                        participantIDsToFetch.append(participantID)
-                    }
-                }
-                guard participantIDsToFetch.isNotEmpty else { return AnyPublisher<[User], Error>.just(cached) }
-                return strongSelf.database.collection("users")
-                    .whereField("id", asArrayOf: User.self, in: participantIDsToFetch)
-                    .handleEvents(receiveOutput: { users in
-                        users.forEach { strongSelf.usersCache.users[$0.id] = $0 }
-                    })
-                    .map { $0 + cached }
-                    .eraseToAnyPublisher()
-            }
-            .eraseToAnyPublisher()
     }
 
     func competitionPublisher(for competitionID: Competition.ID) -> AnyPublisher<Competition, Error> {

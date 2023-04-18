@@ -27,7 +27,9 @@ final class AppState: AppStateProviding {
 
     init() {
         hud = hudSubject.share(replay: 1).eraseToAnyPublisher()
-        didBecomeActive = didBecomeActiveSubject.share(replay: 1).eraseToAnyPublisher()
+        didBecomeActive = didBecomeActiveSubject.share(replay: 1)
+            .removeDuplicates()
+            .eraseToAnyPublisher()
 
         UIApplication.didBecomeActiveNotification.publisher
             .first()

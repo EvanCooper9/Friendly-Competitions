@@ -820,28 +820,6 @@ class CompetitionsManagingMock: CompetitionsManaging {
         }
     }
 
-    //MARK: - participants
-
-    var participantsForCallsCount = 0
-    var participantsForCalled: Bool {
-        return participantsForCallsCount > 0
-    }
-    var participantsForReceivedCompetitionsID: Competition.ID?
-    var participantsForReceivedInvocations: [Competition.ID] = []
-    var participantsForReturnValue: AnyPublisher<[User], Error>!
-    var participantsForClosure: ((Competition.ID) -> AnyPublisher<[User], Error>)?
-
-    func participants(for competitionsID: Competition.ID) -> AnyPublisher<[User], Error> {
-        participantsForCallsCount += 1
-        participantsForReceivedCompetitionsID = competitionsID
-        participantsForReceivedInvocations.append(competitionsID)
-        if let participantsForClosure = participantsForClosure {
-            return participantsForClosure(competitionsID)
-        } else {
-            return participantsForReturnValue
-        }
-    }
-
     //MARK: - competitionPublisher
 
     var competitionPublisherForCallsCount = 0
@@ -1556,6 +1534,28 @@ class SearchManagingMock: SearchManaging {
             return searchForUsersByNameClosure(name)
         } else {
             return searchForUsersByNameReturnValue
+        }
+    }
+
+    //MARK: - searchForUsers
+
+    var searchForUsersWithIDsCallsCount = 0
+    var searchForUsersWithIDsCalled: Bool {
+        return searchForUsersWithIDsCallsCount > 0
+    }
+    var searchForUsersWithIDsReceivedIds: [User.ID]?
+    var searchForUsersWithIDsReceivedInvocations: [[User.ID]] = []
+    var searchForUsersWithIDsReturnValue: AnyPublisher<[User], Error>!
+    var searchForUsersWithIDsClosure: (([User.ID]) -> AnyPublisher<[User], Error>)?
+
+    func searchForUsers(withIDs ids: [User.ID]) -> AnyPublisher<[User], Error> {
+        searchForUsersWithIDsCallsCount += 1
+        searchForUsersWithIDsReceivedIds = ids
+        searchForUsersWithIDsReceivedInvocations.append(ids)
+        if let searchForUsersWithIDsClosure = searchForUsersWithIDsClosure {
+            return searchForUsersWithIDsClosure(ids)
+        } else {
+            return searchForUsersWithIDsReturnValue
         }
     }
 

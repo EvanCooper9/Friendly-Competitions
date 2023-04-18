@@ -132,7 +132,7 @@ struct CompetitionView_Previews: PreviewProvider {
         competitionsManager.competitions = .just([competition])
         competitionsManager.competitionPublisherForReturnValue = .just(competition)
         competitionsManager.standingsPublisherForReturnValue = .just(standings)
-        competitionsManager.participantsForReturnValue = .just(participants)
+        searchManager.searchForUsersWithIDsReturnValue = .just(participants)
         featureFlagManager.valueForClosure = { flag in
             switch flag {
             case .standingsRankUpdateInterval:

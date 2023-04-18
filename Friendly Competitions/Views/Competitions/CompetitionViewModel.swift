@@ -67,6 +67,7 @@ final class CompetitionViewModel: ObservableObject {
     @Injected(\.api) private var api
     @Injected(\.competitionsManager) private var competitionsManager
     @Injected(\.featureFlagManager) private var featureFlagManager
+    @Injected(\.searchManager) private var searchManager
     @Injected(\.scheduler) private var scheduler
     @Injected(\.userManager) private var userManager
 
@@ -121,8 +122,8 @@ final class CompetitionViewModel: ObservableObject {
         let participants = fetchParticipants
             .prepend(())
             .flatMapLatest(withUnretained: self) { strongSelf in
-                strongSelf.competitionsManager
-                    .participants(for: competition.id)
+                strongSelf.searchManager
+                    .searchForUsers(withIDs: competition.participants)
                     .catchErrorJustReturn([])
             }
 
@@ -298,8 +299,8 @@ private extension CompetitionParticipantRow.Config {
             rank: rank,
             isTie: standing.isTie ?? false,
             name: user?.name ?? standing.userId,
-            idPillText: "#LQFH", // visibility == .visible ? user?.hashId : nil,
-            blurred: false, // visibility == .hidden,
+            idPillText: visibility == .visible ? user?.hashId : nil,
+            blurred: visibility == .hidden,
             points: standing.points,
             highlighted: standing.userId == currentUser.id
         )

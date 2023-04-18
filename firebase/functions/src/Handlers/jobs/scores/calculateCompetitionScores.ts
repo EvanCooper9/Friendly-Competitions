@@ -10,27 +10,29 @@ import { Standing } from "../../../Models/Standing";
 async function calculateCompetitionScores(): Promise<void> {
     const template = await remoteConfig().getTemplate();
     const updateThresholdSecondsValue = template.parameters["standings_rank_update_interval"].defaultValue as remoteConfig.ExplicitParameterValue;
-    if (updateThresholdSecondsValue == undefined) return;
     
     const firestore = getFirestore();
     const now = moment();
     const updateThresholdSeconds: number = JSON.parse(updateThresholdSecondsValue.value);
-    const updateCutoff = now.add(-updateThresholdSeconds, "seconds").toDate();
+    const updateCutoff = now.add(-updateThresholdSeconds, "seconds");
+
+    console.log("update cutoff", updateCutoff);
 
     const competitions = await firestore.collection("competitions")
-        .where("end", ">=", now.format("YYYY-MM-DD"))
+        .where("oldestStandingUpdate", "<=", updateCutoff.toDate().toISOString())
         .get()
         .then(query => query.docs.map(doc => new Competition(doc)));
 
-    await Promise.allSettled(competitions.map(async competition => {
-        if (competition.oldestStandingUpdate != null && competition.oldestStandingUpdate > updateCutoff) return;
-        if (competition.oldestStandingUpdate == null) return;
+    console.log(competitions);
 
+    await Promise.allSettled(competitions.map(async competition => {
         console.log(`updating standing points for competition: ${competition.name} - ${competition.id}`);
-        const batch = firestore.batch();
+        
         const standings = await firestore.collection(`competitions/${competition.id}/standings`)
             .get()
             .then(query => query.docs.map(doc => new Standing(doc)));
+
+        const batch = firestore.batch();
         await Promise.allSettled(standings.map(async standing => {
             const pointsBreakdown = standing.pointsBreakdown || {};
             let points = 0;

@@ -16,7 +16,6 @@ import { updateWorkoutScores } from "./Handlers/jobs/scores/updateWorkoutScores"
 import { handleCompetitionUpdate } from "./Handlers/jobs/handleCompetitionUpdate";
 import { calculateCompetitionScores } from "./Handlers/jobs/scores/calculateCompetitionScores";
 import { handleCompetitionCreate } from "./Handlers/jobs/handleCompetitionCreate";
-import { InvocationCache, InvocationCacheContainer } from "./Utilities/Cache";
 
 admin.initializeApp();
 
@@ -153,14 +152,9 @@ exports.completeCompetitions = functions.pubsub.schedule("every day 12:00")
     .timeZone("America/Toronto")
     .onRun(async () => await completeCompetitionsForYesterday());
 
-exports.calculateCompetitionScores = functions.pubsub.schedule("every 15 minutes")
+exports.calculateCompetitionScores = functions.pubsub.schedule("every minute")
     .timeZone("America/Toronto")
-    .onRun(async context => {
-        const cache = InvocationCacheContainer.getInstance();
-        cache.invocationCaches.set(context.eventId, new InvocationCache());
-        await calculateCompetitionScores();
-        cache.invocationCaches.delete(context.eventId);
-    });
+    .onRun(async () => await calculateCompetitionScores());
 
 // Developer
 

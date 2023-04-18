@@ -260,12 +260,11 @@ class Competition {
     /**
      * Sets oldestStandingUpdate to the current date if it doesn't already exist.
      */
-    async updateOldestStandingUpdate(): Promise<void> {
+    async didUpdateStandings(): Promise<void> {
+        if (this.oldestStandingUpdate != null) return;
         const firestore = getFirestore();
-        if (this.oldestStandingUpdate == null) {
-            const obj = { oldestStandingUpdate: new Date().toISOString() }
-            await firestore.doc(`competitions/${this.id}`).update(obj);
-        }
+        const obj = { oldestStandingUpdate: new Date().toISOString() }
+        await firestore.doc(`competitions/${this.id}`).update(obj);
     }
 }
 

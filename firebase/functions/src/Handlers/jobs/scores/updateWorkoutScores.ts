@@ -49,7 +49,7 @@ async function updateWorkoutScores(userID: string, before: DocumentSnapshot, aft
             await transaction.set(standingRef, prepareForFirestore(standing));
         });
 
-        await competition.updateOldestStandingUpdate();
+        await competition.didUpdateStandings();
     }));
 }
 

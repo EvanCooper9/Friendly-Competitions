@@ -51,7 +51,7 @@ async function updateActivitySummaryScores(userID: string, before: DocumentSnaps
             transaction.set(standingRef, prepareForFirestore(standing));
         });
         
-        await competition.updateOldestStandingUpdate();
+        await competition.didUpdateStandings();
     }));
 }
 
