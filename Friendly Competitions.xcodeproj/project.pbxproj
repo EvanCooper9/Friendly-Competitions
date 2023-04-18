@@ -135,7 +135,6 @@
 		ED3D5F30295E472500211E86 /* SignInViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3D5F2F295E472500211E86 /* SignInViewModelTests.swift */; };
 		ED3D85F7295F676800C3D152 /* CompetitionResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3D85F6295F676800C3D152 /* CompetitionResult.swift */; };
 		ED3EAB7729E746B90047C43E /* FirebasePerformance in Frameworks */ = {isa = PBXBuildFile; productRef = ED3EAB7629E746B90047C43E /* FirebasePerformance */; };
-		ED3EAB7929E758DE0047C43E /* HideNameLearnMoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3EAB7829E758DE0047C43E /* HideNameLearnMoreView.swift */; };
 		ED3ED8F7284F951800B5100F /* AutoMockable.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3ED8F6284F951800B5100F /* AutoMockable.generated.swift */; };
 		ED438FF727F7B3B600D72F99 /* View+ConfirmationDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED438FF627F7B3B600D72F99 /* View+ConfirmationDialog.swift */; };
 		ED438FF927F7C2B900D72F99 /* View+Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED438FF827F7C2B900D72F99 /* View+Analytics.swift */; };
@@ -170,6 +169,7 @@
 		ED7881B02850F71E00C7F6CB /* AnalyticsEvent.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED7881AF2850F71E00C7F6CB /* AnalyticsEvent.swift */; };
 		ED802B50298CB76500155B8B /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = ED802B52298CB76500155B8B /* Localizable.strings */; };
 		ED802B58298CB8B200155B8B /* Strings+Generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED802B57298CB8B200155B8B /* Strings+Generated.swift */; };
+		ED81438A29EF110200764730 /* HideNameLearnMoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3EAB7829E758DE0047C43E /* HideNameLearnMoreView.swift */; };
 		ED879BF6299D52210007DB91 /* HealthKitDataHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED879BF5299D52210007DB91 /* HealthKitDataHelper.swift */; };
 		ED879BFB29A06AAB0007DB91 /* ActivitySummaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED879BFA29A06AAB0007DB91 /* ActivitySummaryTests.swift */; };
 		ED879C0129A06E850007DB91 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED879C0029A06E850007DB91 /* Database.swift */; };
@@ -1815,6 +1815,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ED81438A29EF110200764730 /* HideNameLearnMoreView.swift in Sources */,
 				ED879C3D29A411090007DB91 /* AuthenticationManager+Factory.swift in Sources */,
 				ED1B85C629C904CC008DB1F6 /* UserView.swift in Sources */,
 				ED879C5F29A414AB0007DB91 /* Storage+Factory.swift in Sources */,
@@ -1894,7 +1895,6 @@
 				C1F9D7CD26FF871A00B25651 /* NotificationsManaging.swift in Sources */,
 				EDC7849D28035A67001FE005 /* HKWorkoutActivityType+Extensions.swift in Sources */,
 				ED1B85A929C9049E008DB1F6 /* PermissionsViewModel.swift in Sources */,
-				ED3EAB7929E758DE0047C43E /* HideNameLearnMoreView.swift in Sources */,
 				ED879C4329A411550007DB91 /* HealthKitManager+Factory.swift in Sources */,
 				ED1B85A029C90490008DB1F6 /* RootView.swift in Sources */,
 				ED1B5CF7296D1CF600122D7E /* PaywallPrimerView.swift in Sources */,
@@ -2209,7 +2209,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.8.9;
+				MARKETING_VERSION = 1.8.10;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -2261,7 +2261,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.8.9;
+				MARKETING_VERSION = 1.8.10;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
