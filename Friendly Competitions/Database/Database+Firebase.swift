@@ -1,5 +1,6 @@
 import Combine
 import CombineExt
+import Factory
 import FirebaseCrashlytics
 import FirebaseFirestore
 import FirebaseFirestoreCombineSwift
@@ -72,12 +73,26 @@ extension Query: Collection {
 
     func publisher<T: Decodable>(asArrayOf type: T.Type) -> AnyPublisher<[T], Error> {
         snapshotPublisher()
+            .handleEvents(receiveOutput: { snapshot in
+                guard snapshot.documents.isNotEmpty else { return }
+                let analyticsManager = Container.shared.analyticsManager()
+                snapshot.documents.forEach { document in
+                    analyticsManager.log(event: .databaseRead(path: document.reference.path))
+                }
+            })
             .map { $0.documents.decoded(as: T.self) }
             .reportErrorToCrashlytics()
     }
 
     func getDocuments<T>(ofType type: T.Type, source: DatabaseSource) -> AnyPublisher<[T], Error> where T : Decodable {
         getDocuments(source: source.firestoreSource)
+            .handleEvents(receiveOutput: { snapshot in
+                guard snapshot.documents.isNotEmpty else { return }
+                let analyticsManager = Container.shared.analyticsManager()
+                snapshot.documents.forEach { document in
+                    analyticsManager.log(event: .databaseRead(path: document.reference.path))
+                }
+            })
             .map { $0.documents.decoded(as: T.self) }
             .flatMapLatest(withUnretained: self) { strongSelf, results -> AnyPublisher<[T], Error> in
                 guard results.isEmpty, source == .cacheFirst else { return .just(results) }
@@ -110,6 +125,10 @@ extension DocumentReference: Document {
 
     func set<T: Encodable>(value: T) -> AnyPublisher<Void, Error> {
         setData(from: value, encoder: .custom)
+            .handleEvents(receiveOutput: { [path] in
+                let analyticsManager = Container.shared.analyticsManager()
+                analyticsManager.log(event: .databaseWrite(path: path))
+            })
             .reportErrorToCrashlytics(userInfo: [
                 "path": path,
                 "data": value
@@ -117,9 +136,13 @@ extension DocumentReference: Document {
     }
 
     func update(fields data: [String : Any]) -> AnyPublisher<Void, Error> {
-        Future { [weak self] promise in
+        Future { [weak self, path] promise in
             guard let strongSelf = self else { return }
             strongSelf.updateData(data) { error in
+
+                let analyticsManager = Container.shared.analyticsManager()
+                analyticsManager.log(event: .databaseWrite(path: path))
+
                 if let error {
                     promise(.failure(error))
                 } else {
@@ -141,6 +164,8 @@ extension DocumentReference: Document {
                     promise(.failure(error))
                     return
                 } else if let snapshot {
+                    let analyticsManager = Container.shared.analyticsManager()
+                    analyticsManager.log(event: .databaseRead(path: snapshot.reference.path))
                     do {
                         let data = try snapshot.data(as: T.self, decoder: .custom)
                         promise(.success(data))
@@ -163,6 +188,11 @@ extension DocumentReference: Document {
 
     func publisher<T: Decodable>(as type: T.Type) -> AnyPublisher<T, Error> {
         snapshotPublisher()
+            .print(path)
+            .handleEvents(receiveOutput: { snapshot in
+                let analyticsManager = Container.shared.analyticsManager()
+                analyticsManager.log(event: .databaseRead(path: snapshot.reference.path))
+            })
             .tryMap { try $0.data(as: T.self, decoder: .custom) }
             .reportErrorToCrashlytics(userInfo: [
                 "path": path,
@@ -176,6 +206,8 @@ extension DocumentReference: Document {
 extension WriteBatch: Batch {
     func set<T: Encodable>(value: T, forDocument document: Document) throws {
         guard let documentReference = document as? DocumentReference else { return }
+        let analyticsManager = Container.shared.analyticsManager()
+        analyticsManager.log(event: .databaseWrite(path: documentReference.path))
         try setData(from: value, forDocument: documentReference, encoder: .custom)
     }
 }
