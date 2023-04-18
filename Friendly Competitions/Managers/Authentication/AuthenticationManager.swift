@@ -33,8 +33,8 @@ final class AuthenticationManager: AuthenticationManaging {
     @Injected(\.scheduler) private var scheduler
     @Injected(\.signInWithAppleProvider) private var signInWithAppleProvider
 
-    private var emailVerifiedSubject: CurrentValueSubject<Bool, Never>!
-    private var loggedInSubject: CurrentValueSubject<Bool, Never>!
+    private var emailVerifiedSubject = CurrentValueSubject<Bool, Never>(true)
+    private var loggedInSubject = ReplaySubject<Bool, Never>(bufferSize: 1)
 
     private var userListener: AnyCancellable?
     private var createdUserSubject = ReplaySubject<User, Error>(bufferSize: 1)
@@ -44,13 +44,7 @@ final class AuthenticationManager: AuthenticationManaging {
     // MARK: - Lifecycle
 
     init() {
-        emailVerifiedSubject = .init(auth.user?.isEmailVerified ?? false)
-        if let user = authenticationCache.user {
-            registerUserManager(with: user)
-            loggedInSubject = .init(true)
-        } else {
-            loggedInSubject = .init(false)
-        }
+        handle(user: authenticationCache.user)
         listenForAuth()
     }
 
@@ -148,23 +142,24 @@ final class AuthenticationManager: AuthenticationManaging {
                 .catchErrorJustReturn(nil)
                 .eraseToAnyPublisher()
             }
-            .sink(withUnretained: self) { strongSelf, user in
-                if let user {
-                    strongSelf.registerUserManager(with: user)
-                } else {
-                    Container.shared.userManager.reset()
-                }
-                strongSelf.loggedInSubject.send(user != nil)
-            }
+            .dropFirst()
+            .sink(withUnretained: self) { $0.handle(user: $1) }
             .store(in: &cancellables)
     }
 
-    private func registerUserManager(with user: User) {
-        Container.shared.userManager.register { [weak self] in
-            let userManager = UserManager(user: user)
-            self?.userListener = userManager.userPublisher.sink { self?.authenticationCache.user = $0 }
-            return userManager
+    private func handle(user: User?) {
+        if let user {
+            Container.shared.userManager.scope(.shared).register { [weak self] in
+                let userManager = UserManager(user: user)
+                self?.userListener = userManager.userPublisher.sink { self?.authenticationCache.user = $0 }
+                return userManager
+            }
+            authenticationCache.user = user
+        } else {
+            Container.shared.userManager.reset()
+            authenticationCache.user = nil
         }
+        loggedInSubject.send(user != nil)
     }
 
     /// Creates a user in the database based on the auth user

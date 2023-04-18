@@ -21,4 +21,9 @@ enum AnalyticsEvent: Codable {
     case premiumPurchaseCancelled(id: String)
     case premiumPurchased(id: String)
     case premiumBannerDismissed
+
+    // database
+    case databaseRead(path: String)
+    case databaseWrite(path: String)
+    case databaseDelete(path: String)
 }
