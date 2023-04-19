@@ -43,12 +43,15 @@ struct SignIn: View {
                             .shadow(radius: 10)
                     }
 
-                Spacer()
-
-                DeveloperMenu()
-                    .font(.largeTitle)
-
-                Spacer()
+                if viewModel.showDeveloper {
+                    DeveloperMenu()
+                        .font(.largeTitle)
+                        .frame(maxHeight: .infinity, alignment: .center)
+                } else {
+                    Color.clear
+                        .contentShape(Rectangle())
+                        .onTapGesture(count: 5, perform: viewModel.showDeveloperTapped)
+                }
 
                 VStack {
                     Button(action: viewModel.submit) {

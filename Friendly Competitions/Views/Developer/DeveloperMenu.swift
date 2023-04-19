@@ -17,6 +17,7 @@ struct DeveloperMenu: View {
         } label: {
             Image(systemName: .hammerCircleFill)
         }
+        .registerScreenView(name: "Developer")
         .alert("Environment Destination", isPresented: $viewModel.showDestinationAlert) {
             TextField("Destination", text: $viewModel.destination)
                 .textInputAutocapitalization(.never)
