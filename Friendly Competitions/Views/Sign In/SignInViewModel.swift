@@ -8,13 +8,14 @@ final class SignInViewModel: ObservableObject {
 
     // MARK: - Public Properties
 
-    @Published var loading = false
+    @Published private(set) var loading = false
     @Published var signingInWithEmail = false
     @Published var isSigningUp = false
     @Published var name = ""
     @Published var email = ""
     @Published var password = ""
     @Published var passwordConfirmation = ""
+    @Published private(set) var showDeveloper = false
 
     // MARK: - Private Properties
 
@@ -30,6 +31,14 @@ final class SignInViewModel: ObservableObject {
     // MARK: - Lifecycle
 
     init() {
+        #if DEBUG
+        showDeveloper = true
+        #else
+        userManager.userPublisher
+            .map { ["evan.cooper@rogers.com", "evancmcooper@gmail.com"].contains($0.email) }
+            .assign(to: &$showDeveloper)
+        #endif
+
         hudSubject
             .sink(withUnretained: self) { $0.appState.push(hud: $1) }
             .store(in: &cancellables)
