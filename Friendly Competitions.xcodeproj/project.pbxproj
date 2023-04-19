@@ -221,6 +221,7 @@
 		ED901B712802618700FE619E /* NewCompetitionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED901B702802618700FE619E /* NewCompetitionViewModel.swift */; };
 		ED901B742802649200FE619E /* VerifyEmailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED901B732802649200FE619E /* VerifyEmailViewModel.swift */; };
 		ED901B76280265DB00FE619E /* SignInViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED901B75280265DB00FE619E /* SignInViewModel.swift */; };
+		ED95D5CF29F03FF400990FBF /* CompetitionParticipantRowConfigTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED95D5CE29F03FF400990FBF /* CompetitionParticipantRowConfigTests.swift */; };
 		ED97FCA5297B238B00597A16 /* RootTab.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED97FCA4297B238B00597A16 /* RootTab.swift */; };
 		ED9F255B29A4353C008C9967 /* DateToEndOfDay.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED9F255A29A4353C008C9967 /* DateToEndOfDay.swift */; };
 		ED9F255D29A43544008C9967 /* DateToStartOfDay.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED9F255C29A43544008C9967 /* DateToStartOfDay.swift */; };
@@ -454,6 +455,7 @@
 		ED901B702802618700FE619E /* NewCompetitionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCompetitionViewModel.swift; sourceTree = "<group>"; };
 		ED901B732802649200FE619E /* VerifyEmailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyEmailViewModel.swift; sourceTree = "<group>"; };
 		ED901B75280265DB00FE619E /* SignInViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInViewModel.swift; sourceTree = "<group>"; };
+		ED95D5CE29F03FF400990FBF /* CompetitionParticipantRowConfigTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionParticipantRowConfigTests.swift; sourceTree = "<group>"; };
 		ED97FCA4297B238B00597A16 /* RootTab.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootTab.swift; sourceTree = "<group>"; };
 		ED9F255A29A4353C008C9967 /* DateToEndOfDay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateToEndOfDay.swift; sourceTree = "<group>"; };
 		ED9F255C29A43544008C9967 /* DateToStartOfDay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateToStartOfDay.swift; sourceTree = "<group>"; };
@@ -1463,6 +1465,7 @@
 		EDBDFB4B29D0AEC9003E6278 /* Competitions */ = {
 			isa = PBXGroup;
 			children = (
+				ED95D5CE29F03FF400990FBF /* CompetitionParticipantRowConfigTests.swift */,
 				EDBDFB4C29D0AED7003E6278 /* CompetitionResultsViewModelTests.swift */,
 				ED0C4BE329D315C0003485CF /* NewCompetitionViewModelTests.swift */,
 			);
@@ -1785,6 +1788,7 @@
 				ED779D3A29F019DA00317950 /* AuthenticationManagerTests.swift in Sources */,
 				C1E35D4627B45F6C00833EB2 /* PermissionStatusTests.swift in Sources */,
 				ED58C98729AA805A00393468 /* FriendsManagerTests.swift in Sources */,
+				ED95D5CF29F03FF400990FBF /* CompetitionParticipantRowConfigTests.swift in Sources */,
 				ED879C0F29A151600007DB91 /* Database+Mock.swift in Sources */,
 				C132944A27DAB12200117548 /* DeepLinkTests.swift in Sources */,
 				ED1CFA9D2864B92A00192E49 /* Publisher+Extensions.swift in Sources */,
