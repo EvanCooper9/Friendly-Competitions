@@ -278,20 +278,3 @@ final class CompetitionViewModel: ObservableObject {
         currentStandingsMaximum += 10
     }
 }
-
-private extension CompetitionParticipantRow.Config {
-    init(user: User?, currentUser: User, standing: Competition.Standing) {
-        let visibility = user?.visibility(by: currentUser) ?? .hidden
-        let rank = standing.isTie == true ? "T\(standing.rank)" : standing.rank.ordinalString
-        self.init(
-            id: standing.id,
-            rank: rank,
-            isTie: standing.isTie ?? false,
-            name: user?.name ?? standing.userId,
-            idPillText: "#LQFH", // visibility == .visible ? user?.hashId : nil,
-            blurred: false, // visibility == .hidden,
-            points: standing.points,
-            highlighted: standing.userId == currentUser.id
-        )
-    }
-}
