@@ -33,10 +33,6 @@ final class SignInViewModel: ObservableObject {
     init() {
         #if DEBUG
         showDeveloper = true
-        #else
-        userManager.userPublisher
-            .map { ["evan.cooper@rogers.com", "evancmcooper@gmail.com"].contains($0.email) }
-            .assign(to: &$showDeveloper)
         #endif
 
         hudSubject
@@ -118,5 +114,9 @@ final class SignInViewModel: ObservableObject {
         } else {
             signInSubject.send(.apple)
         }
+    }
+
+    func showDeveloperTapped() {
+        showDeveloper = true
     }
 }
