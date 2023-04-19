@@ -44,7 +44,7 @@ final class AuthenticationManager: AuthenticationManaging {
     // MARK: - Lifecycle
 
     init() {
-        handle(user: authenticationCache.user)
+        handle(user: authenticationCache.currentUser)
         listenForAuth()
     }
 
@@ -151,14 +151,13 @@ final class AuthenticationManager: AuthenticationManaging {
         if let user {
             Container.shared.userManager.scope(.shared).register { [weak self] in
                 let userManager = UserManager(user: user)
-                self?.userListener = userManager.userPublisher.sink { self?.authenticationCache.user = $0 }
+                self?.userListener = userManager.userPublisher.sink { self?.authenticationCache.currentUser = $0 }
                 return userManager
             }
-            authenticationCache.user = user
         } else {
-            Container.shared.userManager.reset()
-            authenticationCache.user = nil
+            Container.shared.userManager.scope(.shared).reset()
         }
+        authenticationCache.currentUser = user
         loggedInSubject.send(user != nil)
     }
 
