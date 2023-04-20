@@ -67,6 +67,7 @@ class ActivitySummaryCacheMock: ActivitySummaryCache {
 
 
     var activitySummary: ActivitySummary?
+    var activitySummaries: [ActivitySummary.ID: ActivitySummary] = [:]
 
 
 }

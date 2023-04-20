@@ -13,6 +13,7 @@ final class ActivitySummaryManagerTests: FCTestCase {
     private var cache: ActivitySummaryCacheMock!
     private var competitionsManager: CompetitionsManagingMock!
     private var healthKitManager: HealthKitManagingMock!
+    private var healthKitDataHelperBuilder: HealthKitDataHelperBuildingMock<[ActivitySummary]>!
     private var database: DatabaseMock!
     private var permissionsManager: PermissionsManagingMock!
     private var scheduler: TestSchedulerOf<RunLoop>!
@@ -25,6 +26,7 @@ final class ActivitySummaryManagerTests: FCTestCase {
         cache = .init()
         competitionsManager = .init()
         healthKitManager = .init()
+        healthKitDataHelperBuilder = .init()
         database = .init()
         permissionsManager = .init()
         scheduler = .init(now: .init(.now))
@@ -34,6 +36,7 @@ final class ActivitySummaryManagerTests: FCTestCase {
         container.activitySummaryCache.register { self.cache }
         container.competitionsManager.register { self.competitionsManager }
         container.healthKitManager.register { self.healthKitManager }
+        container.healthKitDataHelperBuilder.register { self.healthKitDataHelperBuilder }
         container.database.register { self.database }
         container.permissionsManager.register { self.permissionsManager }
         container.scheduler.register { self.scheduler.eraseToAnyScheduler() }
@@ -153,19 +156,72 @@ final class ActivitySummaryManagerTests: FCTestCase {
             return DocumentMock<ActivitySummary>()
         }
         
-        let competitions = PassthroughSubject<[Competition], Never>()
-        competitionsManager.competitions = competitions.share(replay: 1).eraseToAnyPublisher()
-        competitionsManager.competitionsDateInterval = .init()
-        
         let manager = ActivitySummaryManager()
         manager.activitySummary
             .sink()
             .store(in: &cancellables)
+
+        healthKitDataHelperBuilder.healthKitDataHelper!
+            .fetch(dateInterval: .init())
+            .flatMapLatest(withUnretained: self) { strongSelf, activitySummaries in
+                XCTAssertEqual(activitySummaries, expected)
+                return strongSelf.healthKitDataHelperBuilder.healthKitDataHelper!.uplaod(data: activitySummaries)
+            }
+            .sink()
+            .store(in: &cancellables)
         
-        // trigger fetch & upload
-        competitions.send([.mock])
-        scheduler.advance(by: .seconds(1))
-        
+        waitForExpectations(timeout: 1)
+    }
+
+    func testThatItDoesNotUploadDuplicates() {
+        let expectation = self.expectation(description: #function)
+        expectation.isInverted = true
+
+        let expectedActivitySummaries = [ActivitySummary.mock]
+
+        userManager.user = .evan
+
+        healthKitManager.executeClosure = { query in
+            guard let query = query as? ActivitySummaryQuery else {
+                XCTFail("Unexpected query type")
+                return
+            }
+            query.resultsHandler(.success(expectedActivitySummaries))
+        }
+
+        let batchMock = BatchMock<ActivitySummary>()
+        batchMock.commitClosure = {
+            if batchMock.commitCallCount > 1 {
+                expectation.fulfill()
+                XCTFail("committing more than once")
+            }
+        }
+        batchMock.setClosure = { _, _ in }
+
+        database.batchClosure = { batchMock }
+        database.documentClosure = { _ in DocumentMock<ActivitySummary>() }
+
+        let manager = ActivitySummaryManager()
+        manager.activitySummary
+            .sink()
+            .store(in: &cancellables)
+
+        healthKitDataHelperBuilder.healthKitDataHelper!
+            .fetch(dateInterval: .init())
+            .flatMapLatest(withUnretained: self) { strongSelf, activitySummaries in
+                XCTAssertEqual(activitySummaries, expectedActivitySummaries)
+                return strongSelf.healthKitDataHelperBuilder.healthKitDataHelper!.uplaod(data: activitySummaries)
+            }
+            .flatMapLatest(withUnretained: self) { strongSelf in
+                strongSelf.healthKitDataHelperBuilder.healthKitDataHelper!.fetch(dateInterval: .init())
+            }
+            .flatMapLatest(withUnretained: self) { strongSelf, activitySummaries in
+                XCTAssertEqual(activitySummaries, expectedActivitySummaries)
+                return strongSelf.healthKitDataHelperBuilder.healthKitDataHelper!.uplaod(data: activitySummaries)
+            }
+            .sink()
+            .store(in: &cancellables)
+
         waitForExpectations(timeout: 1)
     }
 }

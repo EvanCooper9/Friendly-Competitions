@@ -139,6 +139,9 @@
 		ED438FF727F7B3B600D72F99 /* View+ConfirmationDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED438FF627F7B3B600D72F99 /* View+ConfirmationDialog.swift */; };
 		ED438FF927F7C2B900D72F99 /* View+Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED438FF827F7C2B900D72F99 /* View+Analytics.swift */; };
 		ED438FFB27F7D18600D72F99 /* AnalyticsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED438FFA27F7D18600D72F99 /* AnalyticsManager.swift */; };
+		ED47BA0329F1A510007A1D12 /* HealthKitDataHelper+Factory.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED47BA0229F1A510007A1D12 /* HealthKitDataHelper+Factory.swift */; };
+		ED47BA0629F1A5EC007A1D12 /* HealthKitDataHelperBuildingMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED47BA0529F1A5EC007A1D12 /* HealthKitDataHelperBuildingMock.swift */; };
+		ED47BA0829F1AABD007A1D12 /* HealthKitDataHelperBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED47BA0729F1AABD007A1D12 /* HealthKitDataHelperBuilder.swift */; };
 		ED4878252826F43800AC1E2C /* CompetitionParticipantRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED4878242826F43800AC1E2C /* CompetitionParticipantRow.swift */; };
 		ED48782E282747BD00AC1E2C /* InviteFriendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED48782D282747BD00AC1E2C /* InviteFriendsView.swift */; };
 		ED487830282747CE00AC1E2C /* InviteFriendsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED48782F282747CE00AC1E2C /* InviteFriendsViewModel.swift */; };
@@ -379,6 +382,9 @@
 		ED438FF627F7B3B600D72F99 /* View+ConfirmationDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+ConfirmationDialog.swift"; sourceTree = "<group>"; };
 		ED438FF827F7C2B900D72F99 /* View+Analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Analytics.swift"; sourceTree = "<group>"; };
 		ED438FFA27F7D18600D72F99 /* AnalyticsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsManager.swift; sourceTree = "<group>"; };
+		ED47BA0229F1A510007A1D12 /* HealthKitDataHelper+Factory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HealthKitDataHelper+Factory.swift"; sourceTree = "<group>"; };
+		ED47BA0529F1A5EC007A1D12 /* HealthKitDataHelperBuildingMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitDataHelperBuildingMock.swift; sourceTree = "<group>"; };
+		ED47BA0729F1AABD007A1D12 /* HealthKitDataHelperBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitDataHelperBuilder.swift; sourceTree = "<group>"; };
 		ED4878242826F43800AC1E2C /* CompetitionParticipantRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionParticipantRow.swift; sourceTree = "<group>"; };
 		ED48782D282747BD00AC1E2C /* InviteFriendsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteFriendsView.swift; sourceTree = "<group>"; };
 		ED48782F282747CE00AC1E2C /* InviteFriendsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteFriendsViewModel.swift; sourceTree = "<group>"; };
@@ -1094,6 +1100,16 @@
 			path = Sourcery;
 			sourceTree = "<group>";
 		};
+		ED47BA0429F1A589007A1D12 /* HealthKitDataHelper */ = {
+			isa = PBXGroup;
+			children = (
+				ED879BF5299D52210007DB91 /* HealthKitDataHelper.swift */,
+				ED47BA0729F1AABD007A1D12 /* HealthKitDataHelperBuilder.swift */,
+				ED47BA0229F1A510007A1D12 /* HealthKitDataHelper+Factory.swift */,
+			);
+			path = HealthKitDataHelper;
+			sourceTree = "<group>";
+		};
 		ED48782C282747B100AC1E2C /* Invite Friends */ = {
 			isa = PBXGroup;
 			children = (
@@ -1153,7 +1169,7 @@
 		ED6CB45A28BA829000436BBD /* HealthKit */ = {
 			isa = PBXGroup;
 			children = (
-				ED879BF5299D52210007DB91 /* HealthKitDataHelper.swift */,
+				ED47BA0429F1A589007A1D12 /* HealthKitDataHelper */,
 				ED58C98A29AA8C0100393468 /* HealthStoring.swift */,
 				ED879C0629A13C250007DB91 /* HealthKitQuery.swift */,
 				C14634F526F2A84B0028F847 /* HealthKitManager.swift */,
@@ -1256,6 +1272,7 @@
 			isa = PBXGroup;
 			children = (
 				ED879C0E29A151600007DB91 /* Database+Mock.swift */,
+				ED47BA0529F1A5EC007A1D12 /* HealthKitDataHelperBuildingMock.swift */,
 				ED58C98E29AAA1A600393468 /* SearchIndex+Mock.swift */,
 				ED879C0829A1494A0007DB91 /* MockError.swift */,
 			);
@@ -1797,6 +1814,7 @@
 				ED58C99329ABAE7300393468 /* ActivitySummary+Extensions.swift in Sources */,
 				C1EBB16727AD7AF600376E59 /* UserDefaultsTests.swift in Sources */,
 				ED0C4BE029D31068003485CF /* FirestoreEncoderTests.swift in Sources */,
+				ED47BA0629F1A5EC007A1D12 /* HealthKitDataHelperBuildingMock.swift in Sources */,
 				ED58C99829ABB2C200393468 /* RootViewModelTests.swift in Sources */,
 				C1E35D4A27B4600D00833EB2 /* Competition+StandingTests.swift in Sources */,
 				ED9F256129A4366C008C9967 /* CompetitionsManagerTests.swift in Sources */,
@@ -1827,6 +1845,7 @@
 				ED879C3D29A411090007DB91 /* AuthenticationManager+Factory.swift in Sources */,
 				ED1B85C629C904CC008DB1F6 /* UserView.swift in Sources */,
 				ED879C5F29A414AB0007DB91 /* Storage+Factory.swift in Sources */,
+				ED47BA0829F1AABD007A1D12 /* HealthKitDataHelperBuilder.swift in Sources */,
 				EDDB923D2965D2B0006AEE72 /* CompetitionHistoryDataPoint+View.swift in Sources */,
 				ED1E08D728DF4C6600497E20 /* View+RemovingMargin.swift in Sources */,
 				EDD894FD29633F92009636E6 /* EnvironmentManager.swift in Sources */,
@@ -1844,6 +1863,7 @@
 				EDBEA170281459D200058A47 /* EditCompetitionSection.swift in Sources */,
 				ED4F722229C93110007C5864 /* RevenueCatAppService.swift in Sources */,
 				EDA352932836F87600390585 /* CompetitionViewAction.swift in Sources */,
+				ED47BA0329F1A510007A1D12 /* HealthKitDataHelper+Factory.swift in Sources */,
 				ED3868DE29677F8100522722 /* PaywallPurchaseView.swift in Sources */,
 				C12D640727A5F2FC00259237 /* CompetitionsManager.swift in Sources */,
 				C1691DC726D55FCF006FFA30 /* FriendlyCompetitions.swift in Sources */,

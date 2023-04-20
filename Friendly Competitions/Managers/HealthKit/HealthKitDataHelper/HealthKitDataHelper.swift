@@ -4,7 +4,8 @@ import Factory
 import Foundation
 import UIKit
 
-protocol HealthKitDataHelping {
+protocol HealthKitDataHelping<Data> {
+
     associatedtype Data
     typealias FetchClosure = (DateInterval) -> AnyPublisher<Data, Error>
     typealias UploadClosure = (Data) -> AnyPublisher<Void, Error>
@@ -13,10 +14,7 @@ protocol HealthKitDataHelping {
 }
 
 /// Facilitates triggers for fetching & uploading data from HealthKit
-final class HealthKitDataHelper<Data> {
-
-    typealias FetchClosure = (DateInterval) -> AnyPublisher<Data, Error>
-    typealias UploadClosure = (Data) -> AnyPublisher<Void, Error>
+final class HealthKitDataHelper<Data>: HealthKitDataHelping {
 
     // MARK: - Private Properties
 
@@ -31,7 +29,7 @@ final class HealthKitDataHelper<Data> {
 
     // MARK: - Lifecycle
 
-    init(fetch fetchClosure: @escaping FetchClosure, upload uploadClosure: @escaping UploadClosure) {
+    init(fetch fetchClosure: @escaping (DateInterval) -> AnyPublisher<Data, Error>, upload uploadClosure: @escaping (Data) -> AnyPublisher<Void, Error>) {
 
         // Ignore errors from fetchClosure & uploadClosure so that finished is still trigered
         fetchAndUpload

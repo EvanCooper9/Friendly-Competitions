@@ -72,8 +72,10 @@ final class DocumentMock<Model: Codable>: Document {
 
 final class BatchMock<Model: Decodable>: Batch {
 
+    var commitCallCount = 0
     var commitClosure: (() -> Void)?
     func commit() async throws {
+        commitCallCount += 1
         commitClosure!()
     }
 
