@@ -11,51 +11,38 @@ import XCTest
 final class ActivitySummaryManagerTests: FCTestCase {
     
     private var cache: ActivitySummaryCacheMock!
-    private var competitionsManager: CompetitionsManagingMock!
     private var healthKitManager: HealthKitManagingMock!
     private var healthKitDataHelperBuilder: HealthKitDataHelperBuildingMock<[ActivitySummary]>!
     private var database: DatabaseMock!
-    private var permissionsManager: PermissionsManagingMock!
     private var scheduler: TestSchedulerOf<RunLoop>!
     private var userManager: UserManagingMock!
-    private var workoutManager: WorkoutManagingMock!
     private var cancellables: Cancellables!
     
     override func setUp() {
         super.setUp()
         cache = .init()
-        competitionsManager = .init()
         healthKitManager = .init()
         healthKitDataHelperBuilder = .init()
         database = .init()
-        permissionsManager = .init()
         scheduler = .init(now: .init(.now))
         userManager = .init()
-        workoutManager = .init()
-        
+
         container.activitySummaryCache.register { self.cache }
-        container.competitionsManager.register { self.competitionsManager }
         container.healthKitManager.register { self.healthKitManager }
         container.healthKitDataHelperBuilder.register { self.healthKitDataHelperBuilder }
         container.database.register { self.database }
-        container.permissionsManager.register { self.permissionsManager }
         container.scheduler.register { self.scheduler.eraseToAnyScheduler() }
         container.userManager.register { self.userManager }
-        container.workoutManager.register { self.workoutManager }
         cancellables = .init()
-        
-        competitionsManager.competitions = .just([])
     }
     
     override func tearDown() {
         super.tearDown()
         cache = .init()
-        competitionsManager = nil
         healthKitManager = nil
         database = nil
         scheduler = nil
         userManager = nil
-        workoutManager = nil
         cancellables = nil
     }
     

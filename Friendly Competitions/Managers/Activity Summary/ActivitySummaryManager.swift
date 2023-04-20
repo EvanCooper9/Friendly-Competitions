@@ -33,7 +33,6 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
     @Injected(\.database) private var database
     @Injected(\.scheduler) private var scheduler
     @Injected(\.userManager) private var userManager
-    @Injected(\.workoutManager) private var workoutManager
 
     private var helper: (any HealthKitDataHelping<[ActivitySummary]>)!
 
