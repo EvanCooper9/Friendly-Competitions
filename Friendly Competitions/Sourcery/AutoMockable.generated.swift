@@ -1643,6 +1643,7 @@ class UsersCacheMock: UsersCache {
 class WorkoutCacheMock: WorkoutCache {
 
 
+    var workouts: [Workout.ID: Workout] = [:]
     var workoutMetrics: [WorkoutType: [WorkoutMetric]] = [:]
 
 

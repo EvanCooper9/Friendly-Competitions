@@ -23,17 +23,18 @@ final class WorkoutManager: WorkoutManaging {
     @Injected(\.competitionsManager) private var competitionsManager
     @Injected(\.database) private var database
     @Injected(\.healthKitManager) private var healthKitManager
+    @Injected(\.healthKitDataHelperBuilder) private var healthKitDataHelperBuilder
     @Injected(\.userManager) private var userManager
     @Injected(\.workoutCache) private var cache
 
-    private var helper: HealthKitDataHelper<[Workout]>!
+    private var helper: (any HealthKitDataHelping<[Workout]>)!
 
     private var cancellables = Cancellables()
 
     // MARK: - Lifecycle
 
     init() {
-        helper = HealthKitDataHelper { [weak self] dateInterval -> AnyPublisher<[Workout], Error> in
+        helper = healthKitDataHelperBuilder.bulid { [weak self] dateInterval in
             guard let strongSelf = self else { return .just([]) }
             let publishers = strongSelf.cache.workoutMetrics.map { workoutType, metrics in
                 strongSelf.workouts(of: workoutType, with: metrics, in: dateInterval)
@@ -80,7 +81,16 @@ final class WorkoutManager: WorkoutManaging {
     // MARK: - Private Methods
 
     private func upload(workouts: [Workout]) -> AnyPublisher<Void, Error> {
-        .fromAsync { [weak self] in
+
+        let cache = self.cache.workouts // decode once
+        let changedWorkouts = workouts.filter { workout in
+            guard let cached = cache[workout.id] else { return true }
+            return cached != workout
+        }
+
+        guard changedWorkouts.isNotEmpty else { return .just(()) }
+
+        return .fromAsync { [weak self] in
             guard let strongSelf = self else { return }
             let userID = strongSelf.userManager.user.id
             let batch = strongSelf.database.batch()
@@ -90,6 +100,12 @@ final class WorkoutManager: WorkoutManaging {
             }
             try await batch.commit()
         }
+        .handleEvents(withUnretained: self, receiveOutput: { strongSelf in
+            var cache = strongSelf.cache.workouts // decode cache once
+            changedWorkouts.forEach { cache[$0.id] = $0 }
+            strongSelf.cache.workouts = cache // encode cache once
+        })
+        .eraseToAnyPublisher()
     }
 
     private func fetchWorkoutMetrics() -> AnyPublisher<[WorkoutType: [WorkoutMetric]], Never> {

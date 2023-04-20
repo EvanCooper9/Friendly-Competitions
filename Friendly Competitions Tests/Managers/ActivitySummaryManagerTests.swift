@@ -36,16 +36,6 @@ final class ActivitySummaryManagerTests: FCTestCase {
         cancellables = .init()
     }
     
-    override func tearDown() {
-        super.tearDown()
-        cache = .init()
-        healthKitManager = nil
-        database = nil
-        scheduler = nil
-        userManager = nil
-        cancellables = nil
-    }
-    
     func testThatItFetchesActivitySummariesAndSetsCurrentOnSuccess() {
         let expectation = self.expectation(description: #function)
         expectation.expectedFulfillmentCount = 2
