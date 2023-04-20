@@ -46,12 +46,12 @@ class APIMock: API {
     var callWithCalled: Bool {
         return callWithCallsCount > 0
     }
-    var callWithReceivedArguments: (endpoint: String, data: [String: Any]?)?
-    var callWithReceivedInvocations: [(endpoint: String, data: [String: Any]?)] = []
+    var callWithReceivedArguments: (endpoint: Endpoint, data: [String: Any]?)?
+    var callWithReceivedInvocations: [(endpoint: Endpoint, data: [String: Any]?)] = []
     var callWithReturnValue: AnyPublisher<Void, Error>!
-    var callWithClosure: ((String, [String: Any]?) -> AnyPublisher<Void, Error>)?
+    var callWithClosure: ((Endpoint, [String: Any]?) -> AnyPublisher<Void, Error>)?
 
-    func call(_ endpoint: String, with data: [String: Any]?) -> AnyPublisher<Void, Error> {
+    func call(_ endpoint: Endpoint, with data: [String: Any]?) -> AnyPublisher<Void, Error> {
         callWithCallsCount += 1
         callWithReceivedArguments = (endpoint: endpoint, data: data)
         callWithReceivedInvocations.append((endpoint: endpoint, data: data))

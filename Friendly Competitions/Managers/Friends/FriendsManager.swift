@@ -58,7 +58,7 @@ final class FriendsManager: FriendsManaging {
 
     func add(user: User) -> AnyPublisher<Void, Error> {
         let data = ["userID": user.id]
-        return api.call("sendFriendRequest", with: data)
+        return api.call(.sendFriendRequest, with: data)
     }
 
     func accept(friendRequest: User) -> AnyPublisher<Void, Error> {
@@ -66,7 +66,7 @@ final class FriendsManager: FriendsManaging {
             "userID": friendRequest.id,
             "accept": true
         ]
-        return api.call("respondToFriendRequest", with: data)
+        return api.call(.respondToFriendRequest, with: data)
     }
 
     func decline(friendRequest: User) -> AnyPublisher<Void, Error> {
@@ -74,12 +74,12 @@ final class FriendsManager: FriendsManaging {
             "userID": friendRequest.id,
             "accept": false
         ]
-        return api.call("respondToFriendRequest", with: data)
+        return api.call(.respondToFriendRequest, with: data)
     }
 
     func delete(friend: User) -> AnyPublisher<Void, Error> {
         let data = ["userID": friend.id]
-        return api.call("deleteFriend", with: data)
+        return api.call(.deleteFriend, with: data)
     }
 
     func user(withId id: String) -> AnyPublisher<User, Error> {

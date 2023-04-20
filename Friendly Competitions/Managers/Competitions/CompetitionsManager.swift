@@ -108,7 +108,7 @@ final class CompetitionsManager: CompetitionsManaging {
             "competitionID": competition.id,
             "accept": true
         ]
-        return api.call("respondToCompetitionInvite", with: data)
+        return api.call(.respondToCompetitionInvite, with: data)
     }
 
     func create(_ competition: Competition) -> AnyPublisher<Void, Error> {
@@ -125,12 +125,12 @@ final class CompetitionsManager: CompetitionsManaging {
             "competitionID": competition.id,
             "accept": false
         ]
-        return api.call("respondToCompetitionInvite", with: data)
+        return api.call(.respondToCompetitionInvite, with: data)
     }
 
     func delete(_ competition: Competition) -> AnyPublisher<Void, Error> {
         let data = ["competitionID": competition.id]
-        return api.call("deleteCompetition", with: data)
+        return api.call(.deleteCompetition, with: data)
     }
 
     func invite(_ user: User, to competition: Competition) -> AnyPublisher<Void, Error> {
@@ -138,17 +138,17 @@ final class CompetitionsManager: CompetitionsManaging {
             "competitionID": competition.id,
             "userID": user.id
         ]
-        return api.call("inviteUserToCompetition", with: data)
+        return api.call(.inviteUserToCompetition, with: data)
     }
 
     func join(_ competition: Competition) -> AnyPublisher<Void, Error> {
         let data = ["competitionID": competition.id]
-        return api.call("joinCompetition", with: data)
+        return api.call(.joinCompetition, with: data)
     }
 
     func leave(_ competition: Competition) -> AnyPublisher<Void, Error> {
         let data = ["competitionID": competition.id]
-        return api.call("leaveCompetition", with: data)
+        return api.call(.leaveCompetition, with: data)
     }
 
     func search(byID competitionID: Competition.ID) -> AnyPublisher<Competition, Error> {

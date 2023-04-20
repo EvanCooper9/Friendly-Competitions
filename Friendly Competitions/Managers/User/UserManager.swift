@@ -48,7 +48,7 @@ final class UserManager: UserManaging {
     }
 
     func deleteAccount() -> AnyPublisher<Void, Error> {
-        api.call("deleteAccount")
+        api.call(.deleteAccount)
             .flatMapLatest(withUnretained: self) { $0.authenticationManager.deleteAccount() }
             .handleEvents(withUnretained: self, receiveOutput: { try? $0.authenticationManager.signOut() })
             .eraseToAnyPublisher()
