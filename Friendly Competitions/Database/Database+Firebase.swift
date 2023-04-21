@@ -184,8 +184,10 @@ extension DocumentReference: Document {
                     promise(.failure(error))
                     return
                 } else if let snapshot {
-                    let analyticsManager = Container.shared.analyticsManager()
-                    analyticsManager.log(event: .databaseRead(path: snapshot.reference.path))
+                    if source == .server {
+                        let analyticsManager = Container.shared.analyticsManager()
+                        analyticsManager.log(event: .databaseRead(path: snapshot.reference.path))
+                    }
                     do {
                         let data = try snapshot.data(as: T.self, decoder: .custom)
                         promise(.success(data))
