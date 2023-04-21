@@ -88,7 +88,7 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
             .map { cached in
                 activitySummaries
                     .subtracting(cached)
-//                    .sorted(by: \.date)
+                    .sorted(by: \.date)
             }
 
         return changedActivitySummaries
