@@ -71,7 +71,7 @@ final class WorkoutManagerTests: FCTestCase {
             expectation.fulfill()
         }
 
-        database.documentClosure = { _ in DocumentMock<ActivitySummary>() }
+        database.documentClosure = { _ in DocumentMock<Workout>() }
         database.batchClosure = {
             if self.database.batchCallsCount == 1 {
                 return firstBatch
