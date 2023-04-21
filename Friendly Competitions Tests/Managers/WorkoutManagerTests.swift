@@ -61,6 +61,9 @@ final class WorkoutManagerTests: FCTestCase {
         database.documentClosure = { _ in DocumentMock<ActivitySummary>() }
 
         let manager = WorkoutManager()
+        manager.workouts(of: .walking, with: [], in: .init()) // needed to retain manager
+            .sink()
+            .store(in: &cancellables)
 
         let healthKitDataHelper = healthKitDataHelperBuilder.healthKitDataHelper!
         healthKitDataHelper.upload(data: expectedWorkouts)
@@ -69,6 +72,5 @@ final class WorkoutManagerTests: FCTestCase {
             .store(in: &cancellables)
 
         waitForExpectations(timeout: 1)
-        print(manager) // needed to retain workout manager
     }
 }

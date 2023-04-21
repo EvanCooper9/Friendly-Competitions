@@ -156,7 +156,6 @@ final class ActivitySummaryManagerTests: FCTestCase {
     func testThatItDoesNotUploadDuplicates() {
         let expectation = self.expectation(description: #function)
         expectation.isInverted = true
-//        expectation.expectedFulfillmentCount = 2 // upload & finish
 
         let expectedActivitySummaries = [ActivitySummary.mock]
 
@@ -167,7 +166,6 @@ final class ActivitySummaryManagerTests: FCTestCase {
             if batchMock.commitCallCount > 1 {
                 expectation.fulfill()
             }
-//            expectation.fulfill()
         }
         batchMock.setClosure = { _, _ in }
 
@@ -175,18 +173,16 @@ final class ActivitySummaryManagerTests: FCTestCase {
         database.documentClosure = { _ in DocumentMock<ActivitySummary>() }
 
         let manager = ActivitySummaryManager()
-        manager.activitySummary
+        manager.activitySummary // needed to retain manager
             .sink()
             .store(in: &cancellables)
 
         let healthKitDataHelper = healthKitDataHelperBuilder.healthKitDataHelper!
         healthKitDataHelper.upload(data: expectedActivitySummaries)
             .flatMapLatest { healthKitDataHelper.upload(data: expectedActivitySummaries) }
-            .ignoreFailure()
             .sink()
             .store(in: &cancellables)
 
         waitForExpectations(timeout: 1)
-        print(manager)
     }
 }
