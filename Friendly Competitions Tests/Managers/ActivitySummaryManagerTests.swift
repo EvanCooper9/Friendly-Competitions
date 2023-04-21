@@ -183,7 +183,7 @@ final class ActivitySummaryManagerTests: FCTestCase {
             expectation.fulfill()
         }
 
-        database.documentClosure = { _ in DocumentMock<ActivitySummary>() }
+        database.documentReturnValue = DocumentMock<ActivitySummary>()
         database.batchClosure = {
             if self.database.batchCallsCount == 1 {
                 return firstBatch
