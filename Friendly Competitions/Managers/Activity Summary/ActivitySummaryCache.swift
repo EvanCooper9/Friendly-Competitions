@@ -9,6 +9,7 @@ extension UserDefaults: ActivitySummaryCache {
 
     private enum Constants {
         static var activitySummaryKey: String { #function }
+        static var activitySummariesKey: String { #function }
     }
 
     var activitySummary: ActivitySummary? {

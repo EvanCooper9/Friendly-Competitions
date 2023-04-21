@@ -28,7 +28,6 @@ final class DeveloperMenuViewModel: ObservableObject {
     // MARK: - Public Properties
 
     @Published var environment: UnderlyingEnvironment = .prod
-
     @Published var showDestinationAlert = false
     @Published var destination = ""
 

@@ -379,7 +379,7 @@ class AuthUserMock: AuthUser {
 class AuthenticationCacheMock: AuthenticationCache {
 
 
-    var user: User?
+    var currentUser: User?
 
 
 }
