@@ -39,7 +39,7 @@ final class AnalyticsManager: AnalyticsManaging {
         let firebaseCompatibleDictionary = nestedDictionary.reduce(into: [String: Any]()) { partialResult, current in
             switch current.value {
             case .string(let string):
-                partialResult[current.key] = string
+                partialResult[current.key] = string.suffix(100)
             case .number(let number):
                 partialResult[current.key] = number
             case .bool(let bool):
