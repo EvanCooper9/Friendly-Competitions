@@ -239,7 +239,7 @@ final class CompetitionsManager: CompetitionsManaging {
 
         database.collection("competitions")
             .whereField("isPublic", isEqualTo: true)
-            .whereField("owner", isEqualTo: "com.evancooper.FriendlyCompetitions")
+            .whereField("owner", isEqualTo: Bundle.main.id)
             .publisher(asArrayOf: Competition.self)
             .sink(withUnretained: self) { $0.appOwnedCompetitionsSubject.send($1) }
             .store(in: &cancellables)

@@ -4,7 +4,6 @@ import Foundation
 protocol CompetitionCache {
     var competitionsDateInterval: DateInterval { get set }
     var competitionsHasPremiumResults: HasPremiumResultsContainerCache? { get set }
-    var competitionResults: [Competition.ID: [CompetitionResult]] { get set }
 }
 
 extension UserDefaults: CompetitionCache {
@@ -12,7 +11,6 @@ extension UserDefaults: CompetitionCache {
     private enum Constants {
         static var competitionsDateIntervalKey: String { #function }
         static var competitionsHasPremiumResults: String { #function }
-        static var competitionResultsKey: String { #function }
     }
 
     var competitionsDateInterval: DateInterval {
@@ -23,10 +21,5 @@ extension UserDefaults: CompetitionCache {
     var competitionsHasPremiumResults: HasPremiumResultsContainerCache? {
         get { decode(HasPremiumResultsContainerCache.self, forKey: Constants.competitionsHasPremiumResults) }
         set { encode(newValue, forKey: Constants.competitionsHasPremiumResults) }
-    }
-
-    var competitionResults: [Competition.ID: [CompetitionResult]] {
-        get { decode([Competition.ID: [CompetitionResult]].self, forKey: Constants.competitionResultsKey) ?? [:] }
-        set { encode(newValue, forKey: Constants.competitionResultsKey) }
     }
 }
