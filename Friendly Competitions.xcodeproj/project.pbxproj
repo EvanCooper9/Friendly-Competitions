@@ -139,6 +139,11 @@
 		ED438FF727F7B3B600D72F99 /* View+ConfirmationDialog.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED438FF627F7B3B600D72F99 /* View+ConfirmationDialog.swift */; };
 		ED438FF927F7C2B900D72F99 /* View+Analytics.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED438FF827F7C2B900D72F99 /* View+Analytics.swift */; };
 		ED438FFB27F7D18600D72F99 /* AnalyticsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED438FFA27F7D18600D72F99 /* AnalyticsManager.swift */; };
+		ED47BA0329F1A510007A1D12 /* HealthKitDataHelper+Factory.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED47BA0229F1A510007A1D12 /* HealthKitDataHelper+Factory.swift */; };
+		ED47BA0629F1A5EC007A1D12 /* HealthKitDataHelperBuildingMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED47BA0529F1A5EC007A1D12 /* HealthKitDataHelperBuildingMock.swift */; };
+		ED47BA0829F1AABD007A1D12 /* HealthKitDataHelperBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED47BA0729F1AABD007A1D12 /* HealthKitDataHelperBuilder.swift */; };
+		ED47BA0C29F1D8DF007A1D12 /* WorkoutManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED47BA0B29F1D8DF007A1D12 /* WorkoutManagerTests.swift */; };
+		ED47BA1129F2D1A7007A1D12 /* Workout+Mock.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED47BA1029F2D1A7007A1D12 /* Workout+Mock.swift */; };
 		ED4878252826F43800AC1E2C /* CompetitionParticipantRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED4878242826F43800AC1E2C /* CompetitionParticipantRow.swift */; };
 		ED48782E282747BD00AC1E2C /* InviteFriendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED48782D282747BD00AC1E2C /* InviteFriendsView.swift */; };
 		ED487830282747CE00AC1E2C /* InviteFriendsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED48782F282747CE00AC1E2C /* InviteFriendsViewModel.swift */; };
@@ -150,7 +155,6 @@
 		ED4F722229C93110007C5864 /* RevenueCatAppService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED4F722129C93110007C5864 /* RevenueCatAppService.swift */; };
 		ED4F722429C94491007C5864 /* Array+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED4F722329C94491007C5864 /* Array+Extensions.swift */; };
 		ED4F722629C9610E007C5864 /* FCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED4F722529C9610E007C5864 /* FCTestCase.swift */; };
-		ED4F723029C96C13007C5864 /* Publisher+ZipMany.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED4F722F29C96C13007C5864 /* Publisher+ZipMany.swift */; };
 		ED58C98729AA805A00393468 /* FriendsManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED58C98629AA805A00393468 /* FriendsManagerTests.swift */; };
 		ED58C98929AA89CC00393468 /* HealthKitManagerCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED58C98829AA89CC00393468 /* HealthKitManagerCache.swift */; };
 		ED58C98B29AA8C0100393468 /* HealthStoring.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED58C98A29AA8C0100393468 /* HealthStoring.swift */; };
@@ -379,6 +383,11 @@
 		ED438FF627F7B3B600D72F99 /* View+ConfirmationDialog.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+ConfirmationDialog.swift"; sourceTree = "<group>"; };
 		ED438FF827F7C2B900D72F99 /* View+Analytics.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Analytics.swift"; sourceTree = "<group>"; };
 		ED438FFA27F7D18600D72F99 /* AnalyticsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsManager.swift; sourceTree = "<group>"; };
+		ED47BA0229F1A510007A1D12 /* HealthKitDataHelper+Factory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HealthKitDataHelper+Factory.swift"; sourceTree = "<group>"; };
+		ED47BA0529F1A5EC007A1D12 /* HealthKitDataHelperBuildingMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitDataHelperBuildingMock.swift; sourceTree = "<group>"; };
+		ED47BA0729F1AABD007A1D12 /* HealthKitDataHelperBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitDataHelperBuilder.swift; sourceTree = "<group>"; };
+		ED47BA0B29F1D8DF007A1D12 /* WorkoutManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutManagerTests.swift; sourceTree = "<group>"; };
+		ED47BA1029F2D1A7007A1D12 /* Workout+Mock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Workout+Mock.swift"; sourceTree = "<group>"; };
 		ED4878242826F43800AC1E2C /* CompetitionParticipantRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionParticipantRow.swift; sourceTree = "<group>"; };
 		ED48782D282747BD00AC1E2C /* InviteFriendsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteFriendsView.swift; sourceTree = "<group>"; };
 		ED48782F282747CE00AC1E2C /* InviteFriendsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteFriendsViewModel.swift; sourceTree = "<group>"; };
@@ -390,7 +399,6 @@
 		ED4F722129C93110007C5864 /* RevenueCatAppService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RevenueCatAppService.swift; sourceTree = "<group>"; };
 		ED4F722329C94491007C5864 /* Array+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Extensions.swift"; sourceTree = "<group>"; };
 		ED4F722529C9610E007C5864 /* FCTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FCTestCase.swift; sourceTree = "<group>"; };
-		ED4F722F29C96C13007C5864 /* Publisher+ZipMany.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Publisher+ZipMany.swift"; sourceTree = "<group>"; };
 		ED58C98629AA805A00393468 /* FriendsManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendsManagerTests.swift; sourceTree = "<group>"; };
 		ED58C98829AA89CC00393468 /* HealthKitManagerCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitManagerCache.swift; sourceTree = "<group>"; };
 		ED58C98A29AA8C0100393468 /* HealthStoring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthStoring.swift; sourceTree = "<group>"; };
@@ -651,6 +659,7 @@
 				C155229F26E793DA00FE0DA7 /* ActivitySummary+Mock.swift */,
 				C155229D26E793C600FE0DA7 /* Competition+Mock.swift */,
 				C155229B26E793B300FE0DA7 /* User+Mock.swift */,
+				ED47BA1029F2D1A7007A1D12 /* Workout+Mock.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -1094,6 +1103,16 @@
 			path = Sourcery;
 			sourceTree = "<group>";
 		};
+		ED47BA0429F1A589007A1D12 /* HealthKitDataHelper */ = {
+			isa = PBXGroup;
+			children = (
+				ED879BF5299D52210007DB91 /* HealthKitDataHelper.swift */,
+				ED47BA0729F1AABD007A1D12 /* HealthKitDataHelperBuilder.swift */,
+				ED47BA0229F1A510007A1D12 /* HealthKitDataHelper+Factory.swift */,
+			);
+			path = HealthKitDataHelper;
+			sourceTree = "<group>";
+		};
 		ED48782C282747B100AC1E2C /* Invite Friends */ = {
 			isa = PBXGroup;
 			children = (
@@ -1135,7 +1154,6 @@
 		ED4F722E29C96C13007C5864 /* Combine */ = {
 			isa = PBXGroup;
 			children = (
-				ED4F722F29C96C13007C5864 /* Publisher+ZipMany.swift */,
 			);
 			path = Combine;
 			sourceTree = "<group>";
@@ -1153,7 +1171,7 @@
 		ED6CB45A28BA829000436BBD /* HealthKit */ = {
 			isa = PBXGroup;
 			children = (
-				ED879BF5299D52210007DB91 /* HealthKitDataHelper.swift */,
+				ED47BA0429F1A589007A1D12 /* HealthKitDataHelper */,
 				ED58C98A29AA8C0100393468 /* HealthStoring.swift */,
 				ED879C0629A13C250007DB91 /* HealthKitQuery.swift */,
 				C14634F526F2A84B0028F847 /* HealthKitManager.swift */,
@@ -1256,6 +1274,7 @@
 			isa = PBXGroup;
 			children = (
 				ED879C0E29A151600007DB91 /* Database+Mock.swift */,
+				ED47BA0529F1A5EC007A1D12 /* HealthKitDataHelperBuildingMock.swift */,
 				ED58C98E29AAA1A600393468 /* SearchIndex+Mock.swift */,
 				ED879C0829A1494A0007DB91 /* MockError.swift */,
 			);
@@ -1441,6 +1460,7 @@
 				EDFA2CD729D6796500768D0E /* EnvironmentManagerTests.swift */,
 				ED58C98629AA805A00393468 /* FriendsManagerTests.swift */,
 				ED58C99029AAA22C00393468 /* SearchManagerTests.swift */,
+				ED47BA0B29F1D8DF007A1D12 /* WorkoutManagerTests.swift */,
 			);
 			path = Managers;
 			sourceTree = "<group>";
@@ -1788,6 +1808,7 @@
 				ED779D3A29F019DA00317950 /* AuthenticationManagerTests.swift in Sources */,
 				C1E35D4627B45F6C00833EB2 /* PermissionStatusTests.swift in Sources */,
 				ED58C98729AA805A00393468 /* FriendsManagerTests.swift in Sources */,
+				ED47BA0C29F1D8DF007A1D12 /* WorkoutManagerTests.swift in Sources */,
 				ED95D5CF29F03FF400990FBF /* CompetitionParticipantRowConfigTests.swift in Sources */,
 				ED879C0F29A151600007DB91 /* Database+Mock.swift in Sources */,
 				C132944A27DAB12200117548 /* DeepLinkTests.swift in Sources */,
@@ -1797,6 +1818,7 @@
 				ED58C99329ABAE7300393468 /* ActivitySummary+Extensions.swift in Sources */,
 				C1EBB16727AD7AF600376E59 /* UserDefaultsTests.swift in Sources */,
 				ED0C4BE029D31068003485CF /* FirestoreEncoderTests.swift in Sources */,
+				ED47BA0629F1A5EC007A1D12 /* HealthKitDataHelperBuildingMock.swift in Sources */,
 				ED58C99829ABB2C200393468 /* RootViewModelTests.swift in Sources */,
 				C1E35D4A27B4600D00833EB2 /* Competition+StandingTests.swift in Sources */,
 				ED9F256129A4366C008C9967 /* CompetitionsManagerTests.swift in Sources */,
@@ -1827,6 +1849,7 @@
 				ED879C3D29A411090007DB91 /* AuthenticationManager+Factory.swift in Sources */,
 				ED1B85C629C904CC008DB1F6 /* UserView.swift in Sources */,
 				ED879C5F29A414AB0007DB91 /* Storage+Factory.swift in Sources */,
+				ED47BA0829F1AABD007A1D12 /* HealthKitDataHelperBuilder.swift in Sources */,
 				EDDB923D2965D2B0006AEE72 /* CompetitionHistoryDataPoint+View.swift in Sources */,
 				ED1E08D728DF4C6600497E20 /* View+RemovingMargin.swift in Sources */,
 				EDD894FD29633F92009636E6 /* EnvironmentManager.swift in Sources */,
@@ -1835,7 +1858,6 @@
 				C13F922C27BFFF9900FC6880 /* StorageManager.swift in Sources */,
 				ED879C6429A417670007DB91 /* Utility+Factory.swift in Sources */,
 				EDD8950029634043009636E6 /* FirestoreEnvironment.swift in Sources */,
-				ED4F723029C96C13007C5864 /* Publisher+ZipMany.swift in Sources */,
 				ED487830282747CE00AC1E2C /* InviteFriendsViewModel.swift in Sources */,
 				ED4878252826F43800AC1E2C /* CompetitionParticipantRow.swift in Sources */,
 				ED1B85AA29C9049E008DB1F6 /* PermissionView.swift in Sources */,
@@ -1844,6 +1866,7 @@
 				EDBEA170281459D200058A47 /* EditCompetitionSection.swift in Sources */,
 				ED4F722229C93110007C5864 /* RevenueCatAppService.swift in Sources */,
 				EDA352932836F87600390585 /* CompetitionViewAction.swift in Sources */,
+				ED47BA0329F1A510007A1D12 /* HealthKitDataHelper+Factory.swift in Sources */,
 				ED3868DE29677F8100522722 /* PaywallPurchaseView.swift in Sources */,
 				C12D640727A5F2FC00259237 /* CompetitionsManager.swift in Sources */,
 				C1691DC726D55FCF006FFA30 /* FriendlyCompetitions.swift in Sources */,
@@ -1947,6 +1970,7 @@
 				ED879C5029A411E20007DB91 /* NotificationsManager+Factory.swift in Sources */,
 				C1E1A9D127A6D9D700E8E360 /* FriendsManager.swift in Sources */,
 				C1691DDE26D561D5006FFA30 /* SignIn.swift in Sources */,
+				ED47BA1129F2D1A7007A1D12 /* Workout+Mock.swift in Sources */,
 				ED879BF6299D52210007DB91 /* HealthKitDataHelper.swift in Sources */,
 				ED9F255B29A4353C008C9967 /* DateToEndOfDay.swift in Sources */,
 				ED879C0329A07A820007DB91 /* Database+Firebase.swift in Sources */,

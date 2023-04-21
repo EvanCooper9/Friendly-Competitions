@@ -109,6 +109,7 @@ final class AuthenticationManager: AuthenticationManaging {
         .fromAsync { [weak self] in
             try await self?.auth.user?.delete()
         }
+        .eraseToAnyPublisher()
     }
 
     func signOut() throws {

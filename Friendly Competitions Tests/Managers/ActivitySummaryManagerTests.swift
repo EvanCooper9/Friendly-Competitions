@@ -11,49 +11,32 @@ import XCTest
 final class ActivitySummaryManagerTests: FCTestCase {
     
     private var cache: ActivitySummaryCacheMock!
-    private var competitionsManager: CompetitionsManagingMock!
     private var healthKitManager: HealthKitManagingMock!
+    private var healthKitDataHelperBuilder: HealthKitDataHelperBuildingMock<[ActivitySummary]>!
     private var database: DatabaseMock!
-    private var permissionsManager: PermissionsManagingMock!
     private var scheduler: TestSchedulerOf<RunLoop>!
     private var userManager: UserManagingMock!
-    private var workoutManager: WorkoutManagingMock!
+
     private var cancellables: Cancellables!
+
+    private var manager: ActivitySummaryManager!
     
     override func setUp() {
         super.setUp()
         cache = .init()
-        competitionsManager = .init()
         healthKitManager = .init()
+        healthKitDataHelperBuilder = .init()
         database = .init()
-        permissionsManager = .init()
         scheduler = .init(now: .init(.now))
         userManager = .init()
-        workoutManager = .init()
-        
+
         container.activitySummaryCache.register { self.cache }
-        container.competitionsManager.register { self.competitionsManager }
         container.healthKitManager.register { self.healthKitManager }
+        container.healthKitDataHelperBuilder.register { self.healthKitDataHelperBuilder }
         container.database.register { self.database }
-        container.permissionsManager.register { self.permissionsManager }
         container.scheduler.register { self.scheduler.eraseToAnyScheduler() }
         container.userManager.register { self.userManager }
-        container.workoutManager.register { self.workoutManager }
         cancellables = .init()
-        
-        competitionsManager.competitions = .just([])
-    }
-    
-    override func tearDown() {
-        super.tearDown()
-        cache = .init()
-        competitionsManager = nil
-        healthKitManager = nil
-        database = nil
-        scheduler = nil
-        userManager = nil
-        workoutManager = nil
-        cancellables = nil
     }
     
     func testThatItFetchesActivitySummariesAndSetsCurrentOnSuccess() {
@@ -152,20 +135,92 @@ final class ActivitySummaryManagerTests: FCTestCase {
             XCTAssertEqual(path, "users/\(user.id)/activitySummaries/\(expectedActivitySummary.id)")
             return DocumentMock<ActivitySummary>()
         }
-        
-        let competitions = PassthroughSubject<[Competition], Never>()
-        competitionsManager.competitions = competitions.share(replay: 1).eraseToAnyPublisher()
-        competitionsManager.competitionsDateInterval = .init()
+
+        let collection = CollectionMock<ActivitySummary>()
+        collection.getDocumentsClosure = { _, _ in .just([]) }
+        database.collectionReturnValue = collection
         
         let manager = ActivitySummaryManager()
         manager.activitySummary
             .sink()
             .store(in: &cancellables)
+
+        healthKitDataHelperBuilder.healthKitDataHelper!
+            .fetch(dateInterval: .init())
+            .flatMapLatest(withUnretained: self) { strongSelf, activitySummaries in
+                XCTAssertEqual(activitySummaries, expected)
+                return strongSelf.healthKitDataHelperBuilder.healthKitDataHelper!.upload(data: activitySummaries)
+            }
+            .sink()
+            .store(in: &cancellables)
         
-        // trigger fetch & upload
-        competitions.send([.mock])
-        scheduler.advance(by: .seconds(1))
-        
+        waitForExpectations(timeout: 1)
+    }
+
+    func testThatItDoesNotUploadDuplicates() {
+        let expectation = self.expectation(description: #function)
+
+        userManager.user = .evan
+
+        let activitySummaryA = ActivitySummary.mock.with(userID: userManager.user.id)
+        let activitySummaryB = ActivitySummary.mock.with(userID: userManager.user.id).with(date: .now.addingTimeInterval(1.days))
+
+        let firstActivitySummaries = [activitySummaryA]
+        let secondActivitySummaries = [activitySummaryA, activitySummaryB]
+
+        expectation.expectedFulfillmentCount = 2 + (firstActivitySummaries + secondActivitySummaries).uniqued(on: \.id).count
+
+        let firstBatch = BatchMock<ActivitySummary>()
+        firstBatch.commitClosure = expectation.fulfill
+        firstBatch.setClosure = { activitySummary, _ in
+            XCTAssertEqual(activitySummary, firstActivitySummaries[firstBatch.setCallCount - 1])
+            expectation.fulfill()
+        }
+
+        let secondBatch = BatchMock<ActivitySummary>()
+        secondBatch.commitClosure = expectation.fulfill
+        secondBatch.setClosure = { activitySummary, _ in
+            let expectedActivitySummariesForUpload = secondActivitySummaries.filter { activitySummary in
+                !firstActivitySummaries.contains(activitySummary)
+            }
+            XCTAssertEqual(activitySummary, expectedActivitySummariesForUpload[secondBatch.setCallCount - 1])
+            expectation.fulfill()
+        }
+
+        database.documentReturnValue = DocumentMock<ActivitySummary>()
+        database.batchClosure = {
+            if self.database.batchCallsCount == 1 {
+                return firstBatch
+            } else if self.database.batchCallsCount == 2 {
+                return secondBatch
+            }
+            XCTFail("Too many calls to batch")
+            return BatchMock<ActivitySummary>()
+        }
+
+        let collection = CollectionMock<ActivitySummary>()
+        collection.getDocumentsClosure = { _, _ in
+            if collection.getDocumentsCallCount == 1 {
+                return .just([])
+            } else if collection.getDocumentsCallCount == 2 {
+                return .just(firstActivitySummaries)
+            }
+            XCTFail("Too many calls to getDocuments")
+            return .never()
+        }
+        database.collectionReturnValue = collection
+
+        let manager = ActivitySummaryManager()
+        manager.activitySummary
+            .sink() // needed to retain manager
+            .store(in: &cancellables)
+
+        let healthKitDataHelper = healthKitDataHelperBuilder.healthKitDataHelper!
+        healthKitDataHelper.upload(data: firstActivitySummaries)
+            .flatMapLatest { healthKitDataHelper.upload(data: secondActivitySummaries) }
+            .sink()
+            .store(in: &cancellables)
+
         waitForExpectations(timeout: 1)
     }
 }
