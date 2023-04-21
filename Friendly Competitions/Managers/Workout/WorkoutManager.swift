@@ -82,31 +82,27 @@ final class WorkoutManager: WorkoutManaging {
     // MARK: - Private Methods
 
     private func upload(workouts: [Workout]) -> AnyPublisher<Void, Error> {
-
-        let cache = self.cache.workouts // decode once
-        let changedWorkouts = workouts.filter { workout in
-            guard let cached = cache[workout.id] else { return true }
-            return cached != workout
-        }
-
-        guard changedWorkouts.isNotEmpty else { return .just(()) }
-
-        return .fromAsync { [weak self] in
-            guard let strongSelf = self else { return }
-            let userID = strongSelf.userManager.user.id
-            let batch = strongSelf.database.batch()
-            try changedWorkouts.forEach { workout in
-                let document = strongSelf.database.document("users/\(userID)/workouts/\(workout.id)")
-                try batch.set(value: workout, forDocument: document)
+        let changedWorkouts = database
+            .collection("users/\(userManager.user.id)/workouts")
+            .getDocuments(ofType: Workout.self, source: .cache)
+            .map { cached in
+                workouts
+                    .subtracting(cached)
+                    .sorted(by: \.date)
             }
-            try await batch.commit()
-        }
-        .handleEvents(withUnretained: self, receiveOutput: { strongSelf in
-            var cache = strongSelf.cache.workouts // decode cache once
-            changedWorkouts.forEach { cache[$0.id] = $0 }
-            strongSelf.cache.workouts = cache // encode cache once
-        })
-        .eraseToAnyPublisher()
+
+        return changedWorkouts
+            .flatMapAsync { [weak self] workouts in
+                guard let strongSelf = self else { return }
+                let userID = strongSelf.userManager.user.id
+                let batch = strongSelf.database.batch()
+                try workouts.forEach { workout in
+                    let document = strongSelf.database.document("users/\(userID)/workouts/\(workout.id)")
+                    try batch.set(value: workout, forDocument: document)
+                }
+                try await batch.commit()
+            }
+            .eraseToAnyPublisher()
     }
 
     private func fetchWorkoutMetrics() -> AnyPublisher<[WorkoutType: [WorkoutMetric]], Never> {

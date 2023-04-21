@@ -82,6 +82,18 @@ final class WorkoutManagerTests: FCTestCase {
             return BatchMock<Workout>()
         }
 
+        let collection = CollectionMock<Workout>()
+        collection.getDocumentsClosure = { _, _ in
+            if collection.getDocumentsCallCount == 1 {
+                return .just([])
+            } else if collection.getDocumentsCallCount == 2 {
+                return .just(firstWorkouts)
+            }
+            XCTFail("Too many calls to getDocuments")
+            return .never()
+        }
+        database.collectionReturnValue = collection
+
         let manager = WorkoutManager()
         manager.workouts(of: .walking, with: [], in: .init())
             .sink() // needed to retain manager

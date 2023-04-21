@@ -135,6 +135,10 @@ final class ActivitySummaryManagerTests: FCTestCase {
             XCTAssertEqual(path, "users/\(user.id)/activitySummaries/\(expectedActivitySummary.id)")
             return DocumentMock<ActivitySummary>()
         }
+
+        let collection = CollectionMock<ActivitySummary>()
+        collection.getDocumentsClosure = { _, _ in .just([]) }
+        database.collectionReturnValue = collection
         
         let manager = ActivitySummaryManager()
         manager.activitySummary
@@ -193,6 +197,18 @@ final class ActivitySummaryManagerTests: FCTestCase {
             XCTFail("Too many calls to batch")
             return BatchMock<ActivitySummary>()
         }
+
+        let collection = CollectionMock<ActivitySummary>()
+        collection.getDocumentsClosure = { _, _ in
+            if collection.getDocumentsCallCount == 1 {
+                return .just([])
+            } else if collection.getDocumentsCallCount == 2 {
+                return .just(firstActivitySummaries)
+            }
+            XCTFail("Too many calls to getDocuments")
+            return .never()
+        }
+        database.collectionReturnValue = collection
 
         let manager = ActivitySummaryManager()
         manager.activitySummary

@@ -1,6 +1,6 @@
 import Foundation
 
-struct Workout: Codable, Equatable {
+struct Workout: Codable, Equatable, Hashable {
     let type: WorkoutType
     let date: Date
     let points: [WorkoutMetric: Int]

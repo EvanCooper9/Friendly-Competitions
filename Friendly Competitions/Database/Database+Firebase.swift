@@ -85,7 +85,8 @@ extension Query: Collection {
     }
 
     func getDocuments<T>(ofType type: T.Type, source: DatabaseSource) -> AnyPublisher<[T], Error> where T : Decodable {
-        getDocuments(source: source.firestoreSource)
+        let query = self
+        return getDocuments(source: source.firestoreSource)
             .handleEvents(receiveOutput: { snapshot in
                 guard snapshot.documents.isNotEmpty else { return }
                 let analyticsManager = Container.shared.analyticsManager()
@@ -94,9 +95,9 @@ extension Query: Collection {
                 }
             })
             .map { $0.documents.decoded(as: T.self) }
-            .flatMapLatest(withUnretained: self) { strongSelf, results -> AnyPublisher<[T], Error> in
+            .flatMapLatest { [query] (results: [T]) -> AnyPublisher<[T], Error> in
                 guard results.isEmpty, source == .cacheFirst else { return .just(results) }
-                return strongSelf.getDocuments(ofType: T.self, source: .server)
+                return query.getDocuments(ofType: T.self, source: .server)
             }
             .reportErrorToCrashlytics()
     }

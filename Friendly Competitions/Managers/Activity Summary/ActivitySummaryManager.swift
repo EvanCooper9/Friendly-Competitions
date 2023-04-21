@@ -80,34 +80,29 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
     // MARK: - Private Methods
 
     private func upload(activitySummaries: [ActivitySummary]) -> AnyPublisher<Void, Error> {
+        let activitySummaries = activitySummaries.map { $0.with(userID: userManager.user.id) }
 
-        // filter unchanged activity summaries
-        let cache = cache.activitySummaries // decode cache once
-        let changedActivitySummaries = activitySummaries.filter { activitySummary in
-            guard let cached = cache[activitySummary.id] else { return true }
-            return cached != activitySummary
-        }
-
-        guard changedActivitySummaries.isNotEmpty else { return .just(()) }
-
-        return .fromAsync { [weak self] in
-            guard let strongSelf = self else { return }
-            let userID = strongSelf.userManager.user.id
-            let batch = strongSelf.database.batch()
-            try changedActivitySummaries.forEach { activitySummary in
-                var activitySummary = activitySummary
-                activitySummary.userID = userID
-                let document = strongSelf.database.document("users/\(userID)/activitySummaries/\(activitySummary.id)")
-                try batch.set(value: activitySummary, forDocument: document)
+        let changedActivitySummaries = database
+            .collection("users/\(userManager.user.id)/activitySummaries")
+            .getDocuments(ofType: ActivitySummary.self, source: .cache)
+            .map { cached in
+                activitySummaries
+                    .subtracting(cached)
+//                    .sorted(by: \.date)
             }
-            try await batch.commit()
-        }
-        .handleEvents(withUnretained: self, receiveOutput: { strongSelf in
-            var cache = strongSelf.cache.activitySummaries // decode cache once
-            changedActivitySummaries.forEach { cache[$0.id] = $0 }
-            strongSelf.cache.activitySummaries = cache // encode cache once
-        })
-        .eraseToAnyPublisher()
+
+        return changedActivitySummaries
+            .flatMapAsync { [weak self] activitySummaries in
+                guard let strongSelf = self else { return }
+                let userID = strongSelf.userManager.user.id
+                let batch = strongSelf.database.batch()
+                try activitySummaries.forEach { activitySummary in
+                    let document = strongSelf.database.document("users/\(userID)/activitySummaries/\(activitySummary.id)")
+                    try batch.set(value: activitySummary, forDocument: document)
+                }
+                try await batch.commit()
+            }
+            .eraseToAnyPublisher()
     }
 }
 
@@ -120,5 +115,11 @@ private extension DateInterval {
         var endDateComponents = calendar.dateComponents(units, from: end)
         endDateComponents.calendar = calendar
         return HKQuery.predicate(forActivitySummariesBetweenStart: startDateComponents, end: endDateComponents)
+    }
+}
+
+extension Array where Element: Hashable {
+    func subtracting(_ other: Self) -> Self {
+        Array(Set(self).subtracting(Set(other)))
     }
 }
