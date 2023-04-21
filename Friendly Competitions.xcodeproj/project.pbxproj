@@ -143,6 +143,7 @@
 		ED47BA0629F1A5EC007A1D12 /* HealthKitDataHelperBuildingMock.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED47BA0529F1A5EC007A1D12 /* HealthKitDataHelperBuildingMock.swift */; };
 		ED47BA0829F1AABD007A1D12 /* HealthKitDataHelperBuilder.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED47BA0729F1AABD007A1D12 /* HealthKitDataHelperBuilder.swift */; };
 		ED47BA0C29F1D8DF007A1D12 /* WorkoutManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED47BA0B29F1D8DF007A1D12 /* WorkoutManagerTests.swift */; };
+		ED47BA1129F2D1A7007A1D12 /* Workout+Mock.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED47BA1029F2D1A7007A1D12 /* Workout+Mock.swift */; };
 		ED4878252826F43800AC1E2C /* CompetitionParticipantRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED4878242826F43800AC1E2C /* CompetitionParticipantRow.swift */; };
 		ED48782E282747BD00AC1E2C /* InviteFriendsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED48782D282747BD00AC1E2C /* InviteFriendsView.swift */; };
 		ED487830282747CE00AC1E2C /* InviteFriendsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED48782F282747CE00AC1E2C /* InviteFriendsViewModel.swift */; };
@@ -386,6 +387,7 @@
 		ED47BA0529F1A5EC007A1D12 /* HealthKitDataHelperBuildingMock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitDataHelperBuildingMock.swift; sourceTree = "<group>"; };
 		ED47BA0729F1AABD007A1D12 /* HealthKitDataHelperBuilder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitDataHelperBuilder.swift; sourceTree = "<group>"; };
 		ED47BA0B29F1D8DF007A1D12 /* WorkoutManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutManagerTests.swift; sourceTree = "<group>"; };
+		ED47BA1029F2D1A7007A1D12 /* Workout+Mock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Workout+Mock.swift"; sourceTree = "<group>"; };
 		ED4878242826F43800AC1E2C /* CompetitionParticipantRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionParticipantRow.swift; sourceTree = "<group>"; };
 		ED48782D282747BD00AC1E2C /* InviteFriendsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteFriendsView.swift; sourceTree = "<group>"; };
 		ED48782F282747CE00AC1E2C /* InviteFriendsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteFriendsViewModel.swift; sourceTree = "<group>"; };
@@ -657,6 +659,7 @@
 				C155229F26E793DA00FE0DA7 /* ActivitySummary+Mock.swift */,
 				C155229D26E793C600FE0DA7 /* Competition+Mock.swift */,
 				C155229B26E793B300FE0DA7 /* User+Mock.swift */,
+				ED47BA1029F2D1A7007A1D12 /* Workout+Mock.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -1967,6 +1970,7 @@
 				ED879C5029A411E20007DB91 /* NotificationsManager+Factory.swift in Sources */,
 				C1E1A9D127A6D9D700E8E360 /* FriendsManager.swift in Sources */,
 				C1691DDE26D561D5006FFA30 /* SignIn.swift in Sources */,
+				ED47BA1129F2D1A7007A1D12 /* Workout+Mock.swift in Sources */,
 				ED879BF6299D52210007DB91 /* HealthKitDataHelper.swift in Sources */,
 				ED9F255B29A4353C008C9967 /* DateToEndOfDay.swift in Sources */,
 				ED879C0329A07A820007DB91 /* Database+Firebase.swift in Sources */,

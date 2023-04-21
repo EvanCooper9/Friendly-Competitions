@@ -43,31 +43,53 @@ final class WorkoutManagerTests: FCTestCase {
 
     func testThatItDoesNotUploadDuplicates() {
         let expectation = self.expectation(description: #function)
-        expectation.isInverted = true
 
-        let expectedWorkouts = [Workout(type: .walking, date: .now, points: [.distance: 100])]
+        let workoutA = Workout.mock()
+        let workoutB = Workout.mock(date: .now.addingTimeInterval(1.days))
+
+        let firstWorkouts = [workoutA]
+        let secondWorkouts = [workoutA, workoutB]
+
+        expectation.expectedFulfillmentCount = 2 + (firstWorkouts + secondWorkouts).uniqued(on: \.id).count
 
         userManager.user = .evan
 
-        let batchMock = BatchMock<Workout>()
-        batchMock.commitClosure = {
-            if batchMock.commitCallCount > 1 {
-                expectation.fulfill()
-            }
+        let firstBatch = BatchMock<Workout>()
+        firstBatch.commitClosure = expectation.fulfill
+        firstBatch.setClosure = { workout, _ in
+            XCTAssertEqual(workout, firstWorkouts[firstBatch.setCallCount - 1])
+            expectation.fulfill()
         }
-        batchMock.setClosure = { _, _ in }
 
-        database.batchClosure = { batchMock }
+        let secondBatch = BatchMock<Workout>()
+        secondBatch.commitClosure = expectation.fulfill
+        secondBatch.setClosure = { workout, _ in
+            let expectedWorkoutsForUpload = secondWorkouts.filter { workout in
+                !firstWorkouts.contains(workout)
+            }
+            XCTAssertEqual(workout, expectedWorkoutsForUpload[secondBatch.setCallCount - 1])
+            expectation.fulfill()
+        }
+
         database.documentClosure = { _ in DocumentMock<ActivitySummary>() }
+        database.batchClosure = {
+            if self.database.batchCallsCount == 1 {
+                return firstBatch
+            } else if self.database.batchCallsCount == 2 {
+                return secondBatch
+            }
+            XCTFail("Too many calls to batch")
+            return BatchMock<Workout>()
+        }
 
         let manager = WorkoutManager()
-        manager.workouts(of: .walking, with: [], in: .init()) // needed to retain manager
-            .sink()
+        manager.workouts(of: .walking, with: [], in: .init())
+            .sink() // needed to retain manager
             .store(in: &cancellables)
 
         let healthKitDataHelper = healthKitDataHelperBuilder.healthKitDataHelper!
-        healthKitDataHelper.upload(data: expectedWorkouts)
-            .flatMapLatest { healthKitDataHelper.upload(data: expectedWorkouts) }
+        healthKitDataHelper.upload(data: firstWorkouts)
+            .flatMapLatest { healthKitDataHelper.upload(data: secondWorkouts) }
             .sink()
             .store(in: &cancellables)
 

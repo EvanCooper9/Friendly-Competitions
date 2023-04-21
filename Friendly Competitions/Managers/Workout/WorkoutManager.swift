@@ -95,7 +95,7 @@ final class WorkoutManager: WorkoutManaging {
             guard let strongSelf = self else { return }
             let userID = strongSelf.userManager.user.id
             let batch = strongSelf.database.batch()
-            try workouts.forEach { workout in
+            try changedWorkouts.forEach { workout in
                 let document = strongSelf.database.document("users/\(userID)/workouts/\(workout.id)")
                 try batch.set(value: workout, forDocument: document)
             }

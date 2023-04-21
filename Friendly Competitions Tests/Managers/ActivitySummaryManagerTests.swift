@@ -155,31 +155,53 @@ final class ActivitySummaryManagerTests: FCTestCase {
 
     func testThatItDoesNotUploadDuplicates() {
         let expectation = self.expectation(description: #function)
-        expectation.isInverted = true
-
-        let expectedActivitySummaries = [ActivitySummary.mock]
 
         userManager.user = .evan
 
-        let batchMock = BatchMock<ActivitySummary>()
-        batchMock.commitClosure = {
-            if batchMock.commitCallCount > 1 {
-                expectation.fulfill()
-            }
-        }
-        batchMock.setClosure = { _, _ in }
+        let activitySummaryA = ActivitySummary.mock.with(userID: userManager.user.id)
+        let activitySummaryB = ActivitySummary.mock.with(userID: userManager.user.id).with(date: .now.addingTimeInterval(1.days))
 
-        database.batchClosure = { batchMock }
+        let firstActivitySummaries = [activitySummaryA]
+        let secondActivitySummaries = [activitySummaryA, activitySummaryB]
+
+        expectation.expectedFulfillmentCount = 2 + (firstActivitySummaries + secondActivitySummaries).uniqued(on: \.id).count
+
+        let firstBatch = BatchMock<ActivitySummary>()
+        firstBatch.commitClosure = expectation.fulfill
+        firstBatch.setClosure = { activitySummary, _ in
+            XCTAssertEqual(activitySummary, firstActivitySummaries[firstBatch.setCallCount - 1])
+            expectation.fulfill()
+        }
+
+        let secondBatch = BatchMock<ActivitySummary>()
+        secondBatch.commitClosure = expectation.fulfill
+        secondBatch.setClosure = { activitySummary, _ in
+            let expectedActivitySummariesForUpload = secondActivitySummaries.filter { activitySummary in
+                !firstActivitySummaries.contains(activitySummary)
+            }
+            XCTAssertEqual(activitySummary, expectedActivitySummariesForUpload[secondBatch.setCallCount - 1])
+            expectation.fulfill()
+        }
+
         database.documentClosure = { _ in DocumentMock<ActivitySummary>() }
+        database.batchClosure = {
+            if self.database.batchCallsCount == 1 {
+                return firstBatch
+            } else if self.database.batchCallsCount == 2 {
+                return secondBatch
+            }
+            XCTFail("Too many calls to batch")
+            return BatchMock<ActivitySummary>()
+        }
 
         let manager = ActivitySummaryManager()
-        manager.activitySummary // needed to retain manager
-            .sink()
+        manager.activitySummary
+            .sink() // needed to retain manager
             .store(in: &cancellables)
 
         let healthKitDataHelper = healthKitDataHelperBuilder.healthKitDataHelper!
-        healthKitDataHelper.upload(data: expectedActivitySummaries)
-            .flatMapLatest { healthKitDataHelper.upload(data: expectedActivitySummaries) }
+        healthKitDataHelper.upload(data: firstActivitySummaries)
+            .flatMapLatest { healthKitDataHelper.upload(data: secondActivitySummaries) }
             .sink()
             .store(in: &cancellables)
 
