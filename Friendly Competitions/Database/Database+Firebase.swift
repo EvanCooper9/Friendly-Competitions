@@ -48,6 +48,19 @@ extension Firestore: Database {
 // MARK: Collection
 
 extension Query: Collection {
+    func count() -> AnyPublisher<Int, Error> {
+        Future { [count] promise in
+            count.getAggregation(source: .server) { snapshot, error in
+                if let error {
+                    promise(.failure(error))
+                } else if let snapshot {
+                    promise(.success(Int(truncating: snapshot.count)))
+                }
+            }
+        }
+        .eraseToAnyPublisher()
+    }
+
     func whereField<T: Decodable>(_ field: String, asArrayOf type: T.Type, in values: [Any]) -> AnyPublisher<[T], Error> {
         .fromAsync {
             try await self
@@ -71,6 +84,12 @@ extension Query: Collection {
         return query
     }
 
+    func whereField(_ field: String, notIn values: [Any]) -> Collection {
+        guard values.isNotEmpty else { return self }
+        let query: Query = whereField(field, notIn: values)
+        return query
+    }
+
     func publisher<T: Decodable>(asArrayOf type: T.Type) -> AnyPublisher<[T], Error> {
         snapshotPublisher()
             .handleEvents(receiveOutput: { snapshot in
@@ -88,7 +107,7 @@ extension Query: Collection {
         let query = self
         return getDocuments(source: source.firestoreSource)
             .handleEvents(receiveOutput: { snapshot in
-                guard snapshot.documents.isNotEmpty else { return }
+                guard snapshot.documents.isNotEmpty, source == .server else { return }
                 let analyticsManager = Container.shared.analyticsManager()
                 snapshot.documents.forEach { document in
                     analyticsManager.log(event: .databaseRead(path: document.reference.path))
@@ -165,8 +184,10 @@ extension DocumentReference: Document {
                     promise(.failure(error))
                     return
                 } else if let snapshot {
-                    let analyticsManager = Container.shared.analyticsManager()
-                    analyticsManager.log(event: .databaseRead(path: snapshot.reference.path))
+                    if source == .server {
+                        let analyticsManager = Container.shared.analyticsManager()
+                        analyticsManager.log(event: .databaseRead(path: snapshot.reference.path))
+                    }
                     do {
                         let data = try snapshot.data(as: T.self, decoder: .custom)
                         promise(.success(data))
@@ -189,7 +210,6 @@ extension DocumentReference: Document {
 
     func publisher<T: Decodable>(as type: T.Type) -> AnyPublisher<T, Error> {
         snapshotPublisher()
-            .print(path)
             .handleEvents(receiveOutput: { snapshot in
                 let analyticsManager = Container.shared.analyticsManager()
                 analyticsManager.log(event: .databaseRead(path: snapshot.reference.path))
@@ -218,9 +238,7 @@ extension WriteBatch: Batch {
 fileprivate extension DatabaseSource {
     var firestoreSource: FirestoreSource {
         switch self {
-        case .cache:
-            return .cache
-        case .cacheFirst:
+        case .cache, .cacheFirst:
             return .cache
         case .server:
             return .server

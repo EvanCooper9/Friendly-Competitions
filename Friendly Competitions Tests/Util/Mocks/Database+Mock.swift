@@ -20,6 +20,11 @@ final class CollectionMock<Model: Decodable>: Collection {
         whereFieldIsEqualToClosure!()
     }
 
+    var whereFieldIsNotInClosure: (() -> Collection)?
+    func whereField(_ field: String, notIn values: [Any]) -> Collection {
+        whereFieldIsNotInClosure!()
+    }
+
     var publisherCallCount = 0
     var publisherClosure: (() -> AnyPublisher<[Model], Error>)?
     func publisher<T: Decodable>(asArrayOf type: T.Type) -> AnyPublisher<[T], Error> {
@@ -36,6 +41,11 @@ final class CollectionMock<Model: Decodable>: Collection {
         return getDocumentsClosure!(T.self as! Model.Type, source)
             .map { $0 as! [T] }
             .eraseToAnyPublisher()
+    }
+
+    var countReturnValue: AnyPublisher<Int, Error>!
+    func count() -> AnyPublisher<Int, Error> {
+        countReturnValue!
     }
 }
 
