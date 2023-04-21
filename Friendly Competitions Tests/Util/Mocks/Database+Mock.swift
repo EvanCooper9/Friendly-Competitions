@@ -29,9 +29,11 @@ final class CollectionMock<Model: Decodable>: Collection {
             .eraseToAnyPublisher()
     }
 
+    var getDocumentsCallCount = 0
     var getDocumentsClosure: ((Model.Type, DatabaseSource) -> AnyPublisher<[Model], Error>)?
     func getDocuments<T>(ofType type: T.Type, source: DatabaseSource) -> AnyPublisher<[T], Error> where T : Decodable {
-        getDocumentsClosure!(T.self as! Model.Type, source)
+        getDocumentsCallCount += 1
+        return getDocumentsClosure!(T.self as! Model.Type, source)
             .map { $0 as! [T] }
             .eraseToAnyPublisher()
     }
@@ -72,8 +74,10 @@ final class DocumentMock<Model: Codable>: Document {
 
 final class BatchMock<Model: Decodable>: Batch {
 
+    var commitCallCount = 0
     var commitClosure: (() -> Void)?
     func commit() async throws {
+        commitCallCount += 1
         commitClosure!()
     }
 

@@ -1,6 +1,6 @@
 import HealthKit
 
-struct ActivitySummary: Identifiable, Codable, Equatable {
+struct ActivitySummary: Identifiable, Codable, Equatable, Hashable {
     var id: String { date.encodedToString(with: .dateDashed) }
 
     let activeEnergyBurned: Double
@@ -29,6 +29,12 @@ struct ActivitySummary: Identifiable, Codable, Equatable {
         case .workout:
             return 0
         }
+    }
+
+    func with(userID: User.ID) -> ActivitySummary {
+        var activitySummary = self
+        activitySummary.userID = userID
+        return activitySummary
     }
 }
 
