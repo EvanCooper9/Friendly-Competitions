@@ -76,6 +76,7 @@ final class WorkoutManager: WorkoutManaging {
             }
             return workouts
         }
+        .eraseToAnyPublisher()
     }
 
     // MARK: - Private Methods

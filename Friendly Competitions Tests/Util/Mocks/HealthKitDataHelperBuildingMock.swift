@@ -11,6 +11,8 @@ final class HealthKitDataHelperBuildingMock<D>: HealthKitDataHelperBuilding {
         let helper = HealthKitDataHelperMock(fetch: fetchClosure, upload: uploadClosure)
         if let healthKitDataHelper = helper as? HealthKitDataHelperMock<D> {
             self.healthKitDataHelper = healthKitDataHelper
+        } else {
+            fatalError("Type mispatch: \(D.self) != \(Data.self)")
         }
         return helper
     }
@@ -30,7 +32,7 @@ final class HealthKitDataHelperMock<Data>: HealthKitDataHelping {
         fetchClosure(dateInterval)
     }
 
-    func uplaod(data: Data) -> AnyPublisher<Void, Error> {
+    func upload(data: Data) -> AnyPublisher<Void, Error> {
         uploadClosure(data)
     }
 }

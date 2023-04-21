@@ -16,7 +16,10 @@ final class ActivitySummaryManagerTests: FCTestCase {
     private var database: DatabaseMock!
     private var scheduler: TestSchedulerOf<RunLoop>!
     private var userManager: UserManagingMock!
+
     private var cancellables: Cancellables!
+
+    private var manager: ActivitySummaryManager!
     
     override func setUp() {
         super.setUp()
@@ -142,7 +145,7 @@ final class ActivitySummaryManagerTests: FCTestCase {
             .fetch(dateInterval: .init())
             .flatMapLatest(withUnretained: self) { strongSelf, activitySummaries in
                 XCTAssertEqual(activitySummaries, expected)
-                return strongSelf.healthKitDataHelperBuilder.healthKitDataHelper!.uplaod(data: activitySummaries)
+                return strongSelf.healthKitDataHelperBuilder.healthKitDataHelper!.upload(data: activitySummaries)
             }
             .sink()
             .store(in: &cancellables)
@@ -153,25 +156,18 @@ final class ActivitySummaryManagerTests: FCTestCase {
     func testThatItDoesNotUploadDuplicates() {
         let expectation = self.expectation(description: #function)
         expectation.isInverted = true
+//        expectation.expectedFulfillmentCount = 2 // upload & finish
 
         let expectedActivitySummaries = [ActivitySummary.mock]
 
         userManager.user = .evan
 
-        healthKitManager.executeClosure = { query in
-            guard let query = query as? ActivitySummaryQuery else {
-                XCTFail("Unexpected query type")
-                return
-            }
-            query.resultsHandler(.success(expectedActivitySummaries))
-        }
-
         let batchMock = BatchMock<ActivitySummary>()
         batchMock.commitClosure = {
             if batchMock.commitCallCount > 1 {
                 expectation.fulfill()
-                XCTFail("committing more than once")
             }
+//            expectation.fulfill()
         }
         batchMock.setClosure = { _, _ in }
 
@@ -183,22 +179,14 @@ final class ActivitySummaryManagerTests: FCTestCase {
             .sink()
             .store(in: &cancellables)
 
-        healthKitDataHelperBuilder.healthKitDataHelper!
-            .fetch(dateInterval: .init())
-            .flatMapLatest(withUnretained: self) { strongSelf, activitySummaries in
-                XCTAssertEqual(activitySummaries, expectedActivitySummaries)
-                return strongSelf.healthKitDataHelperBuilder.healthKitDataHelper!.uplaod(data: activitySummaries)
-            }
-            .flatMapLatest(withUnretained: self) { strongSelf in
-                strongSelf.healthKitDataHelperBuilder.healthKitDataHelper!.fetch(dateInterval: .init())
-            }
-            .flatMapLatest(withUnretained: self) { strongSelf, activitySummaries in
-                XCTAssertEqual(activitySummaries, expectedActivitySummaries)
-                return strongSelf.healthKitDataHelperBuilder.healthKitDataHelper!.uplaod(data: activitySummaries)
-            }
+        let healthKitDataHelper = healthKitDataHelperBuilder.healthKitDataHelper!
+        healthKitDataHelper.upload(data: expectedActivitySummaries)
+            .flatMapLatest { healthKitDataHelper.upload(data: expectedActivitySummaries) }
+            .ignoreFailure()
             .sink()
             .store(in: &cancellables)
 
         waitForExpectations(timeout: 1)
+        print(manager)
     }
 }

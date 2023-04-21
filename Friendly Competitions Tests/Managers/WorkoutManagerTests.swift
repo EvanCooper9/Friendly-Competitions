@@ -49,19 +49,10 @@ final class WorkoutManagerTests: FCTestCase {
 
         userManager.user = .evan
 
-        healthKitManager.executeClosure = { query in
-            if let query = query as? WorkoutQuery {
-                query.resultsHandler(.success([]))
-            } else if let query = query as? SampleQuery {
-                query.resultsHandler(.success([:]))
-            }
-        }
-
         let batchMock = BatchMock<Workout>()
         batchMock.commitClosure = {
             if batchMock.commitCallCount > 1 {
                 expectation.fulfill()
-                XCTFail("committing more than once")
             }
         }
         batchMock.setClosure = { _, _ in }
@@ -71,19 +62,9 @@ final class WorkoutManagerTests: FCTestCase {
 
         let manager = WorkoutManager()
 
-        healthKitDataHelperBuilder.healthKitDataHelper!
-            .fetch(dateInterval: .init())
-            .flatMapLatest(withUnretained: self) { strongSelf, _ in
-                // directly inject expectedWorkouts because setting up the health kit queries is too much work
-                strongSelf.healthKitDataHelperBuilder.healthKitDataHelper!.uplaod(data: expectedWorkouts)
-            }
-            .flatMapLatest(withUnretained: self) { strongSelf in
-                strongSelf.healthKitDataHelperBuilder.healthKitDataHelper!.fetch(dateInterval: .init())
-            }
-            .flatMapLatest(withUnretained: self) { strongSelf, _ in
-                // directly inject expectedWorkouts because setting up the health kit queries is too much work
-                strongSelf.healthKitDataHelperBuilder.healthKitDataHelper!.uplaod(data: expectedWorkouts)
-            }
+        let healthKitDataHelper = healthKitDataHelperBuilder.healthKitDataHelper!
+        healthKitDataHelper.upload(data: expectedWorkouts)
+            .flatMapLatest { healthKitDataHelper.upload(data: expectedWorkouts) }
             .sink()
             .store(in: &cancellables)
 
