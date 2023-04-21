@@ -16,8 +16,10 @@ protocol Collection {
     func whereField<T: Decodable>(_ field: String, asArrayOf type: T.Type, in values: [Any]) -> AnyPublisher<[T], Error>
     func whereField(_ field: String, arrayContains value: Any) -> Collection
     func whereField(_ field: String, isEqualTo value: Any) -> Collection
+    func whereField(_ field: String, notIn values: [Any]) -> Collection
     func publisher<T: Decodable>(asArrayOf type: T.Type) -> AnyPublisher<[T], Error>
     func getDocuments<T: Decodable>(ofType type: T.Type, source: DatabaseSource) -> AnyPublisher<[T], Error>
+    func count() -> AnyPublisher<Int, Error>
 }
 
 extension Collection {

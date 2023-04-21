@@ -567,6 +567,7 @@ class CompetitionCacheMock: CompetitionCache {
     }
     var underlyingCompetitionsDateInterval: DateInterval!
     var competitionsHasPremiumResults: HasPremiumResultsContainerCache?
+    var competitionResults: [Competition.ID: [CompetitionResult]] = [:]
 
 
 }

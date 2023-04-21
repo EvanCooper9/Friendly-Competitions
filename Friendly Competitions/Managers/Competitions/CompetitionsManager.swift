@@ -163,9 +163,23 @@ final class CompetitionsManager: CompetitionsManaging {
     }
 
     func results(for competitionID: Competition.ID) -> AnyPublisher<[CompetitionResult], Error> {
-        database.collection("competitions/\(competitionID)/results")
+        let query = database.collection("competitions/\(competitionID)/results")
             .whereField("participants", arrayContains: userManager.user.id)
-            .getDocuments(ofType: CompetitionResult.self)
+
+        let cachedResults = query.getDocuments(ofType: CompetitionResult.self, source: .cache)
+        let serverCount = query.count()
+
+        return Publishers
+            .CombineLatest(cachedResults, serverCount)
+            .flatMapLatest { result -> AnyPublisher<[CompetitionResult], Error> in
+                let (cachedResults, serverCount) = result
+                if cachedResults.count == serverCount {
+                    return .just(cachedResults)
+                } else {
+                    return query.getDocuments(ofType: CompetitionResult.self, source: .server)
+                }
+            }
+            .eraseToAnyPublisher()
     }
 
     func standings(for competitionID: Competition.ID, resultID: CompetitionResult.ID) -> AnyPublisher<[Competition.Standing], Error> {
@@ -225,7 +239,7 @@ final class CompetitionsManager: CompetitionsManaging {
 
         database.collection("competitions")
             .whereField("isPublic", isEqualTo: true)
-            .whereField("owner", isEqualTo: Bundle.main.id)
+            .whereField("owner", isEqualTo: "com.evancooper.FriendlyCompetitions")
             .publisher(asArrayOf: Competition.self)
             .sink(withUnretained: self) { $0.appOwnedCompetitionsSubject.send($1) }
             .store(in: &cancellables)
