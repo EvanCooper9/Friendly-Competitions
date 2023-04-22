@@ -13,6 +13,7 @@ struct ActivitySummaryInfoView: View {
                         Text("\(activitySummary.activeEnergyBurned.formatted())/\(activitySummary.activeEnergyBurnedGoal.formatted(.number))")
                             .foregroundColor(.red)
                             .font(.title3)
+                            .monospaced()
                     } else {
                         emtpy
                     }
@@ -23,6 +24,7 @@ struct ActivitySummaryInfoView: View {
                         Text("\(activitySummary.appleExerciseTime.formatted())/\(activitySummary.appleExerciseTimeGoal.formatted())")
                             .foregroundColor(.green)
                             .font(.title3)
+                            .monospaced()
                     } else {
                         emtpy
                     }
@@ -33,6 +35,7 @@ struct ActivitySummaryInfoView: View {
                         Text("\(activitySummary.appleStandHours.formatted())/\(activitySummary.appleStandHoursGoal.formatted())")
                             .foregroundColor(.blue)
                             .font(.title3)
+                            .monospaced()
                     } else {
                         emtpy
                     }

@@ -7,6 +7,7 @@ struct IDPill: View {
     var body: some View {
         Text(id)
             .font(.footnote)
+            .monospaced()
             .foregroundColor(.gray)
             .padding(.horizontal, 8)
             .padding(.vertical, 4)

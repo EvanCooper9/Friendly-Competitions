@@ -43,6 +43,7 @@ struct CompetitionDetails: View {
                 Label("\(competition.participants.count)", systemImage: .person3Fill)
                     .foregroundColor(colorScheme.textColor)
                     .font(.footnote)
+                    .monospaced()
             }
         }
         .padding(.vertical, 2)
@@ -65,6 +66,7 @@ struct CompetitionDetails_Previews: PreviewProvider {
 
     static var previews: some View {
         List {
+            CompetitionDetails(competition: .mockPublic, showParticipantCount: false, isFeatured: true)
             CompetitionDetails(competition: .mockFuture, showParticipantCount: true, isFeatured: false)
             CompetitionDetails(competition: .mock, showParticipantCount: true, isFeatured: false)
             CompetitionDetails(competition: .mockOld, showParticipantCount: true, isFeatured: false)

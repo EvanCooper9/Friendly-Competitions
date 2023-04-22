@@ -41,7 +41,7 @@ final class CompetitionViewModel: ObservableObject {
             ),
             (
                 value: competition.scoringModel.displayName,
-                valueType: .other(systemImage: .plusminusCircle, description: "Scoring model")
+                valueType: .other(systemImage: .plusminusCircle, description: "Scoring")
             ),
             (
                 value: competition.repeats ? L10n.Generics.yes : L10n.Generics.no,
