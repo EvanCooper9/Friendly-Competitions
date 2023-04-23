@@ -73,7 +73,11 @@ extension Query: Collection {
         return Publishers
             .ZipMany(chunks)
             .map { $0.reduce([], +) }
-            .eraseToAnyPublisher()
+            . reportErrorToCrashlytics(userInfo: [
+                 "field": field,
+                 "values": values,
+                 "type": String(describing: T.self)
+             ])
     }
 
     func whereField(_ field: String, arrayContains value: Any) -> any Collection {
