@@ -1,3 +1,4 @@
+import Algorithms
 import Combine
 import CombineExt
 import Factory
@@ -62,16 +63,21 @@ extension Query: Collection {
     }
 
     func whereField<T: Decodable>(_ field: String, asArrayOf type: T.Type, in values: [Any]) -> AnyPublisher<[T], Error> {
-        .fromAsync {
-            try await self
-                .whereFieldWithChunking(field, in: values)
-                .map { try $0.data(as: T.self, decoder: .custom) }
+        let chunks = values.chunks(ofCount: 10).map { chunk in
+            whereField(field, in: Array(chunk))
+                .getDocuments()
+                .map { $0.documents.decoded(as: T.self) }
+                .eraseToAnyPublisher()
         }
-        .reportErrorToCrashlytics(userInfo: [
-            "field": field,
-            "values": values,
-            "type": String(describing: T.self)
-        ])
+
+        return Publishers
+            .ZipMany(chunks)
+            .map { $0.reduce([], +) }
+            . reportErrorToCrashlytics(userInfo: [
+                 "field": field,
+                 "values": values,
+                 "type": String(describing: T.self)
+             ])
     }
 
     func whereField(_ field: String, arrayContains value: Any) -> any Collection {
