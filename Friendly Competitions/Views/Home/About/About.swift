@@ -10,6 +10,19 @@ struct About: View {
     var body: some View {
         List {
             Section {
+                Text(L10n.About.hey)
+                Text(L10n.About.madeWithLove)
+                    .font(.footnote)
+                    .foregroundColor(.secondaryLabel)
+            } header: {
+                VStack {
+                    AppIcon().shadow(radius: 10)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.bottom, .large)
+            }
+
+            Section {
                 Button(L10n.About.App.rate, systemImage: .heartFill) {
                     let windowScene = UIApplication.shared.connectedScenes
                         .filter { $0.activationState == .foregroundActive }
@@ -27,13 +40,6 @@ struct About: View {
                 Link(destination: viewModel.bugReportURL) {
                     Label(L10n.About.App.reportIssue, systemImage: "ladybug.fill")
                 }
-            } header: {
-                VStack {
-                    AppIcon().shadow(radius: 10)
-                    Text(L10n.About.App.authoredBy)
-                }
-                .frame(maxWidth: .infinity)
-                Text(L10n.About.App.title)
             }
             .textCase(nil)
 
@@ -41,13 +47,20 @@ struct About: View {
                 Link(destination: .developer) {
                     Label(L10n.About.Developer.website, systemImage: .globeAmericasFill)
                 }
-            } header: {
-                Text(L10n.About.Developer.title)
             }
-            .textCase(nil)
+
+            Section {
+                ImmutableListItemView(value: "\(Bundle.main.version)", valueType: .other(systemImage: .hammerFill, description: L10n.About.App.version))
+                Link(destination: .gitHub) {
+                    Label(L10n.About.App.code, systemImage: .chevronLeftForwardslashChevronRight)
+                        .monospaced()
+                }
+            } footer: {
+                Text(L10n.About.App .openSource)
+            }
         }
         .registerScreenView(name: "About")
-        .navigationTitle("\(Bundle.main.name) (\(Bundle.main.version))")
+        .navigationTitle(L10n.About.title)
         .navigationBarTitleDisplayMode(.inline)
         .embeddedInNavigationView()
     }
@@ -57,6 +70,7 @@ struct About: View {
 struct About_Previews: PreviewProvider {
     static var previews: some View {
         About()
+            .setupMocks()
     }
 }
 #endif
