@@ -231,11 +231,24 @@ extension DocumentReference: Document {
 // MARK: Batch
 
 extension WriteBatch: Batch {
-    func set<T: Encodable>(value: T, forDocument document: Document) throws {
+    func set<T>(value: T, forDocument document: Document) where T : Encodable {
         guard let documentReference = document as? DocumentReference else { return }
         let analyticsManager = Container.shared.analyticsManager()
         analyticsManager.log(event: .databaseWrite(path: documentReference.path))
-        try setData(from: value, forDocument: documentReference, encoder: .custom)
+        try? setData(from: value, forDocument: documentReference, encoder: .custom)
+    }
+
+    func commit() -> AnyPublisher<Void, Error> {
+        Future { promise in
+            self.commit { error in
+                if let error {
+                    promise(.failure(error))
+                } else {
+                    promise(.success(()))
+                }
+            }
+        }
+        .eraseToAnyPublisher()
     }
 }
 

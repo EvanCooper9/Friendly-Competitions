@@ -92,15 +92,14 @@ final class WorkoutManager: WorkoutManaging {
             }
 
         return changedWorkouts
-            .flatMapAsync { [weak self] workouts in
-                guard let strongSelf = self else { return }
+            .flatMapLatest(withUnretained: self) { strongSelf, workouts in
                 let userID = strongSelf.userManager.user.id
                 let batch = strongSelf.database.batch()
-                try workouts.forEach { workout in
+                workouts.forEach { workout in
                     let document = strongSelf.database.document("users/\(userID)/workouts/\(workout.id)")
-                    try batch.set(value: workout, forDocument: document)
+                    batch.set(value: workout, forDocument: document)
                 }
-                try await batch.commit()
+                return batch.commit()
             }
             .eraseToAnyPublisher()
     }

@@ -122,7 +122,10 @@ final class ActivitySummaryManagerTests: FCTestCase {
         }
         
         let batchMock = BatchMock<ActivitySummary>()
-        batchMock.commitClosure = expectation.fulfill
+        batchMock.commitClosure = {
+            expectation.fulfill()
+            return .just(())
+        }
         batchMock.setClosure = { activitySummary, document in
             let expectedActivitySummary = expected[batchMock.setCallCount - 1]
             XCTAssertEqual(activitySummary, expectedActivitySummary)
@@ -171,14 +174,20 @@ final class ActivitySummaryManagerTests: FCTestCase {
         expectation.expectedFulfillmentCount = 2 + (firstActivitySummaries + secondActivitySummaries).uniqued(on: \.id).count
 
         let firstBatch = BatchMock<ActivitySummary>()
-        firstBatch.commitClosure = expectation.fulfill
+        firstBatch.commitClosure = {
+            expectation.fulfill()
+            return .just(())
+        }
         firstBatch.setClosure = { activitySummary, _ in
             XCTAssertEqual(activitySummary, firstActivitySummaries[firstBatch.setCallCount - 1])
             expectation.fulfill()
         }
 
         let secondBatch = BatchMock<ActivitySummary>()
-        secondBatch.commitClosure = expectation.fulfill
+        secondBatch.commitClosure = {
+            expectation.fulfill()
+            return .just(())
+        }
         secondBatch.setClosure = { activitySummary, _ in
             let expectedActivitySummariesForUpload = secondActivitySummaries.filter { activitySummary in
                 !firstActivitySummaries.contains(activitySummary)
