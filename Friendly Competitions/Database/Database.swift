@@ -64,8 +64,8 @@ extension Document {
 // MARK: Batch
 
 protocol Batch {
-    func commit() async throws
-    func set<T: Encodable>(value: T, forDocument document: Document) throws
+    func commit() -> AnyPublisher<Void, Error>
+    func set<T: Encodable>(value: T, forDocument document: Document)
 }
 
 // MARK: Source

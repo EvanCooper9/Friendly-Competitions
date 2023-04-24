@@ -55,14 +55,20 @@ final class WorkoutManagerTests: FCTestCase {
         userManager.user = .evan
 
         let firstBatch = BatchMock<Workout>()
-        firstBatch.commitClosure = expectation.fulfill
+        firstBatch.commitClosure = {
+            expectation.fulfill()
+            return .just(())
+        }
         firstBatch.setClosure = { workout, _ in
             XCTAssertEqual(workout, firstWorkouts[firstBatch.setCallCount - 1])
             expectation.fulfill()
         }
 
         let secondBatch = BatchMock<Workout>()
-        secondBatch.commitClosure = expectation.fulfill
+        secondBatch.commitClosure = {
+            expectation.fulfill()
+            return .just(())
+        }
         secondBatch.setClosure = { workout, _ in
             let expectedWorkoutsForUpload = secondWorkouts.filter { workout in
                 !firstWorkouts.contains(workout)
