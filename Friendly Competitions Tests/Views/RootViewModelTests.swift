@@ -17,12 +17,6 @@ final class RootViewModelTests: FCTestCase {
         cancellables = .init()
     }
     
-    override func tearDown() {
-        super.tearDown()
-        appState = nil
-        cancellables = nil
-    }
-    
     func testThatTabChangesToHomeOnDeepLink() {
         let expectation = self.expectation(description: #function)
         

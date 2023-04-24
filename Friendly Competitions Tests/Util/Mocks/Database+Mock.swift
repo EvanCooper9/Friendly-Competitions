@@ -4,7 +4,7 @@ import Combine
 
 final class CollectionMock<Model: Decodable>: Collection {
     var whereFieldInClosure: (() -> AnyPublisher<[Model], Error>)?
-    func whereField<T: Decodable>(_ field: String, asArrayOf type: T.Type, in values: [Any]) -> AnyPublisher<[T], Error> {
+    func whereField<T: Decodable>(_ field: String, asArrayOf type: T.Type, in values: [Any], source: DatabaseSource) -> AnyPublisher<[T], Error> {
         whereFieldInClosure!()
             .map { $0 as! [T] }
             .eraseToAnyPublisher()
@@ -23,6 +23,16 @@ final class CollectionMock<Model: Decodable>: Collection {
     var whereFieldIsNotInClosure: (() -> Collection)?
     func whereField(_ field: String, notIn values: [Any]) -> Collection {
         whereFieldIsNotInClosure!()
+    }
+
+    var sortedClosure: ((String, CollectionSortDirection) -> Collection)?
+    func sorted(by field: String, direction: CollectionSortDirection) -> Collection {
+        sortedClosure!(field, direction)
+    }
+
+    var limitClosure: ((Int) -> Collection)?
+    func limit(_ limit: Int) -> Collection {
+        limitClosure!(limit)
     }
 
     var publisherCallCount = 0

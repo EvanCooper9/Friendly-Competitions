@@ -6,7 +6,8 @@ import XCTest
 @testable import Friendly_Competitions
 
 final class SearchManagerTests: FCTestCase {
-    
+
+    private var database: DatabaseMock!
     private var searchClient: SearchClientMock!
     private var userManager: UserManagingMock!
     
@@ -14,17 +15,13 @@ final class SearchManagerTests: FCTestCase {
     
     override func setUp() {
         super.setUp()
+        database = .init()
         searchClient = .init()
         userManager = .init()
+        container.database.register { self.database }
         container.searchClient.register { self.searchClient }
         container.userManager.register { self.userManager }
         cancellables = .init()
-    }
-    
-    override func tearDown() {
-        super.tearDown()
-        searchClient = nil
-        cancellables = nil
     }
     
     func testThatSearchForCompetitionsSucceeds() {

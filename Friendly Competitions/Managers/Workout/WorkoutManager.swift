@@ -19,7 +19,6 @@ final class WorkoutManager: WorkoutManaging {
 
     // MARK: - Private Properties
 
-    @Injected(\.appState) private var appState
     @Injected(\.competitionsManager) private var competitionsManager
     @Injected(\.database) private var database
     @Injected(\.healthKitManager) private var healthKitManager

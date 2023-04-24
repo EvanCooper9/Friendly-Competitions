@@ -20,13 +20,6 @@ final class SignInViewModelTests: FCTestCase {
         container.appState.register { self.appState }
         container.authenticationManager.register { self.authenticationManager }
     }
-
-    override func tearDown() {
-        appState = nil
-        authenticationManager = nil
-        cancellables = nil
-        super.tearDown()
-    }
     
     func testThatInputsAreEmpty() {
         let viewModel = SignInViewModel()

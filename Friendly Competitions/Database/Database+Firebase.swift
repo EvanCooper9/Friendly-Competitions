@@ -5,6 +5,7 @@ import Factory
 import FirebaseCrashlytics
 import FirebaseFirestore
 import FirebaseFirestoreCombineSwift
+import FirebaseFirestoreSwift
 
 extension Firestore.Encoder {
     static let custom: Firestore.Encoder = {
@@ -62,10 +63,10 @@ extension Query: Collection {
         .eraseToAnyPublisher()
     }
 
-    func whereField<T: Decodable>(_ field: String, asArrayOf type: T.Type, in values: [Any]) -> AnyPublisher<[T], Error> {
+    func whereField<T: Decodable>(_ field: String, asArrayOf type: T.Type, in values: [Any], source: DatabaseSource) -> AnyPublisher<[T], Error> {
         let chunks = values.chunks(ofCount: 10).map { chunk in
             whereField(field, in: Array(chunk))
-                .getDocuments()
+                .getDocuments(source: source.firestoreSource)
                 .map { $0.documents.decoded(as: T.self) }
                 .eraseToAnyPublisher()
         }
@@ -73,7 +74,7 @@ extension Query: Collection {
         return Publishers
             .ZipMany(chunks)
             .map { $0.reduce([], +) }
-            . reportErrorToCrashlytics(userInfo: [
+            .reportErrorToCrashlytics(userInfo: [
                  "field": field,
                  "values": values,
                  "type": String(describing: T.self)
@@ -93,6 +94,16 @@ extension Query: Collection {
     func whereField(_ field: String, notIn values: [Any]) -> Collection {
         guard values.isNotEmpty else { return self }
         let query: Query = whereField(field, notIn: values)
+        return query
+    }
+
+    func sorted(by field: String, direction: CollectionSortDirection) -> Collection {
+        let query: Query = order(by: field, descending: direction == .descending)
+        return query
+    }
+
+    func limit(_ limit: Int) -> Collection {
+        let query: Query = self.limit(to: limit)
         return query
     }
 
