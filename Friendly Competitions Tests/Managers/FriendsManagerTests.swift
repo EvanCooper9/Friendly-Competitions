@@ -10,7 +10,7 @@ final class FriendsManagerTests: FCTestCase {
     private var api: APIMock!
     private var appState: AppStateProvidingMock!
     private var database: DatabaseMock!
-    private var usersCache: UsersCacheMock!
+    private var searchManager: SearchManagingMock!
     private var userManager: UserManagingMock!
     
     private var cancellables: Cancellables!
@@ -21,28 +21,21 @@ final class FriendsManagerTests: FCTestCase {
         api = .init()
         appState = .init()
         database = .init()
-        usersCache = .init()
+        searchManager = .init()
         userManager = .init()
         
         container.api.register { self.api }
         container.appState.register { self.appState }
         container.database.register { self.database }
+        container.searchManager.register { self.searchManager }
         container.userManager.register { self.userManager }
         
         cancellables = .init()
     }
     
-    override func tearDown() {
-        super.tearDown()
-        api = nil
-        appState = nil
-        database = nil
-        userManager = nil
-        cancellables = nil
-    }
-    
     func testThatItFetchesAndUpdatesFriends() {
         let expectation = self.expectation(description: #function)
+        let expected = [[], [User.andrew]]
         
         setupEmptyDatabase()
         appState.didBecomeActive = .just(true)
@@ -57,10 +50,16 @@ final class FriendsManagerTests: FCTestCase {
             XCTAssertEqual(collection, "users")
             return friendsCollection
         }
+
+        searchManager.searchForUsersWithIDsClosure = { ids in
+            let expectedIndex = (self.searchManager.searchForUsersWithIDsCallsCount - 1) / 2
+            return .just(expected[expectedIndex])
+        }
         
         let manager = FriendsManager()
         manager.friends
-            .expect([], [.andrew], expectation: expectation)
+            .collect(expected.count)
+            .expect(expected, expectation: expectation)
             .store(in: &cancellables)
         
         userPublisher.send(.evan.with(friends: []))
@@ -73,6 +72,7 @@ final class FriendsManagerTests: FCTestCase {
     
     func testThatItFetchesAndUpdatesFriendRequests() {
         let expectation = self.expectation(description: #function)
+        let expected = [[], [User.andrew]]
         
         setupEmptyDatabase()
         appState.didBecomeActive = .just(true)
@@ -87,46 +87,22 @@ final class FriendsManagerTests: FCTestCase {
             XCTAssertEqual(collection, "users")
             return friendRequestsCollection
         }
+
+        searchManager.searchForUsersWithIDsClosure = { ids in
+            let expectedIndex = (self.searchManager.searchForUsersWithIDsCallsCount - 1) / 2
+            return .just(expected[expectedIndex])
+        }
         
         let manager = FriendsManager()
         manager.friendRequests
-            .expect([], [.andrew], expectation: expectation)
+            .collect(expected.count)
+            .expect(expected, expectation: expectation)
             .store(in: &cancellables)
         
         userPublisher.send(.evan.with(friendRequests: []))
         friendRequestsPublisher.send([])
         userPublisher.send(.evan.with(friendRequests: [User.andrew.id]))
         friendRequestsPublisher.send([.andrew])
-        
-        waitForExpectations(timeout: 1)
-    }
-    
-    func testThatItDoesNotRefetchCachedUsers() {
-        let expectation = self.expectation(description: #function)
-        
-        setupEmptyDatabase()
-        appState.didBecomeActive = .just(true)
-        
-        let friendsPublisher = PassthroughSubject<[User], Error>()
-        let friendsCollection = CollectionMock<User>()
-        friendsCollection.whereFieldInClosure = { friendsPublisher.eraseToAnyPublisher() }
-        database.collectionClosure = { collection in
-            XCTAssertEqual(collection, "users")
-            return friendsCollection
-        }
-        
-        let userPublisher = PassthroughSubject<User, Never>()
-        userManager.userPublisher = userPublisher.eraseToAnyPublisher()
-        
-        let manager = FriendsManager()
-        manager.friends
-            .expect([.andrew], [.andrew, .gabby], expectation: expectation)
-            .store(in: &cancellables)
-        
-        userPublisher.send(.evan.with(friends: [User.andrew.id]))
-        friendsPublisher.send([.andrew])
-        userPublisher.send(.evan.with(friends: [User.andrew.id, User.gabby.id]))
-        friendsPublisher.send([.gabby]) // andrew should be returned through cache
         
         waitForExpectations(timeout: 1)
     }

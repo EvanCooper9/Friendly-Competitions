@@ -36,17 +36,6 @@ final class CompetitionsManagerTests: FCTestCase {
         appState.didBecomeActive = .never()
     }
     
-    override func tearDown() {
-        super.tearDown()
-        api = nil
-        appState = nil
-        analyticsManager = nil
-        cache = .init()
-        database = nil
-        userManager = nil
-        cancellables = nil
-    }
-    
     func testThatItFetchesAndUpdatesCompetitions() {
         let expectation = self.expectation(description: #function)
         expectation.expectedFulfillmentCount = 3

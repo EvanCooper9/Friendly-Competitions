@@ -57,17 +57,6 @@ final class HomeViewModelTests: FCTestCase {
         container.userManager.register { self.userManager }
     }
 
-    override func tearDown() {
-        super.tearDown()
-        activitySummaryManager = nil
-        competitionsManager = nil
-        friendsManager = nil
-        permissionsManager = nil
-        scheduler = nil
-        userManager = nil
-        cancellables = nil
-    }
-
     func testThatActivitySummaryUpdates() {
         let expectation = expectation(description: #function)
 
