@@ -173,13 +173,10 @@ final class CompetitionsManager: CompetitionsManaging {
             .flatMapLatest { result -> AnyPublisher<[CompetitionResult], Error> in
                 let (cachedResults, serverCount) = result
                 let diff = serverCount - cachedResults.count
-                if diff == 0 {
-                    return .just(cachedResults)
-                } else {
-                    return query
-                        .limit(diff)
-                        .getDocuments(ofType: CompetitionResult.self, source: .server)
-                }
+                guard diff > 0 else { return .just(cachedResults) }
+                return query
+                    .limit(diff)
+                    .getDocuments(ofType: CompetitionResult.self, source: .server)
             }
             .eraseToAnyPublisher()
     }
