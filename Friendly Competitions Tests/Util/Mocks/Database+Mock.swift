@@ -85,15 +85,15 @@ final class DocumentMock<Model: Codable>: Document {
 final class BatchMock<Model: Decodable>: Batch {
 
     var commitCallCount = 0
-    var commitClosure: (() -> Void)?
-    func commit() async throws {
+    var commitClosure: (() -> AnyPublisher<Void, Error>)?
+    func commit() -> AnyPublisher<Void, Error> {
         commitCallCount += 1
-        commitClosure!()
+        return commitClosure!()
     }
 
     var setCallCount = 0
     var setClosure: ((Model, Document) -> Void)?
-    func set<T: Encodable>(value: T, forDocument document: Document) throws {
+    func set<T: Encodable>(value: T, forDocument document: Document) {
         setCallCount += 1
         setClosure!(value as! Model, document)
     }
