@@ -20,6 +20,7 @@ struct MedalView: View {
             Spacer()
             Text("\(value)")
                 .foregroundColor(.gray)
+                .monospaced()
         }
     }
 }

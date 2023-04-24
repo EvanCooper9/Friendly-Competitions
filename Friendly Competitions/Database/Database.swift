@@ -13,14 +13,31 @@ protocol Database {
 // MARK: Collection
 
 protocol Collection {
-    func whereField<T: Decodable>(_ field: String, asArrayOf type: T.Type, in values: [Any]) -> AnyPublisher<[T], Error>
+    func whereField<T: Decodable>(_ field: String, asArrayOf type: T.Type, in values: [Any], source: DatabaseSource) -> AnyPublisher<[T], Error>
     func whereField(_ field: String, arrayContains value: Any) -> Collection
     func whereField(_ field: String, isEqualTo value: Any) -> Collection
+    func whereField(_ field: String, notIn values: [Any]) -> Collection
+    func sorted(by field: String, direction: CollectionSortDirection) -> Collection
+    func limit(_ limit: Int) -> Collection
     func publisher<T: Decodable>(asArrayOf type: T.Type) -> AnyPublisher<[T], Error>
     func getDocuments<T: Decodable>(ofType type: T.Type, source: DatabaseSource) -> AnyPublisher<[T], Error>
+    func count() -> AnyPublisher<Int, Error>
+}
+
+enum CollectionSortDirection {
+    case ascending
+    case descending
 }
 
 extension Collection {
+    func whereField<T: Decodable>(_ field: String, asArrayOf type: T.Type, in values: [Any], source: DatabaseSource = .server) -> AnyPublisher<[T], Error> {
+        whereField(field, asArrayOf: T.self, in: values, source: source)
+    }
+
+    func sorted(by field: String, direction: CollectionSortDirection = .ascending) -> Collection {
+        sorted(by: field, direction: direction)
+    }
+
     func getDocuments<T: Decodable>(ofType type: T.Type, source: DatabaseSource = .server) -> AnyPublisher<[T], Error> {
         getDocuments(ofType: T.self, source: source)
     }
@@ -47,8 +64,8 @@ extension Document {
 // MARK: Batch
 
 protocol Batch {
-    func commit() async throws
-    func set<T: Encodable>(value: T, forDocument document: Document) throws
+    func commit() -> AnyPublisher<Void, Error>
+    func set<T: Encodable>(value: T, forDocument document: Document)
 }
 
 // MARK: Source

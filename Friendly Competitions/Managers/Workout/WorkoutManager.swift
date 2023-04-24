@@ -19,21 +19,21 @@ final class WorkoutManager: WorkoutManaging {
 
     // MARK: - Private Properties
 
-    @Injected(\.appState) private var appState
     @Injected(\.competitionsManager) private var competitionsManager
     @Injected(\.database) private var database
     @Injected(\.healthKitManager) private var healthKitManager
+    @Injected(\.healthKitDataHelperBuilder) private var healthKitDataHelperBuilder
     @Injected(\.userManager) private var userManager
     @Injected(\.workoutCache) private var cache
 
-    private var helper: HealthKitDataHelper<[Workout]>!
+    private var helper: (any HealthKitDataHelping<[Workout]>)!
 
     private var cancellables = Cancellables()
 
     // MARK: - Lifecycle
 
     init() {
-        helper = HealthKitDataHelper { [weak self] dateInterval -> AnyPublisher<[Workout], Error> in
+        helper = healthKitDataHelperBuilder.bulid { [weak self] dateInterval in
             guard let strongSelf = self else { return .just([]) }
             let publishers = strongSelf.cache.workoutMetrics.map { workoutType, metrics in
                 strongSelf.workouts(of: workoutType, with: metrics, in: dateInterval)
@@ -75,21 +75,32 @@ final class WorkoutManager: WorkoutManaging {
             }
             return workouts
         }
+        .eraseToAnyPublisher()
     }
 
     // MARK: - Private Methods
 
     private func upload(workouts: [Workout]) -> AnyPublisher<Void, Error> {
-        .fromAsync { [weak self] in
-            guard let strongSelf = self else { return }
-            let userID = strongSelf.userManager.user.id
-            let batch = strongSelf.database.batch()
-            try workouts.forEach { workout in
-                let document = strongSelf.database.document("users/\(userID)/workouts/\(workout.id)")
-                try batch.set(value: workout, forDocument: document)
+        let changedWorkouts = database
+            .collection("users/\(userManager.user.id)/workouts")
+            .getDocuments(ofType: Workout.self, source: .cache)
+            .map { cached in
+                workouts
+                    .subtracting(cached)
+                    .sorted(by: \.date)
             }
-            try await batch.commit()
-        }
+
+        return changedWorkouts
+            .flatMapLatest(withUnretained: self) { strongSelf, workouts in
+                let userID = strongSelf.userManager.user.id
+                let batch = strongSelf.database.batch()
+                workouts.forEach { workout in
+                    let document = strongSelf.database.document("users/\(userID)/workouts/\(workout.id)")
+                    batch.set(value: workout, forDocument: document)
+                }
+                return batch.commit()
+            }
+            .eraseToAnyPublisher()
     }
 
     private func fetchWorkoutMetrics() -> AnyPublisher<[WorkoutType: [WorkoutMetric]], Never> {

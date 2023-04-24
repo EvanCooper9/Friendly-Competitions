@@ -41,7 +41,7 @@ final class CompetitionViewModel: ObservableObject {
             ),
             (
                 value: competition.scoringModel.displayName,
-                valueType: .other(systemImage: .plusminusCircle, description: "Scoring model")
+                valueType: .other(systemImage: .plusminusCircle, description: "Scoring")
             ),
             (
                 value: competition.repeats ? L10n.Generics.yes : L10n.Generics.no,
@@ -62,6 +62,7 @@ final class CompetitionViewModel: ObservableObject {
     @Injected(\.api) private var api
     @Injected(\.competitionsManager) private var competitionsManager
     @Injected(\.scheduler) private var scheduler
+    @Injected(\.searchManager) private var searchManager
     @Injected(\.userManager) private var userManager
 
     private let confirmActionSubject = PassthroughSubject<Void, Error>()
@@ -115,8 +116,8 @@ final class CompetitionViewModel: ObservableObject {
         let participants = fetchParticipants
             .prepend(())
             .flatMapLatest(withUnretained: self) { strongSelf in
-                strongSelf.competitionsManager
-                    .participants(for: competition.id)
+                strongSelf.searchManager
+                    .searchForUsers(withIDs: competition.participants)
                     .catchErrorJustReturn([])
             }
 

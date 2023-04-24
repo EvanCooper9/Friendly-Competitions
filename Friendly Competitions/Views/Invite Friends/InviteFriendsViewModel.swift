@@ -18,7 +18,6 @@ final class InviteFriendsViewModel: ObservableObject {
     // MARK: - Public Properties
 
     @Published var loading = false
-    @Published var footerText: String?
     @Published var rows = [RowConfig]()
     @Published var searchText = ""
 

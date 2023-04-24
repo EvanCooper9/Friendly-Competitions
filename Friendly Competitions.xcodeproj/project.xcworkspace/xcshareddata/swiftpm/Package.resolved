@@ -42,7 +42,7 @@
       "location" : "https://github.com/EvanCooper9/ECKit",
       "state" : {
         "branch" : "main",
-        "revision" : "3543eda8f0d5787f3153b6247326f09387da0023"
+        "revision" : "aa2f20cb7495db0045f1f282668ed33bed130363"
       }
     },
     {
@@ -50,8 +50,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/hmlongco/Factory",
       "state" : {
-        "revision" : "86c72fccbc8b4f978b46c629c46038d2e59a62f1",
-        "version" : "2.1.2"
+        "revision" : "1276137960e14561473f2dfe72b9ccf3a2e03690",
+        "version" : "2.1.4"
       }
     },
     {
@@ -86,8 +86,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/GoogleDataTransport.git",
       "state" : {
-        "revision" : "f6b558e3f801f2cac336b04f615ce111fa9ddaa0",
-        "version" : "9.2.1"
+        "revision" : "cc7265b8e3906304e6e81f32c1662a94bbae2357",
+        "version" : "9.2.2"
       }
     },
     {
@@ -95,8 +95,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/GoogleUtilities.git",
       "state" : {
-        "revision" : "0543562f85620b5b7c510c6bcbef75b562a5127b",
-        "version" : "7.11.0"
+        "revision" : "871d43135925cde39ef7421d8723ce47edfdcc39",
+        "version" : "7.11.1"
       }
     },
     {
@@ -113,8 +113,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/gtm-session-fetcher.git",
       "state" : {
-        "revision" : "96d7cc73a71ce950723aa3c50ce4fb275ae180b8",
-        "version" : "3.1.0"
+        "revision" : "d415594121c9e8a4f9d79cecee0965cf35e74dbd",
+        "version" : "3.1.1"
       }
     },
     {
@@ -158,8 +158,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/RevenueCat/purchases-ios",
       "state" : {
-        "revision" : "5d77aeccee3622dd2a5dbfd7af5aed195b84767e",
-        "version" : "4.17.8"
+        "revision" : "a0358d44d84a9d27a632518ee5aa4131b294955f",
+        "version" : "4.17.11"
       }
     },
     {
@@ -204,7 +204,7 @@
       "location" : "https://github.com/SwiftUIX/SwiftUIX",
       "state" : {
         "branch" : "master",
-        "revision" : "94335c9f823e7353c15dacd298f79b6338860c8e"
+        "revision" : "ec2c0719f048d7294749cb2e29df7560133ef09a"
       }
     },
     {
@@ -212,8 +212,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/xctest-dynamic-overlay",
       "state" : {
-        "revision" : "ab8c9f45843694dd16be4297e6d44c0634fd9913",
-        "version" : "0.8.4"
+        "revision" : "4af50b38daf0037cfbab15514a241224c3f62f98",
+        "version" : "0.8.5"
       }
     }
   ],

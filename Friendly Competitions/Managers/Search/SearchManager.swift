@@ -8,12 +8,14 @@ import Foundation
 protocol SearchManaging {
     func searchForCompetitions(byName name: String) -> AnyPublisher<[Competition], Error>
     func searchForUsers(byName name: String) -> AnyPublisher<[User], Error>
+    func searchForUsers(withIDs userIDs: [User.ID]) -> AnyPublisher<[User], Error>
 }
 
 final class SearchManager: SearchManaging {
 
     // MARK: - Private Properties
 
+    @Injected(\.database) private var database
     @Injected(\.searchClient) private var searchClient
     @Injected(\.userManager) private var userManager
 
@@ -34,5 +36,23 @@ final class SearchManager: SearchManaging {
                 guard user.id != strongSelf.userManager.user.id else { return false }
                 return user.searchable ?? false
             }
+    }
+
+    func searchForUsers(withIDs userIDs: [User.ID]) -> AnyPublisher<[User], Error> {
+        let cachedResults = database
+            .collection("users")
+            .whereField("id", asArrayOf: User.self, in: userIDs, source: .cache)
+
+        return cachedResults
+            .flatMapLatest(withUnretained: self) { strongSelf, cachedResults -> AnyPublisher<[User], Error> in
+                let remaining = cachedResults.map(\.id).subtracting(userIDs)
+                guard remaining.isNotEmpty else { return .just(cachedResults) }
+                return strongSelf.database
+                    .collection("users")
+                    .whereField("id", asArrayOf: User.self, in: userIDs, source: .server)
+                    .map { $0 + cachedResults }
+                    .eraseToAnyPublisher()
+            }
+            .eraseToAnyPublisher()
     }
 }

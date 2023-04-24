@@ -26,7 +26,6 @@ protocol CompetitionsManaging {
     func search(byID competitionID: Competition.ID) -> AnyPublisher<Competition, Error>
     func results(for competitionID: Competition.ID) -> AnyPublisher<[CompetitionResult], Error>
     func standings(for competitionID: Competition.ID, resultID: CompetitionResult.ID) -> AnyPublisher<[Competition.Standing], Error>
-    func participants(for competitionsID: Competition.ID) -> AnyPublisher<[User], Error>
 
     func competitionPublisher(for competitionID: Competition.ID) -> AnyPublisher<Competition, Error>
     func standingsPublisher(for competitionID: Competition.ID) -> AnyPublisher<[Competition.Standing], Error>
@@ -76,7 +75,6 @@ final class CompetitionsManager: CompetitionsManaging {
     @Injected(\.competitionCache) private var cache
     @Injected(\.database) private var database
     @Injected(\.userManager) private var userManager
-    @Injected(\.usersCache) private var usersCache
 
     private var cancellables = Cancellables()
 
@@ -163,39 +161,29 @@ final class CompetitionsManager: CompetitionsManaging {
     }
 
     func results(for competitionID: Competition.ID) -> AnyPublisher<[CompetitionResult], Error> {
-        database.collection("competitions/\(competitionID)/results")
+        let query = database.collection("competitions/\(competitionID)/results")
             .whereField("participants", arrayContains: userManager.user.id)
-            .getDocuments(ofType: CompetitionResult.self)
+            .sorted(by: "end", direction: .descending)
+
+        let cachedResults = query.getDocuments(ofType: CompetitionResult.self, source: .cache)
+        let serverCount = query.count()
+
+        return Publishers
+            .CombineLatest(cachedResults, serverCount)
+            .flatMapLatest { result -> AnyPublisher<[CompetitionResult], Error> in
+                let (cachedResults, serverCount) = result
+                let diff = serverCount - cachedResults.count
+                guard diff > 0 else { return .just(cachedResults) }
+                return query
+                    .limit(diff)
+                    .getDocuments(ofType: CompetitionResult.self, source: .server)
+            }
+            .eraseToAnyPublisher()
     }
 
     func standings(for competitionID: Competition.ID, resultID: CompetitionResult.ID) -> AnyPublisher<[Competition.Standing], Error> {
         database.collection("competitions/\(competitionID)/results/\(resultID)/standings")
             .getDocuments(ofType: Competition.Standing.self, source: .cacheFirst)
-    }
-
-    func participants(for competitionsID: Competition.ID) -> AnyPublisher<[User], Error> {
-        search(byID: competitionsID)
-            .map(\.participants)
-            .flatMapLatest(withUnretained: self) { strongSelf, participantIDs in
-                var cached = [User]()
-                var participantIDsToFetch = [String]()
-                participantIDs.forEach { participantID in
-                    if let user = strongSelf.usersCache.users[participantID] {
-                        cached.append(user)
-                    } else {
-                        participantIDsToFetch.append(participantID)
-                    }
-                }
-                guard participantIDsToFetch.isNotEmpty else { return AnyPublisher<[User], Error>.just(cached) }
-                return strongSelf.database.collection("users")
-                    .whereField("id", asArrayOf: User.self, in: participantIDsToFetch)
-                    .handleEvents(receiveOutput: { users in
-                        users.forEach { strongSelf.usersCache.users[$0.id] = $0 }
-                    })
-                    .map { $0 + cached }
-                    .eraseToAnyPublisher()
-            }
-            .eraseToAnyPublisher()
     }
 
     func competitionPublisher(for competitionID: Competition.ID) -> AnyPublisher<Competition, Error> {
@@ -255,22 +243,5 @@ final class CompetitionsManager: CompetitionsManaging {
 private extension Dictionary where Key == Competition.ID {
     func removeOldCompetitions(current competitions: [Competition]) -> Self {
         filter { competitionId, _ in competitions.contains(where: { $0.id == competitionId }) }
-    }
-}
-
-private extension Query {
-    /// Attempts to get documents from the cache. If that fails, it will get documents from the server.
-    /// - Returns: A publisher emitting a QuerySnapshot instance.
-    func getDocumentsPreferCache() -> AnyPublisher<QuerySnapshot, Error> {
-        let serverQuery = self // after query is ran, it's gone. Can't use `self` in escaping closures below
-        return getDocuments(source: .cache)
-            .catch { [serverQuery] _ -> AnyPublisher<QuerySnapshot, Error> in
-                serverQuery.getDocuments(source: .server).eraseToAnyPublisher()
-            }
-            .flatMapLatest { [serverQuery] snapshot -> AnyPublisher<QuerySnapshot, Error> in
-                guard snapshot.isEmpty else { return .just(snapshot) }
-                return serverQuery.getDocuments(source: .server).eraseToAnyPublisher()
-            }
-            .eraseToAnyPublisher()
     }
 }

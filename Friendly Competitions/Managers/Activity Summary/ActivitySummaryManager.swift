@@ -29,12 +29,12 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
 
     @Injected(\.activitySummaryCache) private var cache
     @Injected(\.healthKitManager) private var healthKitManager
+    @Injected(\.healthKitDataHelperBuilder) private var healthKitDataHelperBuilder
     @Injected(\.database) private var database
     @Injected(\.scheduler) private var scheduler
     @Injected(\.userManager) private var userManager
-    @Injected(\.workoutManager) private var workoutManager
 
-    private var helper: HealthKitDataHelper<[ActivitySummary]>!
+    private var helper: (any HealthKitDataHelping<[ActivitySummary]>)!
 
     private var activitySummarySubject = ReplaySubject<ActivitySummary?, Never>(bufferSize: 1)
     private var cancellables = Cancellables()
@@ -42,10 +42,10 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
     // MARK: - Lifecycle
 
     init() {
-        helper = HealthKitDataHelper { [weak self] dateInterval in
+        helper = healthKitDataHelperBuilder.bulid { [weak self] dateInterval in
             self?.activitySummaries(in: dateInterval) ?? .just([])
-        } upload: { [weak self] in
-            self?.upload(activitySummaries: $0) ?? .just(())
+        } upload: { [weak self] data in
+            self?.upload(activitySummaries: data) ?? .just(())
         }
 
         let storedActivitySummary = cache.activitySummary
@@ -80,18 +80,28 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
     // MARK: - Private Methods
 
     private func upload(activitySummaries: [ActivitySummary]) -> AnyPublisher<Void, Error> {
-        .fromAsync { [weak self] in
-            guard let strongSelf = self else { return }
-            let userID = strongSelf.userManager.user.id
-            let batch = strongSelf.database.batch()
-            try activitySummaries.forEach { activitySummary in
-                var activitySummary = activitySummary
-                activitySummary.userID = userID
-                let document = strongSelf.database.document("users/\(userID)/activitySummaries/\(activitySummary.id)")
-                try batch.set(value: activitySummary, forDocument: document)
+        let activitySummaries = activitySummaries.map { $0.with(userID: userManager.user.id) }
+
+        let changedActivitySummaries = database
+            .collection("users/\(userManager.user.id)/activitySummaries")
+            .getDocuments(ofType: ActivitySummary.self, source: .cache)
+            .map { cached in
+                activitySummaries
+                    .subtracting(cached)
+                    .sorted(by: \.date)
             }
-            try await batch.commit()
-        }
+
+        return changedActivitySummaries
+            .flatMapLatest(withUnretained: self) { strongSelf, activitySummaries in
+                let userID = strongSelf.userManager.user.id
+                let batch = strongSelf.database.batch()
+                activitySummaries.forEach { activitySummary in
+                    let document = strongSelf.database.document("users/\(userID)/activitySummaries/\(activitySummary.id)")
+                    batch.set(value: activitySummary, forDocument: document)
+                }
+                return batch.commit()
+            }
+            .eraseToAnyPublisher()
     }
 }
 
@@ -104,5 +114,11 @@ private extension DateInterval {
         var endDateComponents = calendar.dateComponents(units, from: end)
         endDateComponents.calendar = calendar
         return HKQuery.predicate(forActivitySummariesBetweenStart: startDateComponents, end: endDateComponents)
+    }
+}
+
+extension Array where Element: Hashable {
+    func subtracting(_ other: Self) -> Self {
+        Array(Set(self).subtracting(Set(other)))
     }
 }

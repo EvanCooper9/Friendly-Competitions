@@ -24,17 +24,11 @@ struct InviteFriendsView: View {
                     }
                 }
             } footer: {
-                VStack(alignment: .leading, spacing: 10) {
-                    if let footerText = viewModel.footerText {
-                        Text(footerText)
-                    }
-                    HStack {
-                        Text(L10n.InviteFriends.havingTrouble)
-                            .font(.body)
-                        Button(L10n.InviteFriends.sendAnInviteLink, action: viewModel.sendInviteLink)
-                            .font(.body)
-                    }
+                HStack {
+                    Text(L10n.InviteFriends.havingTrouble)
+                    Button(L10n.InviteFriends.sendAnInviteLink, action: viewModel.sendInviteLink)
                 }
+                .font(.body)
             }
         }
         .listStyle(.insetGrouped)

@@ -1,9 +1,11 @@
+import Algorithms
 import Combine
 import CombineExt
 import Factory
 import FirebaseCrashlytics
 import FirebaseFirestore
 import FirebaseFirestoreCombineSwift
+import FirebaseFirestoreSwift
 
 extension Firestore.Encoder {
     static let custom: Firestore.Encoder = {
@@ -48,17 +50,35 @@ extension Firestore: Database {
 // MARK: Collection
 
 extension Query: Collection {
-    func whereField<T: Decodable>(_ field: String, asArrayOf type: T.Type, in values: [Any]) -> AnyPublisher<[T], Error> {
-        .fromAsync {
-            try await self
-                .whereFieldWithChunking(field, in: values)
-                .map { try $0.data(as: T.self, decoder: .custom) }
+    func count() -> AnyPublisher<Int, Error> {
+        Future { [count] promise in
+            count.getAggregation(source: .server) { snapshot, error in
+                if let error {
+                    promise(.failure(error))
+                } else if let snapshot {
+                    promise(.success(Int(truncating: snapshot.count)))
+                }
+            }
         }
-        .reportErrorToCrashlytics(userInfo: [
-            "field": field,
-            "values": values,
-            "type": String(describing: T.self)
-        ])
+        .eraseToAnyPublisher()
+    }
+
+    func whereField<T: Decodable>(_ field: String, asArrayOf type: T.Type, in values: [Any], source: DatabaseSource) -> AnyPublisher<[T], Error> {
+        let chunks = values.chunks(ofCount: 10).map { chunk in
+            whereField(field, in: Array(chunk))
+                .getDocuments(source: source.firestoreSource)
+                .map { $0.documents.decoded(as: T.self) }
+                .eraseToAnyPublisher()
+        }
+
+        return Publishers
+            .ZipMany(chunks)
+            .map { $0.reduce([], +) }
+            .reportErrorToCrashlytics(userInfo: [
+                 "field": field,
+                 "values": values,
+                 "type": String(describing: T.self)
+             ])
     }
 
     func whereField(_ field: String, arrayContains value: Any) -> any Collection {
@@ -68,6 +88,22 @@ extension Query: Collection {
 
     func whereField(_ field: String, isEqualTo value: Any) -> any Collection {
         let query: Query = whereField(field, isEqualTo: value)
+        return query
+    }
+
+    func whereField(_ field: String, notIn values: [Any]) -> Collection {
+        guard values.isNotEmpty else { return self }
+        let query: Query = whereField(field, notIn: values)
+        return query
+    }
+
+    func sorted(by field: String, direction: CollectionSortDirection) -> Collection {
+        let query: Query = order(by: field, descending: direction == .descending)
+        return query
+    }
+
+    func limit(_ limit: Int) -> Collection {
+        let query: Query = self.limit(to: limit)
         return query
     }
 
@@ -85,18 +121,19 @@ extension Query: Collection {
     }
 
     func getDocuments<T>(ofType type: T.Type, source: DatabaseSource) -> AnyPublisher<[T], Error> where T : Decodable {
-        getDocuments(source: source.firestoreSource)
+        let query = self
+        return getDocuments(source: source.firestoreSource)
             .handleEvents(receiveOutput: { snapshot in
-                guard snapshot.documents.isNotEmpty else { return }
+                guard snapshot.documents.isNotEmpty, source == .server else { return }
                 let analyticsManager = Container.shared.analyticsManager()
                 snapshot.documents.forEach { document in
                     analyticsManager.log(event: .databaseRead(path: document.reference.path))
                 }
             })
             .map { $0.documents.decoded(as: T.self) }
-            .flatMapLatest(withUnretained: self) { strongSelf, results -> AnyPublisher<[T], Error> in
+            .flatMapLatest { [query] (results: [T]) -> AnyPublisher<[T], Error> in
                 guard results.isEmpty, source == .cacheFirst else { return .just(results) }
-                return strongSelf.getDocuments(ofType: T.self, source: .server)
+                return query.getDocuments(ofType: T.self, source: .server)
             }
             .reportErrorToCrashlytics()
     }
@@ -164,8 +201,10 @@ extension DocumentReference: Document {
                     promise(.failure(error))
                     return
                 } else if let snapshot {
-                    let analyticsManager = Container.shared.analyticsManager()
-                    analyticsManager.log(event: .databaseRead(path: snapshot.reference.path))
+                    if source == .server {
+                        let analyticsManager = Container.shared.analyticsManager()
+                        analyticsManager.log(event: .databaseRead(path: snapshot.reference.path))
+                    }
                     do {
                         let data = try snapshot.data(as: T.self, decoder: .custom)
                         promise(.success(data))
@@ -188,7 +227,6 @@ extension DocumentReference: Document {
 
     func publisher<T: Decodable>(as type: T.Type) -> AnyPublisher<T, Error> {
         snapshotPublisher()
-            .print(path)
             .handleEvents(receiveOutput: { snapshot in
                 let analyticsManager = Container.shared.analyticsManager()
                 analyticsManager.log(event: .databaseRead(path: snapshot.reference.path))
@@ -204,11 +242,24 @@ extension DocumentReference: Document {
 // MARK: Batch
 
 extension WriteBatch: Batch {
-    func set<T: Encodable>(value: T, forDocument document: Document) throws {
+    func set<T>(value: T, forDocument document: Document) where T : Encodable {
         guard let documentReference = document as? DocumentReference else { return }
         let analyticsManager = Container.shared.analyticsManager()
         analyticsManager.log(event: .databaseWrite(path: documentReference.path))
-        try setData(from: value, forDocument: documentReference, encoder: .custom)
+        try? setData(from: value, forDocument: documentReference, encoder: .custom)
+    }
+
+    func commit() -> AnyPublisher<Void, Error> {
+        Future { promise in
+            self.commit { error in
+                if let error {
+                    promise(.failure(error))
+                } else {
+                    promise(.success(()))
+                }
+            }
+        }
+        .eraseToAnyPublisher()
     }
 }
 
@@ -217,9 +268,7 @@ extension WriteBatch: Batch {
 fileprivate extension DatabaseSource {
     var firestoreSource: FirestoreSource {
         switch self {
-        case .cache:
-            return .cache
-        case .cacheFirst:
+        case .cache, .cacheFirst:
             return .cache
         case .server:
             return .server

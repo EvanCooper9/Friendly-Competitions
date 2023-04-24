@@ -11,11 +11,23 @@ import Foundation
 // swiftlint:disable nesting type_body_length type_name vertical_whitespace_opening_braces
 internal enum L10n {
   internal enum About {
+    /// Hey, thanks for using Friendly Competitions! I hope you're enjoying my app. Feel free to provide feedback below or reach out to me by visiting my website. 
+    /// 
+    ///  Evan
+    internal static let hey = L10n.tr("Localizable", "About.hey", fallback: "Hey, thanks for using Friendly Competitions! I hope you're enjoying my app. Feel free to provide feedback below or reach out to me by visiting my website. \n\n Evan")
+    /// Made with ❤️ in Toronto, Canada
+    internal static let madeWithLove = L10n.tr("Localizable", "About.madeWithLove", fallback: "Made with ❤️ in Toronto, Canada")
+    /// About
+    internal static let title = L10n.tr("Localizable", "About.title", fallback: "About")
     internal enum App {
       /// by Evan Cooper
       internal static let authoredBy = L10n.tr("Localizable", "About.App.authoredBy", fallback: "by Evan Cooper")
+      /// Code
+      internal static let code = L10n.tr("Localizable", "About.App.code", fallback: "Code")
       /// Feature Request
       internal static let featureRequest = L10n.tr("Localizable", "About.App.featureRequest", fallback: "Feature Request")
+      /// Did you know this app is completely open source? Tap above to find out more.
+      internal static let openSource = L10n.tr("Localizable", "About.App.openSource", fallback: "Did you know this app is completely open source? Tap above to find out more.")
       /// Privacy Policy
       internal static let privacyPolicy = L10n.tr("Localizable", "About.App.privacyPolicy", fallback: "Privacy Policy")
       /// Rate
@@ -24,12 +36,12 @@ internal enum L10n {
       internal static let reportIssue = L10n.tr("Localizable", "About.App.reportIssue", fallback: "Report an Issue")
       /// The App
       internal static let title = L10n.tr("Localizable", "About.App.title", fallback: "The App")
+      /// Version
+      internal static let version = L10n.tr("Localizable", "About.App.version", fallback: "Version")
     }
     internal enum Developer {
-      /// The Developer
-      internal static let title = L10n.tr("Localizable", "About.Developer.title", fallback: "The Developer")
-      /// Website
-      internal static let website = L10n.tr("Localizable", "About.Developer.website", fallback: "Website")
+      /// My Website
+      internal static let website = L10n.tr("Localizable", "About.Developer.website", fallback: "My Website")
     }
   }
   internal enum ActivitySummaryInfo {
