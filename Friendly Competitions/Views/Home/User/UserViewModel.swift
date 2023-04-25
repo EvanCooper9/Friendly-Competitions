@@ -19,6 +19,7 @@ final class UserViewModel: ObservableObject {
         didSet { confirmationRequired = actionRequiringConfirmation != nil }
     }
 
+    @Injected(\.api) private var api
     @Injected(\.friendsManager) private var friendsManager
     @Injected(\.userManager) private var userManager
 
@@ -52,8 +53,8 @@ final class UserViewModel: ObservableObject {
             .flatMapLatest(withUnretained: self) { strongSelf -> AnyPublisher<Void, Never> in
                 switch strongSelf.actionRequiringConfirmation {
                 case .deleteFriend:
-                    return strongSelf.friendsManager
-                        .delete(friend: user)
+                    return strongSelf.api
+                        .call(.deleteFriend(id: user.id))
                         .isLoading { strongSelf.loading = $0 }
                         .ignoreFailure()
                 default:
@@ -67,18 +68,18 @@ final class UserViewModel: ObservableObject {
             .flatMapLatest(withUnretained: self) { strongSelf, action -> AnyPublisher<Void, Never> in
                 switch action {
                 case .acceptFriendRequest:
-                    return strongSelf.friendsManager
-                        .accept(friendRequest: user)
+                    return strongSelf.api
+                        .call(.respondToFriendRequest(from: user.id, accept: true))
                         .isLoading { strongSelf.loading = $0 }
                         .ignoreFailure()
                 case .denyFriendRequest:
-                    return strongSelf.friendsManager
-                        .decline(friendRequest: user)
+                    return strongSelf.api
+                        .call(.respondToFriendRequest(from: user.id, accept: false))
                         .isLoading { strongSelf.loading = $0 }
                         .ignoreFailure()
                 case .request:
-                    return strongSelf.friendsManager
-                        .add(user: user)
+                    return strongSelf.api
+                        .call(.sendFriendRequest(id: user.id))
                         .isLoading { strongSelf.loading = $0 }
                         .ignoreFailure()
                 case .deleteFriend:

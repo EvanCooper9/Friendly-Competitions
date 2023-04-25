@@ -15,13 +15,7 @@ protocol CompetitionsManaging {
     var competitionsDateInterval: DateInterval { get }
     var hasPremiumResults: AnyPublisher<Bool, Never> { get }
 
-    func accept(_ competition: Competition) -> AnyPublisher<Void, Error>
     func create(_ competition: Competition) -> AnyPublisher<Void, Error>
-    func decline(_ competition: Competition) -> AnyPublisher<Void, Error>
-    func delete(_ competition: Competition) -> AnyPublisher<Void, Error>
-    func invite(_ user: User, to competition: Competition) -> AnyPublisher<Void, Error>
-    func join(_ competition: Competition) -> AnyPublisher<Void, Error>
-    func leave(_ competition: Competition) -> AnyPublisher<Void, Error>
     func update(_ competition: Competition) -> AnyPublisher<Void, Error>
     func search(byID competitionID: Competition.ID) -> AnyPublisher<Competition, Error>
     func results(for competitionID: Competition.ID) -> AnyPublisher<[CompetitionResult], Error>
@@ -101,14 +95,6 @@ final class CompetitionsManager: CompetitionsManaging {
 
     // MARK: - Public Methods
 
-    func accept(_ competition: Competition) -> AnyPublisher<Void, Error> {
-        let data: [String: Any] = [
-            "competitionID": competition.id,
-            "accept": true
-        ]
-        return api.call("respondToCompetitionInvite", with: data)
-    }
-
     func create(_ competition: Competition) -> AnyPublisher<Void, Error> {
         database.document("competitions/\(competition.id)")
             .set(value: competition)
@@ -116,37 +102,6 @@ final class CompetitionsManager: CompetitionsManaging {
                 $0.analyticsManager.log(event: .createCompetition(name: competition.name))
             })
             .eraseToAnyPublisher()
-    }
-
-    func decline(_ competition: Competition) -> AnyPublisher<Void, Error> {
-        let data: [String: Any] = [
-            "competitionID": competition.id,
-            "accept": false
-        ]
-        return api.call("respondToCompetitionInvite", with: data)
-    }
-
-    func delete(_ competition: Competition) -> AnyPublisher<Void, Error> {
-        let data = ["competitionID": competition.id]
-        return api.call("deleteCompetition", with: data)
-    }
-
-    func invite(_ user: User, to competition: Competition) -> AnyPublisher<Void, Error> {
-        let data = [
-            "competitionID": competition.id,
-            "userID": user.id
-        ]
-        return api.call("inviteUserToCompetition", with: data)
-    }
-
-    func join(_ competition: Competition) -> AnyPublisher<Void, Error> {
-        let data = ["competitionID": competition.id]
-        return api.call("joinCompetition", with: data)
-    }
-
-    func leave(_ competition: Competition) -> AnyPublisher<Void, Error> {
-        let data = ["competitionID": competition.id]
-        return api.call("leaveCompetition", with: data)
     }
 
     func search(byID competitionID: Competition.ID) -> AnyPublisher<Competition, Error> {
