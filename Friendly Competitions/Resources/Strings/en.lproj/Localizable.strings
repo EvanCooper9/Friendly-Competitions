@@ -18,14 +18,19 @@
 "ActivitySummaryInfo.Value.empty" = "-";
 
 // About
+"About.title" = "About";
+"About.hey" = "Hey, thanks for using Friendly Competitions! I hope you're enjoying my app. Feel free to provide feedback below or reach out to me by visiting my website. \n\n Evan";
+"About.madeWithLove" = "Made with ❤️ in Toronto, Canada";
 "About.App.authoredBy" = "by Evan Cooper";
 "About.App.title" = "The App";
 "About.App.rate" = "Rate";
 "About.App.privacyPolicy" = "Privacy Policy";
 "About.App.featureRequest" = "Feature Request";
 "About.App.reportIssue" = "Report an Issue";
-"About.Developer.title" = "The Developer";
-"About.Developer.website" = "Website";
+"About.App.code" = "Code";
+"About.App.openSource" = "Did you know this app is completely open source? Tap above to find out more.";
+"About.App.version" = "Version";
+"About.Developer.website" = "My Website";
 
 // Developer
 "Developer.title" = "Developer";

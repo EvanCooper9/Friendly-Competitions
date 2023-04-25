@@ -46,7 +46,7 @@ final class CompetitionViewModel: ObservableObject {
             ),
             (
                 value: competition.scoringModel.displayName,
-                valueType: .other(systemImage: .plusminusCircle, description: "Scoring model")
+                valueType: .other(systemImage: .plusminusCircle, description: "Scoring")
             ),
             (
                 value: competition.repeats ? L10n.Generics.yes : L10n.Generics.no,
@@ -69,6 +69,7 @@ final class CompetitionViewModel: ObservableObject {
     @Injected(\.featureFlagManager) private var featureFlagManager
     @Injected(\.searchManager) private var searchManager
     @Injected(\.scheduler) private var scheduler
+    @Injected(\.searchManager) private var searchManager
     @Injected(\.userManager) private var userManager
 
     private let confirmActionSubject = PassthroughSubject<Void, Error>()
@@ -189,16 +190,16 @@ final class CompetitionViewModel: ObservableObject {
             .flatMapLatest(withUnretained: self) { strongSelf -> AnyPublisher<Void, Error> in
                 switch strongSelf.actionRequiringConfirmation {
                 case .delete:
-                    return strongSelf.competitionsManager
-                        .delete(competition)
+                    return strongSelf.api
+                        .call(.deleteCompetition(id: competition.id))
                         .isLoading { strongSelf.loading = $0 }
                         .eraseToAnyPublisher()
                 case .edit:
                     strongSelf.saveEditsSubject.send()
                     return .just(())
                 case .leave:
-                    return strongSelf.competitionsManager
-                        .leave(competition)
+                    return strongSelf.api
+                        .call(.leaveCompetition(id: competition.id))
                         .handleEvents(receiveOutput: { fetchParticipants.send() })
                         .isLoading { strongSelf.loading = $0 }
                         .eraseToAnyPublisher()
@@ -225,14 +226,14 @@ final class CompetitionViewModel: ObservableObject {
             .flatMapLatest(withUnretained: self) { strongSelf, action -> AnyPublisher<Void, Error> in
                 switch action {
                 case .acceptInvite:
-                    return strongSelf.competitionsManager
-                        .accept(competition)
+                    return strongSelf.api
+                        .call(.respondToCompetitionInvite(id: competition.id, accept: true))
                         .handleEvents(receiveOutput: { fetchParticipants.send() })
                         .isLoading { strongSelf.loading = $0 }
                         .eraseToAnyPublisher()
                 case .declineInvite:
-                    return strongSelf.competitionsManager
-                        .decline(competition)
+                    return strongSelf.api
+                        .call(.respondToCompetitionInvite(id: competition.id, accept: false))
                         .isLoading { strongSelf.loading = $0 }
                         .eraseToAnyPublisher()
                 case .delete, .leave:
@@ -245,8 +246,8 @@ final class CompetitionViewModel: ObservableObject {
                     strongSelf.showInviteFriend.toggle()
                     return .empty()
                 case .join:
-                    return strongSelf.competitionsManager
-                        .join(competition)
+                    return strongSelf.api
+                        .call(.joinCompetition(id: competition.id))
                         .handleEvents(receiveOutput: { fetchParticipants.send() })
                         .isLoading { strongSelf.loading = $0 }
                         .eraseToAnyPublisher()

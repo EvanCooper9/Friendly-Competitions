@@ -8,7 +8,7 @@ import Foundation
 protocol SearchManaging {
     func searchForCompetitions(byName name: String) -> AnyPublisher<[Competition], Error>
     func searchForUsers(byName name: String) -> AnyPublisher<[User], Error>
-    func searchForUsers(withIDs ids: [User.ID]) -> AnyPublisher<[User], Error>
+    func searchForUsers(withIDs userIDs: [User.ID]) -> AnyPublisher<[User], Error>
 }
 
 final class SearchManager: SearchManaging {
@@ -39,24 +39,21 @@ final class SearchManager: SearchManaging {
             }
     }
 
-    func searchForUsers(withIDs ids: [User.ID]) -> AnyPublisher<[User], Error> {
-        var cached = [User]()
-        var idsToFetch = [String]()
-        ids.forEach { id in
-            if let user = usersCache.users[id] {
-                cached.append(user)
-            } else {
-                idsToFetch.append(id)
-            }
-        }
+    func searchForUsers(withIDs userIDs: [User.ID]) -> AnyPublisher<[User], Error> {
+        let cachedResults = database
+            .collection("users")
+            .whereField("id", asArrayOf: User.self, in: userIDs, source: .cache)
 
-        guard idsToFetch.isNotEmpty else { return .just(cached) }
-        return database.collection("users")
-            .whereField("id", asArrayOf: User.self, in: idsToFetch)
-            .handleEvents(withUnretained: self, receiveOutput: { strongSelf, users in
-                users.forEach { strongSelf.usersCache.users[$0.id] = $0 }
-            })
-            .map { $0 + cached }
+        return cachedResults
+            .flatMapLatest(withUnretained: self) { strongSelf, cachedResults -> AnyPublisher<[User], Error> in
+                let remaining = cachedResults.map(\.id).subtracting(userIDs)
+                guard remaining.isNotEmpty else { return .just(cachedResults) }
+                return strongSelf.database
+                    .collection("users")
+                    .whereField("id", asArrayOf: User.self, in: userIDs, source: .server)
+                    .map { $0 + cachedResults }
+                    .eraseToAnyPublisher()
+            }
             .eraseToAnyPublisher()
     }
 }

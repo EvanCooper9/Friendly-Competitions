@@ -4,7 +4,7 @@ import Combine
 
 final class CollectionMock<Model: Decodable>: Collection {
     var whereFieldInClosure: (() -> AnyPublisher<[Model], Error>)?
-    func whereField<T: Decodable>(_ field: String, asArrayOf type: T.Type, in values: [Any]) -> AnyPublisher<[T], Error> {
+    func whereField<T: Decodable>(_ field: String, asArrayOf type: T.Type, in values: [Any], source: DatabaseSource) -> AnyPublisher<[T], Error> {
         whereFieldInClosure!()
             .map { $0 as! [T] }
             .eraseToAnyPublisher()
@@ -18,6 +18,21 @@ final class CollectionMock<Model: Decodable>: Collection {
     var whereFieldIsEqualToClosure: (() -> Collection)?
     func whereField(_ field: String, isEqualTo value: Any) -> Collection {
         whereFieldIsEqualToClosure!()
+    }
+
+    var whereFieldIsNotInClosure: (() -> Collection)?
+    func whereField(_ field: String, notIn values: [Any]) -> Collection {
+        whereFieldIsNotInClosure!()
+    }
+
+    var sortedClosure: ((String, CollectionSortDirection) -> Collection)?
+    func sorted(by field: String, direction: CollectionSortDirection) -> Collection {
+        sortedClosure!(field, direction)
+    }
+
+    var limitClosure: ((Int) -> Collection)?
+    func limit(_ limit: Int) -> Collection {
+        limitClosure!(limit)
     }
 
     var publisherCallCount = 0
@@ -36,6 +51,11 @@ final class CollectionMock<Model: Decodable>: Collection {
         return getDocumentsClosure!(T.self as! Model.Type, source)
             .map { $0 as! [T] }
             .eraseToAnyPublisher()
+    }
+
+    var countReturnValue: AnyPublisher<Int, Error>!
+    func count() -> AnyPublisher<Int, Error> {
+        countReturnValue!
     }
 }
 
@@ -75,15 +95,15 @@ final class DocumentMock<Model: Codable>: Document {
 final class BatchMock<Model: Decodable>: Batch {
 
     var commitCallCount = 0
-    var commitClosure: (() -> Void)?
-    func commit() async throws {
+    var commitClosure: (() -> AnyPublisher<Void, Error>)?
+    func commit() -> AnyPublisher<Void, Error> {
         commitCallCount += 1
-        commitClosure!()
+        return commitClosure!()
     }
 
     var setCallCount = 0
     var setClosure: ((Model, Document) -> Void)?
-    func set<T: Encodable>(value: T, forDocument document: Document) throws {
+    func set<T: Encodable>(value: T, forDocument document: Document) {
         setCallCount += 1
         setClosure!(value as! Model, document)
     }

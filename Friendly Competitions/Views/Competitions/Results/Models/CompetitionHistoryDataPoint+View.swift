@@ -43,13 +43,12 @@ extension CompetitionResultsDataPoint {
                             Spacer()
                             Text(standing.points)
                                 .lineLimit(1)
+                                .monospaced()
                         }
-                        .font(standing.isHighlighted ? .title2 : .title3)
-                        .padding(.vertical, .small)
-                        .padding(.horizontal)
+                        .bold(standing.isHighlighted)
+                        .padding(.small)
                         .background(standing.isHighlighted ? .accentColor : .systemFill)
                         .foregroundColor(standing.isHighlighted ? .white : .label)
-                        .bold(standing.isHighlighted)
                         .cornerRadius(5)
                         .id(standing.rank)
                     }
@@ -65,6 +64,7 @@ extension CompetitionResultsDataPoint {
             ZStack {
                 Text(current)
                     .font(.largeTitle)
+                    .monospaced()
                 trendIcon(current: current, previous: previous, goal: .high)
                     .frame(maxHeight: .infinity, alignment: .bottom)
             }
@@ -80,6 +80,7 @@ extension CompetitionResultsDataPoint {
                     Text(L10n.Results.ActivitySummaries.RingsClosed.message)
                     Text(current)
                         .font(.largeTitle)
+                        .monospaced()
                 }
                 trendIcon(current: current, previous: previous, goal: .high)
                     .frame(maxHeight: .infinity, alignment: .bottom)
@@ -94,6 +95,7 @@ extension CompetitionResultsDataPoint {
                                 Text(key.description)
                                 Spacer()
                                 Text(workout.points[key]!)
+                                    .monospaced()
                             }
                             .padding(.small)
                             .background(.accentColor)
@@ -140,6 +142,7 @@ extension CompetitionResultsDataPoint {
             HStack {
                 Image(systemName: trendImage)
                 Text(abs(current - previous))
+                    .monospaced()
             }
             .foregroundColor(trendColor)
             .padding(.vertical, .small)

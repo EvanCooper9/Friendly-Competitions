@@ -39,6 +39,8 @@ struct RootView_Previews: PreviewProvider {
             .health: .authorized,
             .notifications: .authorized
         ])
+
+        searchManager.searchForUsersWithIDsReturnValue = .just([.evan])
     }
 
     static var previews: some View {

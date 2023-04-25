@@ -15,13 +15,7 @@ protocol CompetitionsManaging {
     var competitionsDateInterval: DateInterval { get }
     var hasPremiumResults: AnyPublisher<Bool, Never> { get }
 
-    func accept(_ competition: Competition) -> AnyPublisher<Void, Error>
     func create(_ competition: Competition) -> AnyPublisher<Void, Error>
-    func decline(_ competition: Competition) -> AnyPublisher<Void, Error>
-    func delete(_ competition: Competition) -> AnyPublisher<Void, Error>
-    func invite(_ user: User, to competition: Competition) -> AnyPublisher<Void, Error>
-    func join(_ competition: Competition) -> AnyPublisher<Void, Error>
-    func leave(_ competition: Competition) -> AnyPublisher<Void, Error>
     func update(_ competition: Competition) -> AnyPublisher<Void, Error>
     func search(byID competitionID: Competition.ID) -> AnyPublisher<Competition, Error>
     func results(for competitionID: Competition.ID) -> AnyPublisher<[CompetitionResult], Error>
@@ -101,14 +95,6 @@ final class CompetitionsManager: CompetitionsManaging {
 
     // MARK: - Public Methods
 
-    func accept(_ competition: Competition) -> AnyPublisher<Void, Error> {
-        let data: [String: Any] = [
-            "competitionID": competition.id,
-            "accept": true
-        ]
-        return api.call("respondToCompetitionInvite", with: data)
-    }
-
     func create(_ competition: Competition) -> AnyPublisher<Void, Error> {
         database.document("competitions/\(competition.id)")
             .set(value: competition)
@@ -116,37 +102,6 @@ final class CompetitionsManager: CompetitionsManaging {
                 $0.analyticsManager.log(event: .createCompetition(name: competition.name))
             })
             .eraseToAnyPublisher()
-    }
-
-    func decline(_ competition: Competition) -> AnyPublisher<Void, Error> {
-        let data: [String: Any] = [
-            "competitionID": competition.id,
-            "accept": false
-        ]
-        return api.call("respondToCompetitionInvite", with: data)
-    }
-
-    func delete(_ competition: Competition) -> AnyPublisher<Void, Error> {
-        let data = ["competitionID": competition.id]
-        return api.call("deleteCompetition", with: data)
-    }
-
-    func invite(_ user: User, to competition: Competition) -> AnyPublisher<Void, Error> {
-        let data = [
-            "competitionID": competition.id,
-            "userID": user.id
-        ]
-        return api.call("inviteUserToCompetition", with: data)
-    }
-
-    func join(_ competition: Competition) -> AnyPublisher<Void, Error> {
-        let data = ["competitionID": competition.id]
-        return api.call("joinCompetition", with: data)
-    }
-
-    func leave(_ competition: Competition) -> AnyPublisher<Void, Error> {
-        let data = ["competitionID": competition.id]
-        return api.call("leaveCompetition", with: data)
     }
 
     func search(byID competitionID: Competition.ID) -> AnyPublisher<Competition, Error> {
@@ -161,9 +116,24 @@ final class CompetitionsManager: CompetitionsManaging {
     }
 
     func results(for competitionID: Competition.ID) -> AnyPublisher<[CompetitionResult], Error> {
-        database.collection("competitions/\(competitionID)/results")
+        let query = database.collection("competitions/\(competitionID)/results")
             .whereField("participants", arrayContains: userManager.user.id)
-            .getDocuments(ofType: CompetitionResult.self)
+            .sorted(by: "end", direction: .descending)
+
+        let cachedResults = query.getDocuments(ofType: CompetitionResult.self, source: .cache)
+        let serverCount = query.count()
+
+        return Publishers
+            .CombineLatest(cachedResults, serverCount)
+            .flatMapLatest { result -> AnyPublisher<[CompetitionResult], Error> in
+                let (cachedResults, serverCount) = result
+                let diff = serverCount - cachedResults.count
+                guard diff > 0 else { return .just(cachedResults) }
+                return query
+                    .limit(diff)
+                    .getDocuments(ofType: CompetitionResult.self, source: .server)
+            }
+            .eraseToAnyPublisher()
     }
 
     func standings(for competitionID: Competition.ID, resultID: CompetitionResult.ID) -> AnyPublisher<[Competition.Standing], Error> {
@@ -228,22 +198,5 @@ final class CompetitionsManager: CompetitionsManaging {
 private extension Dictionary where Key == Competition.ID {
     func removeOldCompetitions(current competitions: [Competition]) -> Self {
         filter { competitionId, _ in competitions.contains(where: { $0.id == competitionId }) }
-    }
-}
-
-private extension Query {
-    /// Attempts to get documents from the cache. If that fails, it will get documents from the server.
-    /// - Returns: A publisher emitting a QuerySnapshot instance.
-    func getDocumentsPreferCache() -> AnyPublisher<QuerySnapshot, Error> {
-        let serverQuery = self // after query is ran, it's gone. Can't use `self` in escaping closures below
-        return getDocuments(source: .cache)
-            .catch { [serverQuery] _ -> AnyPublisher<QuerySnapshot, Error> in
-                serverQuery.getDocuments(source: .server).eraseToAnyPublisher()
-            }
-            .flatMapLatest { [serverQuery] snapshot -> AnyPublisher<QuerySnapshot, Error> in
-                guard snapshot.isEmpty else { return .just(snapshot) }
-                return serverQuery.getDocuments(source: .server).eraseToAnyPublisher()
-            }
-            .eraseToAnyPublisher()
     }
 }

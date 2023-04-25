@@ -28,6 +28,7 @@ final class FriendsManagerTests: FCTestCase {
         container.appState.register { self.appState }
         container.searchManager.register { self.searchManager }
         container.database.register { self.database }
+        container.searchManager.register { self.searchManager }
         container.userManager.register { self.userManager }
         
         cancellables = .init()
@@ -35,7 +36,7 @@ final class FriendsManagerTests: FCTestCase {
     
     func testThatItFetchesAndUpdatesFriends() {
         let expectation = self.expectation(description: #function)
-        let expected: [[User]] = [[], [.andrew]]
+        let expected = [[], [User.andrew]]
         
         setupEmptyDatabase()
         appState.didBecomeActive = .just(true)
@@ -57,6 +58,11 @@ final class FriendsManagerTests: FCTestCase {
             XCTAssertEqual(collection, "users")
             return friendsCollection
         }
+
+        searchManager.searchForUsersWithIDsClosure = { ids in
+            let expectedIndex = (self.searchManager.searchForUsersWithIDsCallsCount - 1) / 2
+            return .just(expected[expectedIndex])
+        }
         
         let manager = FriendsManager()
         manager.friends
@@ -74,7 +80,7 @@ final class FriendsManagerTests: FCTestCase {
     
     func testThatItFetchesAndUpdatesFriendRequests() {
         let expectation = self.expectation(description: #function)
-        let expected: [[User]] = [[], [.andrew]]
+        let expected = [[], [User.andrew]]
         
         setupEmptyDatabase()
         appState.didBecomeActive = .just(true)
@@ -95,6 +101,11 @@ final class FriendsManagerTests: FCTestCase {
         database.collectionClosure = { collection in
             XCTAssertEqual(collection, "users")
             return friendRequestsCollection
+        }
+
+        searchManager.searchForUsersWithIDsClosure = { ids in
+            let expectedIndex = (self.searchManager.searchForUsersWithIDsCallsCount - 1) / 2
+            return .just(expected[expectedIndex])
         }
         
         let manager = FriendsManager()
@@ -126,140 +137,6 @@ final class FriendsManagerTests: FCTestCase {
             .store(in: &cancellables)
     }
     
-    func testThatAddSucceeds() {
-        let expectaion = self.expectation(description: #function)
-        appState.didBecomeActive = .never()
-        api.callWithReturnValue = .just(())
-        
-        let manager = FriendsManager()
-        let user = User.evan
-        testAPI(manager.add(user: user), expect: .success(()), expectation: expectaion)
-        
-        XCTAssertEqual(api.callWithCallsCount, 1)
-        XCTAssertEqual(api.callWithReceivedArguments?.endpoint, "sendFriendRequest")
-        XCTAssertEqual(api.callWithReceivedArguments?.data?["userID"] as? String, user.id)
-        XCTAssertEqual(api.callWithReceivedArguments?.data?.count, 1)
-        waitForExpectations(timeout: 1)
-    }
-    
-    func testThatAddFails() {
-        let expectation = self.expectation(description: #function)
-        let error = MockError.mock(id: #function)
-        api.callWithReturnValue = .error(error)
-        appState.didBecomeActive = .never()
-        
-        let user = User.evan
-        let manager = FriendsManager()
-        
-        testAPI(manager.add(user: user), expect: .failure(error), expectation: expectation)
-        
-        XCTAssertEqual(api.callWithCallsCount, 1)
-        XCTAssertEqual(api.callWithReceivedArguments?.endpoint, "sendFriendRequest")
-        XCTAssertEqual(api.callWithReceivedArguments?.data?["userID"] as? String, user.id)
-        XCTAssertEqual(api.callWithReceivedArguments?.data?.count, 1)
-        waitForExpectations(timeout: 1)
-    }
-    
-    func testThatAcceptSucceeds() {
-        let expectaion = self.expectation(description: #function)
-        appState.didBecomeActive = .never()
-        api.callWithReturnValue = .just(())
-        let manager = FriendsManager()
-        let user = User.evan
-        testAPI(manager.accept(friendRequest: user), expect: .success(()), expectation: expectaion)
-        
-        XCTAssertEqual(api.callWithCallsCount, 1)
-        XCTAssertEqual(api.callWithReceivedArguments?.endpoint, "respondToFriendRequest")
-        XCTAssertEqual(api.callWithReceivedArguments?.data?["userID"] as? String, user.id)
-        XCTAssertEqual(api.callWithReceivedArguments?.data?["accept"] as? Bool, true)
-        XCTAssertEqual(api.callWithReceivedArguments?.data?.count, 2)
-        waitForExpectations(timeout: 1)
-    }
-    
-    func testThatAcceptFails() {
-        let expectaion = self.expectation(description: #function)
-        let error = MockError.mock(id: #function)
-        api.callWithReturnValue = .error(error)
-        appState.didBecomeActive = .never()
-        
-        let manager = FriendsManager()
-        let user = User.evan
-        testAPI(manager.accept(friendRequest: user), expect: .failure(error), expectation: expectaion)
-        
-        XCTAssertEqual(api.callWithCallsCount, 1)
-        XCTAssertEqual(api.callWithReceivedArguments?.endpoint, "respondToFriendRequest")
-        XCTAssertEqual(api.callWithReceivedArguments?.data?["userID"] as? String, user.id)
-        XCTAssertEqual(api.callWithReceivedArguments?.data?["accept"] as? Bool, true)
-        XCTAssertEqual(api.callWithReceivedArguments?.data?.count, 2)
-        waitForExpectations(timeout: 1)
-    }
-    
-    func testThatDeclineSucceeds() {
-        let expectaion = self.expectation(description: #function)
-        appState.didBecomeActive = .never()
-        api.callWithReturnValue = .just(())
-        let manager = FriendsManager()
-        let user = User.evan
-        testAPI(manager.decline(friendRequest: user), expect: .success(()), expectation: expectaion)
-        
-        XCTAssertEqual(api.callWithCallsCount, 1)
-        XCTAssertEqual(api.callWithReceivedArguments?.endpoint, "respondToFriendRequest")
-        XCTAssertEqual(api.callWithReceivedArguments?.data?["userID"] as? String, user.id)
-        XCTAssertEqual(api.callWithReceivedArguments?.data?["accept"] as? Bool, false)
-        XCTAssertEqual(api.callWithReceivedArguments?.data?.count, 2)
-        waitForExpectations(timeout: 1)
-    }
-    
-    func testThatDeclineFails() {
-        let expectaion = self.expectation(description: #function)
-        let error = MockError.mock(id: #function)
-        api.callWithReturnValue = .error(error)
-        appState.didBecomeActive = .never()
-        
-        let manager = FriendsManager()
-        let user = User.evan
-        testAPI(manager.decline(friendRequest: user), expect: .failure(error), expectation: expectaion)
-        
-        XCTAssertEqual(api.callWithCallsCount, 1)
-        XCTAssertEqual(api.callWithReceivedArguments?.endpoint, "respondToFriendRequest")
-        XCTAssertEqual(api.callWithReceivedArguments?.data?["userID"] as? String, user.id)
-        XCTAssertEqual(api.callWithReceivedArguments?.data?["accept"] as? Bool, false)
-        XCTAssertEqual(api.callWithReceivedArguments?.data?.count, 2)
-        waitForExpectations(timeout: 1)
-    }
-    
-    func testThatDeleteSucceeds() {
-        let expectaion = self.expectation(description: #function)
-        appState.didBecomeActive = .never()
-        api.callWithReturnValue = .just(())
-        let manager = FriendsManager()
-        let user = User.evan
-        testAPI(manager.delete(friend: user), expect: .success(()), expectation: expectaion)
-        
-        XCTAssertEqual(api.callWithCallsCount, 1)
-        XCTAssertEqual(api.callWithReceivedArguments?.endpoint, "deleteFriend")
-        XCTAssertEqual(api.callWithReceivedArguments?.data?["userID"] as? String, user.id)
-        XCTAssertEqual(api.callWithReceivedArguments?.data?.count, 1)
-        waitForExpectations(timeout: 1)
-    }
-    
-    func testThatDeleteFails() {
-        let expectaion = self.expectation(description: #function)
-        let error = MockError.mock(id: #function)
-        api.callWithReturnValue = .error(error)
-        appState.didBecomeActive = .never()
-        
-        let manager = FriendsManager()
-        let user = User.evan
-        testAPI(manager.delete(friend: user), expect: .failure(error), expectation: expectaion)
-        
-        XCTAssertEqual(api.callWithCallsCount, 1)
-        XCTAssertEqual(api.callWithReceivedArguments?.endpoint, "deleteFriend")
-        XCTAssertEqual(api.callWithReceivedArguments?.data?["userID"] as? String, user.id)
-        XCTAssertEqual(api.callWithReceivedArguments?.data?.count, 1)
-        waitForExpectations(timeout: 1)
-    }
-    
     // MARK: - Private
     
     private func setupEmptyDatabase() {
@@ -271,26 +148,5 @@ final class FriendsManagerTests: FCTestCase {
         activitySummariesCollection.whereFieldIsEqualToClosure = { activitySummariesCollection }
         activitySummariesCollection.whereFieldInClosure = { .just([]) }
         database.collectionGroupReturnValue = activitySummariesCollection
-    }
-    
-    private func testAPI(_ publisher: AnyPublisher<Void, Error>, expect expectedResult: Result<Void, MockError>, expectation: XCTestExpectation) {
-        publisher
-            .mapToResult()
-            .sink { result in
-                switch (result, expectedResult) {
-                case (.success, .success):
-                    expectation.fulfill()
-                case (.failure(let error), .failure(let expectedError)):
-                    guard let error = error as? MockError else {
-                        XCTFail("Wrong error type")
-                        return
-                    }
-                    XCTAssertEqual(error, expectedError)
-                    expectation.fulfill()
-                default:
-                    break
-                }
-            }
-            .store(in: &cancellables)
     }
 }

@@ -24,6 +24,7 @@ struct CompetitionParticipantRow: View {
             }
             Spacer()
             Text(config.points)
+                .monospaced()
         }
         .foregroundColor(config.highlighted ? .blue : nil)
     }
