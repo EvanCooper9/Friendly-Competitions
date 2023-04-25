@@ -23,6 +23,7 @@ final class InviteFriendsViewModel: ObservableObject {
 
     // MARK: - Private Properties
 
+    @Injected(\.api) private var api
     @Injected(\.competitionsManager) private var competitionsManager
     @Injected(\.friendsManager) private var friendsManager
     @Injected(\.searchManager) private var searchManager
@@ -101,8 +102,8 @@ final class InviteFriendsViewModel: ObservableObject {
             .flatMapLatest(withUnretained: self) { strongSelf, user -> AnyPublisher<Void, Never> in
                 switch action {
                 case .addFriend:
-                    return strongSelf.friendsManager
-                        .accept(friendRequest: user)
+                    return strongSelf.api
+                        .call(.respondToFriendRequest(from: user.id, accept: true))
                         .isLoading { strongSelf.loading = $0 }
                         .ignoreFailure()
                 case .competitionInvite:
@@ -113,16 +114,16 @@ final class InviteFriendsViewModel: ObservableObject {
             .store(in: &cancellables)
 
         inviteSubject
-            .flatMapLatest(withUnretained: self) { strongSelf, friend -> AnyPublisher<Void, Never> in
+            .flatMapLatest(withUnretained: self) { strongSelf, user -> AnyPublisher<Void, Never> in
                 switch action {
                 case .addFriend:
-                    return strongSelf.friendsManager
-                        .add(user: friend)
+                    return strongSelf.api
+                        .call(.sendFriendRequest(id: user.id))
                         .isLoading { strongSelf.loading = $0 }
                         .ignoreFailure()
                 case .competitionInvite(let competition):
-                    return strongSelf.competitionsManager
-                        .invite(friend, to: competition)
+                    return strongSelf.api
+                        .call(.inviteUserToCompetition(competitionID: competition.id, userID: user.id))
                         .isLoading { strongSelf.loading = $0 }
                         .ignoreFailure()
                 }

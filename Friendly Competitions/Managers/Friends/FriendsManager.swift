@@ -11,10 +11,6 @@ protocol FriendsManaging {
     var friendActivitySummaries: AnyPublisher<[User.ID: ActivitySummary], Never> { get }
     var friendRequests: AnyPublisher<[User], Never> { get }
 
-    func add(user: User) -> AnyPublisher<Void, Error>
-    func accept(friendRequest: User) -> AnyPublisher<Void, Error>
-    func decline(friendRequest: User) -> AnyPublisher<Void, Error>
-    func delete(friend: User) -> AnyPublisher<Void, Error>
     func user(withId id: String) -> AnyPublisher<User, Error>
 }
 
@@ -55,32 +51,6 @@ final class FriendsManager: FriendsManaging {
     }
 
     // MARK: - Public Methods
-
-    func add(user: User) -> AnyPublisher<Void, Error> {
-        let data = ["userID": user.id]
-        return api.call(.sendFriendRequest, with: data)
-    }
-
-    func accept(friendRequest: User) -> AnyPublisher<Void, Error> {
-        let data: [String: Any] = [
-            "userID": friendRequest.id,
-            "accept": true
-        ]
-        return api.call(.respondToFriendRequest, with: data)
-    }
-
-    func decline(friendRequest: User) -> AnyPublisher<Void, Error> {
-        let data: [String: Any] = [
-            "userID": friendRequest.id,
-            "accept": false
-        ]
-        return api.call(.respondToFriendRequest, with: data)
-    }
-
-    func delete(friend: User) -> AnyPublisher<Void, Error> {
-        let data = ["userID": friend.id]
-        return api.call(.deleteFriend, with: data)
-    }
 
     func user(withId id: String) -> AnyPublisher<User, Error> {
         database.document("users/\(id)")

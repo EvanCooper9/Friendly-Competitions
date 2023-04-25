@@ -4,9 +4,9 @@ import FirebaseFunctions
 import FirebaseFunctionsCombineSwift
 
 extension Functions: API {
-    func call(_ endpoint: Endpoint, with data: [String : Any]?) -> AnyPublisher<Void, Error> {
+    func call(_ endpoint: Endpoint) -> AnyPublisher<Void, Error> {
         httpsCallable(endpoint.name)
-            .call(data)
+            .call(endpoint.data)
             .mapToVoid()
             .eraseToAnyPublisher()
     }

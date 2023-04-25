@@ -42,23 +42,23 @@ class APIMock: API {
 
     //MARK: - call
 
-    var callWithCallsCount = 0
-    var callWithCalled: Bool {
-        return callWithCallsCount > 0
+    var callCallsCount = 0
+    var callCalled: Bool {
+        return callCallsCount > 0
     }
-    var callWithReceivedArguments: (endpoint: Endpoint, data: [String: Any]?)?
-    var callWithReceivedInvocations: [(endpoint: Endpoint, data: [String: Any]?)] = []
-    var callWithReturnValue: AnyPublisher<Void, Error>!
-    var callWithClosure: ((Endpoint, [String: Any]?) -> AnyPublisher<Void, Error>)?
+    var callReceivedEndpoint: Endpoint?
+    var callReceivedInvocations: [Endpoint] = []
+    var callReturnValue: AnyPublisher<Void, Error>!
+    var callClosure: ((Endpoint) -> AnyPublisher<Void, Error>)?
 
-    func call(_ endpoint: Endpoint, with data: [String: Any]?) -> AnyPublisher<Void, Error> {
-        callWithCallsCount += 1
-        callWithReceivedArguments = (endpoint: endpoint, data: data)
-        callWithReceivedInvocations.append((endpoint: endpoint, data: data))
-        if let callWithClosure = callWithClosure {
-            return callWithClosure(endpoint, data)
+    func call(_ endpoint: Endpoint) -> AnyPublisher<Void, Error> {
+        callCallsCount += 1
+        callReceivedEndpoint = endpoint
+        callReceivedInvocations.append(endpoint)
+        if let callClosure = callClosure {
+            return callClosure(endpoint)
         } else {
-            return callWithReturnValue
+            return callReturnValue
         }
     }
 
@@ -600,28 +600,6 @@ class CompetitionsManagingMock: CompetitionsManaging {
     var underlyingHasPremiumResults: AnyPublisher<Bool, Never>!
 
 
-    //MARK: - accept
-
-    var acceptCallsCount = 0
-    var acceptCalled: Bool {
-        return acceptCallsCount > 0
-    }
-    var acceptReceivedCompetition: Competition?
-    var acceptReceivedInvocations: [Competition] = []
-    var acceptReturnValue: AnyPublisher<Void, Error>!
-    var acceptClosure: ((Competition) -> AnyPublisher<Void, Error>)?
-
-    func accept(_ competition: Competition) -> AnyPublisher<Void, Error> {
-        acceptCallsCount += 1
-        acceptReceivedCompetition = competition
-        acceptReceivedInvocations.append(competition)
-        if let acceptClosure = acceptClosure {
-            return acceptClosure(competition)
-        } else {
-            return acceptReturnValue
-        }
-    }
-
     //MARK: - create
 
     var createCallsCount = 0
@@ -641,116 +619,6 @@ class CompetitionsManagingMock: CompetitionsManaging {
             return createClosure(competition)
         } else {
             return createReturnValue
-        }
-    }
-
-    //MARK: - decline
-
-    var declineCallsCount = 0
-    var declineCalled: Bool {
-        return declineCallsCount > 0
-    }
-    var declineReceivedCompetition: Competition?
-    var declineReceivedInvocations: [Competition] = []
-    var declineReturnValue: AnyPublisher<Void, Error>!
-    var declineClosure: ((Competition) -> AnyPublisher<Void, Error>)?
-
-    func decline(_ competition: Competition) -> AnyPublisher<Void, Error> {
-        declineCallsCount += 1
-        declineReceivedCompetition = competition
-        declineReceivedInvocations.append(competition)
-        if let declineClosure = declineClosure {
-            return declineClosure(competition)
-        } else {
-            return declineReturnValue
-        }
-    }
-
-    //MARK: - delete
-
-    var deleteCallsCount = 0
-    var deleteCalled: Bool {
-        return deleteCallsCount > 0
-    }
-    var deleteReceivedCompetition: Competition?
-    var deleteReceivedInvocations: [Competition] = []
-    var deleteReturnValue: AnyPublisher<Void, Error>!
-    var deleteClosure: ((Competition) -> AnyPublisher<Void, Error>)?
-
-    func delete(_ competition: Competition) -> AnyPublisher<Void, Error> {
-        deleteCallsCount += 1
-        deleteReceivedCompetition = competition
-        deleteReceivedInvocations.append(competition)
-        if let deleteClosure = deleteClosure {
-            return deleteClosure(competition)
-        } else {
-            return deleteReturnValue
-        }
-    }
-
-    //MARK: - invite
-
-    var inviteToCallsCount = 0
-    var inviteToCalled: Bool {
-        return inviteToCallsCount > 0
-    }
-    var inviteToReceivedArguments: (user: User, competition: Competition)?
-    var inviteToReceivedInvocations: [(user: User, competition: Competition)] = []
-    var inviteToReturnValue: AnyPublisher<Void, Error>!
-    var inviteToClosure: ((User, Competition) -> AnyPublisher<Void, Error>)?
-
-    func invite(_ user: User, to competition: Competition) -> AnyPublisher<Void, Error> {
-        inviteToCallsCount += 1
-        inviteToReceivedArguments = (user: user, competition: competition)
-        inviteToReceivedInvocations.append((user: user, competition: competition))
-        if let inviteToClosure = inviteToClosure {
-            return inviteToClosure(user, competition)
-        } else {
-            return inviteToReturnValue
-        }
-    }
-
-    //MARK: - join
-
-    var joinCallsCount = 0
-    var joinCalled: Bool {
-        return joinCallsCount > 0
-    }
-    var joinReceivedCompetition: Competition?
-    var joinReceivedInvocations: [Competition] = []
-    var joinReturnValue: AnyPublisher<Void, Error>!
-    var joinClosure: ((Competition) -> AnyPublisher<Void, Error>)?
-
-    func join(_ competition: Competition) -> AnyPublisher<Void, Error> {
-        joinCallsCount += 1
-        joinReceivedCompetition = competition
-        joinReceivedInvocations.append(competition)
-        if let joinClosure = joinClosure {
-            return joinClosure(competition)
-        } else {
-            return joinReturnValue
-        }
-    }
-
-    //MARK: - leave
-
-    var leaveCallsCount = 0
-    var leaveCalled: Bool {
-        return leaveCallsCount > 0
-    }
-    var leaveReceivedCompetition: Competition?
-    var leaveReceivedInvocations: [Competition] = []
-    var leaveReturnValue: AnyPublisher<Void, Error>!
-    var leaveClosure: ((Competition) -> AnyPublisher<Void, Error>)?
-
-    func leave(_ competition: Competition) -> AnyPublisher<Void, Error> {
-        leaveCallsCount += 1
-        leaveReceivedCompetition = competition
-        leaveReceivedInvocations.append(competition)
-        if let leaveClosure = leaveClosure {
-            return leaveClosure(competition)
-        } else {
-            return leaveReturnValue
         }
     }
 
@@ -1036,94 +904,6 @@ class FriendsManagingMock: FriendsManaging {
     }
     var underlyingFriendRequests: AnyPublisher<[User], Never>!
 
-
-    //MARK: - add
-
-    var addUserCallsCount = 0
-    var addUserCalled: Bool {
-        return addUserCallsCount > 0
-    }
-    var addUserReceivedUser: User?
-    var addUserReceivedInvocations: [User] = []
-    var addUserReturnValue: AnyPublisher<Void, Error>!
-    var addUserClosure: ((User) -> AnyPublisher<Void, Error>)?
-
-    func add(user: User) -> AnyPublisher<Void, Error> {
-        addUserCallsCount += 1
-        addUserReceivedUser = user
-        addUserReceivedInvocations.append(user)
-        if let addUserClosure = addUserClosure {
-            return addUserClosure(user)
-        } else {
-            return addUserReturnValue
-        }
-    }
-
-    //MARK: - accept
-
-    var acceptFriendRequestCallsCount = 0
-    var acceptFriendRequestCalled: Bool {
-        return acceptFriendRequestCallsCount > 0
-    }
-    var acceptFriendRequestReceivedFriendRequest: User?
-    var acceptFriendRequestReceivedInvocations: [User] = []
-    var acceptFriendRequestReturnValue: AnyPublisher<Void, Error>!
-    var acceptFriendRequestClosure: ((User) -> AnyPublisher<Void, Error>)?
-
-    func accept(friendRequest: User) -> AnyPublisher<Void, Error> {
-        acceptFriendRequestCallsCount += 1
-        acceptFriendRequestReceivedFriendRequest = friendRequest
-        acceptFriendRequestReceivedInvocations.append(friendRequest)
-        if let acceptFriendRequestClosure = acceptFriendRequestClosure {
-            return acceptFriendRequestClosure(friendRequest)
-        } else {
-            return acceptFriendRequestReturnValue
-        }
-    }
-
-    //MARK: - decline
-
-    var declineFriendRequestCallsCount = 0
-    var declineFriendRequestCalled: Bool {
-        return declineFriendRequestCallsCount > 0
-    }
-    var declineFriendRequestReceivedFriendRequest: User?
-    var declineFriendRequestReceivedInvocations: [User] = []
-    var declineFriendRequestReturnValue: AnyPublisher<Void, Error>!
-    var declineFriendRequestClosure: ((User) -> AnyPublisher<Void, Error>)?
-
-    func decline(friendRequest: User) -> AnyPublisher<Void, Error> {
-        declineFriendRequestCallsCount += 1
-        declineFriendRequestReceivedFriendRequest = friendRequest
-        declineFriendRequestReceivedInvocations.append(friendRequest)
-        if let declineFriendRequestClosure = declineFriendRequestClosure {
-            return declineFriendRequestClosure(friendRequest)
-        } else {
-            return declineFriendRequestReturnValue
-        }
-    }
-
-    //MARK: - delete
-
-    var deleteFriendCallsCount = 0
-    var deleteFriendCalled: Bool {
-        return deleteFriendCallsCount > 0
-    }
-    var deleteFriendReceivedFriend: User?
-    var deleteFriendReceivedInvocations: [User] = []
-    var deleteFriendReturnValue: AnyPublisher<Void, Error>!
-    var deleteFriendClosure: ((User) -> AnyPublisher<Void, Error>)?
-
-    func delete(friend: User) -> AnyPublisher<Void, Error> {
-        deleteFriendCallsCount += 1
-        deleteFriendReceivedFriend = friend
-        deleteFriendReceivedInvocations.append(friend)
-        if let deleteFriendClosure = deleteFriendClosure {
-            return deleteFriendClosure(friend)
-        } else {
-            return deleteFriendReturnValue
-        }
-    }
 
     //MARK: - user
 

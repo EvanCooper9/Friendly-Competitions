@@ -6,7 +6,7 @@ struct AppLauncher {
         if NSClassFromString("XCTestCase") == nil {
             FriendlyCompetitions.main()
         } else {
-            FriendlyCompetitionsTest.main()
+            FriendlyCompetitionsTests.main()
         }
     }
 }

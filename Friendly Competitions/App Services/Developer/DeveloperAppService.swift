@@ -10,16 +10,6 @@ final class DeveloperAppService: AppService {
     private var cancellables = Cancellables()
 
     func didFinishLaunching() {
-        #if DEBUG
-//        forceCompetitionComplete()
-        #endif
-    }
-
-    // MARK: - Private Methods
-
-    private func forceCompetitionComplete() {
-        api.call(.dev_sendCompetitionCompleteNotification, with: ["date": "2023-05-19"])
-            .sink()
-            .store(in: &cancellables)
+        // do nothing
     }
 }
