@@ -1,17 +1,23 @@
 extension Competition {
     enum ScoringModel: Equatable, Hashable, Identifiable {
+        case activityRingCloseCount
         case percentOfGoals
         case rawNumbers
+        case stepCount
         case workout(WorkoutType, [WorkoutMetric])
 
         var id: String { displayName }
 
         var displayName: String {
             switch self {
+            case .activityRingCloseCount:
+                return "Rings Closed"
             case .percentOfGoals:
                 return L10n.Competition.ScoringModel.PercentOfGoals.displayName
             case .rawNumbers:
                 return L10n.Competition.ScoringModel.RawNumbers.displayName
+            case .stepCount:
+                return "Step Count"
             case .workout(let workoutType, _):
                 return L10n.Competition.ScoringModel.Workout.displayNameWithType(workoutType.description)
             }
@@ -19,10 +25,14 @@ extension Competition {
 
         var description: String {
             switch self {
+            case .activityRingCloseCount:
+                return "Every ring closed is 1 point"
             case .percentOfGoals:
                 return L10n.Competition.ScoringModel.PercentOfGoals.description
             case .rawNumbers:
                 return L10n.Competition.ScoringModel.RawNumbers.description
+            case .stepCount:
+                return "Every step is 1 point"
             case .workout(let workoutType, _):
                 return L10n.Competition.ScoringModel.Workout.description(workoutType.description)
             }
@@ -35,9 +45,11 @@ extension Competition.ScoringModel: Codable {
     private struct EncodedModel: Codable {
 
         enum UnderlyingScoringModel: Int, Codable {
-            case percentOfGoals
-            case rawNumbers
-            case workout
+            case percentOfGoals = 0
+            case rawNumbers = 1
+            case workout = 2
+            case activityRingCloseCount = 3
+            case stepCount = 4
         }
 
         let type: UnderlyingScoringModel
@@ -67,16 +79,24 @@ extension Competition.ScoringModel: Codable {
                 )
             }
             self = .workout(workoutType, workoutMetrics)
+        case .activityRingCloseCount:
+            self = .activityRingCloseCount
+        case .stepCount:
+            self = .stepCount
         }
     }
 
     func encode(to encoder: Encoder) throws {
         var container = encoder.singleValueContainer()
         switch self {
+        case .activityRingCloseCount:
+            try container.encode(EncodedModel(type: .activityRingCloseCount, workoutType: nil, workoutMetrics: nil))
         case .percentOfGoals:
             try container.encode(EncodedModel(type: .percentOfGoals, workoutType: nil, workoutMetrics: nil))
         case .rawNumbers:
             try container.encode(EncodedModel(type: .rawNumbers, workoutType: nil, workoutMetrics: nil))
+        case .stepCount:
+            try container.encode(EncodedModel(type: .stepCount, workoutType: nil, workoutMetrics: nil))
         case .workout(let workoutType, let workoutMetrics):
             try container.encode(EncodedModel(type: .workout, workoutType: workoutType, workoutMetrics: workoutMetrics))
         }

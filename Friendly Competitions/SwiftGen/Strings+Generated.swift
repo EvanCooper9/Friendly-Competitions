@@ -13,8 +13,8 @@ internal enum L10n {
   internal enum About {
     /// Hey, thanks for using Friendly Competitions! I hope you're enjoying my app. Feel free to provide feedback below or reach out to me by visiting my website. 
     /// 
-    ///  Evan
-    internal static let hey = L10n.tr("Localizable", "About.hey", fallback: "Hey, thanks for using Friendly Competitions! I hope you're enjoying my app. Feel free to provide feedback below or reach out to me by visiting my website. \n\n Evan")
+    /// Evan
+    internal static let hey = L10n.tr("Localizable", "About.hey", fallback: "Hey, thanks for using Friendly Competitions! I hope you're enjoying my app. Feel free to provide feedback below or reach out to me by visiting my website. \n\nEvan")
     /// Made with ❤️ in Toronto, Canada
     internal static let madeWithLove = L10n.tr("Localizable", "About.madeWithLove", fallback: "Made with ❤️ in Toronto, Canada")
     /// About
@@ -120,8 +120,8 @@ internal enum L10n {
       internal static let `public` = L10n.tr("Localizable", "Competition.Edit.public", fallback: "Public")
       /// Repeats
       internal static let repeats = L10n.tr("Localizable", "Competition.Edit.repeats", fallback: "Repeats")
-      /// Scoring Model
-      internal static let scoringModel = L10n.tr("Localizable", "Competition.Edit.scoringModel", fallback: "Scoring Model")
+      /// Scoring
+      internal static let scoringModel = L10n.tr("Localizable", "Competition.Edit.scoringModel", fallback: "Scoring")
       /// Starts
       internal static let starts = L10n.tr("Localizable", "Competition.Edit.starts", fallback: "Starts")
       /// Details
@@ -144,6 +144,10 @@ internal enum L10n {
       internal static let results = L10n.tr("Localizable", "Competition.Results.results", fallback: "Results")
     }
     internal enum ScoringModel {
+      internal enum ActivityRingCloseCount {
+        /// Ring Close Count
+        internal static let displayName = L10n.tr("Localizable", "Competition.ScoringModel.ActivityRingCloseCount.displayName", fallback: "Ring Close Count")
+      }
       internal enum PercentOfGoals {
         /// Every percent of an activity ring filled gains 1 point. Daily max of 600 points.
         internal static let description = L10n.tr("Localizable", "Competition.ScoringModel.PercentOfGoals.description", fallback: "Every percent of an activity ring filled gains 1 point. Daily max of 600 points.")

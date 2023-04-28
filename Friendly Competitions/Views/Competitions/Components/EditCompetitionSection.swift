@@ -5,18 +5,24 @@ import SwiftUIX
 struct EditCompetitionSection: View {
 
     private enum UnderlyingScoringModel: CaseIterable, CustomStringConvertible, Identifiable {
+        case activityRingCloseCount
         case percentOfGoals
         case rawNumbers
+        case stepCount
         case workout
 
         var id: String { description }
 
         var description: String {
             switch self {
+            case .activityRingCloseCount:
+                return L10n.Competition.ScoringModel.ActivityRingCloseCount.displayName
             case .percentOfGoals:
                 return L10n.Competition.ScoringModel.PercentOfGoals.displayName
             case .rawNumbers:
                 return L10n.Competition.ScoringModel.RawNumbers.displayName
+            case .stepCount:
+                return "Step Count"
             case .workout:
                 return L10n.Competition.ScoringModel.Workout.displayName
             }
@@ -40,10 +46,14 @@ struct EditCompetitionSection: View {
 
     private var newScoringModel: Competition.ScoringModel? {
         switch underlyingScoringModel {
+        case .activityRingCloseCount:
+            return .activityRingCloseCount
         case .percentOfGoals:
             return .percentOfGoals
         case .rawNumbers:
             return .rawNumbers
+        case .stepCount:
+            return .stepCount
         case .workout:
             if let underlyingWorkoutType, !underlyingWorkoutMetrics.isEmpty {
                 return .workout(underlyingWorkoutType, underlyingWorkoutMetrics)
@@ -72,10 +82,14 @@ struct EditCompetitionSection: View {
         _isPublic = isPublic
 
         switch scoringModel.wrappedValue {
+        case .activityRingCloseCount:
+            _underlyingScoringModel = .init(initialValue: .activityRingCloseCount)
         case .percentOfGoals:
             _underlyingScoringModel = .init(initialValue: .percentOfGoals)
         case .rawNumbers:
             _underlyingScoringModel = .init(initialValue: .rawNumbers)
+        case .stepCount:
+            _underlyingScoringModel = .init(initialValue: .stepCount)
         case .workout(let type, let metrics):
             _underlyingScoringModel = .init(initialValue: .workout)
             _underlyingWorkoutType = .init(initialValue: type)
@@ -86,50 +100,61 @@ struct EditCompetitionSection: View {
     // MARK: - View
 
     var body: some View {
-        Section {
-            TextField(L10n.Competition.Edit.name, text: $name)
+        Group {
+            Section {
+                TextField(L10n.Competition.Edit.name, text: $name)
 
-            DatePicker(
-                L10n.Competition.Edit.starts,
-                selection: $start,
-                in: PartialRangeFrom(min(start, Date())),
-                displayedComponents: [.date]
-            )
-            DatePicker(
-                L10n.Competition.Edit.ends,
-                selection: $end,
-                in: PartialRangeFrom(start.addingTimeInterval(1.days)),
-                displayedComponents: [.date]
-            )
+                DatePicker(
+                    L10n.Competition.Edit.starts,
+                    selection: $start,
+                    in: PartialRangeFrom(min(start, Date())),
+                    displayedComponents: [.date]
+                )
+                DatePicker(
+                    L10n.Competition.Edit.ends,
+                    selection: $end,
+                    in: PartialRangeFrom(start.addingTimeInterval(1.days)),
+                    displayedComponents: [.date]
+                )
 
-            EnumPicker(L10n.Competition.Edit.scoringModel, selection: $underlyingScoringModel)
-
-            if underlyingScoringModel == .workout {
-                EnumPicker(L10n.Competition.Edit.workoutType, selection: $underlyingWorkoutType, allowsNoSelection: true)
-
-                if let underlyingWorkoutType {
-                    MultiPicker(
-                        title: L10n.Competition.Edit.workoutMetrics,
-                        selection: $underlyingWorkoutMetrics,
-                        options: underlyingWorkoutType.metrics
-                    )
+                Toggle(L10n.Competition.Edit.repeats, isOn: $repeats)
+                Toggle(L10n.Competition.Edit.public, isOn: $isPublic)
+            } header: {
+                Text("Details")
+            } footer: {
+                if detailsFooterTexts.isNotEmpty {
+                    VStack(alignment: .leading, spacing: 10) {
+                        ForEach(detailsFooterTexts, id: \.self, content: Text.init)
+                    }
                 }
             }
 
-            Toggle(L10n.Competition.Edit.repeats, isOn: $repeats)
-            Toggle(L10n.Competition.Edit.public, isOn: $isPublic)
-        } header: {
-            Text(L10n.Competition.Edit.title)
-        } footer: {
-            if detailsFooterTexts.isNotEmpty {
-                VStack(alignment: .leading, spacing: 10) {
-                    ForEach(detailsFooterTexts, id: \.self, content: Text.init)
+            Section {
+
+                EnumPicker(L10n.Competition.Edit.scoringModel, selection: $underlyingScoringModel)
+
+                if underlyingScoringModel == .workout {
+                    EnumPicker(L10n.Competition.Edit.workoutType, selection: $underlyingWorkoutType, allowsNoSelection: true)
+
+                    if let underlyingWorkoutType {
+                        MultiPicker(
+                            title: L10n.Competition.Edit.workoutMetrics,
+                            selection: $underlyingWorkoutMetrics,
+                            options: underlyingWorkoutType.metrics
+                        )
+                    }
+                }
+            } header: {
+                Text("Scoring")
+            } footer: {
+                Button("Learn more") {
+                    print("learn more")
                 }
             }
-        }
-        .onChange(of: newScoringModel) { newScoringModel in
-            guard let newScoringModel else { return }
-            scoringModel = newScoringModel
+            .onChange(of: newScoringModel) { newScoringModel in
+                guard let newScoringModel else { return }
+                scoringModel = newScoringModel
+            }
         }
     }
 }

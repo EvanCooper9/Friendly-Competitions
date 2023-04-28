@@ -7,6 +7,7 @@ final class DataUploadingAppService: AppService {
     @LazyInjected(\.authenticationManager) private var authenticationManager
 
     private var activitySummaryManager: ActivitySummaryManaging?
+    private var stepCountManager: StepCountManaging?
     private var workoutManager: WorkoutManaging?
 
     private var cancellables = Cancellables()
@@ -21,6 +22,7 @@ final class DataUploadingAppService: AppService {
             .sink(withUnretained: self) { strongSelf, loggedIn in
                 if loggedIn {
                     strongSelf.activitySummaryManager = Container.shared.activitySummaryManager.resolve()
+                    strongSelf.stepCountManager = Container.shared.stepCountManager.resolve()
                     strongSelf.workoutManager = Container.shared.workoutManager.resolve()
                 } else {
                     strongSelf.activitySummaryManager = nil

@@ -16,6 +16,7 @@ import { updateWorkoutScores } from "./Handlers/jobs/updateWorkoutScores";
 import { updateCompetitionRanks } from "./Handlers/competitions/updateCompetitionRanks";
 import { handleCompetitionUpdate } from "./Handlers/jobs/handleCompetitionUpdate";
 import { sendBackgroundNotification, sendNotification } from "./Handlers/notifications/notifications";
+import { updateStepCountScores } from "./Handlers/jobs/updateStepCountScores";
 
 admin.initializeApp();
 
@@ -121,6 +122,15 @@ exports.updateActivitySummaryScores = functions.firestore
         const before = snapshot.before;
         const after = snapshot.after;
         await updateActivitySummaryScores(userID, before, after);
+    });
+
+exports.updateStepCountScores = functions.firestore
+    .document("users/{userID}/steps/{stepCountID}")
+    .onWrite(async (snapshot, context) => {
+        const userID = context.params.userID;
+        const before = snapshot.before;
+        const after = snapshot.after;
+        await updateStepCountScores(userID, before, after);
     });
 
 exports.updateWorkoutScores = functions.firestore

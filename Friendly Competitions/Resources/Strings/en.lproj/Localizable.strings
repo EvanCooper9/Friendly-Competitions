@@ -19,7 +19,7 @@
 
 // About
 "About.title" = "About";
-"About.hey" = "Hey, thanks for using Friendly Competitions! I hope you're enjoying my app. Feel free to provide feedback below or reach out to me by visiting my website. \n\n Evan";
+"About.hey" = "Hey, thanks for using Friendly Competitions! I hope you're enjoying my app. Feel free to provide feedback below or reach out to me by visiting my website. \n\nEvan";
 "About.madeWithLove" = "Made with ❤️ in Toronto, Canada";
 "About.App.authoredBy" = "by Evan Cooper";
 "About.App.title" = "The App";
@@ -75,6 +75,7 @@
 "Competition.Details.ends" = "Ends";
 "Competition.Details.scoringModel" = "Scoring model";
 "Competition.Details.repeats" = "Repeats";
+"Competition.ScoringModel.ActivityRingCloseCount.displayName" = "Ring Close Count";
 "Competition.ScoringModel.PercentOfGoals.displayName" = "Percent of Goals";
 "Competition.ScoringModel.RawNumbers.displayName" = "Raw numbers";
 "Competition.ScoringModel.Workout.displayName" = "Workout";
@@ -101,7 +102,7 @@
 "Competition.Edit.name" = "Name";
 "Competition.Edit.starts" = "Starts";
 "Competition.Edit.ends" = "Ends";
-"Competition.Edit.scoringModel" = "Scoring Model";
+"Competition.Edit.scoringModel" = "Scoring";
 "Competition.Edit.workoutType" = "Workout Type";
 "Competition.Edit.workoutMetrics" = "Workout metrics";
 "Competition.Edit.repeats" = "Repeats";

@@ -23,6 +23,9 @@ final class ActivitySummaryQuery: HealthKitQuery {
 
         underlyingQuery = HKActivitySummaryQuery(predicate: predicate, resultsHandler: { _, results, error in
             if let error {
+                error.reportToCrashlytics(userInfo: [
+                    "queryType": String(describing: Self.self)
+                ])
                 resultsHandler(.failure(error))
             } else {
                 let activitySummaries = results?.map(\.activitySummary) ?? []
@@ -46,6 +49,9 @@ final class WorkoutQuery: HealthKitQuery {
         let startDateSort = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
         underlyingQuery = HKSampleQuery(sampleType: sampleType, predicate: predicate, limit: 0, sortDescriptors: [startDateSort]) { _, workouts, error in
             if let error {
+                error.reportToCrashlytics(userInfo: [
+                    "queryType": String(describing: Self.self)
+                ])
                 resultsHandler(.failure(error))
             } else {
                 let workouts = workouts?
@@ -71,6 +77,9 @@ final class StepsQuery: HealthKitQuery {
             quantityType: HKQuantityType(.stepCount),
             quantitySamplePredicate: predicate) { _, stats, error in
                 if let error {
+                    error.reportToCrashlytics(userInfo: [
+                        "queryType": String(describing: Self.self)
+                    ])
                     resultsHandler(.failure(error))
                 } else {
                     let steps = stats?.sumQuantity()?.doubleValue(for: .count()) ?? 0
@@ -92,6 +101,9 @@ final class SampleQuery: HealthKitQuery {
 
         underlyingQuery = HKSampleQuery(sampleType: sampleType, predicate: predicate, limit: 0, sortDescriptors: nil) { _, samples, error in
             if let error {
+                error.reportToCrashlytics(userInfo: [
+                    "queryType": String(describing: Self.self)
+                ])
                 resultsHandler(.failure(error))
             } else if let samples {
                 let total = samples

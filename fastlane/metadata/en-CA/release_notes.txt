@@ -1,3 +1,7 @@
+New competition scoring models:
+• Step count
+• Activity ring close count
+
 Improvements:
 • Performance
 • Bug fixes

@@ -62,6 +62,15 @@ class ActivitySummary {
         case RawScoringModel.workout: {
             return 0;
         }
+        case RawScoringModel.activityRingCloseCount: {
+            const energy = this.activeEnergyBurned > this.activeEnergyBurnedGoal;
+            const exercise = this.appleExerciseTime > this.appleExerciseTimeGoal;
+            const stand = this.appleStandHours > this.appleExerciseTimeGoal;
+            return energy && exercise && stand ? 1 : 0;
+        }
+        case RawScoringModel.stepCount: {
+            return 0
+        }
         }
     }
 }

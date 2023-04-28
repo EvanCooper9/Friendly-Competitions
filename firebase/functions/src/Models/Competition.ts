@@ -9,6 +9,7 @@ import { User } from "./User";
 import { Workout } from "./Workout";
 import { setStandingRanks } from "../Handlers/standings/setStandingRanks";
 import { getFirestore } from "../Utilities/firestore";
+import { StepCount } from "./StepCount";
 
 const dateFormat = "YYYY-MM-DD";
 
@@ -209,6 +210,19 @@ class Competition {
             .get()
             .then(query => query.docs.map(doc => new ActivitySummary(doc)))
             .then(activitySummaries => activitySummaries.filter(x => x.isIncludedInCompetition(this)));
+    }
+
+    /**
+     * Fetch activity summaries for a user that fall within the bounds of this competition's start & end
+     * @param {string} userID The ID of the user to fetch activity summaries for
+     * @return {Promise<StepCount[]>} A promise of step counts
+     */
+    async stepCounts(userID: string): Promise<StepCount[]> {
+        return await getFirestore().collection(`users/${userID}/steps`)
+        .where("date", ">=", moment(this.start).format(dateFormat))
+        .get()
+        .then(query => query.docs.map(doc => new StepCount(doc)))
+        .then(activitySummaries => activitySummaries.filter(x => x.isIncludedInCompetition(this)));
     }
 
     /**

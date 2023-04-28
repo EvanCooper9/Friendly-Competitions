@@ -47,6 +47,12 @@ async function recalculateStandings(competition: Competition): Promise<void> {
         case RawScoringModel.workout:
             scoringData = await competition.workouts(participantID);
             break;
+        case RawScoringModel.activityRingCloseCount:
+            scoringData = await competition.activitySummaries(participantID);
+            break;
+        case RawScoringModel.stepCount:
+            scoringData = await competition.stepCounts(participantID);
+            break;
         }
 
         let totalPoints = 0;
