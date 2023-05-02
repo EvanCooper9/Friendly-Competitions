@@ -13,8 +13,8 @@ import { sendNewCompetitionInvites } from "./Handlers/competitions/sendNewCompet
 import { updateUserCompetitionStandingsLEGACY, updateCompetitionStandingsLEGACY } from "./Handlers/competitions/updateCompetitionStandingsLEGACY";
 import { updateActivitySummaryScores } from "./Handlers/jobs/updateActivitySummaryScores";
 import { updateWorkoutScores } from "./Handlers/jobs/updateWorkoutScores";
-import { handleCompetitionUpdate } from "./Handlers/jobs/updateCompetitionStandings";
 import { updateCompetitionRanks } from "./Handlers/competitions/updateCompetitionRanks";
+import { handleCompetitionUpdate } from "./Handlers/jobs/handleCompetitionUpdate";
 
 admin.initializeApp();
 
@@ -119,6 +119,7 @@ exports.updateActivitySummaryScores = functions.firestore
         const userID = context.params.userID;
         const before = snapshot.before;
         const after = snapshot.after;
+        console.log(`updating activity summary scores: ${userID}, ${after.id}`);
         await updateActivitySummaryScores(userID, before, after);
     });
 
@@ -128,6 +129,7 @@ exports.updateWorkoutScores = functions.firestore
         const userID = context.params.userID;
         const before = snapshot.before;
         const after = snapshot.after;
+        console.log(`updating workout scores: ${userID}, ${after.id}`);
         await updateWorkoutScores(userID, before, after);
     });
 

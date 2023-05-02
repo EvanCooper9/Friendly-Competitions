@@ -1,4 +1,3 @@
-import { getFirestore } from "firebase-admin/firestore";
 import * as moment from "moment";
 import { sendNotificationsToUser } from "../Handlers/notifications/notifications";
 import { Constants } from "../Utilities/Constants";
@@ -8,6 +7,8 @@ import { ScoringModel } from "./ScoringModel";
 import { Standing } from "./Standing";
 import { User } from "./User";
 import { Workout } from "./Workout";
+import { calculateStandingsRanks } from "../Handlers/standings/calculateStandingsRanks";
+import { getFirestore } from "../Utilities/firstore";
 
 const dateFormat = "YYYY-MM-DD";
 
@@ -63,16 +64,10 @@ class Competition {
      */
     async resetStandings(): Promise<void> { 
         const firestore = getFirestore();
-        const standingsRef = await firestore.collection(this.standingsPath).get();
-        const standings = standingsRef.docs.map(doc => new Standing(doc));
-        const batch = firestore.batch();
-        standings.forEach(standing => {
-            standing.points = 0;
-            standing.pointsBreakdown = {};
-            const ref = firestore.doc(this.standingsPathForUser(standing.userId));
-            batch.set(ref, prepareForFirestore(standing));
-        });
-        await batch.commit();
+        const standings = await firestore.collection(this.standingsPath)
+            .get()
+            .then(query => query.docs.map(doc => new Standing(doc)));
+        await calculateStandingsRanks(this, standings);
     }
 
     /**
@@ -80,29 +75,10 @@ class Competition {
      */
     async updateStandingRanks(): Promise<void> {
         const firestore = getFirestore();
-        
         const standings = await firestore.collection(this.standingsPath)
-            .orderBy("points", "desc")
             .get()
             .then(query => query.docs.map(doc => new Standing(doc)));
-
-        const batch = firestore.batch();
-
-        let currentRank = 1;
-        standings.forEach((standing, index) => {
-            const isSameAsPrevious = index - 1 >= 0 && standings[index - 1].points == standing.points;
-            const isSameAsNext = index + 1 < standings.length && standings[index + 1].points == standing.points;
-            if (isSameAsPrevious || isSameAsNext) {
-                standing.isTie = true;
-            } else {
-                currentRank = index + 1;
-            }
-            standing.rank = currentRank;
-
-            const ref = firestore.doc(this.standingsPathForUser(standing.userId));
-            batch.set(ref, prepareForFirestore(standing));
-        });
-        await batch.commit();
+        await calculateStandingsRanks(this, standings);
     }
 
     /**
@@ -221,7 +197,9 @@ class Competition {
      * @return {Promise<ActivitySummary[]>} A promise of activity summaries
      */
     async activitySummaries(userID: string): Promise<ActivitySummary[]> {
+        console.log(`${this.start} - ${moment(this.start).format(dateFormat)}`)
         return await getFirestore().collection(`users/${userID}/activitySummaries`)
+            .where("date", ">=", moment(this.start).format(dateFormat))
             .get()
             .then(query => query.docs.map(doc => new ActivitySummary(doc)))
             .then(activitySummaries => activitySummaries.filter(x => x.isIncludedInCompetition(this)));
@@ -237,6 +215,7 @@ class Competition {
         if (workoutType == null) return Promise.resolve([]);
         return await getFirestore().collection(`users/${userID}/workouts`)
             .where("type", "==", workoutType)
+            .where("date", ">=", moment(this.start).format(dateFormat))
             .get()
             .then(query => query.docs.map(doc => new Workout(doc)))
             .then(workouts => workouts.filter(x => x.isIncludedInCompetition(this)));

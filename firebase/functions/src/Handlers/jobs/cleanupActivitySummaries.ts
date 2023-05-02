@@ -1,6 +1,6 @@
-import { getFirestore } from "firebase-admin/firestore";
 import { ActivitySummary } from "../../Models/ActivitySummary";
 import { Competition } from "../../Models/Competition";
+import { getFirestore } from "../../Utilities/firstore";
 
 /**
  * Delete all activity summaries that are not in use by active competitions
