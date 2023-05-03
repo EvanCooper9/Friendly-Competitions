@@ -5,6 +5,7 @@ import { User } from "../../Models/User";
 import { Constants } from "../../Utilities/Constants";
 import { getFirestore } from "../../Utilities/firstore";
 import * as notifications from "../notifications/notifications";
+import { Event, EventParameterKey, logEvent } from "../../Utilities/Analytics";
 
 /**
  * Completes all competitions that ended yesterday
@@ -36,6 +37,11 @@ async function completeCompetitionsForDate(date: string): Promise<void> {
         .where("end", "==", date)
         .get()
         .then(query => query.docs.map(doc => new Competition(doc)));
+
+    competitions.forEach(async competition => {
+        await logEvent(Event.database_read, { [EventParameterKey.path]: `competitions/${competition.id}` });
+    });
+    
     await Promise.allSettled(competitions.map(async competition => await completeCompetition(competition)));
 }
 
@@ -56,10 +62,16 @@ async function completeCompetition(competition: Competition): Promise<void> {
     await competition.kickInactiveUsers();
 
     await Promise.allSettled(competition.participants.map(async userID => {
-        const user = await firestore.doc(`users/${userID}`).get().then(doc => new User(doc));
-        const standing = await firestore.doc(`competitions/${competition.id}/standings/${userID}`).get().then(doc => new Standing(doc));
+        const userPath = `users/${userID}`
+        const user = await firestore.doc(userPath).get().then(doc => new User(doc));
+        await logEvent(Event.database_read, { [EventParameterKey.path]: userPath });
+
+        const standing = await firestore.doc(competition.standingsPathForUser(userID)).get().then(doc => new Standing(doc));
+        await logEvent(Event.database_read, { [EventParameterKey.path]: competition.standingsPathForUser(userID) });
+
         const rank = standing.rank;
         const ordinal = ["st", "nd", "rd"][((rank+90)%100-10)%10-1] || "th";
+
         await notifications.sendNotificationsToUser(
             user,
             "Competition complete!",

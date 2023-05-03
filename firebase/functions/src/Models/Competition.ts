@@ -8,6 +8,7 @@ import { ScoringModel } from "./ScoringModel";
 import { Standing } from "./Standing";
 import { User } from "./User";
 import { Workout } from "./Workout";
+import { Event, EventParameterKey, logEvent } from "../Utilities/Analytics";
 
 const dateFormat = "YYYY-MM-DD";
 
@@ -66,11 +67,12 @@ class Competition {
         const standingsRef = await firestore.collection(this.standingsPath).get();
         const standings = standingsRef.docs.map(doc => new Standing(doc));
         const batch = firestore.batch();
-        standings.forEach(standing => {
+        standings.forEach(async standing => {
             standing.points = 0;
             standing.pointsBreakdown = {};
             const ref = firestore.doc(this.standingsPathForUser(standing.userId));
             batch.set(ref, prepareForFirestore(standing));
+            await logEvent(Event.database_write, { [EventParameterKey.path]: this.standingsPathForUser(standing.userId) })
         });
         await batch.commit();
     }
@@ -86,10 +88,14 @@ class Competition {
             .get()
             .then(query => query.docs.map(doc => new Standing(doc)));
 
+        standings.forEach(async standing => {
+            await logEvent(Event.database_read, { [EventParameterKey.path]: this.standingsPathForUser(standing.userId) });
+        });
+
         const batch = firestore.batch();
 
         let currentRank = 1;
-        standings.forEach((standing, index) => {
+        standings.forEach(async (standing, index) => {
             const isSameAsPrevious = index - 1 >= 0 && standings[index - 1].points == standing.points;
             const isSameAsNext = index + 1 < standings.length && standings[index + 1].points == standing.points;
             if (isSameAsPrevious || isSameAsNext) {
@@ -101,6 +107,7 @@ class Competition {
 
             const ref = firestore.doc(this.standingsPathForUser(standing.userId));
             batch.set(ref, prepareForFirestore(standing));
+            await logEvent(Event.database_write, { [EventParameterKey.path]: ref.path });
         });
         await batch.commit();
     }
@@ -139,6 +146,10 @@ class Competition {
         const standingsRef = await firestore.collection(this.standingsPath).get();
         const standings = standingsRef.docs.map(doc => new Standing(doc));
 
+        standings.forEach(async standing => {
+            await logEvent(Event.database_read, { [EventParameterKey.path]: this.standingsPathForUser(standing.userId) });
+        });
+
         const batch = firestore.batch();
 
         const inactiveUserIds: string[] = [];
@@ -161,11 +172,16 @@ class Competition {
         const obj = { participants: activeUserIds };
         batch.update(firestore.doc(this.path), obj);
         await batch.commit();
+        await logEvent(Event.database_write, { [EventParameterKey.path]: this.path });
 
         const inactiveUsers = await firestore.collection("users")
             .where("id", "in", inactiveUserIds)
             .get()
             .then(query => query.docs.map(doc => new User(doc)));
+
+        inactiveUsers.forEach(async user => {
+            await logEvent(Event.database_read, { [EventParameterKey.path]: `users/${user.id}` });
+        });
 
         await Promise.allSettled(inactiveUsers.map(async user => {
             await sendNotificationsToUser(
@@ -185,6 +201,10 @@ class Competition {
         const standingsRef = await firestore.collection(this.standingsPath).get();
         const standings = standingsRef.docs.map(doc => new Standing(doc));
 
+        standings.forEach(async standing => {
+            await logEvent(Event.database_read, { [EventParameterKey.path]: this.standingsPathForUser(standing.userId) });
+        });
+
         const batch = firestore.batch();
         
         const end = moment(this.end).format(dateFormat);
@@ -196,10 +216,12 @@ class Competition {
             participants: this.participants
         };
         batch.set(resultsRef, resultsObj);
+        await logEvent(Event.database_write, { [EventParameterKey.path]: resultsRef.path });
 
-        standings.forEach(standing => {
+        standings.forEach(async standing => {
             const ref = firestore.doc(`${this.resultsPath}/${end}/standings/${standing.userId}`);
             batch.set(ref, prepareForFirestore(standing));
+            await logEvent(Event.database_write, { [EventParameterKey.path]: ref.path });
         });
         await batch.commit();
     }
@@ -221,10 +243,16 @@ class Competition {
      * @return {Promise<ActivitySummary[]>} A promise of activity summaries
      */
     async activitySummaries(userID: string): Promise<ActivitySummary[]> {
-        return await getFirestore().collection(`users/${userID}/activitySummaries`)
+        const activitySummaries = await getFirestore().collection(`users/${userID}/activitySummaries`)
             .get()
             .then(query => query.docs.map(doc => new ActivitySummary(doc)))
             .then(activitySummaries => activitySummaries.filter(x => x.isIncludedInCompetition(this)));
+
+        activitySummaries.forEach(async activitySummary => {
+            await logEvent(Event.database_read, { [EventParameterKey.path]: `users/${userID}/activitySummaries/${activitySummary.id}` });
+        });
+
+        return activitySummaries;
     }
 
     /**
@@ -235,11 +263,18 @@ class Competition {
     async workouts(userID: string): Promise<Workout[]> {
         const workoutType = this.scoringModel.workoutType;
         if (workoutType == null) return Promise.resolve([]);
-        return await getFirestore().collection(`users/${userID}/workouts`)
+        
+        const workouts = await getFirestore().collection(`users/${userID}/workouts`)
             .where("type", "==", workoutType)
             .get()
             .then(query => query.docs.map(doc => new Workout(doc)))
             .then(workouts => workouts.filter(x => x.isIncludedInCompetition(this)));
+
+        workouts.forEach(async workout => {
+            await logEvent(Event.database_read, { [EventParameterKey.path]:`users/${userID}/activitySummaries/${workout.id}` });
+        });
+
+        return workouts;
     }
 
     /**

@@ -1,4 +1,5 @@
 import * as admin from "firebase-admin";
+import { Event, EventParameterKey, logEvent } from "../Utilities/Analytics";
 
 interface Statistics {
     golds: number;
@@ -53,9 +54,9 @@ class User {
         }
 
         this.statistics = statistics;
-        return admin.firestore().doc(`users/${this.id}`)
-            .update({statistics: statistics})
-            .then();
+        const userPath = `users/${this.id}`;
+        await admin.firestore().doc(userPath).update({statistics: statistics});
+        await logEvent(Event.database_write, { [EventParameterKey.path]: userPath })
     }
 }
 

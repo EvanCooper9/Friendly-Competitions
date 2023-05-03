@@ -4,6 +4,7 @@ import { Competition } from "../../Models/Competition";
 import { Standing } from "../../Models/Standing";
 import { getFirestore } from "../../Utilities/firstore";
 import { prepareForFirestore } from "../../Utilities/prepareForFirestore";
+import { Event, EventParameterKey, logEvent } from "../../Utilities/Analytics";
 
 /**
  * Updates all competition standings for the activity summary that has changed
@@ -20,6 +21,10 @@ async function updateActivitySummaryScores(userID: string, before: DocumentSnaps
         .get()
         .then(query => query.docs.map(doc => new Competition(doc)));
 
+    competitions.forEach(async competition => {
+        await logEvent(Event.database_read, { [EventParameterKey.path]: `competitions/${competition.id}` });
+    });
+
     await Promise.allSettled(competitions.map(async competition => {
         const date = new Date(after.id);
         if (date < competition.start || date > competition.end) return;
@@ -29,6 +34,8 @@ async function updateActivitySummaryScores(userID: string, before: DocumentSnaps
             const standingDoc = await transaction.get(standingRef);
             let standing = Standing.new(0, userID);
             if (standingDoc.exists) standing = new Standing(standingDoc);
+
+            await logEvent(Event.database_read, { [EventParameterKey.path]: standingRef.path });
     
             const pointsBreakdown = standing.pointsBreakdown ?? {};
             if (Object.keys(pointsBreakdown).length == 0) {
@@ -50,6 +57,7 @@ async function updateActivitySummaryScores(userID: string, before: DocumentSnaps
             standing.points = 0;
             Object.keys(pointsBreakdown).forEach(key => standing.points += pointsBreakdown[key]);
             transaction.set(standingRef, prepareForFirestore(standing));
+            await logEvent(Event.database_write, { [EventParameterKey.path]: standingRef.path });
         });
         
         await competition.updateStandingRanks();

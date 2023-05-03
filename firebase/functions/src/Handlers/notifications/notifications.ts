@@ -1,5 +1,6 @@
 import * as admin from "firebase-admin";
 import { User } from "../../Models/User";
+import { Event, EventParameterKey, logEvent } from "../../Utilities/Analytics";
 
 /**
  * Sends a notification to all of a user's notification tokens
@@ -27,7 +28,11 @@ async function sendNotificationsToUser(user: User, title: string, body: string, 
 
     await Promise.allSettled(notifications);
     const activeTokens = tokens.filter(t => !tokensToDelete.includes(t));
-    await admin.firestore().doc(`users/${user.id}`).update({ notificationTokens: activeTokens });
+    
+    if (activeTokens != tokens) return;
+    const userPath = `users/${user.id}`;
+    await admin.firestore().doc(userPath).update({ notificationTokens: activeTokens });
+    await logEvent(Event.database_write, { [EventParameterKey.path]: userPath});
 }
 
 /**

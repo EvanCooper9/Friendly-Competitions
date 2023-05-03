@@ -4,6 +4,7 @@ import { Standing } from "../../Models/Standing";
 import { Workout } from "../../Models/Workout";
 import { getFirestore } from "../../Utilities/firstore";
 import { prepareForFirestore } from "../../Utilities/prepareForFirestore";
+import { Event, EventParameterKey, logEvent } from "../../Utilities/Analytics";
 
 /**
  * Updates all competition standings for the workout that has changed
@@ -28,6 +29,8 @@ async function updateWorkoutScores(userID: string, before: DocumentSnapshot, aft
             const standingDoc = await transaction.get(standingRef);
             let standing = Standing.new(0, userID);
             if (standingDoc.exists) standing = new Standing(standingDoc);
+
+            await logEvent(Event.database_read, { [EventParameterKey.path]: standingRef.path });
 
             const pointsBreakdown = standing.pointsBreakdown ?? {};
             if (Object.keys(pointsBreakdown).length == 0) {
