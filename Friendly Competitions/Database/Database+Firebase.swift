@@ -124,7 +124,7 @@ extension Query: Collection {
         let query = self
         return getDocuments(source: source.firestoreSource)
             .handleEvents(receiveOutput: { snapshot in
-                guard snapshot.documents.isNotEmpty, source == .server else { return }
+                guard snapshot.documents.isNotEmpty, !snapshot.metadata.isFromCache else { return }
                 let analyticsManager = Container.shared.analyticsManager()
                 snapshot.documents.forEach { document in
                     analyticsManager.log(event: .databaseRead(path: document.reference.path))
@@ -201,7 +201,7 @@ extension DocumentReference: Document {
                     promise(.failure(error))
                     return
                 } else if let snapshot {
-                    if source == .server {
+                    if !snapshot.metadata.isFromCache {
                         let analyticsManager = Container.shared.analyticsManager()
                         analyticsManager.log(event: .databaseRead(path: snapshot.reference.path))
                     }
@@ -246,7 +246,7 @@ extension WriteBatch: Batch {
         guard let documentReference = document as? DocumentReference else { return }
         let analyticsManager = Container.shared.analyticsManager()
         analyticsManager.log(event: .databaseWrite(path: documentReference.path))
-        try? setData(from: value, forDocument: documentReference, encoder: .custom)
+        _ = try? setData(from: value, forDocument: documentReference, encoder: .custom)
     }
 
     func commit() -> AnyPublisher<Void, Error> {
@@ -272,6 +272,8 @@ fileprivate extension DatabaseSource {
             return .cache
         case .server:
             return .server
+        case .default:
+            return .default
         }
     }
 }
@@ -311,7 +313,7 @@ extension Error {
         nsError = NSError(
             domain: nsError.domain,
             code: nsError.code,
-            userInfo: nsError.userInfo.merging(userInfo) { _, newKey in newKey }
+            userInfo: nsError.userInfo.merging(userInfo) { _, newValue in newValue }
         )
         Crashlytics.crashlytics().record(error: nsError)
     }
