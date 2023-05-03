@@ -30,7 +30,7 @@ enum CollectionSortDirection {
 }
 
 extension Collection {
-    func whereField<T: Decodable>(_ field: String, asArrayOf type: T.Type, in values: [Any], source: DatabaseSource = .server) -> AnyPublisher<[T], Error> {
+    func whereField<T: Decodable>(_ field: String, asArrayOf type: T.Type, in values: [Any], source: DatabaseSource = .default) -> AnyPublisher<[T], Error> {
         whereField(field, asArrayOf: T.self, in: values, source: source)
     }
 
@@ -38,7 +38,7 @@ extension Collection {
         sorted(by: field, direction: direction)
     }
 
-    func getDocuments<T: Decodable>(ofType type: T.Type, source: DatabaseSource = .server) -> AnyPublisher<[T], Error> {
+    func getDocuments<T: Decodable>(ofType type: T.Type, source: DatabaseSource = .default) -> AnyPublisher<[T], Error> {
         getDocuments(ofType: T.self, source: source)
     }
 }
@@ -56,7 +56,7 @@ protocol Document {
 }
 
 extension Document {
-    func get<T: Decodable>(as type: T.Type, source: DatabaseSource = .server) -> AnyPublisher<T, Error> {
+    func get<T: Decodable>(as type: T.Type, source: DatabaseSource = .default) -> AnyPublisher<T, Error> {
         get(as: T.self, source: source)
     }
 }
@@ -79,4 +79,7 @@ enum DatabaseSource {
 
     /// Fetch data directly from server
     case server
+
+    /// Fetch from server first, then cache if failed
+    case `default`
 }
