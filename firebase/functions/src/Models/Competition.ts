@@ -72,7 +72,7 @@ class Competition {
             standing.pointsBreakdown = {};
             const ref = firestore.doc(this.standingsPathForUser(standing.userId));
             batch.set(ref, prepareForFirestore(standing));
-            await logEvent(Event.database_write, { [EventParameterKey.path]: this.standingsPathForUser(standing.userId) })
+            await logEvent(Event.databaseWrite, { [EventParameterKey.path]: this.standingsPathForUser(standing.userId) });
         });
         await batch.commit();
     }
@@ -89,7 +89,7 @@ class Competition {
             .then(query => query.docs.map(doc => new Standing(doc)));
 
         standings.forEach(async standing => {
-            await logEvent(Event.database_read, { [EventParameterKey.path]: this.standingsPathForUser(standing.userId) });
+            await logEvent(Event.databaseRead, { [EventParameterKey.path]: this.standingsPathForUser(standing.userId) });
         });
 
         const batch = firestore.batch();
@@ -107,7 +107,7 @@ class Competition {
 
             const ref = firestore.doc(this.standingsPathForUser(standing.userId));
             batch.set(ref, prepareForFirestore(standing));
-            await logEvent(Event.database_write, { [EventParameterKey.path]: ref.path });
+            await logEvent(Event.databaseWrite, { [EventParameterKey.path]: ref.path });
         });
         await batch.commit();
     }
@@ -147,7 +147,7 @@ class Competition {
         const standings = standingsRef.docs.map(doc => new Standing(doc));
 
         standings.forEach(async standing => {
-            await logEvent(Event.database_read, { [EventParameterKey.path]: this.standingsPathForUser(standing.userId) });
+            await logEvent(Event.databaseRead, { [EventParameterKey.path]: this.standingsPathForUser(standing.userId) });
         });
 
         const batch = firestore.batch();
@@ -172,7 +172,7 @@ class Competition {
         const obj = { participants: activeUserIds };
         batch.update(firestore.doc(this.path), obj);
         await batch.commit();
-        await logEvent(Event.database_write, { [EventParameterKey.path]: this.path });
+        await logEvent(Event.databaseWrite, { [EventParameterKey.path]: this.path });
 
         const inactiveUsers = await firestore.collection("users")
             .where("id", "in", inactiveUserIds)
@@ -180,7 +180,7 @@ class Competition {
             .then(query => query.docs.map(doc => new User(doc)));
 
         inactiveUsers.forEach(async user => {
-            await logEvent(Event.database_read, { [EventParameterKey.path]: `users/${user.id}` });
+            await logEvent(Event.databaseRead, { [EventParameterKey.path]: `users/${user.id}` });
         });
 
         await Promise.allSettled(inactiveUsers.map(async user => {
@@ -202,7 +202,7 @@ class Competition {
         const standings = standingsRef.docs.map(doc => new Standing(doc));
 
         standings.forEach(async standing => {
-            await logEvent(Event.database_read, { [EventParameterKey.path]: this.standingsPathForUser(standing.userId) });
+            await logEvent(Event.databaseRead, { [EventParameterKey.path]: this.standingsPathForUser(standing.userId) });
         });
 
         const batch = firestore.batch();
@@ -216,12 +216,12 @@ class Competition {
             participants: this.participants
         };
         batch.set(resultsRef, resultsObj);
-        await logEvent(Event.database_write, { [EventParameterKey.path]: resultsRef.path });
+        await logEvent(Event.databaseWrite, { [EventParameterKey.path]: resultsRef.path });
 
         standings.forEach(async standing => {
             const ref = firestore.doc(`${this.resultsPath}/${end}/standings/${standing.userId}`);
             batch.set(ref, prepareForFirestore(standing));
-            await logEvent(Event.database_write, { [EventParameterKey.path]: ref.path });
+            await logEvent(Event.databaseWrite, { [EventParameterKey.path]: ref.path });
         });
         await batch.commit();
     }
@@ -249,7 +249,7 @@ class Competition {
             .then(activitySummaries => activitySummaries.filter(x => x.isIncludedInCompetition(this)));
 
         activitySummaries.forEach(async activitySummary => {
-            await logEvent(Event.database_read, { [EventParameterKey.path]: `users/${userID}/activitySummaries/${activitySummary.id}` });
+            await logEvent(Event.databaseRead, { [EventParameterKey.path]: `users/${userID}/activitySummaries/${activitySummary.id}` });
         });
 
         return activitySummaries;
@@ -271,7 +271,7 @@ class Competition {
             .then(workouts => workouts.filter(x => x.isIncludedInCompetition(this)));
 
         workouts.forEach(async workout => {
-            await logEvent(Event.database_read, { [EventParameterKey.path]:`users/${userID}/activitySummaries/${workout.id}` });
+            await logEvent(Event.databaseRead, { [EventParameterKey.path]: `users/${userID}/activitySummaries/${workout.id}` });
         });
 
         return workouts;

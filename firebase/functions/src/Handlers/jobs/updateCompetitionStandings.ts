@@ -66,7 +66,7 @@ async function updateAllCompetitionStandings(competition: Competition): Promise<
         
         const standingRef = firestore.doc(`competitions/${competition.id}/standings/${participantID}`);
         batch.set(standingRef, prepareForFirestore(standing));
-        await logEvent(Event.database_write, { [EventParameterKey.path]: standingRef.path });
+        await logEvent(Event.databaseWrite, { [EventParameterKey.path]: standingRef.path });
     }));
     await batch.commit();
     await competition.updateStandingRanks();

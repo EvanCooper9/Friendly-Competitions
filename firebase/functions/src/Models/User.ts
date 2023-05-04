@@ -56,7 +56,7 @@ class User {
         this.statistics = statistics;
         const userPath = `users/${this.id}`;
         await admin.firestore().doc(userPath).update({statistics: statistics});
-        await logEvent(Event.database_write, { [EventParameterKey.path]: userPath })
+        await logEvent(Event.databaseWrite, { [EventParameterKey.path]: userPath });
     }
 }
 

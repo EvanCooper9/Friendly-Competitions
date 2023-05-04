@@ -22,7 +22,7 @@ async function updateActivitySummaryScores(userID: string, before: DocumentSnaps
         .then(query => query.docs.map(doc => new Competition(doc)));
 
     competitions.forEach(async competition => {
-        await logEvent(Event.database_read, { [EventParameterKey.path]: `competitions/${competition.id}` });
+        await logEvent(Event.databaseRead, { [EventParameterKey.path]: `competitions/${competition.id}` });
     });
 
     await Promise.allSettled(competitions.map(async competition => {
@@ -35,7 +35,7 @@ async function updateActivitySummaryScores(userID: string, before: DocumentSnaps
             let standing = Standing.new(0, userID);
             if (standingDoc.exists) standing = new Standing(standingDoc);
 
-            await logEvent(Event.database_read, { [EventParameterKey.path]: standingRef.path });
+            await logEvent(Event.databaseRead, { [EventParameterKey.path]: standingRef.path });
     
             const pointsBreakdown = standing.pointsBreakdown ?? {};
             if (Object.keys(pointsBreakdown).length == 0) {
@@ -57,7 +57,7 @@ async function updateActivitySummaryScores(userID: string, before: DocumentSnaps
             standing.points = 0;
             Object.keys(pointsBreakdown).forEach(key => standing.points += pointsBreakdown[key]);
             transaction.set(standingRef, prepareForFirestore(standing));
-            await logEvent(Event.database_write, { [EventParameterKey.path]: standingRef.path });
+            await logEvent(Event.databaseWrite, { [EventParameterKey.path]: standingRef.path });
         });
         
         await competition.updateStandingRanks();

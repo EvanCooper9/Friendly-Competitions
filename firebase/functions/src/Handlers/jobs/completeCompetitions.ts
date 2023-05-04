@@ -39,7 +39,7 @@ async function completeCompetitionsForDate(date: string): Promise<void> {
         .then(query => query.docs.map(doc => new Competition(doc)));
 
     competitions.forEach(async competition => {
-        await logEvent(Event.database_read, { [EventParameterKey.path]: `competitions/${competition.id}` });
+        await logEvent(Event.databaseRead, { [EventParameterKey.path]: `competitions/${competition.id}` });
     });
     
     await Promise.allSettled(competitions.map(async competition => await completeCompetition(competition)));
@@ -62,12 +62,12 @@ async function completeCompetition(competition: Competition): Promise<void> {
     await competition.kickInactiveUsers();
 
     await Promise.allSettled(competition.participants.map(async userID => {
-        const userPath = `users/${userID}`
+        const userPath = `users/${userID}`;
         const user = await firestore.doc(userPath).get().then(doc => new User(doc));
-        await logEvent(Event.database_read, { [EventParameterKey.path]: userPath });
+        await logEvent(Event.databaseRead, { [EventParameterKey.path]: userPath });
 
         const standing = await firestore.doc(competition.standingsPathForUser(userID)).get().then(doc => new Standing(doc));
-        await logEvent(Event.database_read, { [EventParameterKey.path]: competition.standingsPathForUser(userID) });
+        await logEvent(Event.databaseRead, { [EventParameterKey.path]: competition.standingsPathForUser(userID) });
 
         const rank = standing.rank;
         const ordinal = ["st", "nd", "rd"][((rank+90)%100-10)%10-1] || "th";

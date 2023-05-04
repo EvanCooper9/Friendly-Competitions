@@ -30,7 +30,7 @@ async function updateWorkoutScores(userID: string, before: DocumentSnapshot, aft
             let standing = Standing.new(0, userID);
             if (standingDoc.exists) standing = new Standing(standingDoc);
 
-            await logEvent(Event.database_read, { [EventParameterKey.path]: standingRef.path });
+            await logEvent(Event.databaseRead, { [EventParameterKey.path]: standingRef.path });
 
             const pointsBreakdown = standing.pointsBreakdown ?? {};
             if (Object.keys(pointsBreakdown).length == 0) {

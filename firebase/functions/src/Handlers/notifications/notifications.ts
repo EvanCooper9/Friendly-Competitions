@@ -32,7 +32,7 @@ async function sendNotificationsToUser(user: User, title: string, body: string, 
     if (activeTokens != tokens) return;
     const userPath = `users/${user.id}`;
     await admin.firestore().doc(userPath).update({ notificationTokens: activeTokens });
-    await logEvent(Event.database_write, { [EventParameterKey.path]: userPath});
+    await logEvent(Event.databaseWrite, { [EventParameterKey.path]: userPath});
 }
 
 /**
