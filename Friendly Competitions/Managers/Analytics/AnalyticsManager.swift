@@ -36,7 +36,7 @@ final class AnalyticsManager: AnalyticsManaging {
               case .object(let nestedDictionary) = parameters
         else { return }
 
-        let firebaseCompatibleDictionary = nestedDictionary.reduce(into: [String: Any]()) { partialResult, current in
+        var params = nestedDictionary.reduce(into: [String: Any]()) { partialResult, current in
             switch current.value {
             case .string(let string):
                 partialResult[current.key] = string.suffix(100)
@@ -48,8 +48,9 @@ final class AnalyticsManager: AnalyticsManaging {
                 break
             }
         }
-
-        Analytics.logEvent(eventName, parameters: firebaseCompatibleDictionary)
+        params["source"] = "ios"
+        
+        Analytics.logEvent(eventName, parameters: params)
     }
 }
 
