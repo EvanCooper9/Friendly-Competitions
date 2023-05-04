@@ -11,4 +11,11 @@ final class SearchIndexMock<Model: Decodable>: SearchIndex {
             .map { $0 as! [ResultType] }
             .eraseToAnyPublisher()
     }
+
+    #if DEBUG
+    var uploadReturnValue: AnyPublisher<Void, Error>!
+    func upload<T: Encodable>(_ models: [T]) -> AnyPublisher<Void, Error> {
+        uploadReturnValue!
+    }
+    #endif
 }

@@ -9,13 +9,20 @@ protocol SearchClient {
 
 protocol SearchIndex {
     func search<ResultType: Decodable>(query: String) -> AnyPublisher<[ResultType], Error>
+
+    #if DEBUG
+    func upload<T: Encodable>(_ models: [T]) -> AnyPublisher<Void, Error>
+    #endif
 }
 
 // MARK: - Algolia Implementation
 
 extension AlgoliaSearchClient.SearchClient: SearchClient {
     init() {
-        self.init(appID: "WSNLKJEWQD", apiKey: "4b2d2f9f53bcd6bb53eba3e3176490e1") // public API key, ok to be in source
+        self.init(
+            appID: "WSNLKJEWQD",
+            apiKey: "4b2d2f9f53bcd6bb53eba3e3176490e1" // public API key, ok to be in source
+        )
     }
 
     func index(withName name: String) -> SearchIndex {
@@ -33,7 +40,7 @@ extension AlgoliaSearchClient.Index: SearchIndex {
                     promise(.failure(error))
                 case .success(let response):
                     do {
-                        let hits = response.hits.map(\.object).compactMap { $0["object"] }
+                        let hits = response.hits.map(\.object)
                         let data = try JSONEncoder().encode(hits)
                         let searchResults = try JSONDecoder().decode([ResultType].self, from: data)
                         promise(.success(searchResults))
@@ -45,4 +52,20 @@ extension AlgoliaSearchClient.Index: SearchIndex {
         }
         .eraseToAnyPublisher()
     }
+
+    #if DEBUG
+    func upload<T: Encodable>(_ models: [T]) -> AnyPublisher<Void, Error> {
+        Future { promise in
+            saveObjects(models, autoGeneratingObjectID: true, requestOptions: .none) { result in
+                switch result {
+                case .success:
+                    promise(.success(()))
+                case .failure(let error):
+                    promise(.failure(error))
+                }
+            }
+        }
+        .eraseToAnyPublisher()
+    }
+    #endif
 }
