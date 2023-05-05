@@ -3,7 +3,7 @@ import { Competition } from "../../Models/Competition";
 import { StringKeyDictionary } from "../../Models/Helpers/EnumDictionary";
 import { RawScoringModel, ScoringModel } from "../../Models/ScoringModel";
 import { Standing } from "../../Models/Standing";
-import { calculateStandingsRanks } from "../standings/calculateStandingsRanks";
+import { setStandingRanks } from "../standings/setStandingRanks";
 
 interface Scoring {
     id: string;
@@ -25,7 +25,7 @@ async function handleCompetitionUpdate(before: DocumentSnapshot, after: Document
     const startDateChanged = competition.start != competitionBefore.start;
     const endDateChanged = competition.end != competitionBefore.end;
     if (scoringModelChanged || startDateChanged || endDateChanged) {
-        await updateAllCompetitionStandings(competition);
+        await recalculateStandings(competition);
     }
 }
 
@@ -34,7 +34,7 @@ async function handleCompetitionUpdate(before: DocumentSnapshot, after: Document
  * @param {Competition} competition the competition to update standings for
  * @return {Promise<void>} A promise that resolves when complete
  */
-async function updateAllCompetitionStandings(competition: Competition): Promise<void> {    
+async function recalculateStandings(competition: Competition): Promise<void> {    
     const standingResults = await Promise.allSettled(competition.participants.map(async participantID => {
         let scoringData: Scoring[];
         switch (competition.scoringModel.type) {
@@ -58,8 +58,6 @@ async function updateAllCompetitionStandings(competition: Competition): Promise<
         });
         const standing = Standing.new(totalPoints, participantID);
         standing.pointsBreakdown = pointsBreakdown;
-        console.log(`updateAllCompetitionStandings ${participantID}`);
-        console.log(JSON.stringify(standing));
         return standing;
     }));
     
@@ -67,9 +65,7 @@ async function updateAllCompetitionStandings(competition: Competition): Promise<
         .filter(result => result.status == "fulfilled")
         .map(result =>(result as PromiseFulfilledResult<Standing>).value);
 
-    console.log(JSON.stringify(standings));
-
-    await calculateStandingsRanks(competition, standings);
+    await setStandingRanks(competition, standings);
 }
 
 export {

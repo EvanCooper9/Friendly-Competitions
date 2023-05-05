@@ -7,7 +7,7 @@ import { ScoringModel } from "./ScoringModel";
 import { Standing } from "./Standing";
 import { User } from "./User";
 import { Workout } from "./Workout";
-import { calculateStandingsRanks } from "../Handlers/standings/calculateStandingsRanks";
+import { setStandingRanks } from "../Handlers/standings/setStandingRanks";
 import { getFirestore } from "../Utilities/firstore";
 
 const dateFormat = "YYYY-MM-DD";
@@ -67,7 +67,14 @@ class Competition {
         const standings = await firestore.collection(this.standingsPath)
             .get()
             .then(query => query.docs.map(doc => new Standing(doc)));
-        await calculateStandingsRanks(this, standings);
+        
+        standings.map(standing => {
+            standing.points = 0;
+            standing.pointsBreakdown = {};
+            return standing
+        });
+        
+        await setStandingRanks(this, standings);
     }
 
     /**
@@ -78,7 +85,7 @@ class Competition {
         const standings = await firestore.collection(this.standingsPath)
             .get()
             .then(query => query.docs.map(doc => new Standing(doc)));
-        await calculateStandingsRanks(this, standings);
+        await setStandingRanks(this, standings);
     }
 
     /**
@@ -94,7 +101,7 @@ class Competition {
         let newEnd = competitionEnd;
         if (competitionStart.day() == 1 && competitionEnd.day() == competitionEnd.daysInMonth()) {
             newStart = moment(this.end).add(1, "days");
-            newEnd = moment(this.end).add(1, "days").set("day", newStart.daysInMonth());
+            newEnd = newStart.endOf("month");
         } else {
             const diff = competitionEnd.diff(competitionStart, "days");
             newStart = moment(this.end).add(1, "days");
@@ -197,7 +204,6 @@ class Competition {
      * @return {Promise<ActivitySummary[]>} A promise of activity summaries
      */
     async activitySummaries(userID: string): Promise<ActivitySummary[]> {
-        console.log(`${this.start} - ${moment(this.start).format(dateFormat)}`)
         return await getFirestore().collection(`users/${userID}/activitySummaries`)
             .where("date", ">=", moment(this.start).format(dateFormat))
             .get()

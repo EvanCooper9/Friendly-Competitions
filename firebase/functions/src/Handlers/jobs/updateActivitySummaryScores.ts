@@ -32,12 +32,6 @@ async function updateActivitySummaryScores(userID: string, before: DocumentSnaps
     
             const pointsBreakdown = standing.pointsBreakdown ?? {};
             if (Object.keys(pointsBreakdown).length == 0) {
-                
-                console.log(`Points breakdown is empty
-                    User: ${userID},
-                    Competition: ${competition.id}
-                `);
-
                 const activitySummaries = await competition.activitySummaries(userID);
                 activitySummaries.forEach(activitySummary => {
                     const points = activitySummary.pointsForScoringModel(competition.scoringModel);
