@@ -1,5 +1,5 @@
 import { User } from "../../Models/User";
-import { getFirestore } from "../../Utilities/firstore";
+import { getFirestore } from "../../Utilities/firestore";
 
 /**
  * Deletes a friend

@@ -2,7 +2,7 @@ import { DocumentSnapshot } from "firebase-admin/firestore";
 import { ActivitySummary } from "../../Models/ActivitySummary";
 import { Competition } from "../../Models/Competition";
 import { Standing } from "../../Models/Standing";
-import { getFirestore } from "../../Utilities/firstore";
+import { getFirestore } from "../../Utilities/firestore";
 import { prepareForFirestore } from "../../Utilities/prepareForFirestore";
 
 /**

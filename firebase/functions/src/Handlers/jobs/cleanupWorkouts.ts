@@ -1,6 +1,6 @@
 import { Competition } from "../../Models/Competition";
 import { Workout } from "../../Models/Workout";
-import { getFirestore } from "../../Utilities/firstore";
+import { getFirestore } from "../../Utilities/firestore";
 
 /**
  * Delete all activity summaries that are not in use by active competitions

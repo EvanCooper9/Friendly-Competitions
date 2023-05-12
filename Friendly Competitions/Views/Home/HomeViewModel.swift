@@ -37,6 +37,7 @@ final class HomeViewModel: ObservableObject {
     @Injected(\.premiumManager) private var premiumManager
     @Injected(\.scheduler) private var scheduler
     @Injected(\.userManager) private var userManager
+    @Injected(\.workoutManager) private var workoutManager
 
     @UserDefault("competitionsFiltered", defaultValue: false) var competitionsFiltered
     @UserDefault("dismissedPremiumBanner", defaultValue: false) private var dismissedPremiumBanner

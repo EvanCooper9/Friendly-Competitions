@@ -1,5 +1,5 @@
 import { Competition } from "../../Models/Competition";
-import { getFirestore } from "../../Utilities/firstore";
+import { getFirestore } from "../../Utilities/firestore";
 
 /**
  * Updates the ranks of a competition's standings. Assumes points are up to date.

@@ -3,7 +3,7 @@ import { Competition } from "../../Models/Competition";
 import { Standing } from "../../Models/Standing";
 import { User } from "../../Models/User";
 import { Constants } from "../../Utilities/Constants";
-import { getFirestore } from "../../Utilities/firstore";
+import { getFirestore } from "../../Utilities/firestore";
 import * as notifications from "../notifications/notifications";
 
 /**

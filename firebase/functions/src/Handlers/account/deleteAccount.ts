@@ -1,6 +1,6 @@
 import { Competition } from "../../Models/Competition";
 import { User } from "../../Models/User";
-import { getFirestore } from "../../Utilities/firstore";
+import { getFirestore } from "../../Utilities/firestore";
 
 /**
  * Deletes an account and all user data

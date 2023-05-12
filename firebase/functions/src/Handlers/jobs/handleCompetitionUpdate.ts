@@ -35,7 +35,7 @@ async function handleCompetitionUpdate(before: DocumentSnapshot, after: Document
  * @return {Promise<void>} A promise that resolves when complete
  */
 async function recalculateStandings(competition: Competition): Promise<void> {    
-    const standingResults = await Promise.allSettled(competition.participants.map(async participantID => {
+    const standings = await Promise.all(competition.participants.map(async participantID => {
         let scoringData: Scoring[];
         switch (competition.scoringModel.type) {
         case RawScoringModel.percentOfGoals:
@@ -60,10 +60,6 @@ async function recalculateStandings(competition: Competition): Promise<void> {
         standing.pointsBreakdown = pointsBreakdown;
         return standing;
     }));
-    
-    const standings = standingResults
-        .filter(result => result.status == "fulfilled")
-        .map(result =>(result as PromiseFulfilledResult<Standing>).value);
 
     await setStandingRanks(competition, standings);
 }

@@ -8,7 +8,7 @@ import { Standing } from "./Standing";
 import { User } from "./User";
 import { Workout } from "./Workout";
 import { setStandingRanks } from "../Handlers/standings/setStandingRanks";
-import { getFirestore } from "../Utilities/firstore";
+import { getFirestore } from "../Utilities/firestore";
 
 const dateFormat = "YYYY-MM-DD";
 
@@ -71,7 +71,7 @@ class Competition {
         standings.map(standing => {
             standing.points = 0;
             standing.pointsBreakdown = {};
-            return standing
+            return standing;
         });
         
         await setStandingRanks(this, standings);
