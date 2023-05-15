@@ -8,7 +8,7 @@ final class FetchCompetitionBackgroundJob: BackgroundJob {
         case competitionID
     }
 
-    let competitionID: String
+    private let competitionID: String
 
     @LazyInjected(\.authenticationManager) private var authenticationManager
     @LazyInjected(\.database) private var database
