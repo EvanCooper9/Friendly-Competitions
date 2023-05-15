@@ -34,6 +34,8 @@ module.exports = {
         "comma-dangle": "off",
         "guard-for-in": "off",
         "arrow-parens": "off",
-        "object-curly-spacing": "off"
+        "object-curly-spacing": "off",
+        "@typescript-eslint/explicit-module-boundary-types": "off",
+        "@typescript-eslint/no-explicit-any": "off"
     },
 };

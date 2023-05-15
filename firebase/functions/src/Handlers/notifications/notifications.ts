@@ -36,7 +36,7 @@ async function sendNotificationsToUser(user: User, title: string, body: string, 
  * Sends a background notifications to all of a user's notification tokens
  * @param {User} user  The user to send to notifications to
  * @param {any?} backgroundJob The data to send to the client
- * @returns {Promise<void>} A promise that resolves when complete
+ * @return {Promise<void>} A promise that resolves when complete
  */
 async function sendBackgroundNotificationToUser(user: User, backgroundJob?: any): Promise<void> {
     const tokens = user.notificationTokens;
@@ -68,7 +68,7 @@ async function sendBackgroundNotificationToUser(user: User, backgroundJob?: any)
  * @param {string} title The title of the notification
  * @param {string} body The body of the notification
  * @param {string?} deepLink (Optional) A deep link for navigation when interacting with a notification
- * @returns {Promise<void>} A promise that resolves when complete
+ * @return {Promise<void>} A promise that resolves when complete
  */
 async function sendNotification(fcmToken: string, title: string, body: string, deepLink?: string): Promise<void> {
     const notificationPayload = {
@@ -87,7 +87,7 @@ async function sendNotification(fcmToken: string, title: string, body: string, d
  * Send a single background notification for a given token
  * @param {string} fcmToken  The token to send the notification for
  * @param {any?} backgroundJob The data to send to the client
- * @returns {Promise<void>} A promise that resolves when complete
+ * @return {Promise<void>} A promise that resolves when complete
  */
 async function sendBackgroundNotification(fcmToken: string, backgroundJob?: any): Promise<void> {
     const notificationPayload = {
@@ -98,7 +98,7 @@ async function sendBackgroundNotification(fcmToken: string, backgroundJob?: any)
                 "apns-priority": "5"
             },
             payload: {
-                aps:  {
+                aps: {
                     contentAvailable: true
                 },
                 customData: {
@@ -106,7 +106,7 @@ async function sendBackgroundNotification(fcmToken: string, backgroundJob?: any)
                 }
             }
         }
-    }
+    };
     await admin.messaging().send(notificationPayload);
 }
 
