@@ -157,9 +157,9 @@
 		ED4F722229C93110007C5864 /* RevenueCatAppService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED4F722129C93110007C5864 /* RevenueCatAppService.swift */; };
 		ED4F722429C94491007C5864 /* Array+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED4F722329C94491007C5864 /* Array+Extensions.swift */; };
 		ED4F722629C9610E007C5864 /* FCTestCase.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED4F722529C9610E007C5864 /* FCTestCase.swift */; };
-		ED570D252A127E9900C0B28F /* BackgroundNotificationAppService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED570D242A127E9900C0B28F /* BackgroundNotificationAppService.swift */; };
 		ED570D272A12889700C0B28F /* FetchCompetitionBackgroundJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED570D262A12889700C0B28F /* FetchCompetitionBackgroundJob.swift */; };
 		ED570D2A2A128BE200C0B28F /* BackgroundJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED570D292A128BE200C0B28F /* BackgroundJob.swift */; };
+		ED570D2E2A12D42100C0B28F /* BackgroundJobsAppService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED570D2D2A12D42100C0B28F /* BackgroundJobsAppService.swift */; };
 		ED58C98729AA805A00393468 /* FriendsManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED58C98629AA805A00393468 /* FriendsManagerTests.swift */; };
 		ED58C98929AA89CC00393468 /* HealthKitManagerCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED58C98829AA89CC00393468 /* HealthKitManagerCache.swift */; };
 		ED58C98B29AA8C0100393468 /* HealthStoring.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED58C98A29AA8C0100393468 /* HealthStoring.swift */; };
@@ -405,9 +405,9 @@
 		ED4F722129C93110007C5864 /* RevenueCatAppService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RevenueCatAppService.swift; sourceTree = "<group>"; };
 		ED4F722329C94491007C5864 /* Array+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Array+Extensions.swift"; sourceTree = "<group>"; };
 		ED4F722529C9610E007C5864 /* FCTestCase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FCTestCase.swift; sourceTree = "<group>"; };
-		ED570D242A127E9900C0B28F /* BackgroundNotificationAppService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundNotificationAppService.swift; sourceTree = "<group>"; };
 		ED570D262A12889700C0B28F /* FetchCompetitionBackgroundJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FetchCompetitionBackgroundJob.swift; sourceTree = "<group>"; };
 		ED570D292A128BE200C0B28F /* BackgroundJob.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundJob.swift; sourceTree = "<group>"; };
+		ED570D2D2A12D42100C0B28F /* BackgroundJobsAppService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackgroundJobsAppService.swift; sourceTree = "<group>"; };
 		ED58C98629AA805A00393468 /* FriendsManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendsManagerTests.swift; sourceTree = "<group>"; };
 		ED58C98829AA89CC00393468 /* HealthKitManagerCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitManagerCache.swift; sourceTree = "<group>"; };
 		ED58C98A29AA8C0100393468 /* HealthStoring.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthStoring.swift; sourceTree = "<group>"; };
@@ -1147,7 +1147,7 @@
 				ED268B542A11269D00A4A50B /* Data Uploading */,
 				ED4F721B29C93044007C5864 /* Firebase */,
 				ED4F722029C93101007C5864 /* Revenue Cat */,
-				ED570D232A127E8000C0B28F /* Notifications */,
+				ED570D232A127E8000C0B28F /* Background Jobs */,
 			);
 			path = "App Services";
 			sourceTree = "<group>";
@@ -1168,22 +1168,22 @@
 			path = "Revenue Cat";
 			sourceTree = "<group>";
 		};
-		ED570D232A127E8000C0B28F /* Notifications */ = {
-			isa = PBXGroup;
-			children = (
-				ED570D242A127E9900C0B28F /* BackgroundNotificationAppService.swift */,
-				ED570D282A1288A600C0B28F /* Background Jobs */,
-			);
-			path = Notifications;
-			sourceTree = "<group>";
-		};
-		ED570D282A1288A600C0B28F /* Background Jobs */ = {
+		ED570D232A127E8000C0B28F /* Background Jobs */ = {
 			isa = PBXGroup;
 			children = (
 				ED570D292A128BE200C0B28F /* BackgroundJob.swift */,
-				ED570D262A12889700C0B28F /* FetchCompetitionBackgroundJob.swift */,
+				ED570D2D2A12D42100C0B28F /* BackgroundJobsAppService.swift */,
+				ED570D2F2A12D4AC00C0B28F /* Jobs */,
 			);
 			path = "Background Jobs";
+			sourceTree = "<group>";
+		};
+		ED570D2F2A12D4AC00C0B28F /* Jobs */ = {
+			isa = PBXGroup;
+			children = (
+				ED570D262A12889700C0B28F /* FetchCompetitionBackgroundJob.swift */,
+			);
+			path = Jobs;
 			sourceTree = "<group>";
 		};
 		ED58C99429ABAE9800393468 /* Extensions */ = {
@@ -1940,7 +1940,6 @@
 				ED1B85C429C904CC008DB1F6 /* UserViewModel.swift in Sources */,
 				C1884E5426D5A40E00C21014 /* Competition.swift in Sources */,
 				ED32B88D29D9F65D005C917B /* AuthProviding+Firebase.swift in Sources */,
-				ED570D252A127E9900C0B28F /* BackgroundNotificationAppService.swift in Sources */,
 				ED901B76280265DB00FE619E /* SignInViewModel.swift in Sources */,
 				ED1B85C329C904CC008DB1F6 /* HomeView.swift in Sources */,
 				ED1B85CD29C90D1D008DB1F6 /* EnvironmentCache.swift in Sources */,
@@ -2011,6 +2010,7 @@
 				C132945627DF6D9E00117548 /* Binding+Extensions.swift in Sources */,
 				ED039768295F5458003D4D80 /* CompetitionResultsView.swift in Sources */,
 				ED4F721829C92FCB007C5864 /* AppService.swift in Sources */,
+				ED570D2E2A12D42100C0B28F /* BackgroundJobsAppService.swift in Sources */,
 				ED879C4E29A411CA0007DB91 /* FriendsManager+Factory.swift in Sources */,
 				ED8D05F9295F5DB8002B3B3A /* CompetitionResultsDateRange.swift in Sources */,
 				ED8D05F7295F5DA1002B3B3A /* CompetitionResultsDateRangeSelector.swift in Sources */,
@@ -2249,7 +2249,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Friendly Competitions/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = "FC (DBG)";
+				INFOPLIST_KEY_CFBundleDisplayName = Competitions;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "We need access to HealthKit so you can compete against your friends!";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "We need access to HealthKit so you can compete against your friends!";

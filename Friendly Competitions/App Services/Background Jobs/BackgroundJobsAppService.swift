@@ -3,14 +3,21 @@ import ECKit
 import Factory
 import Foundation
 
-final class BackgroundNotificationAppService: AppService {
+final class BackgroundJobsAppService: AppService {
+
+    private enum Constants {
+        static let customDataKey = "customData"
+        static let backgroundJobKey = "backgroundJob"
+    }
 
     private let jobTypes: [BackgroundJob.Type] = [FetchCompetitionBackgroundJob.self]
     private let decoder = JSONDecoder()
 
+    private let formatter = ISO8601DateFormatter()
+
     func didReceiveRemoteNotification(with data: [AnyHashable: Any]) -> AnyPublisher<Void, Never> {
-        guard let customData = data["customData"] as? [String: Any],
-              let backgroundJob = customData["backgroundJob"],
+        guard let customData = data[Constants.customDataKey] as? [String: Any],
+              let backgroundJob = customData[Constants.backgroundJobKey] as? [String: Any],
               let data = try? JSONSerialization.data(withJSONObject: backgroundJob)
         else { return .just(()) }
 

@@ -122,6 +122,8 @@ final class CompetitionsManager: CompetitionsManaging {
 
         let cachedResults = query.getDocuments(ofType: CompetitionResult.self, source: .cache)
         let serverCount = query.count()
+            .catchErrorJustReturn(0)
+            .setFailureType(to: Error.self)
 
         return Publishers
             .CombineLatest(cachedResults, serverCount)

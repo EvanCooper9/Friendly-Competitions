@@ -1,6 +1,7 @@
 import Combine
 import CombineExt
 import Factory
+import Foundation
 
 final class FetchCompetitionBackgroundJob: BackgroundJob {
 
@@ -16,29 +17,30 @@ final class FetchCompetitionBackgroundJob: BackgroundJob {
 
     func execute() -> AnyPublisher<Void, Never> {
         authenticationManager.loggedIn
-            .first()
-            .flatMapLatest(withUnretained: self) { strongSelf, loggedIn -> AnyPublisher<Void, Never> in
+            .setFailureType(to: Error.self)
+            .flatMapLatest { loggedIn -> AnyPublisher<Void, Error> in
                 guard loggedIn else { return .just(()) }
-                return strongSelf.update()
+                return self.update()
             }
+            .first()
+            .catchErrorJustReturn(())
             .eraseToAnyPublisher()
     }
 
     // MARK: - Private Methods
 
-    private func update() -> AnyPublisher<Void, Never> {
+    private func update() -> AnyPublisher<Void, Error> {
         // fetch fresh document from server, should get cached
         database
             .document("competitions/\(competitionID)")
             .get(as: Competition.self, source: .server)
             .mapToVoid()
-            .flatMapLatest(withUnretained: self) { strongSelf in
+            .flatMapLatest {
                 // fetch fresh results from server, should get cached
-                strongSelf.competitionsManager
-                    .results(for: strongSelf.competitionID)
+                self.competitionsManager
+                    .results(for: self.competitionID)
                     .mapToVoid()
             }
-            .catchErrorJustReturn(())
             .eraseToAnyPublisher()
     }
 }

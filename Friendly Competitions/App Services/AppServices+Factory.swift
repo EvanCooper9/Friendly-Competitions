@@ -8,7 +8,7 @@ extension Container {
                 RevenueCatAppService()
                 DeveloperAppService()
                 DataUploadingAppService()
-                BackgroundNotificationAppService()
+                BackgroundJobsAppService()
             }
         }
         .scope(.singleton)
