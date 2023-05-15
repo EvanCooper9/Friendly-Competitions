@@ -20,6 +20,7 @@ final class NotificationsManager: NSObject, NotificationsManaging {
     @Injected(\.api) private var api
     @Injected(\.appState) private var appState
     @Injected(\.analyticsManager) private var analyticsManager
+    @Injected(\.competitionsManager) private var competitionsManager
 
     private let _permissionStatus: CurrentValueSubject<PermissionStatus, Never>
 
@@ -63,13 +64,13 @@ final class NotificationsManager: NSObject, NotificationsManaging {
     // MARK: - Private Methods
 
     private func setupNotifications() {
-//        Messaging.messaging().delegate = self
         UNUserNotificationCenter.current().delegate = self
         UIApplication.shared.registerForRemoteNotifications()
     }
 }
 
 extension NotificationsManager: UNUserNotificationCenterDelegate {
+
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification) async -> UNNotificationPresentationOptions {
         [.sound, .banner, .badge, .list]
     }

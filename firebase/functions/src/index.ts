@@ -15,6 +15,7 @@ import { updateActivitySummaryScores } from "./Handlers/jobs/updateActivitySumma
 import { updateWorkoutScores } from "./Handlers/jobs/updateWorkoutScores";
 import { updateCompetitionRanks } from "./Handlers/competitions/updateCompetitionRanks";
 import { handleCompetitionUpdate } from "./Handlers/jobs/handleCompetitionUpdate";
+import { sendBackgroundNotification } from "./Handlers/notifications/notifications";
 
 admin.initializeApp();
 
@@ -161,4 +162,11 @@ exports.dev_sendCompetitionCompleteNotification = functions.https.onCall(async (
         return;
     }
     await completeCompetitionsForDate(data.date);
+});
+
+exports.dev_sendBackgroundNotification = functions.https.onCall(async (data, context) => {
+    await sendBackgroundNotification(
+        "dxB51F0VG0Utn7b74o70Cs:APA91bHqA_dFCTVJxOeu99ZgEfBq-1kLqNZhTaIfd6Hv5uaugNb4M98ZPXTFzVOpXUT7UXsT6TxuNDnzj7Cu-ccGFKCmWAjt8qPe5xADt4nTZ-Fup7hqjp0ZTbWaJXUGrWAdjQiNuJNO",
+        { competitionID: "6A9405AC-F85C-4A0A-8DE7-3D03C783B0CF" }
+    ) 
 });

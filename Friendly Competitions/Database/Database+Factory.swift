@@ -12,11 +12,11 @@ extension Container {
             case .prod:
                 break
             case .debugLocal:
-                settings.cacheSettings = MemoryCacheSettings()
+//                settings.cacheSettings = MemoryCacheSettings()
                 settings.isSSLEnabled = false
                 settings.host = "localhost:\(8080)"
             case .debugRemote(let destination):
-                settings.cacheSettings = MemoryCacheSettings()
+//                settings.cacheSettings = MemoryCacheSettings()
                 settings.isSSLEnabled = false
                 settings.host = "\(destination):\(8080)"
             }

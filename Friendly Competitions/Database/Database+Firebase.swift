@@ -110,7 +110,7 @@ extension Query: Collection {
     func publisher<T: Decodable>(asArrayOf type: T.Type) -> AnyPublisher<[T], Error> {
         snapshotPublisher()
             .handleEvents(receiveOutput: { snapshot in
-                guard snapshot.documents.isNotEmpty else { return }
+                guard snapshot.documents.isNotEmpty, !snapshot.metadata.isFromCache else { return }
                 let analyticsManager = Container.shared.analyticsManager()
                 snapshot.documents.forEach { document in
                     analyticsManager.log(event: .databaseRead(path: document.reference.path))
