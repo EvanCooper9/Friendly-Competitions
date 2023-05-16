@@ -10,7 +10,11 @@ final class BackgroundJobsAppService: AppService {
         static let backgroundJobKey = "backgroundJob"
     }
 
-    private let jobTypes: [BackgroundJob.Type] = [FetchCompetitionBackgroundJob.self]
+    private let jobTypes: [BackgroundJob.Type] = [
+        FetchCompetitionBackgroundJob.self,
+        FetchCompetitionResultsBackgroundJob.self
+    ]
+
     private let decoder = JSONDecoder()
 
     func didReceiveRemoteNotification(with data: [AnyHashable: Any]) -> AnyPublisher<Void, Never> {

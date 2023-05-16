@@ -260,7 +260,7 @@ private extension SubscriptionPeriod.Unit {
 }
 
 private extension Publisher where Output: Codable {
-    // sourcery:disable:next user_defaults
+    // swiftlint:disable:next user_defaults
     func stored(in userDefaults: UserDefaults = .standard, withKey key: String) -> AnyPublisher<Output, Failure> {
         let cachedValue = userDefaults.decode(Output.self, forKey: key)
 
