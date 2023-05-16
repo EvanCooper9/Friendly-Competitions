@@ -1,6 +1,6 @@
 import Foundation
 
-struct Premium {
+struct Premium: Codable {
     let id: String
     let title: String
     let price: String

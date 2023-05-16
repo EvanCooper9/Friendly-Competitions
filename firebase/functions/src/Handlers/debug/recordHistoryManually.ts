@@ -1,5 +1,5 @@
 import { Competition } from "../../Models/Competition";
-import { getFirestore } from "../../Utilities/firstore";
+import { getFirestore } from "../../Utilities/firestore";
 
 /**
  * Record current standings in competition history.

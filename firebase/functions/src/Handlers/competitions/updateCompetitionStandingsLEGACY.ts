@@ -1,7 +1,7 @@
 import { Competition } from "../../Models/Competition";
 import { RawScoringModel } from "../../Models/ScoringModel";
 import { Standing } from "../../Models/Standing";
-import { getFirestore } from "../../Utilities/firstore";
+import { getFirestore } from "../../Utilities/firestore";
 
 /**
  * Update a user's standings in all of their competitions

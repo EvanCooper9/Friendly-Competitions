@@ -1,4 +1,4 @@
-import { getFirestore } from "../../Utilities/firstore";
+import { getFirestore } from "../../Utilities/firestore";
 
 /**
  * Deletes a competition and it's standings

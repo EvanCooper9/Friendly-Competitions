@@ -8,13 +8,14 @@ import { deleteFriend } from "./Handlers/friends/deleteFriend";
 import { FriendRequestAction, handleFriendRequest } from "./Handlers/friends/handleFriendRequest";
 import { joinCompetition } from "./Handlers/competitions/joinCompetition";
 import { leaveCompetition } from "./Handlers/competitions/leaveCompetition";
-import { completeCompetitionsForDate, completeCompetitionsForYesterday } from "./Handlers/jobs/completeCompetitions";
+import { completeCompetitionsForYesterday } from "./Handlers/jobs/completeCompetitions";
 import { sendNewCompetitionInvites } from "./Handlers/competitions/sendNewCompetitionInvites";
 import { updateUserCompetitionStandingsLEGACY, updateCompetitionStandingsLEGACY } from "./Handlers/competitions/updateCompetitionStandingsLEGACY";
 import { updateActivitySummaryScores } from "./Handlers/jobs/updateActivitySummaryScores";
 import { updateWorkoutScores } from "./Handlers/jobs/updateWorkoutScores";
-import { handleCompetitionUpdate } from "./Handlers/jobs/updateCompetitionStandings";
 import { updateCompetitionRanks } from "./Handlers/competitions/updateCompetitionRanks";
+import { handleCompetitionUpdate } from "./Handlers/jobs/handleCompetitionUpdate";
+import { sendBackgroundNotification } from "./Handlers/notifications/notifications";
 
 admin.initializeApp();
 
@@ -152,13 +153,16 @@ exports.completeCompetitions = functions.pubsub.schedule("every day 12:00")
     .timeZone("America/Toronto")
     .onRun(async () => await completeCompetitionsForYesterday());
 
-// Developer
+exports.dev_sendBackgroundNotification = functions.https.onCall(async () => {
+    const token = "dxB51F0VG0Utn7b74o70Cs:APA91bHqA_dFCTVJxOeu99ZgEfBq-1kLqNZhTaIfd6Hv5uaugNb4M98ZPXTFzVOpXUT7UXsT6TxuNDnzj7Cu-ccGFKCmWAjt8qPe5xADt4nTZ-Fup7hqjp0ZTbWaJXUGrWAdjQiNuJNO";
+    const competitionBackgroundJob = {
+        documentPath: "competitions/6A9405AC-F85C-4A0A-8DE7-3D03C783B0CF"
+    };
+    await sendBackgroundNotification(token, competitionBackgroundJob);
 
-exports.dev_sendCompetitionCompleteNotification = functions.https.onCall(async (data, context) => {
-    const userID = context.auth?.uid;
-    if (userID != "LqfhMHfQ97b0s9vaQdWyf8jqvSa2" && userID != "o2E4T1HS9tUqCYfrm7qPd3TuryE2") {
-        console.log(`Unauthorized access to developer function from user ID: ${userID}`);
-        return;
-    }
-    await completeCompetitionsForDate(data.date);
+    const resultsBackgroundJob = {
+        documentPath: "competitions/6A9405AC-F85C-4A0A-8DE7-3D03C783B0CF",
+        competitionIDForResults: "6A9405AC-F85C-4A0A-8DE7-3D03C783B0CF"
+    };
+    await sendBackgroundNotification(token, resultsBackgroundJob);
 });

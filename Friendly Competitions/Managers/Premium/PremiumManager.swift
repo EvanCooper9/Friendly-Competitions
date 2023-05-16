@@ -45,7 +45,10 @@ final class PremiumManager: PremiumManaging {
     // MARK: - Lifecycle
 
     init() {
-        premium = premiumSubject.eraseToAnyPublisher()
+        premium = premiumSubject
+            .stored(withKey: "premium")
+            .eraseToAnyPublisher()
+
         products = productsSubject.eraseToAnyPublisher()
 
         login()
@@ -252,6 +255,22 @@ private extension SubscriptionPeriod.Unit {
             return "month"
         case .year:
             return "year"
+        }
+    }
+}
+
+private extension Publisher where Output: Codable {
+    // swiftlint:disable:next user_defaults
+    func stored(in userDefaults: UserDefaults = .standard, withKey key: String) -> AnyPublisher<Output, Failure> {
+        let cachedValue = userDefaults.decode(Output.self, forKey: key)
+
+        if let cachedValue {
+            return prepend(cachedValue)
+                .handleEvents(receiveOutput: { userDefaults.encode($0, forKey: key) })
+                .eraseToAnyPublisher()
+        } else {
+            return handleEvents(receiveOutput: { userDefaults.encode($0, forKey: key) })
+                .eraseToAnyPublisher()
         }
     }
 }

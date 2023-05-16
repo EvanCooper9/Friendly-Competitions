@@ -7,6 +7,8 @@ extension Container {
                 FirebaseAppService()
                 RevenueCatAppService()
                 DeveloperAppService()
+                DataUploadingAppService()
+                BackgroundJobsAppService()
             }
         }
         .scope(.singleton)

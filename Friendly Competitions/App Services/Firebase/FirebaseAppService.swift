@@ -1,3 +1,5 @@
+import Combine
+import ECKit
 import Factory
 import Firebase
 import FirebaseMessaging
@@ -16,6 +18,11 @@ final class FirebaseAppService: NSObject, AppService {
 
     func didRegisterForRemoteNotifications(with deviceToken: Data) {
         Messaging.messaging().apnsToken = deviceToken
+    }
+
+    func didReceiveRemoteNotification(with data: [AnyHashable : Any]) -> AnyPublisher<Void, Never> {
+        Messaging.messaging().appDidReceiveMessage(data)
+        return .just(())
     }
 }
 

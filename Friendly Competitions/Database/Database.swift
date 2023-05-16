@@ -53,6 +53,8 @@ protocol Document {
     func update(fields data: [String: Any]) -> AnyPublisher<Void, Error>
     func get<T: Decodable>(as type: T.Type, source: DatabaseSource) -> AnyPublisher<T, Error>
     func publisher<T: Decodable>(as type: T.Type) -> AnyPublisher<T, Error>
+
+    func cacheFromServer() -> AnyPublisher<Void, Error>
 }
 
 extension Document {

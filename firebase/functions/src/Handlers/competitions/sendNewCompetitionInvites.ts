@@ -1,7 +1,7 @@
-import { getFirestore } from "firebase-admin/firestore";
 import { Competition } from "../../Models/Competition";
 import { User } from "../../Models/User";
 import { Constants } from "../../Utilities/Constants";
+import { getFirestore } from "../../Utilities/firestore";
 import { sendNotificationsToUser } from "../notifications/notifications";
 
 /**

@@ -1,5 +1,5 @@
 import { Competition } from "../../Models/Competition";
-import { getFirestore } from "../../Utilities/firstore";
+import { getFirestore } from "../../Utilities/firestore";
 
 /**
  * Respond to a competition invite

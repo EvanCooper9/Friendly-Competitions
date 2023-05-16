@@ -3,7 +3,7 @@ import { Competition } from "../../Models/Competition";
 import { Standing } from "../../Models/Standing";
 import { User } from "../../Models/User";
 import { Constants } from "../../Utilities/Constants";
-import { getFirestore } from "../../Utilities/firstore";
+import { getFirestore } from "../../Utilities/firestore";
 import * as notifications from "../notifications/notifications";
 
 /**
@@ -54,6 +54,7 @@ async function completeCompetition(competition: Competition): Promise<void> {
 
     await competition.recordResults();
     await competition.kickInactiveUsers();
+    await competition.updateRepeatingCompetition();
 
     await Promise.allSettled(competition.participants.map(async userID => {
         const user = await firestore.doc(`users/${userID}`).get().then(doc => new User(doc));
@@ -66,11 +67,17 @@ async function completeCompetition(competition: Competition): Promise<void> {
             `You placed ${rank}${ordinal} in ${competition.name}. Tap to see your results.`,
             `${Constants.NOTIFICATION_URL}/competition/${competition.id}/results`
         );
+        await notifications.sendBackgroundNotificationToUser(
+            user,
+            {
+                documentPath: `competitions/${competition.id}`,
+                competitionIDForResults: competition.id
+            }
+        );
         await user.updateStatisticsWithNewRank(rank);
     }));
 
     await competition.resetStandings();
-    await competition.updateRepeatingCompetition();
 }
 
 export {
