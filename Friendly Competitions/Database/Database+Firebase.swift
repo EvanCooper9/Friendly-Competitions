@@ -237,6 +237,19 @@ extension DocumentReference: Document {
                 "type": String(describing: T.self)
             ])
     }
+
+    func cacheFromServer() -> AnyPublisher<Void, Error> {
+        Future { promise in
+            self.getDocument(source: .server) { _, error in
+                if let error {
+                    promise(.failure(error))
+                } else {
+                    promise(.success(()))
+                }
+            }
+        }
+        .eraseToAnyPublisher()
+    }
 }
 
 // MARK: Batch

@@ -558,6 +558,30 @@ class AuthenticationManagingMock: AuthenticationManaging {
     }
 
 }
+class BackgroundJobMock: BackgroundJob {
+
+
+
+
+    //MARK: - execute
+
+    var executeCallsCount = 0
+    var executeCalled: Bool {
+        return executeCallsCount > 0
+    }
+    var executeReturnValue: AnyPublisher<Void, Never>!
+    var executeClosure: (() -> AnyPublisher<Void, Never>)?
+
+    func execute() -> AnyPublisher<Void, Never> {
+        executeCallsCount += 1
+        if let executeClosure = executeClosure {
+            return executeClosure()
+        } else {
+            return executeReturnValue
+        }
+    }
+
+}
 class CompetitionCacheMock: CompetitionCache {
 
 

@@ -90,6 +90,11 @@ final class DocumentMock<Model: Codable>: Document {
             .map { $0 as! T }
             .eraseToAnyPublisher()
     }
+
+    var cacheFromServerClosure: (() -> AnyPublisher<Void, Error>)?
+    func cacheFromServer() -> AnyPublisher<Void, Error> {
+        cacheFromServerClosure!()
+    }
 }
 
 final class BatchMock<Model: Decodable>: Batch {

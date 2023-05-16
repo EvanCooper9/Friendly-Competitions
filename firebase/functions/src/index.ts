@@ -155,8 +155,14 @@ exports.completeCompetitions = functions.pubsub.schedule("every day 12:00")
 
 exports.dev_sendBackgroundNotification = functions.https.onCall(async () => {
     const token = "dxB51F0VG0Utn7b74o70Cs:APA91bHqA_dFCTVJxOeu99ZgEfBq-1kLqNZhTaIfd6Hv5uaugNb4M98ZPXTFzVOpXUT7UXsT6TxuNDnzj7Cu-ccGFKCmWAjt8qPe5xADt4nTZ-Fup7hqjp0ZTbWaJXUGrWAdjQiNuJNO";
-    const backgroundJob = {
-        competitionID: "6A9405AC-F85C-4A0A-8DE7-3D03C783B0CF"
+    const competitionBackgroundJob = {
+        documentPath: "competitions/6A9405AC-F85C-4A0A-8DE7-3D03C783B0CF"
     };
-    await sendBackgroundNotification(token, backgroundJob);
+    await sendBackgroundNotification(token, competitionBackgroundJob);
+
+    const resultsBackgroundJob = {
+        documentPath: "competitions/6A9405AC-F85C-4A0A-8DE7-3D03C783B0CF",
+        competitionIDForResults: "6A9405AC-F85C-4A0A-8DE7-3D03C783B0CF"
+    };
+    await sendBackgroundNotification(token, resultsBackgroundJob);
 });

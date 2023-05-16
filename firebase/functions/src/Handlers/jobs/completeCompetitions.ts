@@ -69,7 +69,10 @@ async function completeCompetition(competition: Competition): Promise<void> {
         );
         await notifications.sendBackgroundNotificationToUser(
             user,
-            { competitionID: competition.id }
+            {
+                documentPath: `competitions/${competition.id}`,
+                competitionIDForResults: competition.id
+            }
         );
         await user.updateStatisticsWithNewRank(rank);
     }));
