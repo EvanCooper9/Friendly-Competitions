@@ -2295,7 +2295,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Friendly Competitions/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = Competitions;
+				INFOPLIST_KEY_CFBundleDisplayName = "FC (DBG)";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "We need access to HealthKit so you can compete against your friends!";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "We need access to HealthKit so you can compete against your friends!";
@@ -2311,7 +2311,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.8.12;
+				MARKETING_VERSION = 1.8.13;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -2363,7 +2363,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.8.12;
+				MARKETING_VERSION = 1.8.13;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
