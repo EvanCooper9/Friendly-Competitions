@@ -845,6 +845,30 @@ class DatabaseMock: Database {
     }
 
 }
+class DatabaseSettingManagingMock: DatabaseSettingManaging {
+
+
+    var shouldResetCache: Bool {
+        get { return underlyingShouldResetCache }
+        set(value) { underlyingShouldResetCache = value }
+    }
+    var underlyingShouldResetCache: Bool!
+
+
+    //MARK: - didResetCache
+
+    var didResetCacheCallsCount = 0
+    var didResetCacheCalled: Bool {
+        return didResetCacheCallsCount > 0
+    }
+    var didResetCacheClosure: (() -> Void)?
+
+    func didResetCache() {
+        didResetCacheCallsCount += 1
+        didResetCacheClosure?()
+    }
+
+}
 class EnvironmentCacheMock: EnvironmentCache {
 
 
