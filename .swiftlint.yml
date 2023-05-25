@@ -69,6 +69,7 @@ custom_rules:
     excluded:
       - ".*Cache\\.swift"
       - ".*Factory\\.swift"
+      - ".*Store\\.swift"
     name: "User defaults"
     regex: "(UserDefaults)"
     message: "User defaults should be abstracted behind a cache protocol"

@@ -45,7 +45,7 @@ final class SearchManager: SearchManaging {
 
         return cachedResults
             .flatMapLatest(withUnretained: self) { strongSelf, cachedResults -> AnyPublisher<[User], Error> in
-                let remaining = cachedResults.map(\.id).subtracting(userIDs)
+                let remaining = userIDs.subtracting(cachedResults.map(\.id))
                 guard remaining.isNotEmpty else { return .just(cachedResults) }
                 return strongSelf.database
                     .collection("users")
