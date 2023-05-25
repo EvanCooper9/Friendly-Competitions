@@ -8,14 +8,9 @@ protocol FeatureFlagManaging {
 
 final class FeatureFlagManager: FeatureFlagManaging {
 
-    private let remoteConfig: RemoteConfig
+    private let remoteConfig = RemoteConfig.remoteConfig()
 
     init() {
-        remoteConfig = RemoteConfig.remoteConfig()
-        let settings = RemoteConfigSettings()
-        settings.minimumFetchInterval = 0
-        remoteConfig.configSettings = settings
-
         remoteConfig.fetch { status, error -> Void in
             if let error {
                 error.reportToCrashlytics()
