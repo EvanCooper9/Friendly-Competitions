@@ -125,6 +125,8 @@
 		ED1F8DEE29E3933A0009B986 /* DeveloperAppService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1F8DED29E3933A0009B986 /* DeveloperAppService.swift */; };
 		ED1F8DF229E5F7A20009B986 /* AppLauncher.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1F8DF129E5F7A20009B986 /* AppLauncher.swift */; };
 		ED268B562A1126AF00A4A50B /* DataUploadingAppService.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED268B552A1126AF00A4A50B /* DataUploadingAppService.swift */; };
+		ED2B88F42A1F048D0043AD87 /* DatabaseSettingsManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED2B88F32A1F048D0043AD87 /* DatabaseSettingsManager.swift */; };
+		ED2B88F72A1F058D0043AD87 /* FeatureFlagManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED2B88F62A1F058D0043AD87 /* FeatureFlagManager.swift */; };
 		ED31825A29899E640091EE8C /* AlgoliaSearchClient in Frameworks */ = {isa = PBXBuildFile; productRef = ED31825929899E640091EE8C /* AlgoliaSearchClient */; };
 		ED31825C29899E9D0091EE8C /* SearchManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED31825B29899E9D0091EE8C /* SearchManager.swift */; };
 		ED32B87A29D694CF005C917B /* AuthenticationCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED32B87929D694CF005C917B /* AuthenticationCache.swift */; };
@@ -132,6 +134,11 @@
 		ED32B87E29D718A8005C917B /* SignInWithAppleProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED32B87D29D718A8005C917B /* SignInWithAppleProvider.swift */; };
 		ED32B88D29D9F65D005C917B /* AuthProviding+Firebase.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED32B88C29D9F65D005C917B /* AuthProviding+Firebase.swift */; };
 		ED3868DE29677F8100522722 /* PaywallPurchaseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3868DC29677F8100522722 /* PaywallPurchaseView.swift */; };
+		ED3983AD2A1F098800279929 /* FirebaseRemoteConfig in Frameworks */ = {isa = PBXBuildFile; productRef = ED3983AC2A1F098800279929 /* FirebaseRemoteConfig */; };
+		ED3983AF2A1F098800279929 /* FirebaseRemoteConfigSwift in Frameworks */ = {isa = PBXBuildFile; productRef = ED3983AE2A1F098800279929 /* FirebaseRemoteConfigSwift */; };
+		ED3983B12A1F0A2400279929 /* FeatureFlagManager+Factory.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3983B02A1F0A2400279929 /* FeatureFlagManager+Factory.swift */; };
+		ED3983B42A1F0AE400279929 /* DatabaseSettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3983B32A1F0AE400279929 /* DatabaseSettingsStore.swift */; };
+		ED3983B62A1F88AC00279929 /* FeatureFlag.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3983B52A1F88AC00279929 /* FeatureFlag.swift */; };
 		ED3C09E029626A1D00ED4ACC /* NavigationDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3C09DF29626A1D00ED4ACC /* NavigationDestination.swift */; };
 		ED3D5F30295E472500211E86 /* SignInViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3D5F2F295E472500211E86 /* SignInViewModelTests.swift */; };
 		ED3D85F7295F676800C3D152 /* CompetitionResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3D85F6295F676800C3D152 /* CompetitionResult.swift */; };
@@ -375,12 +382,17 @@
 		ED1F8DED29E3933A0009B986 /* DeveloperAppService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperAppService.swift; sourceTree = "<group>"; };
 		ED1F8DF129E5F7A20009B986 /* AppLauncher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLauncher.swift; sourceTree = "<group>"; };
 		ED268B552A1126AF00A4A50B /* DataUploadingAppService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataUploadingAppService.swift; sourceTree = "<group>"; };
+		ED2B88F32A1F048D0043AD87 /* DatabaseSettingsManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseSettingsManager.swift; sourceTree = "<group>"; };
+		ED2B88F62A1F058D0043AD87 /* FeatureFlagManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureFlagManager.swift; sourceTree = "<group>"; };
 		ED31825B29899E9D0091EE8C /* SearchManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchManager.swift; sourceTree = "<group>"; };
 		ED32B87929D694CF005C917B /* AuthenticationCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationCache.swift; sourceTree = "<group>"; };
 		ED32B87B29D69B84005C917B /* AuthProviding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthProviding.swift; sourceTree = "<group>"; };
 		ED32B87D29D718A8005C917B /* SignInWithAppleProvider.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInWithAppleProvider.swift; sourceTree = "<group>"; };
 		ED32B88C29D9F65D005C917B /* AuthProviding+Firebase.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "AuthProviding+Firebase.swift"; sourceTree = "<group>"; };
 		ED3868DC29677F8100522722 /* PaywallPurchaseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallPurchaseView.swift; sourceTree = "<group>"; };
+		ED3983B02A1F0A2400279929 /* FeatureFlagManager+Factory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "FeatureFlagManager+Factory.swift"; sourceTree = "<group>"; };
+		ED3983B32A1F0AE400279929 /* DatabaseSettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseSettingsStore.swift; sourceTree = "<group>"; };
+		ED3983B52A1F88AC00279929 /* FeatureFlag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureFlag.swift; sourceTree = "<group>"; };
 		ED3C09DF29626A1D00ED4ACC /* NavigationDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationDestination.swift; sourceTree = "<group>"; };
 		ED3D5F2F295E472500211E86 /* SignInViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInViewModelTests.swift; sourceTree = "<group>"; };
 		ED3D85F6295F676800C3D152 /* CompetitionResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionResult.swift; sourceTree = "<group>"; };
@@ -521,6 +533,7 @@
 				ED71E2A328F70212001FED74 /* Files in Frameworks */,
 				C1C8B24726F3FB9C008D6B1B /* HealthKit.framework in Frameworks */,
 				ED07572929CA65FC00141AD4 /* FirebaseFirestore in Frameworks */,
+				ED3983AD2A1F098800279929 /* FirebaseRemoteConfig in Frameworks */,
 				ED07572129CA65FC00141AD4 /* FirebaseAnalyticsSwift in Frameworks */,
 				ED3EAB7729E746B90047C43E /* FirebasePerformance in Frameworks */,
 				ED07571F29CA65FC00141AD4 /* FirebaseAnalytics in Frameworks */,
@@ -528,6 +541,7 @@
 				C1C8B24926F3FBA3008D6B1B /* HealthKitUI.framework in Frameworks */,
 				ED31825A29899E640091EE8C /* AlgoliaSearchClient in Frameworks */,
 				ED1B5CEF296B574B00122D7E /* ReceiptParser in Frameworks */,
+				ED3983AF2A1F098800279929 /* FirebaseRemoteConfigSwift in Frameworks */,
 				ED493E9727FDE47300A94F4A /* AuthenticationServices.framework in Frameworks */,
 				ED879C1529A19A9B0007DB91 /* CombineSchedulers in Frameworks */,
 				ED879C1829A1CC8D0007DB91 /* Factory in Frameworks */,
@@ -860,6 +874,7 @@
 				ED7881A92850F6B400C7F6CB /* Authentication */,
 				ED879C2A29A40D660007DB91 /* Competitions */,
 				EDD894FE29634038009636E6 /* Environment */,
+				ED2B88F52A1F057F0043AD87 /* Feature Flag */,
 				ED879C4629A4118C0007DB91 /* Friends */,
 				ED6CB45A28BA829000436BBD /* HealthKit */,
 				ED879C4729A411930007DB91 /* Notifications */,
@@ -1073,6 +1088,16 @@
 			path = Views;
 			sourceTree = "<group>";
 		};
+		ED2B88F52A1F057F0043AD87 /* Feature Flag */ = {
+			isa = PBXGroup;
+			children = (
+				ED3983B52A1F88AC00279929 /* FeatureFlag.swift */,
+				ED2B88F62A1F058D0043AD87 /* FeatureFlagManager.swift */,
+				ED3983B02A1F0A2400279929 /* FeatureFlagManager+Factory.swift */,
+			);
+			path = "Feature Flag";
+			sourceTree = "<group>";
+		};
 		ED32B88B29D9F640005C917B /* Auth Providing */ = {
 			isa = PBXGroup;
 			children = (
@@ -1093,6 +1118,15 @@
 				ED1B5D00296DBD3100122D7E /* PaywallStep.swift */,
 			);
 			path = Paywall;
+			sourceTree = "<group>";
+		};
+		ED3983B22A1F0AD300279929 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				ED2B88F32A1F048D0043AD87 /* DatabaseSettingsManager.swift */,
+				ED3983B32A1F0AE400279929 /* DatabaseSettingsStore.swift */,
+			);
+			path = Settings;
 			sourceTree = "<group>";
 		};
 		ED3D5F2E295E471600211E86 /* Sign In */ = {
@@ -1296,6 +1330,7 @@
 				ED879C0029A06E850007DB91 /* Database.swift */,
 				ED879C3829A410BB0007DB91 /* Database+Factory.swift */,
 				ED879C0229A07A820007DB91 /* Database+Firebase.swift */,
+				ED3983B22A1F0AD300279929 /* Settings */,
 			);
 			path = Database;
 			sourceTree = "<group>";
@@ -1627,6 +1662,8 @@
 				ED07573429CA65FC00141AD4 /* FirebaseStorage */,
 				ED07573629CA65FC00141AD4 /* FirebaseStorageCombine-Community */,
 				ED3EAB7629E746B90047C43E /* FirebasePerformance */,
+				ED3983AC2A1F098800279929 /* FirebaseRemoteConfig */,
+				ED3983AE2A1F098800279929 /* FirebaseRemoteConfigSwift */,
 			);
 			productName = CompyBoi;
 			productReference = C1691DC326D55FCF006FFA30 /* Friendly Competitions.app */;
@@ -1914,6 +1951,7 @@
 				C155CA7627AC1A63005F49F4 /* Competition+Standing.swift in Sources */,
 				C123C9CD27A863F100375F73 /* UserHashIDPill.swift in Sources */,
 				ED901B4F280249B000FE619E /* CompetitionViewModel.swift in Sources */,
+				ED3983B12A1F0A2400279929 /* FeatureFlagManager+Factory.swift in Sources */,
 				ED879C6229A416B40007DB91 /* AppState+Factory.swift in Sources */,
 				ED879C5829A4124C0007DB91 /* UserManager+Factory.swift in Sources */,
 				ED879C5629A412350007DB91 /* StorageManager+Factory.swift in Sources */,
@@ -1927,6 +1965,7 @@
 				ED438FF727F7B3B600D72F99 /* View+ConfirmationDialog.swift in Sources */,
 				ED438FFB27F7D18600D72F99 /* AnalyticsManager.swift in Sources */,
 				ED1B5CFF296DBD2400122D7E /* PaywallViewModel.swift in Sources */,
+				ED2B88F42A1F048D0043AD87 /* DatabaseSettingsManager.swift in Sources */,
 				C155229C26E793B300FE0DA7 /* User+Mock.swift in Sources */,
 				C15522A026E793DA00FE0DA7 /* ActivitySummary+Mock.swift in Sources */,
 				C10A267927E9528700FD1C2C /* ColorScheme+Extensions.swift in Sources */,
@@ -1987,6 +2026,7 @@
 				ED879C3B29A410D70007DB91 /* API+Factory.swift in Sources */,
 				EDAF6C47285277FF002BC0DD /* Nonce.swift in Sources */,
 				ED879C3F29A4112D0007DB91 /* AnalyticsManager+Factory.swift in Sources */,
+				ED2B88F72A1F058D0043AD87 /* FeatureFlagManager.swift in Sources */,
 				ED1B85AD29C9049E008DB1F6 /* ExploreViewModel.swift in Sources */,
 				C1401F8B26D94D1C0080F74F /* ImmutableListItemView.swift in Sources */,
 				ED58C98B29AA8C0100393468 /* HealthStoring.swift in Sources */,
@@ -2033,6 +2073,7 @@
 				ED1F8DEE29E3933A0009B986 /* DeveloperAppService.swift in Sources */,
 				EDC5FC3F27FA7C1B00F2882D /* View+HUD.swift in Sources */,
 				ED48783228295A2100AC1E2C /* InviteFriendsAction.swift in Sources */,
+				ED3983B42A1F0AE400279929 /* DatabaseSettingsStore.swift in Sources */,
 				C1C8B24326F3FB47008D6B1B /* ActivitySummaryManager.swift in Sources */,
 				ED1B85C029C904CC008DB1F6 /* DeveloperMenu.swift in Sources */,
 				ED9F255D29A43544008C9967 /* DateToStartOfDay.swift in Sources */,
@@ -2048,6 +2089,7 @@
 				C1884E4E26D59E3100C21014 /* User.swift in Sources */,
 				ED879C1F29A3BB850007DB91 /* API+Firebase.swift in Sources */,
 				ED879C1D29A3BB720007DB91 /* API.swift in Sources */,
+				ED3983B62A1F88AC00279929 /* FeatureFlag.swift in Sources */,
 				ED1B5CE42969358100122D7E /* PremiumBanner.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -2253,7 +2295,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "Friendly Competitions/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = Competitions;
+				INFOPLIST_KEY_CFBundleDisplayName = "FC (DBG)";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "We need access to HealthKit so you can compete against your friends!";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "We need access to HealthKit so you can compete against your friends!";
@@ -2269,7 +2311,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.8.12;
+				MARKETING_VERSION = 1.8.13;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -2321,7 +2363,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.8.12;
+				MARKETING_VERSION = 1.8.13;
 				OTHER_LDFLAGS = (
 					"$(inherited)",
 					"-ObjC",
@@ -2519,6 +2561,16 @@
 			isa = XCSwiftPackageProductDependency;
 			package = ED31825829899E640091EE8C /* XCRemoteSwiftPackageReference "algoliasearch-client-swift" */;
 			productName = AlgoliaSearchClient;
+		};
+		ED3983AC2A1F098800279929 /* FirebaseRemoteConfig */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ED07571D29CA65FC00141AD4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseRemoteConfig;
+		};
+		ED3983AE2A1F098800279929 /* FirebaseRemoteConfigSwift */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ED07571D29CA65FC00141AD4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseRemoteConfigSwift;
 		};
 		ED3EAB7629E746B90047C43E /* FirebasePerformance */ = {
 			isa = XCSwiftPackageProductDependency;
