@@ -151,6 +151,7 @@ final class CompetitionsManager: CompetitionsManaging {
     func standingsPublisher(for competitionID: Competition.ID) -> AnyPublisher<[Competition.Standing], Error> {
         database.collection("competitions/\(competitionID)/standings")
             .publisher(asArrayOf: Competition.Standing.self)
+            .eraseToAnyPublisher()
     }
 
     // MARK: - Private Methods

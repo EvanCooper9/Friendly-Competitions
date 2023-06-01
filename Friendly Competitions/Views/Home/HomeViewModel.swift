@@ -25,6 +25,9 @@ final class HomeViewModel: ObservableObject {
     @Published private(set) var loadingDeepLink = false
     @Published private(set) var showPremiumBanner = false
     @Published var showPaywall = false
+    @Published var showNewCompetition = false
+    @Published var showAddFriends = false
+    @Published var showAnonymousAccountBlocker = false
 
     // MARK: - Private Properties
 
@@ -161,6 +164,7 @@ final class HomeViewModel: ObservableObject {
             .assign(to: &$showPremiumBanner)
 
         userManager.userPublisher
+            .filter { $0.isAnonymous != true }
             .map { $0.name.ifEmpty(Bundle.main.name) }
             .receive(on: scheduler)
             .assign(to: &$title)
@@ -171,6 +175,24 @@ final class HomeViewModel: ObservableObject {
     func dismissPremiumBannerTapped() {
         analyticsManager.log(event: .premiumBannerDismissed)
         dismissedPremiumBanner.toggle()
+    }
+
+    func newCompetitionTapped() {
+        guard userManager.user.isAnonymous != true else {
+            showAnonymousAccountBlocker = true
+            return
+        }
+
+        showNewCompetition = true
+    }
+
+    func addFriendsTapped() {
+        guard userManager.user.isAnonymous != true else {
+            showAnonymousAccountBlocker = true
+            return
+        }
+
+        showAddFriends = true
     }
 }
 

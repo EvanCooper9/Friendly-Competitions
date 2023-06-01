@@ -46,12 +46,20 @@ final class AuthenticationManager: AuthenticationManaging {
     init() {
         handle(user: authenticationCache.currentUser)
         listenForAuth()
+
+//        if auth.user == nil {
+//            signInAnonymously()
+//                .sink()
+//                .store(in: &cancellables)
+//        }
     }
 
     // MARK: - Public Methods
 
     func signIn(with authenticationMethod: AuthenticationMethod) -> AnyPublisher<Void, Error> {
         switch authenticationMethod {
+        case .anonymous:
+            return signInAnonymously()
         case .apple:
             createdUserSubject = .init(bufferSize: 1)
             return signInWithAppleProvider.signIn()
@@ -125,7 +133,11 @@ final class AuthenticationManager: AuthenticationManaging {
     private func listenForAuth() {
         auth.userPublisher()
             .handleEvents(withUnretained: self, receiveOutput: { strongSelf, authUser in
-                strongSelf.emailVerifiedSubject.send(authUser?.isEmailVerified ?? false)
+                if let authUser, !authUser.isAnonymous {
+                    strongSelf.emailVerifiedSubject.send(authUser.isEmailVerified)
+                } else {
+                    strongSelf.emailVerifiedSubject.send(true)
+                }
             })
             .flatMapLatest(withUnretained: self) { (strongSelf: AuthenticationManager, authUser) -> AnyPublisher<User?, Never> in
                 guard let authUser else { return .just(nil) }
@@ -143,7 +155,7 @@ final class AuthenticationManager: AuthenticationManaging {
                 .catchErrorJustReturn(nil)
                 .eraseToAnyPublisher()
             }
-            .dropFirst()
+//            .dropFirst()
             .sink(withUnretained: self) { $0.handle(user: $1) }
             .store(in: &cancellables)
     }
@@ -166,15 +178,25 @@ final class AuthenticationManager: AuthenticationManaging {
     /// - Parameter authUser: the auth user
     /// - Returns: A publisher that emits the user that was created in the database
     private func createUser(from authUser: AuthUser) -> AnyPublisher<User, Error> {
-        guard let email = authUser.email else {
-            return .error(AuthenticationError.missingEmail)
-        }
+        let user = User(
+            id: authUser.id,
+            name: .anonymousName,
+            email: authUser.email,
+            isAnonymous: authUser.isAnonymous
+        )
 
-        let user = User(id: authUser.id, email: email, name: authUser.displayName ?? "")
         return database.document("users/\(user.id)")
             .set(value: user)
             .mapToValue(user)
             .handleEvents(withUnretained: self, receiveOutput: { $0.createdUserSubject.send($1) })
+            .eraseToAnyPublisher()
+    }
+
+    private func signInAnonymously() -> AnyPublisher<Void, Error> {
+        createdUserSubject = .init(bufferSize: 1)
+        return auth.signIn(with: .anonymous)
+            .flatMapLatest(withUnretained: self) { $0.createUser(from: $1) }
+            .mapToVoid()
             .eraseToAnyPublisher()
     }
 }

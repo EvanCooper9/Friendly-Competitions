@@ -11,10 +11,10 @@ import Foundation
 // swiftlint:disable nesting type_body_length type_name vertical_whitespace_opening_braces
 internal enum L10n {
   internal enum About {
-    /// Hey, thanks for using Friendly Competitions! I hope you're enjoying my app. Feel free to provide feedback below or reach out to me by visiting my website. 
+    /// Hey, thanks for using Friendly Competitions! I hope you're enjoying my app. Feel free to provide feedback below or reach out to me by visiting my website.
     /// 
-    ///  Evan
-    internal static let hey = L10n.tr("Localizable", "About.hey", fallback: "Hey, thanks for using Friendly Competitions! I hope you're enjoying my app. Feel free to provide feedback below or reach out to me by visiting my website. \n\n Evan")
+    /// Evan
+    internal static let hey = L10n.tr("Localizable", "About.hey", fallback: "Hey, thanks for using Friendly Competitions! I hope you're enjoying my app. Feel free to provide feedback below or reach out to me by visiting my website.\n\nEvan")
     /// Made with ❤️ in Toronto, Canada
     internal static let madeWithLove = L10n.tr("Localizable", "About.madeWithLove", fallback: "Made with ❤️ in Toronto, Canada")
     /// About
@@ -363,6 +363,18 @@ internal enum L10n {
     internal static let shareInviteLink = L10n.tr("Localizable", "Profile.shareInviteLink", fallback: "Share invite link")
     /// Profile
     internal static let title = L10n.tr("Localizable", "Profile.title", fallback: "Profile")
+    internal enum Account {
+      /// You are using an anonymous account. Some features will be disabled until you create a real account.
+      internal static let anonymous = L10n.tr("Localizable", "Profile.Account.anonymous", fallback: "You are using an anonymous account. Some features will be disabled until you create a real account.")
+      /// Create account
+      internal static let createAccount = L10n.tr("Localizable", "Profile.Account.createAccount", fallback: "Create account")
+      /// Delete account
+      internal static let deleteAccount = L10n.tr("Localizable", "Profile.Account.deleteAccount", fallback: "Delete account")
+      /// Sign out
+      internal static let signOut = L10n.tr("Localizable", "Profile.Account.signOut", fallback: "Sign out")
+      /// Account
+      internal static let title = L10n.tr("Localizable", "Profile.Account.title", fallback: "Account")
+    }
     internal enum Medals {
       /// Medals
       internal static let title = L10n.tr("Localizable", "Profile.Medals.title", fallback: "Medals")
@@ -396,14 +408,6 @@ internal enum L10n {
         /// Searchable
         internal static let title = L10n.tr("Localizable", "Profile.Privacy.Searchable.title", fallback: "Searchable")
       }
-    }
-    internal enum Session {
-      /// Delete account
-      internal static let deleteAccount = L10n.tr("Localizable", "Profile.Session.deleteAccount", fallback: "Delete account")
-      /// Sign out
-      internal static let signOut = L10n.tr("Localizable", "Profile.Session.signOut", fallback: "Sign out")
-      /// Session
-      internal static let title = L10n.tr("Localizable", "Profile.Session.title", fallback: "Session")
     }
   }
   internal enum Results {

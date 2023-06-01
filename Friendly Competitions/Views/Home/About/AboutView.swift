@@ -3,7 +3,7 @@ import StoreKit
 import SwiftUI
 import SwiftUIX
 
-struct About: View {
+struct AboutView: View {
 
     @StateObject private var viewModel = AboutViewModel()
 
@@ -69,7 +69,7 @@ struct About: View {
 #if DEBUG
 struct About_Previews: PreviewProvider {
     static var previews: some View {
-        About()
+        AboutView()
             .setupMocks()
     }
 }

@@ -19,7 +19,7 @@
 
 // About
 "About.title" = "About";
-"About.hey" = "Hey, thanks for using Friendly Competitions! I hope you're enjoying my app. Feel free to provide feedback below or reach out to me by visiting my website. \n\n Evan";
+"About.hey" = "Hey, thanks for using Friendly Competitions! I hope you're enjoying my app. Feel free to provide feedback below or reach out to me by visiting my website.\n\nEvan";
 "About.madeWithLove" = "Made with ❤️ in Toronto, Canada";
 "About.App.authoredBy" = "by Evan Cooper";
 "About.App.title" = "The App";
@@ -52,9 +52,11 @@
 "Profile.Privacy.Searchable.description" = "Turn this off to prevent your account from showing up in search. Other people will not be able to add you as a friend.";
 "Profile.Privacy.HideName.title" = "Show name";
 "Profile.Privacy.HideName.description" = "Turn this off to hide your name in competitions. Your friends will still see your name.";
-"Profile.Session.title" = "Session";
-"Profile.Session.signOut" = "Sign out";
-"Profile.Session.deleteAccount" = "Delete account";
+"Profile.Account.title" = "Account";
+"Profile.Account.createAccount" = "Create account";
+"Profile.Account.signOut" = "Sign out";
+"Profile.Account.deleteAccount" = "Delete account";
+"Profile.Account.anonymous" = "You are using an anonymous account. Some features will be disabled until you create a real account.";
 
 // User
 "User.Activity.title" = "Today's activity";

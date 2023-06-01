@@ -24,7 +24,6 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
             .combineLatest()
             .first()
             .mapToVoid()
-            .print()
             .sink { completionHandler(.newData) }
             .store(in: &cancellables)
     }

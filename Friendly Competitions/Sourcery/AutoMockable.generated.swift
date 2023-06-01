@@ -321,6 +321,11 @@ class AuthUserMock: AuthUser {
         set(value) { underlyingIsEmailVerified = value }
     }
     var underlyingIsEmailVerified: Bool!
+    var isAnonymous: Bool {
+        get { return underlyingIsAnonymous }
+        set(value) { underlyingIsAnonymous = value }
+    }
+    var underlyingIsAnonymous: Bool!
 
 
     //MARK: - sendEmailVerification

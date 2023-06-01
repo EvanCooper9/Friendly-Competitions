@@ -17,6 +17,7 @@ protocol AuthUser {
     var displayName: String? { get }
     var email: String? { get }
     var isEmailVerified: Bool { get }
+    var isAnonymous: Bool { get }
     func sendEmailVerification() -> AnyPublisher<Void, Error>
     func set(displayName: String) -> AnyPublisher<AuthUser, Error>
     func reload() async throws
@@ -24,6 +25,7 @@ protocol AuthUser {
 }
 
 enum AuthCredential {
+    case anonymous
     case apple(id: String, nonce: String?, fullName: PersonNameComponents?)
     case email(email: String, password: String)
 }

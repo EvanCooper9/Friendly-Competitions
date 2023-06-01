@@ -6,10 +6,15 @@ import Factory
 final class ProfileViewModel: ObservableObject {
 
     @Published var user: User!
-    @Published var premium: Premium?
+    @Published private(set) var premium: Premium?
     @Published var confirmationRequired = false
     @Published var loading = false
     @Published var showHideNameLearnMore = false
+
+    @Published var showCreateAccount = false
+    var isAnonymousAccount: Bool {
+        user.isAnonymous == true
+    }
 
     // MARK: - Private Properties
 
@@ -75,6 +80,10 @@ final class ProfileViewModel: ObservableObject {
 
     func manageSubscriptionTapped() {
         premiumManager.manageSubscription()
+    }
+
+    func signUpTapped() {
+        showCreateAccount.toggle()
     }
 
     func signOutTapped() {

@@ -23,9 +23,11 @@ struct VerifyEmailView: View {
                 Text("Verify your account")
                     .font(.title)
                     .padding(.bottom, -5)
-                Text("Follow the instructions sent to \(viewModel.user.email) to complete your account")
-                    .fixedSize(horizontal: false, vertical: true)
-                    .foregroundColor(.gray)
+                if let email = viewModel.user.email {
+                    Text("Follow the instructions sent to \(email) to complete your account")
+                        .fixedSize(horizontal: false, vertical: true)
+                        .foregroundColor(.gray)
+                }
                 Button("Send again", systemImage: .paperplaneFill, action: viewModel.resendVerification)
             }
 

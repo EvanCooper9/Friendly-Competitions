@@ -17,6 +17,10 @@ extension Auth: AuthProviding {
 
     func signIn(with credential: AuthCredential) -> AnyPublisher<AuthUser, Error> {
         switch credential {
+        case .anonymous:
+            return signInAnonymously()
+                .map { result -> AuthUser in result.user }
+                .eraseToAnyPublisher()
         case let .apple(id, nonce, fullName):
             let oAuthCredential = OAuthProvider.appleCredential(
                 withIDToken: id,
@@ -35,6 +39,8 @@ extension Auth: AuthProviding {
 
     func signUp(with credential: AuthCredential) -> AnyPublisher<AuthUser, Error> {
         switch credential {
+        case .anonymous:
+            return .never()
         case .apple:
             return .never()
         case .email(let email, let password):
