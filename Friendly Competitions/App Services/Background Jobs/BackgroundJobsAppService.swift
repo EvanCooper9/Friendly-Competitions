@@ -21,7 +21,7 @@ final class BackgroundJobsAppService: AppService {
 
     func didReceiveRemoteNotification(with data: [AnyHashable: Any]) -> AnyPublisher<Void, Never> {
         analyticsManager.log(event: .backgroundNotificationReceived)
-        
+
         guard let customData = data[Constants.customDataKey] as? [String: Any],
               let backgroundJob = customData[Constants.backgroundJobKey] as? [String: Any],
               let data = try? JSONSerialization.data(withJSONObject: backgroundJob)
@@ -32,8 +32,6 @@ final class BackgroundJobsAppService: AppService {
 
         let codableJob = backgroundJob.compactMapValues { $0 as? String }
         analyticsManager.log(event: .backgroundJobReceived(job: codableJob))
-
-        analyticsManager.log(event: .backgroundJobReceived(job: backgroundJob))
 
         return jobTypes
             .compactMap { jobType -> AnyPublisher<Void, Never>? in
