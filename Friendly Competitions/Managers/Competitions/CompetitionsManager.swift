@@ -12,7 +12,6 @@ protocol CompetitionsManaging {
     var competitions: AnyPublisher<[Competition], Never> { get }
     var invitedCompetitions: AnyPublisher<[Competition], Never> { get }
     var appOwnedCompetitions: AnyPublisher<[Competition], Never> { get }
-    var competitionsDateInterval: DateInterval { get }
     var hasPremiumResults: AnyPublisher<Bool, Never> { get }
 
     func create(_ competition: Competition) -> AnyPublisher<Void, Error>
@@ -28,7 +27,6 @@ protocol CompetitionsManaging {
 final class CompetitionsManager: CompetitionsManaging {
 
     private enum Constants {
-        static var competitionsDateIntervalKey: String { #function }
         static var hasPremiumResultsKey: String { #function }
     }
 
@@ -37,7 +35,6 @@ final class CompetitionsManager: CompetitionsManaging {
     let competitions: AnyPublisher<[Competition], Never>
     let invitedCompetitions: AnyPublisher<[Competition], Never>
     let appOwnedCompetitions: AnyPublisher<[Competition], Never>
-    var competitionsDateInterval: DateInterval { cache.competitionsDateInterval }
 
     private(set) lazy var hasPremiumResults: AnyPublisher<Bool, Never> = {
         competitions
@@ -78,13 +75,6 @@ final class CompetitionsManager: CompetitionsManaging {
         competitions = competitionsSubject.eraseToAnyPublisher()
         invitedCompetitions = invitedCompetitionsSubject.eraseToAnyPublisher()
         appOwnedCompetitions = appOwnedCompetitionsSubject.eraseToAnyPublisher()
-
-        competitions
-            .filterMany(\.isActive)
-            .map(\.dateInterval)
-            .removeDuplicates()
-            .sink(withUnretained: self) { $0.cache.competitionsDateInterval = $1 }
-            .store(in: &cancellables)
 
         appState.didBecomeActive
             .filter { $0 }

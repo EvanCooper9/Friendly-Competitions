@@ -19,6 +19,10 @@ final class AppDelegate: NSObject, UIApplicationDelegate {
         appServices.forEach { $0.didRegisterForRemoteNotifications(with: deviceToken) }
     }
 
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        error.reportToCrashlytics()
+    }
+
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable: Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         appServices.map { $0.didReceiveRemoteNotification(with: userInfo) }
             .combineLatest()

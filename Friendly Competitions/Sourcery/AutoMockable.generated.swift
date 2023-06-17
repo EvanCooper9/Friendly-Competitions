@@ -566,11 +566,6 @@ class AuthenticationManagingMock: AuthenticationManaging {
 class CompetitionCacheMock: CompetitionCache {
 
 
-    var competitionsDateInterval: DateInterval {
-        get { return underlyingCompetitionsDateInterval }
-        set(value) { underlyingCompetitionsDateInterval = value }
-    }
-    var underlyingCompetitionsDateInterval: DateInterval!
     var competitionsHasPremiumResults: HasPremiumResultsContainerCache?
 
 
@@ -593,11 +588,6 @@ class CompetitionsManagingMock: CompetitionsManaging {
         set(value) { underlyingAppOwnedCompetitions = value }
     }
     var underlyingAppOwnedCompetitions: AnyPublisher<[Competition], Never>!
-    var competitionsDateInterval: DateInterval {
-        get { return underlyingCompetitionsDateInterval }
-        set(value) { underlyingCompetitionsDateInterval = value }
-    }
-    var underlyingCompetitionsDateInterval: DateInterval!
     var hasPremiumResults: AnyPublisher<Bool, Never> {
         get { return underlyingHasPremiumResults }
         set(value) { underlyingHasPremiumResults = value }

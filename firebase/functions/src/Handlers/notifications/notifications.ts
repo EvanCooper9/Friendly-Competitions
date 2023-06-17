@@ -107,11 +107,13 @@ async function sendBackgroundNotification(fcmToken: string, backgroundJob?: any)
             }
         }
     };
-    await admin.messaging().send(notificationPayload);
+    const id = await admin.messaging().send(notificationPayload);
+    console.log(`background notification response id: ${id}`);
 }
 
 export {
     sendNotificationsToUser,
+    sendNotification,
     sendBackgroundNotificationToUser,
     sendBackgroundNotification
 };

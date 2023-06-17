@@ -1,6 +1,4 @@
-echo "=== 5000 ==="
-lsof -i tcp:5000
-echo "=== 8080=== "
-lsof -i tcp:8080
-echo "=== 9000 ==="
-lsof -i tcp:9000
+for i in 4000, 4001, 4002, 4500, 5000, 8080, 9000; do
+    echo "=== $i ==="
+    lsof -i tcp:$i
+done

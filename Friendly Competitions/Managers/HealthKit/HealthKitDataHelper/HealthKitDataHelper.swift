@@ -49,15 +49,7 @@ final class HealthKitDataHelper<Data>: HealthKitDataHelping {
             .sink(withUnretained: self, receiveValue: { $0.fetchAndUploadFinished.send() })
             .store(in: &cancellables)
 
-        Publishers
-            .Merge(
-                UIApplication.willEnterForegroundNotification.publisher
-                    .map { [weak self] _ in self?.competitionsManager.competitionsDateInterval }
-                    .unwrap(),
-                competitionsManager.competitions
-                    .filterMany(\.isActive)
-                    .map(\.dateInterval)
-            )
+        dateInterval()
             .sink(withUnretained: self, receiveValue: { $0.fetchAndUpload.send($1) })
             .store(in: &cancellables)
 
@@ -67,13 +59,25 @@ final class HealthKitDataHelper<Data>: HealthKitDataHelping {
     // MARK: - Private Methods
 
     private func registerForBackgroundDelivery() {
-        let backgroundDeliveryTrigger: AnyPublisher<Void, Never> = .just(())
-            .handleEvents(withUnretained: self, receiveSubscription: { strongSelf, _ in
-                strongSelf.fetchAndUpload.send(strongSelf.competitionsManager.competitionsDateInterval)
-            })
+        let backgroundDeliveryTrigger: AnyPublisher<Void, Never> = dateInterval()
+            .handleEvents(withUnretained: self, receiveOutput: { $0.fetchAndUpload.send($1) })
+            .mapToVoid()
             .flatMapLatest(withUnretained: self) { $0.fetchAndUploadFinished.eraseToAnyPublisher() }
             .eraseToAnyPublisher()
 
         healthKitManager.registerBackgroundDeliveryTask(backgroundDeliveryTrigger)
+    }
+
+    private func dateInterval() -> AnyPublisher<DateInterval, Never> {
+        competitionsManager.competitions
+            .filterMany(\.isActive)
+            .map { competitions -> DateInterval in
+                guard let dateInterval = competitions.dateInterval else { return .dataFetchDefault }
+                return DateInterval(
+                    start: min(dateInterval.start, DateInterval.dataFetchDefault.start),
+                    end: max(dateInterval.end, DateInterval.dataFetchDefault.end)
+                )
+            }
+            .eraseToAnyPublisher()
     }
 }
