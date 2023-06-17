@@ -24,15 +24,12 @@ extension Competition {
 }
 
 extension Array where Element == Competition {
-    var dateInterval: DateInterval {
-        let components = Calendar.current.dateComponents([.year, .month, .day], from: .now)
-        let now = Calendar.current.date(from: components) ?? .now
-        let yesterday = now.addingTimeInterval(-1.days)
-        let tomorrow = now.addingTimeInterval(1.days)
-        return reduce(DateInterval(start: yesterday, end: tomorrow)) { dateInterval, competition in
-            .init(
-                start: [dateInterval.start, competition.start, yesterday].min() ?? yesterday,
-                end: [dateInterval.end, competition.end, tomorrow].max() ?? tomorrow
+    var dateInterval: DateInterval? {
+        return reduce(nil) { dateInterval, competition in
+            guard let dateInterval else { return .init(start: competition.start, end: competition.end) }
+            return .init(
+                start: [dateInterval.start, competition.start].min()!,
+                end: [dateInterval.end, competition.end].max()!
             )
         }
     }

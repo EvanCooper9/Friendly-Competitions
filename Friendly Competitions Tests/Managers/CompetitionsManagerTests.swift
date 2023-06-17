@@ -154,22 +154,6 @@ final class CompetitionsManagerTests: FCTestCase {
         waitForExpectations(timeout: 1)
     }
     
-    func testThatCompetitionsDateIntervalIsCorrect() {
-        let cachedDateInterval = DateInterval()
-        cache.competitionsDateInterval = cachedDateInterval
-        
-        let didBecomeActive = PassthroughSubject<Bool, Never>()
-        appState.didBecomeActive = didBecomeActive.eraseToAnyPublisher()
-        
-        let competitions = [Competition.mock]
-        setupDatabaseWithCompetitions(participating: competitions)
-        
-        let manager = CompetitionsManager()
-        XCTAssertEqual(manager.competitionsDateInterval, cachedDateInterval)
-        didBecomeActive.send(true)
-        XCTAssertEqual(manager.competitionsDateInterval, competitions.dateInterval)
-    }
-    
     // MARK: - Private
     
     private func testAPI(_ publisher: AnyPublisher<Void, Error>, expect expectedResult: Result<Void, MockError>, expectation: XCTestExpectation) {

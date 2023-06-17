@@ -141,7 +141,7 @@ final class WorkoutManager: WorkoutManaging {
                     }
                     .dateInterval
 
-                return (workoutTypes, dateInterval)
+                return (workoutTypes, dateInterval ?? .dataFetchDefault)
             }
             .flatMapAsync { [weak self] workoutTypes, dateInterval in
                 try await withThrowingTaskGroup(of: (WorkoutType, [Date: [HKQuantityType: Double]]).self) { group -> [Workout] in

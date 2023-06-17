@@ -60,6 +60,7 @@ extension Query: Collection {
                 }
             }
         }
+        .reportErrorToCrashlytics()
         .eraseToAnyPublisher()
     }
 
@@ -117,7 +118,9 @@ extension Query: Collection {
                 }
             })
             .map { $0.documents.decoded(as: T.self) }
-            .reportErrorToCrashlytics()
+            .reportErrorToCrashlytics(userInfo: [
+                "type": String(describing: T.self)
+            ])
     }
 
     func getDocuments<T>(ofType type: T.Type, source: DatabaseSource) -> AnyPublisher<[T], Error> where T : Decodable {
@@ -135,7 +138,9 @@ extension Query: Collection {
                 guard results.isEmpty, source == .cacheFirst else { return .just(results) }
                 return query.getDocuments(ofType: T.self, source: .server)
             }
-            .reportErrorToCrashlytics()
+            .reportErrorToCrashlytics(userInfo: [
+                "type": String(describing: T.self)
+            ])
     }
 }
 
@@ -157,6 +162,9 @@ extension DocumentReference: Document {
                 }
             }
         }
+        .reportErrorToCrashlytics(userInfo: [
+            "path": path
+        ])
         .eraseToAnyPublisher()
     }
 
@@ -168,7 +176,8 @@ extension DocumentReference: Document {
             })
             .reportErrorToCrashlytics(userInfo: [
                 "path": path,
-                "data": value
+                "data": value,
+                "type": String(describing: T.self)
             ])
     }
 
@@ -193,7 +202,7 @@ extension DocumentReference: Document {
         ])
     }
 
-    func get<T: Decodable>(as type: T.Type,  source: DatabaseSource) -> AnyPublisher<T, Error> {
+    func get<T: Decodable>(as type: T.Type, source: DatabaseSource) -> AnyPublisher<T, Error> {
         Future { [weak self] promise in
             guard let self else { return }
             self.getDocument(source: source.firestoreSource) { snapshot, error in
@@ -249,6 +258,9 @@ extension DocumentReference: Document {
             }
         }
         .eraseToAnyPublisher()
+        .reportErrorToCrashlytics(userInfo: [
+            "path": path
+        ])
     }
 }
 
@@ -272,6 +284,7 @@ extension WriteBatch: Batch {
                 }
             }
         }
+        .reportErrorToCrashlytics()
         .eraseToAnyPublisher()
     }
 }
@@ -294,8 +307,10 @@ fileprivate extension DatabaseSource {
 // MARK: - Helpers
 
 fileprivate extension Publisher where Failure == Error {
-    func reportErrorToCrashlytics(userInfo: [String: Any] = [:]) -> AnyPublisher<Output, Failure> {
+    func reportErrorToCrashlytics(userInfo: [String: Any] = [:], caller: String = #function) -> AnyPublisher<Output, Failure> {
         self.catch { error -> AnyPublisher<Output, Failure> in
+            var userInfo = userInfo
+            userInfo["caller"] = caller
             error.reportToCrashlytics(userInfo: userInfo)
             return .error(error)
         }

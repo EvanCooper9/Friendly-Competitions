@@ -94,8 +94,8 @@ final class HealthKitManager: HealthKitManaging {
             let query = ObserverQuery(sampleType: hkSampleType) { [weak self] result in
                 guard let strongSelf = self else { return }
                 switch result {
-                case .failure:
-                    break
+                case .failure(let error):
+                    error.reportToCrashlytics()
                 case .success(let completion):
                     strongSelf.backgroundDeliveryPublishers
                         .combineLatest()
