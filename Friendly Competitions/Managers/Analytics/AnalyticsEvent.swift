@@ -26,4 +26,8 @@ enum AnalyticsEvent: Codable {
     case databaseRead(path: String)
     case databaseWrite(path: String)
     case databaseDelete(path: String)
+
+    // background jobs
+    case backgroundJobReceived(job: [String: Any])
+    case backgroundJobStarted(jobType: String)
 }

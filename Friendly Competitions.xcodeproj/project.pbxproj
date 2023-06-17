@@ -261,6 +261,7 @@
 		EDD8950029634043009636E6 /* FirestoreEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD894FF29634043009636E6 /* FirestoreEnvironment.swift */; };
 		EDDB923D2965D2B0006AEE72 /* CompetitionHistoryDataPoint+View.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDDB923C2965D2B0006AEE72 /* CompetitionHistoryDataPoint+View.swift */; };
 		EDDF77D828BA82E000BB8B97 /* HealthKitPermissionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDDF77D728BA82E000BB8B97 /* HealthKitPermissionType.swift */; };
+		EDFA10922A30089800FB9D5B /* DateInterval+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDFA10912A30089800FB9D5B /* DateInterval+Extensions.swift */; };
 		EDFA2CD829D6796500768D0E /* EnvironmentManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDFA2CD729D6796500768D0E /* EnvironmentManagerTests.swift */; };
 /* End PBXBuildFile section */
 
@@ -509,6 +510,7 @@
 		EDD894FF29634043009636E6 /* FirestoreEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreEnvironment.swift; sourceTree = "<group>"; };
 		EDDB923C2965D2B0006AEE72 /* CompetitionHistoryDataPoint+View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CompetitionHistoryDataPoint+View.swift"; sourceTree = "<group>"; };
 		EDDF77D728BA82E000BB8B97 /* HealthKitPermissionType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitPermissionType.swift; sourceTree = "<group>"; };
+		EDFA10912A30089800FB9D5B /* DateInterval+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DateInterval+Extensions.swift"; sourceTree = "<group>"; };
 		EDFA2CD729D6796500768D0E /* EnvironmentManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentManagerTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -1535,6 +1537,7 @@
 			isa = PBXGroup;
 			children = (
 				ED4F722329C94491007C5864 /* Array+Extensions.swift */,
+				EDFA10912A30089800FB9D5B /* DateInterval+Extensions.swift */,
 				ED1B5CE9296A574800122D7E /* URL+Extensions.swift */,
 			);
 			path = Foundation;
@@ -1948,6 +1951,7 @@
 				ED8C324729118DC400339988 /* VerifyEmailView.swift in Sources */,
 				C1ABB21526D6987C00716984 /* NewCompetitionView.swift in Sources */,
 				ED3ED8F7284F951800B5100F /* AutoMockable.generated.swift in Sources */,
+				EDFA10922A30089800FB9D5B /* DateInterval+Extensions.swift in Sources */,
 				C155CA7627AC1A63005F49F4 /* Competition+Standing.swift in Sources */,
 				C123C9CD27A863F100375F73 /* UserHashIDPill.swift in Sources */,
 				ED901B4F280249B000FE619E /* CompetitionViewModel.swift in Sources */,

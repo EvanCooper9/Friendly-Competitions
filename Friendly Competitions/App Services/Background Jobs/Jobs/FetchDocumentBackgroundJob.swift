@@ -3,7 +3,7 @@ import CombineExt
 import Factory
 import Foundation
 
-final class FetchCompetitionBackgroundJob: BackgroundJob {
+final class FetchDocumentBackgroundJob: BackgroundJob {
 
     private enum CodingKeys: String, CodingKey {
         case documentPath

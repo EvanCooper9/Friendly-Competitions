@@ -42,6 +42,10 @@ final class AnalyticsManager: AnalyticsManaging {
                 partialResult[current.key] = string.suffix(100)
             case .number(let number):
                 partialResult[current.key] = number
+            case .object(let object):
+                partialResult[current.key] = object
+            case .array(let array):
+                partialResult[current.key] = array
             case .bool(let bool):
                 partialResult[current.key] = bool
             default:
