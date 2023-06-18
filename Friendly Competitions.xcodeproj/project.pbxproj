@@ -1020,9 +1020,9 @@
 		ED1B85B529C904CC008DB1F6 /* User */ = {
 			isa = PBXGroup;
 			children = (
+				ED1B85B829C904CC008DB1F6 /* UserView.swift */,
 				ED1B85B629C904CC008DB1F6 /* UserViewModel.swift */,
 				ED1B85B729C904CC008DB1F6 /* UserViewAction.swift */,
-				ED1B85B829C904CC008DB1F6 /* UserView.swift */,
 			);
 			path = User;
 			sourceTree = "<group>";

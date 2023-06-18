@@ -52,6 +52,7 @@
 "Profile.Privacy.Searchable.description" = "Turn this off to prevent your account from showing up in search. Other people will not be able to add you as a friend.";
 "Profile.Privacy.HideName.title" = "Show name";
 "Profile.Privacy.HideName.description" = "Turn this off to hide your name in competitions. Your friends will still see your name.";
+"Profile.Privacy.HideName.learnMore" = "Learn more";
 "Profile.Session.title" = "Session";
 "Profile.Session.signOut" = "Sign out";
 "Profile.Session.deleteAccount" = "Delete account";
@@ -78,11 +79,15 @@
 "Competition.ScoringModel.ActivityRingCloseCount.displayName" = "Ring Close Count";
 "Competition.ScoringModel.PercentOfGoals.displayName" = "Percent of Goals";
 "Competition.ScoringModel.RawNumbers.displayName" = "Raw numbers";
+"Competition.ScoringModel.Steps.displayName" = "Step Count";
 "Competition.ScoringModel.Workout.displayName" = "Workout";
 "Competition.ScoringModel.Workout.displayNameWithType" = "%@ workout";
-"Competition.ScoringModel.PercentOfGoals.description" = "Every percent of an activity ring filled gains 1 point. Daily max of 600 points.";
+"Competition.ScoringModel.ActivityRingCloseCount.description" = "Every ring (move, exercise, stand) closed gains 1 point.";
+"Competition.ScoringModel.PercentOfGoals.description" = "Every percent of an activity ring filled gains 1 point.";
 "Competition.ScoringModel.RawNumbers.description" = "Every calorie, minute and hour gains 1 point. No daily max.";
-"Competition.ScoringModel.Workout.description" = "Only %@ workouts will count towards points.";
+"Competition.ScoringModel.Steps.description" = "Every step gains 1 point.";
+"Competition.ScoringModel.Workout.description" = "Only activity during certain workout types will count towards points.";
+"Competition.ScoringModel.Workout.descriptionWithType" = "Only %@ workouts will count towards points.";
 "Competition.Standings.title" = "Standings";
 "Competition.Standings.showMore" = "Show more";
 "Competition.Standings.empty" = "Nothing here, yet.";
@@ -103,6 +108,7 @@
 "Competition.Edit.starts" = "Starts";
 "Competition.Edit.ends" = "Ends";
 "Competition.Edit.scoringModel" = "Scoring";
+"Competition.Edit.learnMore" = "Learn more";
 "Competition.Edit.workoutType" = "Workout Type";
 "Competition.Edit.workoutMetrics" = "Workout metrics";
 "Competition.Edit.repeats" = "Repeats";
@@ -153,6 +159,8 @@
 "Premium.Paywall.restore" = "Restore Purchases";
 "Premium.Paywall.tos" = "Terms of Service";
 "Premium.Paywall.pp" = "Privacy Policy";
+"Premium.Purchase.title" = "Premium";
+"Premium.Purchase.autoRenews" = "Auto-renews. Cancel Anytime.";
 
 // Permissions
 "Permissions.title" = "Permissions needed";

@@ -11,13 +11,13 @@ extension Competition {
         var displayName: String {
             switch self {
             case .activityRingCloseCount:
-                return "Rings Closed"
+                return L10n.Competition.ScoringModel.ActivityRingCloseCount.displayName
             case .percentOfGoals:
                 return L10n.Competition.ScoringModel.PercentOfGoals.displayName
             case .rawNumbers:
                 return L10n.Competition.ScoringModel.RawNumbers.displayName
             case .stepCount:
-                return "Step Count"
+                return L10n.Competition.ScoringModel.ActivityRingCloseCount.displayName
             case .workout(let workoutType, _):
                 return L10n.Competition.ScoringModel.Workout.displayNameWithType(workoutType.description)
             }
@@ -26,15 +26,15 @@ extension Competition {
         var description: String {
             switch self {
             case .activityRingCloseCount:
-                return "Every ring closed is 1 point"
+                return L10n.Competition.ScoringModel.ActivityRingCloseCount.description
             case .percentOfGoals:
                 return L10n.Competition.ScoringModel.PercentOfGoals.description
             case .rawNumbers:
                 return L10n.Competition.ScoringModel.RawNumbers.description
             case .stepCount:
-                return "Every step is 1 point"
+                return L10n.Competition.ScoringModel.Steps.description
             case .workout(let workoutType, _):
-                return L10n.Competition.ScoringModel.Workout.description(workoutType.description)
+                return L10n.Competition.ScoringModel.Workout.descriptionWithType(workoutType.description)
             }
         }
     }

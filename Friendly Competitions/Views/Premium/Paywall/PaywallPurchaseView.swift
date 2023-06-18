@@ -8,7 +8,7 @@ struct PaywallPurchaseView: View {
 
     var body: some View {
         VStack(spacing: 20) {
-            Text("Premium")
+            Text(L10n.Premium.Purchase.title)
                 .font(.title)
                 .bold()
                 .frame(maxWidth: .infinity, alignment: .leading)
@@ -33,7 +33,7 @@ struct PaywallPurchaseView: View {
                             if let offer = offer.product.offer {
                                 Chip(text: offer, color: .green)
                             }
-                            Text("Auto-renews. Cancel Anytime.")
+                            Text(L10n.Premium.Purchase.autoRenews)
                                 .foregroundColor(.secondaryLabel)
                                 .font(.caption)
                         }

@@ -27,8 +27,8 @@ struct CompetitionDetails: View {
                 Text(competition.name)
 
                 let referenceDate = competition.started ? competition.end : competition.start
-                let endString = competition.ended ? "ended" : "ends"
-                let startString = "starts"
+                let endString = competition.ended ? L10n.Competition.Details.ended.localizedLowercase : L10n.Competition.Details.ends.localizedLowercase
+                let startString = L10n.Competition.Details.starts.localizedLowercase
                 Text("\(competition.started ? endString : startString) \(RelativeDateTimeFormatter().localizedString(for: referenceDate, relativeTo: .now))")
                     .font(.footnote)
                     .foregroundColor(subtitleColor)
@@ -37,7 +37,7 @@ struct CompetitionDetails: View {
             Spacer()
 
             if viewModel.isInvitation {
-                Text("Invited")
+                Text(L10n.InviteFriends.invited)
                     .foregroundColor(.gray)
             } else if showParticipantCount {
                 Label("\(competition.participants.count)", systemImage: .person3Fill)

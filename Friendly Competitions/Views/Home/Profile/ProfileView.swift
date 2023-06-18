@@ -59,7 +59,8 @@ struct ProfileView: View {
             } footer: {
                 Group {
                     Text(L10n.Profile.Privacy.HideName.description) +
-                    Text(" Learn more")
+                    Text(" ") +
+                    Text(L10n.Profile.Privacy.HideName.learnMore)
                         .foregroundColor(.accentColor)
                 }
                 .onTapGesture(perform: viewModel.hideNameLearnMoreTapped)

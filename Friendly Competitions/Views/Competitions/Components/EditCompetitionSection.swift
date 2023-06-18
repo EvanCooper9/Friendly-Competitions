@@ -4,7 +4,7 @@ import SwiftUIX
 
 struct EditCompetitionSection: View {
 
-    private enum UnderlyingScoringModel: CaseIterable, CustomStringConvertible, Identifiable {
+    private enum UnderlyingScoringModel: CaseIterable, CustomStringConvertible, Hashable, Identifiable {
         case activityRingCloseCount
         case percentOfGoals
         case rawNumbers
@@ -22,9 +22,24 @@ struct EditCompetitionSection: View {
             case .rawNumbers:
                 return L10n.Competition.ScoringModel.RawNumbers.displayName
             case .stepCount:
-                return "Step Count"
+                return L10n.Competition.ScoringModel.Steps.displayName
             case .workout:
                 return L10n.Competition.ScoringModel.Workout.displayName
+            }
+        }
+
+        var details: String {
+            switch self {
+            case .activityRingCloseCount:
+                return L10n.Competition.ScoringModel.ActivityRingCloseCount.description
+            case .percentOfGoals:
+                return L10n.Competition.ScoringModel.PercentOfGoals.description
+            case .rawNumbers:
+                return L10n.Competition.ScoringModel.RawNumbers.description
+            case .stepCount:
+                return L10n.Competition.ScoringModel.Steps.description
+            case .workout:
+                return L10n.Competition.ScoringModel.Workout.description
             }
         }
     }
@@ -43,6 +58,7 @@ struct EditCompetitionSection: View {
     @State private var underlyingScoringModel: UnderlyingScoringModel?
     @State private var underlyingWorkoutType: WorkoutType?
     @State private var underlyingWorkoutMetrics: [WorkoutMetric] = []
+    @State private var showScoringModelsLearnMore = false
 
     private var newScoringModel: Competition.ScoringModel? {
         switch underlyingScoringModel {
@@ -120,7 +136,7 @@ struct EditCompetitionSection: View {
                 Toggle(L10n.Competition.Edit.repeats, isOn: $repeats)
                 Toggle(L10n.Competition.Edit.public, isOn: $isPublic)
             } header: {
-                Text("Details")
+                Text(L10n.Competition.Edit.title)
             } footer: {
                 if detailsFooterTexts.isNotEmpty {
                     VStack(alignment: .leading, spacing: 10) {
@@ -129,32 +145,47 @@ struct EditCompetitionSection: View {
                 }
             }
 
-            Section {
+            scoringModelSection
+        }
+    }
 
-                EnumPicker(L10n.Competition.Edit.scoringModel, selection: $underlyingScoringModel)
+    private var scoringModelSection: some View {
+        Section {
 
-                if underlyingScoringModel == .workout {
-                    EnumPicker(L10n.Competition.Edit.workoutType, selection: $underlyingWorkoutType, allowsNoSelection: true)
+            EnumPicker(L10n.Competition.Edit.scoringModel, selection: $underlyingScoringModel)
 
-                    if let underlyingWorkoutType {
-                        MultiPicker(
-                            title: L10n.Competition.Edit.workoutMetrics,
-                            selection: $underlyingWorkoutMetrics,
-                            options: underlyingWorkoutType.metrics
-                        )
+            if underlyingScoringModel == .workout {
+                EnumPicker(L10n.Competition.Edit.workoutType, selection: $underlyingWorkoutType, allowsNoSelection: true)
+
+                if let underlyingWorkoutType {
+                    MultiPicker(
+                        title: L10n.Competition.Edit.workoutMetrics,
+                        selection: $underlyingWorkoutMetrics,
+                        options: underlyingWorkoutType.metrics
+                    )
+                }
+            }
+        } header: {
+            Text(L10n.Competition.Edit.scoringModel)
+        } footer: {
+            Button(L10n.Competition.Edit.learnMore, toggling: $showScoringModelsLearnMore)
+        }
+        .onChange(of: newScoringModel) { newScoringModel in
+            guard let newScoringModel else { return }
+            scoringModel = newScoringModel
+        }
+        .sheet(isPresented: $showScoringModelsLearnMore) {
+            List {
+                ForEach(UnderlyingScoringModel.allCases, id: \.description) { scoringModel in
+                    VStack(alignment: .leading) {
+                        Text(scoringModel.description)
+                        Text(scoringModel.details)
+                            .foregroundColor(.secondaryLabel)
                     }
                 }
-            } header: {
-                Text("Scoring")
-            } footer: {
-                Button("Learn more") {
-                    print("learn more")
-                }
             }
-            .onChange(of: newScoringModel) { newScoringModel in
-                guard let newScoringModel else { return }
-                scoringModel = newScoringModel
-            }
+            .navigationTitle(L10n.Competition.Edit.scoringModel)
+            .embeddedInNavigationView()
         }
     }
 }

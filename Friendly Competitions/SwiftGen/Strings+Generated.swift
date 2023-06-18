@@ -114,6 +114,8 @@ internal enum L10n {
     internal enum Edit {
       /// Ends
       internal static let ends = L10n.tr("Localizable", "Competition.Edit.ends", fallback: "Ends")
+      /// Learn more
+      internal static let learnMore = L10n.tr("Localizable", "Competition.Edit.learnMore", fallback: "Learn more")
       /// Name
       internal static let name = L10n.tr("Localizable", "Competition.Edit.name", fallback: "Name")
       /// Public
@@ -145,12 +147,14 @@ internal enum L10n {
     }
     internal enum ScoringModel {
       internal enum ActivityRingCloseCount {
+        /// Every ring (move, exercise, stand) closed gains 1 point.
+        internal static let description = L10n.tr("Localizable", "Competition.ScoringModel.ActivityRingCloseCount.description", fallback: "Every ring (move, exercise, stand) closed gains 1 point.")
         /// Ring Close Count
         internal static let displayName = L10n.tr("Localizable", "Competition.ScoringModel.ActivityRingCloseCount.displayName", fallback: "Ring Close Count")
       }
       internal enum PercentOfGoals {
-        /// Every percent of an activity ring filled gains 1 point. Daily max of 600 points.
-        internal static let description = L10n.tr("Localizable", "Competition.ScoringModel.PercentOfGoals.description", fallback: "Every percent of an activity ring filled gains 1 point. Daily max of 600 points.")
+        /// Every percent of an activity ring filled gains 1 point.
+        internal static let description = L10n.tr("Localizable", "Competition.ScoringModel.PercentOfGoals.description", fallback: "Every percent of an activity ring filled gains 1 point.")
         /// Percent of Goals
         internal static let displayName = L10n.tr("Localizable", "Competition.ScoringModel.PercentOfGoals.displayName", fallback: "Percent of Goals")
       }
@@ -160,10 +164,18 @@ internal enum L10n {
         /// Raw numbers
         internal static let displayName = L10n.tr("Localizable", "Competition.ScoringModel.RawNumbers.displayName", fallback: "Raw numbers")
       }
+      internal enum Steps {
+        /// Every step gains 1 point.
+        internal static let description = L10n.tr("Localizable", "Competition.ScoringModel.Steps.description", fallback: "Every step gains 1 point.")
+        /// Step Count
+        internal static let displayName = L10n.tr("Localizable", "Competition.ScoringModel.Steps.displayName", fallback: "Step Count")
+      }
       internal enum Workout {
+        /// Only activity during certain workout types will count towards points.
+        internal static let description = L10n.tr("Localizable", "Competition.ScoringModel.Workout.description", fallback: "Only activity during certain workout types will count towards points.")
         /// Only %@ workouts will count towards points.
-        internal static func description(_ p1: Any) -> String {
-          return L10n.tr("Localizable", "Competition.ScoringModel.Workout.description", String(describing: p1), fallback: "Only %@ workouts will count towards points.")
+        internal static func descriptionWithType(_ p1: Any) -> String {
+          return L10n.tr("Localizable", "Competition.ScoringModel.Workout.descriptionWithType", String(describing: p1), fallback: "Only %@ workouts will count towards points.")
         }
         /// Workout
         internal static let displayName = L10n.tr("Localizable", "Competition.ScoringModel.Workout.displayName", fallback: "Workout")
@@ -361,6 +373,12 @@ internal enum L10n {
       /// Preimum
       internal static let title = L10n.tr("Localizable", "Premium.Primer.title", fallback: "Preimum")
     }
+    internal enum Purchase {
+      /// Auto-renews. Cancel Anytime.
+      internal static let autoRenews = L10n.tr("Localizable", "Premium.Purchase.autoRenews", fallback: "Auto-renews. Cancel Anytime.")
+      /// Premium
+      internal static let title = L10n.tr("Localizable", "Premium.Purchase.title", fallback: "Premium")
+    }
   }
   internal enum Profile {
     /// Share invite link
@@ -391,6 +409,8 @@ internal enum L10n {
       internal enum HideName {
         /// Turn this off to hide your name in competitions. Your friends will still see your name.
         internal static let description = L10n.tr("Localizable", "Profile.Privacy.HideName.description", fallback: "Turn this off to hide your name in competitions. Your friends will still see your name.")
+        /// Learn more
+        internal static let learnMore = L10n.tr("Localizable", "Profile.Privacy.HideName.learnMore", fallback: "Learn more")
         /// Show name
         internal static let title = L10n.tr("Localizable", "Profile.Privacy.HideName.title", fallback: "Show name")
       }
