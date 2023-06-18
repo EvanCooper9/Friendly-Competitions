@@ -36,7 +36,8 @@ final class StepCountManager: StepCountManaging {
     // MARK: - Public Methods
 
     func stepCounts(in dateInterval: DateInterval) -> AnyPublisher<[StepCount], Error> {
-        (0 ..< Int(dateInterval.duration / 24.hours))
+        guard let days = Calendar.current.dateComponents([.day], from: dateInterval.start, to: dateInterval.end).day else { return .just([]) }
+        return (0 ..< days)
             .compactMap { offset -> AnyPublisher<StepCount, Error>? in
                 let start = dateInterval.start.addingTimeInterval(24.hours * TimeInterval(offset))
                 let end = start.addingTimeInterval(24.hours - 1.seconds)
@@ -49,7 +50,8 @@ final class StepCountManager: StepCountManaging {
                         case .failure(let error):
                             promise(.failure(error))
                         case .success(let steps):
-                            promise(.success(.init(count: Int(steps), date: start)))
+                            let count = StepCount(count: Int(steps), date: start)
+                            promise(.success(count))
                         }
                     }
                     self?.healthKitManager.execute(query)
