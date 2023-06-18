@@ -46,12 +46,6 @@ final class AuthenticationManager: AuthenticationManaging {
     init() {
         handle(user: authenticationCache.currentUser)
         listenForAuth()
-
-//        if auth.user == nil {
-//            signInAnonymously()
-//                .sink()
-//                .store(in: &cancellables)
-//        }
     }
 
     // MARK: - Public Methods
@@ -155,7 +149,6 @@ final class AuthenticationManager: AuthenticationManaging {
                 .catchErrorJustReturn(nil)
                 .eraseToAnyPublisher()
             }
-//            .dropFirst()
             .sink(withUnretained: self) { $0.handle(user: $1) }
             .store(in: &cancellables)
     }

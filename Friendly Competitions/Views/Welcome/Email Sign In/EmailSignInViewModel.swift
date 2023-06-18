@@ -5,7 +5,7 @@ import Factory
 
 final class EmailSignInViewModel: ObservableObject {
 
-    enum InputType {
+    enum InputType: Equatable {
         case signIn
         case signUp
     }

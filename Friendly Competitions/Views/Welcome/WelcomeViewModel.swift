@@ -8,7 +8,7 @@ final class WelcomeViewModel: ObservableObject {
 
     // MARK: - Public Properties
 
-    @Published private(set) var appNape = Bundle.main.displayName
+    let appNape = Bundle.main.displayName
     @Published private(set) var loading = false
     @Published var showAnonymousSignInConfirmation = false
     @Published var showEmailSignIn = false

@@ -144,7 +144,6 @@
 		ED3983B42A1F0AE400279929 /* DatabaseSettingsStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3983B32A1F0AE400279929 /* DatabaseSettingsStore.swift */; };
 		ED3983B62A1F88AC00279929 /* FeatureFlag.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3983B52A1F88AC00279929 /* FeatureFlag.swift */; };
 		ED3C09E029626A1D00ED4ACC /* NavigationDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3C09DF29626A1D00ED4ACC /* NavigationDestination.swift */; };
-		ED3D5F30295E472500211E86 /* SignInViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3D5F2F295E472500211E86 /* SignInViewModelTests.swift */; };
 		ED3D85F7295F676800C3D152 /* CompetitionResult.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3D85F6295F676800C3D152 /* CompetitionResult.swift */; };
 		ED3EAB7729E746B90047C43E /* FirebasePerformance in Frameworks */ = {isa = PBXBuildFile; productRef = ED3EAB7629E746B90047C43E /* FirebasePerformance */; };
 		ED3ED8F7284F951800B5100F /* AutoMockable.generated.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3ED8F6284F951800B5100F /* AutoMockable.generated.swift */; };
@@ -245,6 +244,8 @@
 		ED9F255D29A43544008C9967 /* DateToStartOfDay.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED9F255C29A43544008C9967 /* DateToStartOfDay.swift */; };
 		ED9F256129A4366C008C9967 /* CompetitionsManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED9F255F29A4366C008C9967 /* CompetitionsManagerTests.swift */; };
 		ED9F256229A4366C008C9967 /* ActivitySummaryManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED9F256029A4366C008C9967 /* ActivitySummaryManagerTests.swift */; };
+		ED9FB8B82A3EC45C00B09310 /* WelcomeViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED9FB8B72A3EC45C00B09310 /* WelcomeViewModelTests.swift */; };
+		ED9FB8BA2A3EC70500B09310 /* EmailSignInViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED9FB8B92A3EC70500B09310 /* EmailSignInViewModelTests.swift */; };
 		EDA035CC291860090091E7A6 /* PremiumManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA035CB291860090091E7A6 /* PremiumManager.swift */; };
 		EDA035CE2918619C0091E7A6 /* StoreKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EDA035CD2918619C0091E7A6 /* StoreKit.framework */; };
 		EDA352932836F87600390585 /* CompetitionViewAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA352922836F87600390585 /* CompetitionViewAction.swift */; };
@@ -404,7 +405,6 @@
 		ED3983B32A1F0AE400279929 /* DatabaseSettingsStore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DatabaseSettingsStore.swift; sourceTree = "<group>"; };
 		ED3983B52A1F88AC00279929 /* FeatureFlag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureFlag.swift; sourceTree = "<group>"; };
 		ED3C09DF29626A1D00ED4ACC /* NavigationDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationDestination.swift; sourceTree = "<group>"; };
-		ED3D5F2F295E472500211E86 /* SignInViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignInViewModelTests.swift; sourceTree = "<group>"; };
 		ED3D85F6295F676800C3D152 /* CompetitionResult.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionResult.swift; sourceTree = "<group>"; };
 		ED3EAB7829E758DE0047C43E /* HideNameLearnMoreView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HideNameLearnMoreView.swift; sourceTree = "<group>"; };
 		ED3ED8F6284F951800B5100F /* AutoMockable.generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AutoMockable.generated.swift; sourceTree = "<group>"; };
@@ -499,6 +499,8 @@
 		ED9F255C29A43544008C9967 /* DateToStartOfDay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateToStartOfDay.swift; sourceTree = "<group>"; };
 		ED9F255F29A4366C008C9967 /* CompetitionsManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CompetitionsManagerTests.swift; sourceTree = "<group>"; };
 		ED9F256029A4366C008C9967 /* ActivitySummaryManagerTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ActivitySummaryManagerTests.swift; sourceTree = "<group>"; };
+		ED9FB8B72A3EC45C00B09310 /* WelcomeViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeViewModelTests.swift; sourceTree = "<group>"; };
+		ED9FB8B92A3EC70500B09310 /* EmailSignInViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailSignInViewModelTests.swift; sourceTree = "<group>"; };
 		EDA035CB291860090091E7A6 /* PremiumManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PremiumManager.swift; sourceTree = "<group>"; };
 		EDA035CD2918619C0091E7A6 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
 		EDA352922836F87600390585 /* CompetitionViewAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionViewAction.swift; sourceTree = "<group>"; };
@@ -1087,7 +1089,7 @@
 				ED58C99729ABB2C200393468 /* RootViewModelTests.swift */,
 				EDBDFB4B29D0AEC9003E6278 /* Competitions */,
 				ED1CFA992864AF1400192E49 /* Home */,
-				ED3D5F2E295E471600211E86 /* Sign In */,
+				ED9FB8B62A3EC44600B09310 /* Welcome */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -1150,14 +1152,6 @@
 				ED3983B32A1F0AE400279929 /* DatabaseSettingsStore.swift */,
 			);
 			path = Settings;
-			sourceTree = "<group>";
-		};
-		ED3D5F2E295E471600211E86 /* Sign In */ = {
-			isa = PBXGroup;
-			children = (
-				ED3D5F2F295E472500211E86 /* SignInViewModelTests.swift */,
-			);
-			path = "Sign In";
 			sourceTree = "<group>";
 		};
 		ED3EAB7A29E764CE0047C43E /* Components */ = {
@@ -1556,6 +1550,15 @@
 			path = Managers;
 			sourceTree = "<group>";
 		};
+		ED9FB8B62A3EC44600B09310 /* Welcome */ = {
+			isa = PBXGroup;
+			children = (
+				ED9FB8B72A3EC45C00B09310 /* WelcomeViewModelTests.swift */,
+				ED9FB8B92A3EC70500B09310 /* EmailSignInViewModelTests.swift */,
+			);
+			path = Welcome;
+			sourceTree = "<group>";
+		};
 		EDA035B92917FE050091E7A6 /* Foundation */ = {
 			isa = PBXGroup;
 			children = (
@@ -1890,6 +1893,7 @@
 				ED58C99629ABAEA500393468 /* User+Extensions.swift in Sources */,
 				EDFA2CD829D6796500768D0E /* EnvironmentManagerTests.swift in Sources */,
 				ED879BFB29A06AAB0007DB91 /* ActivitySummaryTests.swift in Sources */,
+				ED9FB8B82A3EC45C00B09310 /* WelcomeViewModelTests.swift in Sources */,
 				C1E35D4427B45ECE00833EB2 /* PermissionTests.swift in Sources */,
 				ED779D3A29F019DA00317950 /* AuthenticationManagerTests.swift in Sources */,
 				C1E35D4627B45F6C00833EB2 /* PermissionStatusTests.swift in Sources */,
@@ -1905,6 +1909,7 @@
 				C1EBB16727AD7AF600376E59 /* UserDefaultsTests.swift in Sources */,
 				ED0C4BE029D31068003485CF /* FirestoreEncoderTests.swift in Sources */,
 				ED47BA0629F1A5EC007A1D12 /* HealthKitDataHelperBuildingMock.swift in Sources */,
+				ED9FB8BA2A3EC70500B09310 /* EmailSignInViewModelTests.swift in Sources */,
 				ED58C99829ABB2C200393468 /* RootViewModelTests.swift in Sources */,
 				C1E35D4A27B4600D00833EB2 /* Competition+StandingTests.swift in Sources */,
 				ED9F256129A4366C008C9967 /* CompetitionsManagerTests.swift in Sources */,
@@ -1916,7 +1921,6 @@
 				ED1CFA9B2864AF1D00192E49 /* HomeViewModelTests.swift in Sources */,
 				ED0C4BE429D315C0003485CF /* NewCompetitionViewModelTests.swift in Sources */,
 				ED19724E283803F60018FDFF /* WorkoutTypeTests.swift in Sources */,
-				ED3D5F30295E472500211E86 /* SignInViewModelTests.swift in Sources */,
 				ED58C98F29AAA1A600393468 /* SearchIndex+Mock.swift in Sources */,
 				ED879C0929A1494A0007DB91 /* MockError.swift in Sources */,
 				C1E35D4C27B4606200833EB2 /* Competition+ScoringModelTests.swift in Sources */,
