@@ -55,21 +55,34 @@ final class AuthenticationManager: AuthenticationManaging {
         case .anonymous:
             return signInAnonymously()
         case .apple:
-            createdUserSubject = .init(bufferSize: 1)
-            return signInWithAppleProvider.signIn()
-                .flatMapLatest(withUnretained: self) { strongSelf, authUser in
-                    let document = strongSelf.database.document("users/\(authUser.id)")
-                    return document.exists.flatMap { exists -> AnyPublisher<Void, Error> in
-                        guard !exists else { return .just(()) }
-
-                        // This is a new user, we need to create them in the database
-                        return strongSelf.createUser(from: authUser)
-                            .mapToVoid()
-                            .eraseToAnyPublisher()
+            if let user = auth.user {
+                return signInWithAppleProvider.link(with: user)
+                    .flatMapLatest(withUnretained: self) { strongSelf, authUser in
+                        strongSelf.database.document(authUser.databasePath)
+                            .update(fields: [
+                                "name": authUser.displayName?.nilIfEmpty as Any,
+                                "email": authUser.email?.nilIfEmpty as Any,
+                                "isAnonymous": false
+                            ])
                     }
-                }
-                .mapToVoid()
-                .eraseToAnyPublisher()
+                    .eraseToAnyPublisher()
+            } else {
+                createdUserSubject = .init(bufferSize: 1)
+                return signInWithAppleProvider.signIn()
+                    .flatMapLatest(withUnretained: self) { strongSelf, authUser in
+                        let document = strongSelf.database.document(authUser.databasePath)
+                        return document.exists.flatMap { exists -> AnyPublisher<Void, Error> in
+                            guard !exists else { return .just(()) }
+
+                            // This is a new user, we need to create them in the database
+                            return strongSelf.createUser(from: authUser)
+                                .mapToVoid()
+                                .eraseToAnyPublisher()
+                        }
+                    }
+                    .mapToVoid()
+                    .eraseToAnyPublisher()
+            }
         case .email(let email, let password):
             return auth.signIn(with: .email(email: email, password: password))
                 .mapToVoid()
@@ -79,13 +92,27 @@ final class AuthenticationManager: AuthenticationManaging {
 
     func signUp(name: String, email: String, password: String, passwordConfirmation: String) -> AnyPublisher<Void, Error> {
         guard password == passwordConfirmation else { return .error(AuthenticationError.passwordMatch) }
-        createdUserSubject = .init(bufferSize: 1)
-        return auth.signUp(with: .email(email: email, password: password))
-            .flatMapLatest { $0.set(displayName: name) }
-            .flatMapLatest { $0.sendEmailVerification().mapToValue($0) }
-            .flatMapLatest(withUnretained: self) { $0.createUser(from: $1) }
-            .mapToVoid()
-            .eraseToAnyPublisher()
+        if let user = auth.user {
+            return user.link(with: .email(email: email, password: password))
+                .flatMapLatest { user.set(displayName: name) }
+                .flatMapLatest(withUnretained: self) { strongSelf, authUser in
+                    strongSelf.database.document(authUser.databasePath)
+                        .update(fields: [
+                            "name": authUser.displayName?.nilIfEmpty as Any,
+                            "email": authUser.email?.nilIfEmpty as Any,
+                            "isAnonymous": false
+                        ])
+                }
+                .eraseToAnyPublisher()
+        } else {
+            createdUserSubject = .init(bufferSize: 1)
+            return auth.signUp(with: .email(email: email, password: password))
+                .flatMapLatest { $0.set(displayName: name) }
+                .flatMapLatest { $0.sendEmailVerification().mapToValue($0) }
+                .flatMapLatest(withUnretained: self) { $0.createUser(from: $1) }
+                .mapToVoid()
+                .eraseToAnyPublisher()
+        }
     }
 
     func checkEmailVerification() -> AnyPublisher<Void, Error> {
@@ -135,7 +162,7 @@ final class AuthenticationManager: AuthenticationManaging {
             })
             .flatMapLatest(withUnretained: self) { (strongSelf: AuthenticationManager, authUser) -> AnyPublisher<User?, Never> in
                 guard let authUser else { return .just(nil) }
-                let document = strongSelf.database.document("users/\(authUser.id)")
+                let document = strongSelf.database.document(authUser.databasePath)
                 return document.exists.flatMap { exists in
                     if exists {
                         return document.get(as: User.self)
@@ -178,7 +205,7 @@ final class AuthenticationManager: AuthenticationManaging {
             isAnonymous: authUser.isAnonymous
         )
 
-        return database.document("users/\(user.id)")
+        return database.document(authUser.databasePath)
             .set(value: user)
             .mapToValue(user)
             .handleEvents(withUnretained: self, receiveOutput: { $0.createdUserSubject.send($1) })

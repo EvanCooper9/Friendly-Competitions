@@ -104,6 +104,7 @@ extension String {
         "Lizard",
         "Llama",
         "Lobster",
+        "Manatee",
         "Margay",
         "Monitor lizard",
         "Monkey",

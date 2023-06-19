@@ -12,9 +12,7 @@ final class ProfileViewModel: ObservableObject {
     @Published var showHideNameLearnMore = false
 
     @Published var showCreateAccount = false
-    var isAnonymousAccount: Bool {
-        user.isAnonymous == true
-    }
+    @Published var isAnonymousAccount = false
 
     // MARK: - Private Properties
 
@@ -40,6 +38,11 @@ final class ProfileViewModel: ObservableObject {
             }
             .sink()
             .store(in: &cancellables)
+
+        $user
+            .unwrap()
+            .map { $0.isAnonymous == true }
+            .assign(to: &$isAnonymousAccount)
 
         userManager.userPublisher
             .removeDuplicates()

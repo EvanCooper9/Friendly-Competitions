@@ -58,6 +58,10 @@
 "Profile.Account.deleteAccount" = "Delete account";
 "Profile.Account.anonymous" = "You are using an anonymous account. Some features will be disabled until you create a real account.";
 
+// Create Account
+"CreateAccount.title" = "Create account";
+"CreateAccount.desctiption" = "Create an account so that you can receive notifications and create competitions, and more.\n\nDon't worry, all of your data will be migrated to your new account.";
+
 // User
 "User.Activity.title" = "Today's activity";
 "User.Medals.title" = "Medals";
@@ -169,18 +173,33 @@
 "Permission.Status.denied" = "Denied";
 "Permission.Status.done" = "Done";
 
-// Sign in
-"SignIn.title" = "Friendly Compeittions";
-"SignIn.subTitle" = "Compete against groups of friends in fitness";
+// Welcome
+"Welcome.welcomeTo" = "Welcome to";
+"Welcome.description" = "Compete against friends in fitness.";
+"Welcome.anonymousDisclaimer" = "Signing in anonymously will disable certain features like receiving notifications & creating compettions. However, you can always upgrade your account later.";
+
+// Sign In
 "SignIn.apple" = "Sign in with Apple";
+"SignIn.anonymously" = "Sign in Anonymously";
 "SignIn.email" = "Sign in with Email";
-"SignIn.checkEmail" = "Follow the instructions in your email to reset your password.";
+
+// Email Sign In
+"EmailSignIn.name" = "Name";
+"EmailSignIn.email" = "Email";
+"EmailSignIn.password" = "Password";
+"EmailSignIn.passwordConfirmation" = "Confirm password";
+"EmailSignIn.forgot" = "Forgot?";
+"EmailSignIn.new" = "New to %@?";
+"EmailSignIn.signUp" = "Sign up";
+"EmailSignIn.haveAnAccount" = "Have an account?";
+"EmailSignIn.signIn" = "Sign in";
 
 // Verify Email
 "VerifyEmail.signIn" = "Sign in";
 "VerifyEmail.title" = "Verify your account";
 "VerifyEmail.instructions" = "Follow the instructions sent to %@ to complete your account";
 "VerifyEmail.sendAgain" = "Send again";
+"VerifyEmail.reSent" = "Re-send email verification. Check your inbox!";
 
 // List Item
 "ListItem.Name.description" = "Name";

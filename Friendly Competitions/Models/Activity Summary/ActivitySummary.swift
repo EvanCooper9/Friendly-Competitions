@@ -38,6 +38,10 @@ struct ActivitySummary: Identifiable, Codable, Equatable, Hashable {
     }
 }
 
+extension ActivitySummary: Stored {
+    var databasePath: String { "users/\(userID ?? "<null>")/activitySummaries/\(id)" }
+}
+
 extension ActivitySummary {
     var hkActivitySummary: HKActivitySummary {
         let summary = HKActivitySummary()

@@ -8,7 +8,7 @@ struct VerifyEmailView: View {
     var body: some View {
         VStack(spacing: 50) {
 
-            Button("Sign in", systemImage: "chevron.left", action: viewModel.back)
+            Button(L10n.VerifyEmail.signIn, systemImage: .chevronLeft, action: viewModel.back)
                 .frame(maxWidth: .infinity, alignment: .leading)
 
             Spacer()
@@ -20,15 +20,15 @@ struct VerifyEmailView: View {
                 .clipShape(Circle())
 
             VStack(alignment: .leading, spacing: 10) {
-                Text("Verify your account")
+                Text(L10n.VerifyEmail.title)
                     .font(.title)
                     .padding(.bottom, -5)
                 if let email = viewModel.user.email {
-                    Text("Follow the instructions sent to \(email) to complete your account")
+                    Text(L10n.VerifyEmail.instructions(email))
                         .fixedSize(horizontal: false, vertical: true)
                         .foregroundColor(.gray)
                 }
-                Button("Send again", systemImage: .paperplaneFill, action: viewModel.resendVerification)
+                Button(L10n.VerifyEmail.sendAgain, systemImage: .paperplaneFill, action: viewModel.resendVerification)
             }
 
             Spacer()

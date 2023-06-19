@@ -7,14 +7,17 @@ final class CreateAccountViewModel: ObservableObject {
 
     // MARK: - Public Properties
 
-    @Published private(set) var loading = false
     @Published var showEmailSignIn = false
+    @Published private(set) var loading = false
+    @Published private(set) var dismiss = false
+
+    @Published var error: Error?
 
     // MARK: - Private Properties
 
     @Injected(\.authenticationManager) private var authenticationManager
 
-    private let signInWithAppleSubject = PassthroughSubject<Void, Error>()
+    private let signInWithAppleSubject = PassthroughSubject<Void, Never>()
 
     private var cancellables = Cancellables()
 
@@ -23,11 +26,14 @@ final class CreateAccountViewModel: ObservableObject {
     init() {
         signInWithAppleSubject
             .flatMapLatest(withUnretained: self) { strongSelf in
-                strongSelf.authenticationManager
+                strongSelf.error = nil
+                return strongSelf.authenticationManager
                     .signIn(with: .apple)
-                    .isLoading { strongSelf.loading = $0}
+                    .isLoading { strongSelf.loading = $0 }
+                    .onError { strongSelf.error = $0 }
+                    .ignoreFailure()
             }
-            .sink()
+            .sink(withUnretained: self) { $0.dismiss.toggle() }
             .store(in: &cancellables)
     }
 

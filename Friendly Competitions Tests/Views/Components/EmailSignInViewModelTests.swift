@@ -18,22 +18,13 @@ final class EmailSignInViewModelTests: FCTestCase {
         container.authenticationManager.register { self.authenticationManager }
     }
 
-    func testThatInputTypeIsToggled() {
-        let viewModel = EmailSignInViewModel()
-        XCTAssertEqual(viewModel.inputType, .signIn)
-        viewModel.signUpTapped()
-        XCTAssertEqual(viewModel.inputType, .signUp)
-        viewModel.signInTapped()
-        XCTAssertEqual(viewModel.inputType, .signIn)
-    }
-
     func testThatSignInTriggersLoading() {
         let expectation = self.expectation(description: #function)
         let expected = [false, true, false]
 
         authenticationManager.signInWithReturnValue = .just(())
 
-        let viewModel = EmailSignInViewModel()
+        let viewModel = makeViewModel()
         viewModel.$loading
             .collect(expected.count)
             .expect(expected, expectation: expectation)
@@ -49,9 +40,10 @@ final class EmailSignInViewModelTests: FCTestCase {
 
         authenticationManager.signInWithReturnValue = .error(expectedError)
 
-        let viewModel = EmailSignInViewModel()
+        let viewModel = makeViewModel()
         viewModel.continueTapped()
 
+        XCTAssertEqual(viewModel.inputType, .signIn)
         XCTAssertEqual(viewModel.error as? MockError, expectedError)
     }
 
@@ -60,10 +52,11 @@ final class EmailSignInViewModelTests: FCTestCase {
 
         authenticationManager.signUpNameEmailPasswordPasswordConfirmationReturnValue = .error(expectedError)
 
-        let viewModel = EmailSignInViewModel()
-        viewModel.signUpTapped()
+        let viewModel = makeViewModel()
+        viewModel.changeInputTypeTapped()
         viewModel.continueTapped()
 
+        XCTAssertEqual(viewModel.inputType, .signUp)
         XCTAssertEqual(viewModel.error as? MockError, expectedError)
     }
 
@@ -72,7 +65,7 @@ final class EmailSignInViewModelTests: FCTestCase {
 
         authenticationManager.sendPasswordResetToReturnValue = .just(())
 
-        let viewModel = EmailSignInViewModel()
+        let viewModel = makeViewModel()
         viewModel.email = expectedEmail
         viewModel.forgotTapped()
         XCTAssertTrue(authenticationManager.sendPasswordResetToCalled)
@@ -85,7 +78,7 @@ final class EmailSignInViewModelTests: FCTestCase {
 
         authenticationManager.sendPasswordResetToReturnValue = .just(())
 
-        let viewModel = EmailSignInViewModel()
+        let viewModel = makeViewModel()
         viewModel.$loading
             .collect(expected.count)
             .expect(expected, expectation: expectation)
@@ -102,10 +95,30 @@ final class EmailSignInViewModelTests: FCTestCase {
 
         authenticationManager.sendPasswordResetToReturnValue = .error(expectedError)
 
-        let viewModel = EmailSignInViewModel()
+        let viewModel = makeViewModel()
         viewModel.email = #function
         viewModel.forgotTapped()
 
         XCTAssertEqual(viewModel.error as? MockError, expectedError)
+    }
+
+    func testThatCanSwitchInputType() {
+        XCTAssertTrue(makeViewModel(canSwitchInputType: true).canSwitchInputType)
+        XCTAssertFalse(makeViewModel(canSwitchInputType: false).canSwitchInputType)
+    }
+
+    func testThatChangeInputTypeWorks() {
+        let viewModel = makeViewModel()
+        XCTAssertEqual(viewModel.inputType, .signIn)
+        viewModel.changeInputTypeTapped()
+        XCTAssertEqual(viewModel.inputType, .signUp)
+        viewModel.changeInputTypeTapped()
+        XCTAssertEqual(viewModel.inputType, .signIn)
+    }
+
+    // MARK: - Private
+
+    private func makeViewModel(startingInputType: EmailSignInViewInputType = .signIn, canSwitchInputType: Bool = true) -> EmailSignInViewModel {
+        EmailSignInViewModel(startingInputType: startingInputType, canSwitchInputType: canSwitchInputType)
     }
 }

@@ -60,6 +60,30 @@ extension FirebaseAuth.User: AuthUser {
 
     var id: String { uid }
 
+    func link(with credential: AuthCredential) -> AnyPublisher<Void, Error> {
+        switch credential {
+        case .anonymous:
+            return .never()
+        case let .apple(id, nonce, fullName):
+            let oAuthCredential = OAuthProvider.appleCredential(
+                withIDToken: id,
+                rawNonce: nonce,
+                fullName: fullName
+            )
+            return link(with: oAuthCredential)
+                .mapToVoid()
+                .eraseToAnyPublisher()
+        case let .email(email, password):
+            let emailCredential = EmailAuthProvider.credential(
+                withEmail: email,
+                password: password
+            )
+            return link(with: emailCredential)
+                .mapToVoid()
+                .eraseToAnyPublisher()
+        }
+    }
+
     func sendEmailVerification() -> AnyPublisher<Void, Error> {
         Future { [weak self] promise in
             self?.sendEmailVerification { error in

@@ -9,15 +9,15 @@ struct WelcomeView: View {
             VStack(alignment: .leading, spacing: 15) {
                 AppIcon()
                 VStack(alignment: .leading) {
-                    Text("Welcome to")
+                    Text(L10n.Welcome.welcomeTo)
                         .font(.title)
                         .bold()
-                    Text("Friendly Competitions")
+                    Text(Bundle.main.name)
                         .font(.title)
                         .bold()
                         .foregroundColor(.blue)
                 }
-                Text("Compete against friends in fitness.")
+                Text(L10n.Welcome.description)
                     .font(.title3)
                     .foregroundColor(.secondaryLabel)
             }
@@ -29,10 +29,12 @@ struct WelcomeView: View {
         .confirmationDialog(L10n.Confirmation.areYouSure, isPresented: $viewModel.showAnonymousSignInConfirmation, titleVisibility: .visible) {
             Button(L10n.Generics.continue, action: viewModel.confirmAnonymousSignIn)
         } message: {
-            Text("Signing in anonymously will disable certain features like receiving notifications & creating compettions. However, you can always upgrade your account later.")
+            Text(L10n.Welcome.anonymousDisclaimer)
         }
         .withLoadingOverlay(isLoading: viewModel.loading)
-        .sheet(isPresented: $viewModel.showEmailSignIn, content: EmailSignInView.init)
+        .sheet(isPresented: $viewModel.showEmailSignIn) {
+            EmailSignInView()
+        }
     }
 
     @ViewBuilder
@@ -46,7 +48,7 @@ struct WelcomeView: View {
         .buttonStyle(.borderedProminent)
 
         Button(action: viewModel.signInAnonymouslyTapped) {
-            Label("Sign in Anonymously", systemImage: .personCropCircleBadgeQuestionmarkFill)
+            Label(L10n.SignIn.anonymously, systemImage: .personCropCircleBadgeQuestionmarkFill)
                 .signInStyle()
         }
         .buttonStyle(.bordered)

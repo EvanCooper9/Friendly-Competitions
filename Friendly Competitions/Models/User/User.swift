@@ -26,3 +26,7 @@ struct User: Codable, Equatable, Hashable, Identifiable {
         otherUser.id == id || friends.contains(otherUser.id) || showRealName != false ? .visible : .hidden
     }
 }
+
+extension User: Stored {
+    var databasePath: String { "users/\(id)" }
+}

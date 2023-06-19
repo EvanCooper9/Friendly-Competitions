@@ -4,14 +4,14 @@ struct CreateAccountView: View {
 
     @StateObject private var viewModel = CreateAccountViewModel()
 
+    @Environment(\.dismiss) private var dismiss
+
     var body: some View {
         VStack(alignment: .leading, spacing: 50) {
             VStack(alignment: .leading, spacing: 8) {
-                Text("Create account")
+                Text(L10n.CreateAccount.title)
                     .font(.title)
-                Text("Create an account so that you can receive notifications and create competitions, and more.")
-                    .foregroundColor(.secondaryLabel)
-                Text("Don't worry, all of your data will be migrated to your new account.")
+                Text(L10n.CreateAccount.desctiption)
                     .foregroundColor(.secondaryLabel)
             }
 
@@ -27,7 +27,11 @@ struct CreateAccountView: View {
         }
         .padding()
         .fittedDetents()
-        .sheet(isPresented: $viewModel.showEmailSignIn, content: EmailSignInView.init)
+        .sheet(isPresented: $viewModel.showEmailSignIn) {
+            EmailSignInView(startingInputType: .signUp, canSwitchInputType: false)
+        }
+        .onChange(of: viewModel.dismiss) { _ in dismiss() }
+        .errorAlert(error: $viewModel.error)
     }
 }
 

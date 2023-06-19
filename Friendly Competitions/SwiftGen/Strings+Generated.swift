@@ -184,6 +184,14 @@ internal enum L10n {
     /// Are you sure? This cannot be undone.
     internal static let areYouSureCannotBeUndone = L10n.tr("Localizable", "Confirmation.areYouSureCannotBeUndone", fallback: "Are you sure? This cannot be undone.")
   }
+  internal enum CreateAccount {
+    /// Create an account so that you can receive notifications and create competitions, and more.
+    /// 
+    /// Don't worry, all of your data will be migrated to your new account.
+    internal static let desctiption = L10n.tr("Localizable", "CreateAccount.desctiption", fallback: "Create an account so that you can receive notifications and create competitions, and more.\n\nDon't worry, all of your data will be migrated to your new account.")
+    /// Create account
+    internal static let title = L10n.tr("Localizable", "CreateAccount.title", fallback: "Create account")
+  }
   internal enum DeepLink {
     internal enum Competition {
       /// Compete against me in Friendly Competitions!
@@ -209,6 +217,28 @@ internal enum L10n {
         internal static let type = L10n.tr("Localizable", "Developer.Environment.Emulation.type", fallback: "Emulation type")
       }
     }
+  }
+  internal enum EmailSignIn {
+    /// Email
+    internal static let email = L10n.tr("Localizable", "EmailSignIn.email", fallback: "Email")
+    /// Forgot?
+    internal static let forgot = L10n.tr("Localizable", "EmailSignIn.forgot", fallback: "Forgot?")
+    /// Have an account?
+    internal static let haveAnAccount = L10n.tr("Localizable", "EmailSignIn.haveAnAccount", fallback: "Have an account?")
+    /// Name
+    internal static let name = L10n.tr("Localizable", "EmailSignIn.name", fallback: "Name")
+    /// New to %@?
+    internal static func new(_ p1: Any) -> String {
+      return L10n.tr("Localizable", "EmailSignIn.new", String(describing: p1), fallback: "New to %@?")
+    }
+    /// Password
+    internal static let password = L10n.tr("Localizable", "EmailSignIn.password", fallback: "Password")
+    /// Confirm password
+    internal static let passwordConfirmation = L10n.tr("Localizable", "EmailSignIn.passwordConfirmation", fallback: "Confirm password")
+    /// Sign in
+    internal static let signIn = L10n.tr("Localizable", "EmailSignIn.signIn", fallback: "Sign in")
+    /// Sign up
+    internal static let signUp = L10n.tr("Localizable", "EmailSignIn.signUp", fallback: "Sign up")
   }
   internal enum Explore {
     /// Explore
@@ -457,16 +487,12 @@ internal enum L10n {
     internal static let home = L10n.tr("Localizable", "Root.home", fallback: "Home")
   }
   internal enum SignIn {
+    /// Sign in Anonymously
+    internal static let anonymously = L10n.tr("Localizable", "SignIn.anonymously", fallback: "Sign in Anonymously")
     /// Sign in with Apple
     internal static let apple = L10n.tr("Localizable", "SignIn.apple", fallback: "Sign in with Apple")
-    /// Follow the instructions in your email to reset your password.
-    internal static let checkEmail = L10n.tr("Localizable", "SignIn.checkEmail", fallback: "Follow the instructions in your email to reset your password.")
     /// Sign in with Email
     internal static let email = L10n.tr("Localizable", "SignIn.email", fallback: "Sign in with Email")
-    /// Compete against groups of friends in fitness
-    internal static let subTitle = L10n.tr("Localizable", "SignIn.subTitle", fallback: "Compete against groups of friends in fitness")
-    /// Friendly Compeittions
-    internal static let title = L10n.tr("Localizable", "SignIn.title", fallback: "Friendly Compeittions")
   }
   internal enum User {
     internal enum Action {
@@ -501,12 +527,22 @@ internal enum L10n {
     internal static func instructions(_ p1: Any) -> String {
       return L10n.tr("Localizable", "VerifyEmail.instructions", String(describing: p1), fallback: "Follow the instructions sent to %@ to complete your account")
     }
+    /// Re-send email verification. Check your inbox!
+    internal static let reSent = L10n.tr("Localizable", "VerifyEmail.reSent", fallback: "Re-send email verification. Check your inbox!")
     /// Send again
     internal static let sendAgain = L10n.tr("Localizable", "VerifyEmail.sendAgain", fallback: "Send again")
     /// Sign in
     internal static let signIn = L10n.tr("Localizable", "VerifyEmail.signIn", fallback: "Sign in")
     /// Verify your account
     internal static let title = L10n.tr("Localizable", "VerifyEmail.title", fallback: "Verify your account")
+  }
+  internal enum Welcome {
+    /// Signing in anonymously will disable certain features like receiving notifications & creating compettions. However, you can always upgrade your account later.
+    internal static let anonymousDisclaimer = L10n.tr("Localizable", "Welcome.anonymousDisclaimer", fallback: "Signing in anonymously will disable certain features like receiving notifications & creating compettions. However, you can always upgrade your account later.")
+    /// Compete against friends in fitness.
+    internal static let description = L10n.tr("Localizable", "Welcome.description", fallback: "Compete against friends in fitness.")
+    /// Welcome to
+    internal static let welcomeTo = L10n.tr("Localizable", "Welcome.welcomeTo", fallback: "Welcome to")
   }
   internal enum WorkoutMetric {
     internal enum Distance {

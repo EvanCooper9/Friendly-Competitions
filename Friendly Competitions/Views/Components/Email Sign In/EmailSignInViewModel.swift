@@ -5,11 +5,6 @@ import Factory
 
 final class EmailSignInViewModel: ObservableObject {
 
-    enum InputType: Equatable {
-        case signIn
-        case signUp
-    }
-
     // MARK: - Public Properties
 
     @Published var name = ""
@@ -18,21 +13,25 @@ final class EmailSignInViewModel: ObservableObject {
     @Published var passwordConfirmation = ""
 
     @Published var error: Error?
-    @Published private(set) var inputType = InputType.signIn
+    @Published private(set) var inputType: EmailSignInViewInputType
+    @Published private(set) var canSwitchInputType: Bool
     @Published private(set) var loading = false
 
     // MARK: - Private Properties
 
     @Injected(\.authenticationManager) private var authenticationManager
 
-    private let continueSubject = PassthroughSubject<InputType, Never>()
+    private let continueSubject = PassthroughSubject<EmailSignInViewInputType, Never>()
     private let forgotSubject = PassthroughSubject<Void, Never>()
 
     private var cancellables = Cancellables()
 
     // MARK: - Lifecycle
 
-    init() {
+    init(startingInputType: EmailSignInViewInputType, canSwitchInputType: Bool) {
+        inputType = startingInputType
+        self.canSwitchInputType = canSwitchInputType
+
         continueSubject
             .flatMapLatest(withUnretained: self) { strongSelf, inputType in
 
@@ -52,14 +51,7 @@ final class EmailSignInViewModel: ObservableObject {
 
                 return publisher
                     .isLoading { strongSelf.loading = $0 }
-                    .handleEvents(withUnretained: self, receiveCompletion: { strongSelf, completion in
-                        switch completion {
-                        case .failure(let error):
-                            strongSelf.error = error
-                        case .finished:
-                            break
-                        }
-                    })
+                    .onError { strongSelf.error = $0 }
                     .ignoreFailure()
                     .eraseToAnyPublisher()
             }
@@ -91,12 +83,13 @@ final class EmailSignInViewModel: ObservableObject {
         continueSubject.send(inputType)
     }
 
-    func signInTapped() {
-        inputType = .signIn
-    }
-
-    func signUpTapped() {
-        inputType = .signUp
+    func changeInputTypeTapped() {
+        switch inputType {
+        case .signIn:
+            inputType = .signUp
+        case .signUp:
+            inputType = .signIn
+        }
     }
 
     func forgotTapped() {

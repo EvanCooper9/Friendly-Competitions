@@ -7,7 +7,7 @@ import Foundation
 final class VerifyEmailViewModel: ObservableObject {
 
     private enum Constants {
-        static let resentEmailVerification = "Re-sent email verification. Check your inbox!"
+        static let resentEmailVerification = L10n.VerifyEmail.reSent
     }
 
     // MARK: - Public Properties

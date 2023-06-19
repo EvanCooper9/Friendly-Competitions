@@ -16,6 +16,10 @@ struct Competition: Codable, Equatable, Hashable, Identifiable {
     let banner: String?
 }
 
+extension Competition: Stored {
+    var databasePath: String { "competitions/\(id)" }
+}
+
 extension Competition {
     var started: Bool { Date.now.compare(start) != .orderedAscending }
     var ended: Bool { Date.now.compare(end) == .orderedDescending }

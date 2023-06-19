@@ -2,37 +2,41 @@ import SwiftUI
 
 struct EmailSignInView: View {
 
-    @StateObject private var viewModel = EmailSignInViewModel()
+    @StateObject private var viewModel: EmailSignInViewModel
+
+    init(startingInputType: EmailSignInViewInputType = .signIn, canSwitchInputType: Bool = true) {
+        _viewModel = .init(wrappedValue: .init(startingInputType: startingInputType, canSwitchInputType: canSwitchInputType))
+    }
 
     var body: some View {
         VStack(alignment: .leading) {
-            Text("Sign in with Email")
+            Text(L10n.SignIn.email)
                 .font(.title)
 
             switch viewModel.inputType {
             case .signIn:
                 Group {
-                    TextField("Email", text: $viewModel.email)
+                    TextField(L10n.EmailSignIn.email, text: $viewModel.email)
                         .textContentType(.emailAddress)
                         .keyboardType(.emailAddress)
                         .autocorrectionDisabled()
-                    TextFieldWithSecureToggle("Password", text: $viewModel.password, textContentType: .password)
+                    TextFieldWithSecureToggle(L10n.EmailSignIn.password, text: $viewModel.password, textContentType: .password)
                         .onSubmit(viewModel.continueTapped)
                 }
                 .emailSignInStyle()
 
-                Button("Forgot?", action: viewModel.forgotTapped)
+                Button(L10n.EmailSignIn.forgot, action: viewModel.forgotTapped)
                     .frame(maxWidth: .infinity, alignment: .trailing)
             case .signUp:
                 Group {
-                    TextField("Name", text: $viewModel.name)
+                    TextField(L10n.EmailSignIn.name, text: $viewModel.name)
                         .textContentType(.name)
-                    TextField("Email", text: $viewModel.email)
+                    TextField(L10n.EmailSignIn.email, text: $viewModel.email)
                         .textContentType(.emailAddress)
                         .keyboardType(.emailAddress)
                         .autocorrectionDisabled()
-                    TextFieldWithSecureToggle("Password", text: $viewModel.password, textContentType: .newPassword)
-                    TextFieldWithSecureToggle("Confirm Password", text: $viewModel.passwordConfirmation, textContentType: .newPassword)
+                    TextFieldWithSecureToggle(L10n.EmailSignIn.password, text: $viewModel.password, textContentType: .newPassword)
+                    TextFieldWithSecureToggle(L10n.EmailSignIn.passwordConfirmation, text: $viewModel.passwordConfirmation, textContentType: .newPassword)
                         .onSubmit(viewModel.continueTapped)
                 }
                 .emailSignInStyle()
@@ -46,21 +50,23 @@ struct EmailSignInView: View {
             .buttonStyle(.borderedProminent)
             .padding(.vertical)
 
-            Divider()
+            if viewModel.canSwitchInputType {
+                Divider()
 
-            HStack {
-                switch viewModel.inputType {
-                case .signIn:
-                    Text("New to Friendly Competitions?")
-                        .foregroundColor(.secondaryLabel)
-                    Button("Sign up", action: viewModel.signUpTapped)
-                case .signUp:
-                    Text("Have an account?")
-                        .foregroundColor(.secondaryLabel)
-                    Button("Sign in", action: viewModel.signInTapped)
+                HStack {
+                    switch viewModel.inputType {
+                    case .signIn:
+                        Text(L10n.EmailSignIn.new(Bundle.main.name))
+                            .foregroundColor(.secondaryLabel)
+                        Button(L10n.EmailSignIn.signUp, action: viewModel.changeInputTypeTapped)
+                    case .signUp:
+                        Text(L10n.EmailSignIn.haveAnAccount)
+                            .foregroundColor(.secondaryLabel)
+                        Button(L10n.EmailSignIn.signIn, action: viewModel.changeInputTypeTapped)
+                    }
                 }
+                .maxWidth(.infinity)
             }
-            .maxWidth(.infinity)
         }
         .padding()
         .withLoadingOverlay(isLoading: viewModel.loading)
@@ -85,7 +91,9 @@ struct EmailSignInView_Previews: PreviewProvider {
 
         var body: some View {
             Button("Show Email Sign In View", toggle: $isPresented)
-                .sheet(isPresented: $isPresented, content: EmailSignInView.init)
+                .sheet(isPresented: $isPresented) {
+                    EmailSignInView()
+                }
         }
     }
 

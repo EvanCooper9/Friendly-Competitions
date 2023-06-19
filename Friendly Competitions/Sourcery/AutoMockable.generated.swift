@@ -328,6 +328,28 @@ class AuthUserMock: AuthUser {
     var underlyingIsAnonymous: Bool!
 
 
+    //MARK: - link
+
+    var linkWithCallsCount = 0
+    var linkWithCalled: Bool {
+        return linkWithCallsCount > 0
+    }
+    var linkWithReceivedCredential: AuthCredential?
+    var linkWithReceivedInvocations: [AuthCredential] = []
+    var linkWithReturnValue: AnyPublisher<Void, Error>!
+    var linkWithClosure: ((AuthCredential) -> AnyPublisher<Void, Error>)?
+
+    func link(with credential: AuthCredential) -> AnyPublisher<Void, Error> {
+        linkWithCallsCount += 1
+        linkWithReceivedCredential = credential
+        linkWithReceivedInvocations.append(credential)
+        if let linkWithClosure = linkWithClosure {
+            return linkWithClosure(credential)
+        } else {
+            return linkWithReturnValue
+        }
+    }
+
     //MARK: - sendEmailVerification
 
     var sendEmailVerificationCallsCount = 0
@@ -1315,6 +1337,28 @@ class SignInWithAppleProvidingMock: SignInWithAppleProviding {
             return signInClosure()
         } else {
             return signInReturnValue
+        }
+    }
+
+    //MARK: - link
+
+    var linkWithCallsCount = 0
+    var linkWithCalled: Bool {
+        return linkWithCallsCount > 0
+    }
+    var linkWithReceivedUser: AuthUser?
+    var linkWithReceivedInvocations: [AuthUser] = []
+    var linkWithReturnValue: AnyPublisher<AuthUser, Error>!
+    var linkWithClosure: ((AuthUser) -> AnyPublisher<AuthUser, Error>)?
+
+    func link(with user: AuthUser) -> AnyPublisher<AuthUser, Error> {
+        linkWithCallsCount += 1
+        linkWithReceivedUser = user
+        linkWithReceivedInvocations.append(user)
+        if let linkWithClosure = linkWithClosure {
+            return linkWithClosure(user)
+        } else {
+            return linkWithReturnValue
         }
     }
 
