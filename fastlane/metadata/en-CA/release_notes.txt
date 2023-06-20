@@ -1,4 +1,7 @@
-You can now login anonymously
+• You can now login anonymously
+• New competition scoring models:
+    • Step count
+    • Activity ring close count
 
 Improvements:
 • Performance

@@ -33,14 +33,14 @@ struct CompetitionResultsView: View {
             }
         }
         .background(Color.listBackground)
-        .navigationTitle("Results")
+        .navigationTitle(L10n.Results.title)
         .sheet(isPresented: $viewModel.showPaywall, content: PaywallView.init)
         .registerScreenView(name: "Results")
     }
 
     private var lockedView: some View {
         VStack(alignment: .leading, spacing: 15) {
-            Text("You need Friendly Competitions Premium to see older results")
+            Text(L10n.Results.premiumRequred)
                 .frame(maxWidth: .infinity, alignment: .leading)
                 .font(.title)
             PremiumBanner()

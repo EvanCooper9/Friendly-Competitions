@@ -163,7 +163,7 @@ final class CompetitionResultsViewModel: ObservableObject {
 
     private func scoringDataPoints(currentResult: CompetitionResult, previousResult: CompetitionResult?) -> AnyPublisher<[CompetitionResultsDataPoint], Never> {
         switch competition.scoringModel {
-        case .rawNumbers, .percentOfGoals:
+        case .activityRingCloseCount, .rawNumbers, .percentOfGoals:
             let previousActivitySummaries: AnyPublisher<[ActivitySummary]?, Never> = {
                 guard let previousResult else { return .just(nil) }
                 return activitySummaryManager
@@ -197,6 +197,8 @@ final class CompetitionResultsViewModel: ObservableObject {
                     ]
                 }
                 .eraseToAnyPublisher()
+        case .stepCount:
+            return .just([])
         case let .workout(type, metrics):
             let previousWorkouts: AnyPublisher<[Workout]?, Error> = {
                 guard let previousResult else { return .just(nil) }

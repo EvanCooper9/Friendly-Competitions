@@ -60,6 +60,12 @@ class Workout {
             });
             return Math.round(total);
         }
+        case RawScoringModel.activityRingCloseCount: {
+            return 0;
+        }
+        case RawScoringModel.stepCount: {
+            return 0
+        }
         }
     }
 }

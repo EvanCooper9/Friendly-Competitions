@@ -20,13 +20,22 @@ struct ActivitySummary: Identifiable, Codable, Equatable, Hashable {
 
     func points(from scoringModel: Competition.ScoringModel) -> Double {
         switch scoringModel {
+        case .activityRingCloseCount:
+            let count = [
+                activeEnergyBurned > activeEnergyBurnedGoal,
+                appleExerciseTime > appleExerciseTimeGoal,
+                appleStandHours > appleStandHoursGoal
+            ]
+            .filter { $0 }
+            .count
+            return Double(count)
         case .percentOfGoals:
             return (activeEnergyBurned / activeEnergyBurnedGoal) * 100 +
                 (appleExerciseTime / appleStandHoursGoal) * 100 +
                 (appleStandHours / appleStandHoursGoal) * 100
         case .rawNumbers:
             return activeEnergyBurned + appleExerciseTime + appleStandHours
-        case .workout:
+        case .stepCount, .workout:
             return 0
         }
     }

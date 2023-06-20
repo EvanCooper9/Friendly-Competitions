@@ -22,5 +22,4 @@ struct FriendlyCompetitions: App {
             .onOpenURL(perform: appModel.handle)
         }
     }
-
 }

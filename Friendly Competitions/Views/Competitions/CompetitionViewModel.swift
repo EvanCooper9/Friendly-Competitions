@@ -33,19 +33,19 @@ final class CompetitionViewModel: ObservableObject {
         [
             (
                 value: competition.start.formatted(date: .abbreviated, time: .omitted),
-                valueType: .date(description: competition.started ? "Started" : "Starts")
+                valueType: .date(description: competition.started ? L10n.Competition.Details.started : L10n.Competition.Details.starts)
             ),
             (
                 value: competition.end.formatted(date: .abbreviated, time: .omitted),
-                valueType: .date(description: competition.ended ? "Ended" : "Ends")
+                valueType: .date(description: competition.ended ? L10n.Competition.Details.ended : L10n.Competition.Details.ends)
             ),
             (
                 value: competition.scoringModel.displayName,
-                valueType: .other(systemImage: .plusminusCircle, description: "Scoring")
+                valueType: .other(systemImage: .plusminusCircle, description: L10n.Competition.Details.scoringModel)
             ),
             (
                 value: competition.repeats ? L10n.Generics.yes : L10n.Generics.no,
-                valueType: .other(systemImage: .repeatCircle, description: "Restarts")
+                valueType: .other(systemImage: .repeatCircle, description: L10n.Competition.Details.repeats)
             )
         ]
     }

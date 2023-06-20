@@ -14,19 +14,4 @@ class Competition_ScoringModelTests: FCTestCase {
         XCTAssertEqual(Competition.ScoringModel.rawNumbers.displayName, "Raw numbers")
         XCTAssertEqual(Competition.ScoringModel.workout(.walking, []).displayName, "Walking workout")
     }
-
-    func testThatDescriptionIsCorrect() {
-        XCTAssertEqual(
-            Competition.ScoringModel.percentOfGoals.description,
-            "Every percent of an activity ring filled gains 1 point. Daily max of 600 points."
-        )
-        XCTAssertEqual(
-            Competition.ScoringModel.rawNumbers.description,
-            "Every calorie, minute and hour gains 1 point. No daily max."
-        )
-        XCTAssertEqual(
-            Competition.ScoringModel.workout(.walking, []).description,
-            "Only Walking workouts will count towards points."
-        )
-    }
 }
