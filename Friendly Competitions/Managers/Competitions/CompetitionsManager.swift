@@ -86,7 +86,7 @@ final class CompetitionsManager: CompetitionsManaging {
     // MARK: - Public Methods
 
     func create(_ competition: Competition) -> AnyPublisher<Void, Error> {
-        database.document("competitions/\(competition.id)")
+        database.document(competition.databasePath)
             .set(value: competition)
             .handleEvents(withUnretained: self, receiveOutput: {
                 $0.analyticsManager.log(event: .createCompetition(name: competition.name))
@@ -101,7 +101,7 @@ final class CompetitionsManager: CompetitionsManaging {
     }
 
     func update(_ competition: Competition) -> AnyPublisher<Void, Error> {
-        database.document("competitions/\(competition.id)")
+        database.document(competition.databasePath)
             .set(value: competition)
     }
 
@@ -141,6 +141,7 @@ final class CompetitionsManager: CompetitionsManaging {
     func standingsPublisher(for competitionID: Competition.ID) -> AnyPublisher<[Competition.Standing], Error> {
         database.collection("competitions/\(competitionID)/standings")
             .publisher(asArrayOf: Competition.Standing.self)
+            .eraseToAnyPublisher()
     }
 
     // MARK: - Private Methods

@@ -6,10 +6,13 @@ import Factory
 final class ProfileViewModel: ObservableObject {
 
     @Published var user: User!
-    @Published var premium: Premium?
+    @Published private(set) var premium: Premium?
     @Published var confirmationRequired = false
     @Published var loading = false
     @Published var showHideNameLearnMore = false
+
+    @Published var showCreateAccount = false
+    @Published var isAnonymousAccount = false
 
     // MARK: - Private Properties
 
@@ -35,6 +38,11 @@ final class ProfileViewModel: ObservableObject {
             }
             .sink()
             .store(in: &cancellables)
+
+        $user
+            .unwrap()
+            .map { $0.isAnonymous == true }
+            .assign(to: &$isAnonymousAccount)
 
         userManager.userPublisher
             .removeDuplicates()
@@ -75,6 +83,10 @@ final class ProfileViewModel: ObservableObject {
 
     func manageSubscriptionTapped() {
         premiumManager.manageSubscription()
+    }
+
+    func signUpTapped() {
+        showCreateAccount.toggle()
     }
 
     func signOutTapped() {

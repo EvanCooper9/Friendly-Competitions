@@ -8,6 +8,7 @@ import XCTest
 final class SearchManagerTests: FCTestCase {
 
     private var database: DatabaseMock!
+    private var environmentManager: EnvironmentManagingMock!
     private var searchClient: SearchClientMock!
     private var userManager: UserManagingMock!
     
@@ -16,12 +17,16 @@ final class SearchManagerTests: FCTestCase {
     override func setUp() {
         super.setUp()
         database = .init()
+        environmentManager = .init()
         searchClient = .init()
         userManager = .init()
         container.database.register { self.database }
+        container.environmentManager.register { self.environmentManager }
         container.searchClient.register { self.searchClient }
         container.userManager.register { self.userManager }
         cancellables = .init()
+
+        environmentManager.environment = .prod
     }
     
     func testThatSearchForCompetitionsSucceeds() {

@@ -17,6 +17,10 @@ extension Auth: AuthProviding {
 
     func signIn(with credential: AuthCredential) -> AnyPublisher<AuthUser, Error> {
         switch credential {
+        case .anonymous:
+            return signInAnonymously()
+                .map { result -> AuthUser in result.user }
+                .eraseToAnyPublisher()
         case let .apple(id, nonce, fullName):
             let oAuthCredential = OAuthProvider.appleCredential(
                 withIDToken: id,
@@ -35,6 +39,8 @@ extension Auth: AuthProviding {
 
     func signUp(with credential: AuthCredential) -> AnyPublisher<AuthUser, Error> {
         switch credential {
+        case .anonymous:
+            return .never()
         case .apple:
             return .never()
         case .email(let email, let password):
@@ -53,6 +59,30 @@ extension Auth: AuthProviding {
 extension FirebaseAuth.User: AuthUser {
 
     var id: String { uid }
+
+    func link(with credential: AuthCredential) -> AnyPublisher<Void, Error> {
+        switch credential {
+        case .anonymous:
+            return .never()
+        case let .apple(id, nonce, fullName):
+            let oAuthCredential = OAuthProvider.appleCredential(
+                withIDToken: id,
+                rawNonce: nonce,
+                fullName: fullName
+            )
+            return link(with: oAuthCredential)
+                .mapToVoid()
+                .eraseToAnyPublisher()
+        case let .email(email, password):
+            let emailCredential = EmailAuthProvider.credential(
+                withEmail: email,
+                password: password
+            )
+            return link(with: emailCredential)
+                .mapToVoid()
+                .eraseToAnyPublisher()
+        }
+    }
 
     func sendEmailVerification() -> AnyPublisher<Void, Error> {
         Future { [weak self] promise in

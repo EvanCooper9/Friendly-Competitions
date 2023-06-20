@@ -38,10 +38,16 @@ extension CompetitionParticipantRow.Config {
             id: standing.id,
             rank: rank,
             name: user?.name ?? standing.userId,
-            idPillText: visibility == .visible ? user?.hashId : nil,
+            idPillText: (user?.isAnonymous == true ? nil : user?.hashId)?.apply(visibility: visibility),
             blurred: visibility == .hidden,
             points: standing.points,
             highlighted: standing.userId == currentUser.id
         )
+    }
+}
+
+private extension String {
+    func apply(visibility: User.Visibility) -> String? {
+        visibility == .visible ? self : nil
     }
 }

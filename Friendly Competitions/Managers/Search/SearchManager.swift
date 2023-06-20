@@ -16,6 +16,7 @@ final class SearchManager: SearchManaging {
     // MARK: - Private Properties
 
     @Injected(\.database) private var database
+    @Injected(\.environmentManager) private var environmentManager
     @Injected(\.searchClient) private var searchClient
     @Injected(\.userManager) private var userManager
 
@@ -30,12 +31,19 @@ final class SearchManager: SearchManaging {
     }
 
     func searchForUsers(byName name: String) -> AnyPublisher<[User], Error> {
-        userIndex.search(query: name)
-            .filterMany { [weak self] user in
-                guard let strongSelf = self else { return false }
-                guard user.id != strongSelf.userManager.user.id else { return false }
-                return user.searchable ?? false
-            }
+        if environmentManager.environment.isDebug {
+            return database.collection("users")
+                .getDocuments(ofType: User.self)
+                .filterMany { $0.name.contains(name) }
+                .eraseToAnyPublisher()
+        } else {
+            return userIndex.search(query: name)
+                .filterMany { [weak self] user in
+                    guard let strongSelf = self else { return false }
+                    guard user.id != strongSelf.userManager.user.id else { return false }
+                    return user.searchable ?? false
+                }
+        }
     }
 
     func searchForUsers(withIDs userIDs: [User.ID]) -> AnyPublisher<[User], Error> {
