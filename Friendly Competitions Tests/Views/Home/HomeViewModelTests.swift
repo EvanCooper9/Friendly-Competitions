@@ -175,7 +175,7 @@ final class HomeViewModelTests: FCTestCase {
             .expect(Bundle.main.name, User.evan.name, Bundle.main.name, expectation: expectation)
             .store(in: &cancellables)
 
-        let noName = User(id: "abc", email: "test@test.com", name: "")
+        let noName = User(id: "abc", name: "", email: "test@test.com")
         subject.send(noName)
         scheduler.advance()
         waitForExpectations(timeout: 1)

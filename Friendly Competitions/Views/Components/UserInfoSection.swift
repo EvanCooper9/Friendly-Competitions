@@ -8,9 +8,13 @@ struct UserInfoSection: View {
         Section(L10n.Profile.title) {
             HStack {
                 ImmutableListItemView(value: user.name, valueType: .name)
-                IDPill(id: user.hashId)
+                if user.isAnonymous != true {
+                    IDPill(id: user.hashId)
+                }
             }
-            ImmutableListItemView(value: user.email, valueType: .email)
+            if let email = user.email {
+                ImmutableListItemView(value: email, valueType: .email)
+            }
         }
     }
 }

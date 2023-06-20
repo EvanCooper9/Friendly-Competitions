@@ -1,6 +1,7 @@
-New competition scoring models:
-• Step count
-• Activity ring close count
+• You can now login anonymously
+• New competition scoring models:
+    • Step count
+    • Activity ring close count
 
 Improvements:
 • Performance

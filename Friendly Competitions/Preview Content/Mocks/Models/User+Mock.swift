@@ -3,23 +3,23 @@ extension User {
     static var andrew: User {
         .init(
             id: "abc123",
-            email: "andrew@email.com",
-            name: "Andrew Stapleton"
+            name: "Andrew Stapleton",
+            email: "andrew@email.com"
         )
     }
     static var evan: User {
         .init(
             id: "0IQfVBJIgGdfC9CHgYefpZUQ13l1",
-            email: "evan@test.com",
-            name: "Evan Cooper"
+            name: "Evan Cooper",
+            email: "evan@test.com"
         )
     }
 
     static var gabby: User {
         .init(
             id: "W8CwWA8GLqS5TnMNgbTZ9TO2qIG3",
-            email: "gabby@test.com",
-            name: "Gabriella Carrier"
+            name: "Gabriella Carrier",
+            email: "gabby@test.com"
         )
     }
 }

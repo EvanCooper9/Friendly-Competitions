@@ -93,10 +93,9 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
 
         return changedActivitySummaries
             .flatMapLatest(withUnretained: self) { strongSelf, activitySummaries in
-                let userID = strongSelf.userManager.user.id
                 let batch = strongSelf.database.batch()
                 activitySummaries.forEach { activitySummary in
-                    let document = strongSelf.database.document("users/\(userID)/activitySummaries/\(activitySummary.id)")
+                    let document = strongSelf.database.document(activitySummary.databasePath)
                     batch.set(value: activitySummary, forDocument: document)
                 }
                 return batch.commit()

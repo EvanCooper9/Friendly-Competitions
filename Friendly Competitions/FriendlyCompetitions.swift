@@ -15,7 +15,7 @@ struct FriendlyCompetitions: App {
                         VerifyEmailView()
                     }
                 } else {
-                    SignIn()
+                    WelcomeView()
                 }
             }
             .hud(state: $appModel.hud)

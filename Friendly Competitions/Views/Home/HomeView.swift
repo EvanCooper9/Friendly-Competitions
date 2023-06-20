@@ -36,11 +36,10 @@ struct HomeView: View {
                     }
                 }
             }
-            .sheet(isPresented: $presentAbout, content: About.init)
-            .sheet(isPresented: $presentSearchFriendsSheet) { InviteFriendsView(action: .addFriend) }
-            .sheet(isPresented: $presentNewCompetition, content: NewCompetitionView.init)
+            .sheet(isPresented: $presentAbout, content: AboutView.init)
             .sheet(isPresented: $viewModel.requiresPermissions, content: PermissionsView.init)
             .sheet(isPresented: $viewModel.showPaywall, content: PaywallView.init)
+            .sheet(isPresented: $viewModel.showAnonymousAccountBlocker, content: CreateAccountView.init)
             .withLoadingOverlay(isLoading: viewModel.loadingDeepLink)
             .navigationDestination(for: NavigationDestination.self) { $0.view }
             .registerScreenView(name: "Home")
@@ -83,7 +82,7 @@ struct HomeView: View {
                 Text(L10n.Home.Section.Competitions.title)
                     .font(.title3)
                 Spacer()
-                Button(toggling: $presentNewCompetition) {
+                Button(action: viewModel.newCompetitionTapped) {
                     Image(systemName: .plusCircle)
                         .font(.title2)
                 }
@@ -93,6 +92,7 @@ struct HomeView: View {
                 Text(L10n.Home.Section.Competitions.createPrompt)
             }
         }
+        .sheet(isPresented: $viewModel.showNewCompetition, content: NewCompetitionView.init)
     }
 
     private var friends: some View {
@@ -116,7 +116,7 @@ struct HomeView: View {
                 Text(L10n.Home.Section.Friends.title)
                     .font(.title3)
                 Spacer()
-                Button(toggling: $presentSearchFriendsSheet) {
+                Button(action: viewModel.addFriendsTapped) {
                     Image(systemName: .personCropCircleBadgePlus)
                         .font(.title2)
                 }
@@ -126,6 +126,7 @@ struct HomeView: View {
                 Text(L10n.Home.Section.Friends.addPrompt)
             }
         }
+        .sheet(isPresented: $viewModel.showAddFriends) { InviteFriendsView(action: .addFriend) }
     }
 }
 

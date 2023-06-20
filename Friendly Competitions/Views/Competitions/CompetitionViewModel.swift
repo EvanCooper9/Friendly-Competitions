@@ -112,12 +112,12 @@ final class CompetitionViewModel: ObservableObject {
             }
             .assign(to: &$actions)
 
-        let fetchParticipants = PassthroughSubject<Void, Never>()
+        let fetchParticipants = PassthroughSubject<[String], Never>()
         let participants = fetchParticipants
-            .prepend(())
-            .flatMapLatest(withUnretained: self) { strongSelf in
+            .prepend(competition.participants)
+            .flatMapLatest(withUnretained: self) { strongSelf, participants in
                 strongSelf.searchManager
-                    .searchForUsers(withIDs: competition.participants)
+                    .searchForUsers(withIDs: participants)
                     .catchErrorJustReturn([])
             }
 
@@ -125,13 +125,14 @@ final class CompetitionViewModel: ObservableObject {
             .map(\.participants)
             .removeDuplicates()
             .dropFirst()
-            .mapToVoid()
-            .sink { fetchParticipants.send() }
+            .sink { fetchParticipants.send($0) }
             .store(in: &cancellables)
 
         Publishers
             .CombineLatest(
-                competitionsManager.standingsPublisher(for: competition.id).catchErrorJustReturn([]),
+                competitionsManager.standingsPublisher(for: competition.id)
+                    .print("CompetitionViewModel")
+                    .catchErrorJustReturn([]),
                 participants
             )
             .handleEvents(
@@ -193,7 +194,6 @@ final class CompetitionViewModel: ObservableObject {
                 case .leave:
                     return strongSelf.api
                         .call(.leaveCompetition(id: competition.id))
-                        .handleEvents(receiveOutput: { fetchParticipants.send() })
                         .isLoading { strongSelf.loading = $0 }
                         .eraseToAnyPublisher()
                 default:
@@ -221,7 +221,6 @@ final class CompetitionViewModel: ObservableObject {
                 case .acceptInvite:
                     return strongSelf.api
                         .call(.respondToCompetitionInvite(id: competition.id, accept: true))
-                        .handleEvents(receiveOutput: { fetchParticipants.send() })
                         .isLoading { strongSelf.loading = $0 }
                         .eraseToAnyPublisher()
                 case .declineInvite:
@@ -241,7 +240,6 @@ final class CompetitionViewModel: ObservableObject {
                 case .join:
                     return strongSelf.api
                         .call(.joinCompetition(id: competition.id))
-                        .handleEvents(receiveOutput: { fetchParticipants.send() })
                         .isLoading { strongSelf.loading = $0 }
                         .eraseToAnyPublisher()
                 }
