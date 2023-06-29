@@ -16,10 +16,10 @@ struct CreateAccountView: View {
             }
 
             VStack {
-                SignInWithAppleButton(action: viewModel.signInWithAppleTapped)
+                SignInWithAppleButton(L10n.CreateAccount.apple, action: viewModel.signInWithAppleTapped)
 
                 Button(action: viewModel.signInWithEmailTapped) {
-                    Label(L10n.SignIn.email, systemImage: .envelopeFill)
+                    Label(L10n.CreateAccount.email, systemImage: .envelopeFill)
                         .signInStyle()
                 }
                 .buttonStyle(.borderedProminent)

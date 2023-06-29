@@ -61,6 +61,9 @@
 // Create Account
 "CreateAccount.title" = "Create account";
 "CreateAccount.desctiption" = "Create an account so that you can receive notifications and create competitions, and more.\n\nDon't worry, all of your data will be migrated to your new account.";
+"CreateAccount.apple" = "Sign up with Apple";
+"CreateAccount.email" = "Sign up with email";
+"CreateAccount.moreOptions" = "More options";
 
 // User
 "User.Activity.title" = "Today's activity";
