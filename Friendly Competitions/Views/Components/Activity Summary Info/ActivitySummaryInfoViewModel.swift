@@ -64,6 +64,6 @@ final class ActivitySummaryInfoViewModel: ObservableObject {
     }
 
     func checkHealthAppTapped() {
-        UIApplication.shared.openURL(.health)
+        UIApplication.shared.open(.health)
     }
 }

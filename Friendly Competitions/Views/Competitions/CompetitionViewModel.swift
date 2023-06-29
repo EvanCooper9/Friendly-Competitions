@@ -65,6 +65,7 @@ final class CompetitionViewModel: ObservableObject {
     private let fetchParticipantsSubject = PassthroughSubject<[String], Never>()
     private let saveEditsSubject = PassthroughSubject<Void, Error>()
     private let recordResultsSubject = PassthroughSubject<Void, Never>()
+    private let didRequestPermissions = CurrentValueSubject<Void, Never>(())
     private var cancellables = Cancellables()
 
     // MARK: - Lifecycle
@@ -280,9 +281,9 @@ final class CompetitionViewModel: ObservableObject {
 
     private func checkForPermissions() {
         Publishers
-            .CombineLatest(appState.didBecomeActive, $competition)
+            .CombineLatest3(appState.didBecomeActive, $competition, didRequestPermissions)
             .flatMapLatest(withUnretained: self) { strongSelf, result in
-                let (_, competition) = result
+                let (_, competition, _) = result
                 return competition
                     .scoringBanner(
                         activitySummaryManager: strongSelf.activitySummaryManager,
@@ -314,7 +315,7 @@ final class CompetitionViewModel: ObservableObject {
                 .receive(on: scheduler)
                 .sink(withUnretained: self) { strongSelf in
                     strongSelf.banner = nil
-                    strongSelf.checkForPermissions()
+                    strongSelf.didRequestPermissions.send()
                 }
                 .store(in: &cancellables)
         case .missingCompetitionData:
@@ -349,9 +350,7 @@ extension Competition {
                         }
                         .eraseToAnyPublisher()
                 case .notifications:
-                    return notificationsManager.permissionStatus
-                        .map { $0 == .notDetermined ? .missingCompetitionPermissions : nil }
-                        .eraseToAnyPublisher()
+                    return .just(nil)
                 }
             }
             .combineLatest()
