@@ -1,5 +1,6 @@
 import Combine
 import ECKit
+import HealthKit
 import XCTest
 
 @testable import Friendly_Competitions
@@ -18,6 +19,21 @@ final class HealthKitManagerTests: FCTestCase {
         cancellables = .init()
 
         healthStore.shouldRequestReturnValue = .never()
+    }
+
+    func testThatItRegistersForBackgroundDelivery() {
+
+        healthStore.shouldRequestClosure = { permission in
+            guard let hkSampleType = permission.first!.objectType as? HKSampleType else { return .just(true) }
+            return .just(false)
+        }
+
+        let manager = HealthKitManager()
+
+        let expectedCount = HealthKitPermissionType.allCases
+            .compactMap { $0.objectType as? HKSampleType }
+            .count
+        XCTAssertEqual(healthStore.enableBackgroundDeliveryForCallsCount, expectedCount)
     }
 
     func testThatShouldRequestIsCorrect() {

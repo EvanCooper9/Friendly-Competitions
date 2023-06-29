@@ -27,13 +27,16 @@ final class HealthKitManager: HealthKitManaging {
 
     init() {
         HealthKitPermissionType.allCases
-            .map { permission in
+            .map { permission -> AnyPublisher<HealthKitPermissionType?, Never> in
                 shouldRequest([permission])
-                    .filter { $0 }
-                    .mapToValue(permission)
+                    .catchErrorJustReturn(false)
+                    .map { $0 ? nil : permission }
+                    .eraseToAnyPublisher()
             }
             .combineLatest()
-            .sink(withUnretained: self) { $0.registerPermissionsForBackgroundDelivery($1) }
+            .sink(withUnretained: self) { strongSelf, permissions in
+                strongSelf.registerPermissionsForBackgroundDelivery(permissions.compactMap { $0 })
+            }
             .store(in: &cancellables)
     }
 
