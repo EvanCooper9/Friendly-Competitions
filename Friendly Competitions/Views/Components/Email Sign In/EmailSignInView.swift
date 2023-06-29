@@ -10,7 +10,7 @@ struct EmailSignInView: View {
 
     var body: some View {
         VStack(alignment: .leading) {
-            Text(L10n.SignIn.email)
+            Text(viewModel.inputType.title)
                 .font(.title)
 
             switch viewModel.inputType {
