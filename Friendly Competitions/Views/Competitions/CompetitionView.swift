@@ -14,6 +14,19 @@ struct CompetitionView: View {
 
     var body: some View {
         List {
+
+            if let banner = viewModel.banner {
+                Section {
+                    banner.view {
+                        viewModel.tapped(banner: banner)
+                    }
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                    .padding(banner.configuration.background)
+                }
+                .listRowInsets(.zero)
+                .transition(.opacity)
+            }
+
             standings
 
             if viewModel.showResults {
@@ -58,6 +71,7 @@ struct CompetitionView: View {
             ]
         )
         .withLoadingOverlay(isLoading: viewModel.loading)
+        .animation(.default, value: viewModel.banner)
     }
 
     private var standings: some View {
@@ -130,6 +144,8 @@ struct CompetitionView_Previews: PreviewProvider {
         competitionsManager.competitions = .just([competition])
         competitionsManager.competitionPublisherForReturnValue = .just(competition)
         competitionsManager.standingsPublisherForReturnValue = .just(standings)
+
+        healthKitManager.shouldRequestReturnValue = .just(true)
 
         searchManager.searchForUsersWithIDsReturnValue = .just(participants)
     }

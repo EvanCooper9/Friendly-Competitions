@@ -9,12 +9,21 @@ extension CompetitionResultsDataPoint {
             Text(title)
                 .font(.callout)
                 .foregroundColor(.secondaryLabel)
-            Card {
+            Card(includeEdgePadding: includeCardEdgePadding) {
                 content
                     .maxWidth(.infinity)
                     .maxHeight(.infinity)
             }
             .aspectRatio(1, contentMode: .fill)
+        }
+    }
+
+    private var includeCardEdgePadding: Bool {
+        switch self {
+        case .rank, .points, .activitySummaryBestDay, .activitySummaryCloseCount, .workoutsBestDay:
+            return true
+        case .standings:
+            return false
         }
     }
 
@@ -36,30 +45,31 @@ extension CompetitionResultsDataPoint {
         case .standings(let standings):
             ScrollViewReader { proxy in
                 ScrollView {
-                    ForEach(standings) { standing in
-                        HStack(spacing: 0) {
-                            Text(standing.rank.ordinalString!)
-                                .lineLimit(1)
-                            Spacer()
-                            Text(standing.points)
-                                .lineLimit(1)
-                                .monospaced()
+                    VStack {
+                        ForEach(standings) { standing in
+                            HStack(spacing: 0) {
+                                Text(standing.rank.ordinalString!)
+                                    .lineLimit(1)
+                                Spacer()
+                                Text(standing.points)
+                                    .lineLimit(1)
+                                    .monospaced()
+                            }
+                            .bold(standing.isHighlighted)
+                            .padding(.small)
+                            .background(standing.isHighlighted ? .accentColor : .systemFill)
+                            .foregroundColor(standing.isHighlighted ? .white : .label)
+                            .cornerRadius(5)
+                            .id(standing.rank)
                         }
-                        .bold(standing.isHighlighted)
-                        .padding(.small)
-                        .background(standing.isHighlighted ? .accentColor : .systemFill)
-                        .foregroundColor(standing.isHighlighted ? .white : .label)
-                        .cornerRadius(5)
-                        .id(standing.rank)
                     }
-                    .padding(20)
+                    .padding(.small)
                 }
                 .onAppear {
                     guard let id = standings.first(where: \.isHighlighted)?.rank else { return }
                     proxy.scrollTo(id, anchor: .center)
                 }
             }
-            .padding(-20)
         case let .points(current, previous):
             ZStack {
                 Text(current)
@@ -172,14 +182,17 @@ struct CompetitionResultsDataPoint_Previews: PreviewProvider {
 
     private static let data: [CompetitionResultsDataPoint] = [
         .rank(current: 3, previous: 1),
-//        .rank(current: 5, previous: nil),
         .points(current: 500, previous: 447),
         .standings(
             [
                 .init(userId: "1", rank: 1, points: 600, isHighlighted: false),
                 .init(userId: "2", rank: 2, points: 500, isHighlighted: true),
                 .init(userId: "3", rank: 3, points: 400, isHighlighted: false),
-                .init(userId: "4", rank: 4, points: 300, isHighlighted: false)
+                .init(userId: "4", rank: 4, points: 300, isHighlighted: false),
+                .init(userId: "5", rank: 5, points: 600, isHighlighted: false),
+                .init(userId: "6", rank: 6, points: 500, isHighlighted: false),
+                .init(userId: "7", rank: 7, points: 400, isHighlighted: false),
+                .init(userId: "8", rank: 8, points: 300, isHighlighted: false)
             ]
         ),
         .workoutsBestDay(.init(type: .running, date: .now, points: [.distance: 100, .steps: 500])),

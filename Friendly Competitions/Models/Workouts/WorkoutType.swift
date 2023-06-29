@@ -70,3 +70,30 @@ extension WorkoutType {
         }
     }
 }
+
+extension WorkoutType {
+
+    private var distancePermissionType: HealthKitPermissionType {
+        switch self {
+        case .cycling:
+            return .distanceCycling
+        case .running:
+            return .distanceSwimming
+        case .swimming, .walking:
+            return .distanceWalkingRunning
+        }
+    }
+
+    func requiredPermissions(for metrics: [WorkoutMetric]) -> [Permission] {
+        metrics.map { metric in
+            switch metric {
+            case .distance:
+                return .health(distancePermissionType)
+            case .heartRate:
+                return .health(.heartRate)
+            case .steps:
+                return .health(.stepCount)
+            }
+        }
+    }
+}

@@ -10,8 +10,4 @@ extension Container {
     var healthKitManager: Factory<HealthKitManaging> {
         self { HealthKitManager() }.scope(.shared)
     }
-
-    var healthKitManagerCache: Factory<HealthKitManagerCache> {
-        self { UserDefaults.standard }.scope(.shared)
-    }
 }

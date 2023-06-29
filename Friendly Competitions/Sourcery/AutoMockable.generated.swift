@@ -585,6 +585,65 @@ class AuthenticationManagingMock: AuthenticationManaging {
     }
 
 }
+class BannerManagingMock: BannerManaging {
+
+
+    var banner: AnyPublisher<Banner?, Never> {
+        get { return underlyingBanner }
+        set(value) { underlyingBanner = value }
+    }
+    var underlyingBanner: AnyPublisher<Banner?, Never>!
+    var bannerTapped: AnyPublisher<Banner, Never> {
+        get { return underlyingBannerTapped }
+        set(value) { underlyingBannerTapped = value }
+    }
+    var underlyingBannerTapped: AnyPublisher<Banner, Never>!
+
+
+    //MARK: - push
+
+    var pushBannerCallsCount = 0
+    var pushBannerCalled: Bool {
+        return pushBannerCallsCount > 0
+    }
+    var pushBannerReceivedBanner: Banner?
+    var pushBannerReceivedInvocations: [Banner] = []
+    var pushBannerClosure: ((Banner) -> Void)?
+
+    func push(banner: Banner) {
+        pushBannerCallsCount += 1
+        pushBannerReceivedBanner = banner
+        pushBannerReceivedInvocations.append(banner)
+        pushBannerClosure?(banner)
+    }
+
+    //MARK: - pop
+
+    var popCallsCount = 0
+    var popCalled: Bool {
+        return popCallsCount > 0
+    }
+    var popClosure: (() -> Void)?
+
+    func pop() {
+        popCallsCount += 1
+        popClosure?()
+    }
+
+    //MARK: - tapped
+
+    var tappedCallsCount = 0
+    var tappedCalled: Bool {
+        return tappedCallsCount > 0
+    }
+    var tappedClosure: (() -> Void)?
+
+    func tapped() {
+        tappedCallsCount += 1
+        tappedClosure?()
+    }
+
+}
 class CompetitionCacheMock: CompetitionCache {
 
 
@@ -969,21 +1028,9 @@ class FriendsManagingMock: FriendsManaging {
     }
 
 }
-class HealthKitManagerCacheMock: HealthKitManagerCache {
-
-
-    var permissionStatus: [HealthKitPermissionType: PermissionStatus] = [:]
-
-
-}
 class HealthKitManagingMock: HealthKitManaging {
 
 
-    var permissionStatus: AnyPublisher<PermissionStatus, Never> {
-        get { return underlyingPermissionStatus }
-        set(value) { underlyingPermissionStatus = value }
-    }
-    var underlyingPermissionStatus: AnyPublisher<PermissionStatus, Never>!
 
 
     //MARK: - execute
@@ -1020,17 +1067,48 @@ class HealthKitManagingMock: HealthKitManaging {
         registerBackgroundDeliveryTaskClosure?(publisher)
     }
 
-    //MARK: - requestPermissions
+    //MARK: - shouldRequest
 
-    var requestPermissionsCallsCount = 0
-    var requestPermissionsCalled: Bool {
-        return requestPermissionsCallsCount > 0
+    var shouldRequestCallsCount = 0
+    var shouldRequestCalled: Bool {
+        return shouldRequestCallsCount > 0
     }
-    var requestPermissionsClosure: (() -> Void)?
+    var shouldRequestReceivedPermissions: [HealthKitPermissionType]?
+    var shouldRequestReceivedInvocations: [[HealthKitPermissionType]] = []
+    var shouldRequestReturnValue: AnyPublisher<Bool, Error>!
+    var shouldRequestClosure: (([HealthKitPermissionType]) -> AnyPublisher<Bool, Error>)?
 
-    func requestPermissions() {
-        requestPermissionsCallsCount += 1
-        requestPermissionsClosure?()
+    func shouldRequest(_ permissions: [HealthKitPermissionType]) -> AnyPublisher<Bool, Error> {
+        shouldRequestCallsCount += 1
+        shouldRequestReceivedPermissions = permissions
+        shouldRequestReceivedInvocations.append(permissions)
+        if let shouldRequestClosure = shouldRequestClosure {
+            return shouldRequestClosure(permissions)
+        } else {
+            return shouldRequestReturnValue
+        }
+    }
+
+    //MARK: - request
+
+    var requestCallsCount = 0
+    var requestCalled: Bool {
+        return requestCallsCount > 0
+    }
+    var requestReceivedPermissions: [HealthKitPermissionType]?
+    var requestReceivedInvocations: [[HealthKitPermissionType]] = []
+    var requestReturnValue: AnyPublisher<Void, Error>!
+    var requestClosure: (([HealthKitPermissionType]) -> AnyPublisher<Void, Error>)?
+
+    func request(_ permissions: [HealthKitPermissionType]) -> AnyPublisher<Void, Error> {
+        requestCallsCount += 1
+        requestReceivedPermissions = permissions
+        requestReceivedInvocations.append(permissions)
+        if let requestClosure = requestClosure {
+            return requestClosure(permissions)
+        } else {
+            return requestReturnValue
+        }
     }
 
 }
@@ -1073,21 +1151,48 @@ class HealthStoringMock: HealthStoring {
         enableBackgroundDeliveryForClosure?(permissionType)
     }
 
-    //MARK: - requestAuthorization
+    //MARK: - shouldRequest
 
-    var requestAuthorizationForCompletionCallsCount = 0
-    var requestAuthorizationForCompletionCalled: Bool {
-        return requestAuthorizationForCompletionCallsCount > 0
+    var shouldRequestCallsCount = 0
+    var shouldRequestCalled: Bool {
+        return shouldRequestCallsCount > 0
     }
-    var requestAuthorizationForCompletionReceivedArguments: (permissionTypes: [HealthKitPermissionType], completion: (Bool) -> Void)?
-    var requestAuthorizationForCompletionReceivedInvocations: [(permissionTypes: [HealthKitPermissionType], completion: (Bool) -> Void)] = []
-    var requestAuthorizationForCompletionClosure: (([HealthKitPermissionType], @escaping (Bool) -> Void) -> Void)?
+    var shouldRequestReceivedPermissions: [HealthKitPermissionType]?
+    var shouldRequestReceivedInvocations: [[HealthKitPermissionType]] = []
+    var shouldRequestReturnValue: AnyPublisher<Bool, Error>!
+    var shouldRequestClosure: (([HealthKitPermissionType]) -> AnyPublisher<Bool, Error>)?
 
-    func requestAuthorization(for permissionTypes: [HealthKitPermissionType], completion: @escaping (Bool) -> Void) {
-        requestAuthorizationForCompletionCallsCount += 1
-        requestAuthorizationForCompletionReceivedArguments = (permissionTypes: permissionTypes, completion: completion)
-        requestAuthorizationForCompletionReceivedInvocations.append((permissionTypes: permissionTypes, completion: completion))
-        requestAuthorizationForCompletionClosure?(permissionTypes, completion)
+    func shouldRequest(_ permissions: [HealthKitPermissionType]) -> AnyPublisher<Bool, Error> {
+        shouldRequestCallsCount += 1
+        shouldRequestReceivedPermissions = permissions
+        shouldRequestReceivedInvocations.append(permissions)
+        if let shouldRequestClosure = shouldRequestClosure {
+            return shouldRequestClosure(permissions)
+        } else {
+            return shouldRequestReturnValue
+        }
+    }
+
+    //MARK: - request
+
+    var requestCallsCount = 0
+    var requestCalled: Bool {
+        return requestCallsCount > 0
+    }
+    var requestReceivedPermissions: [HealthKitPermissionType]?
+    var requestReceivedInvocations: [[HealthKitPermissionType]] = []
+    var requestReturnValue: AnyPublisher<Void, Error>!
+    var requestClosure: (([HealthKitPermissionType]) -> AnyPublisher<Void, Error>)?
+
+    func request(_ permissions: [HealthKitPermissionType]) -> AnyPublisher<Void, Error> {
+        requestCallsCount += 1
+        requestReceivedPermissions = permissions
+        requestReceivedInvocations.append(permissions)
+        if let requestClosure = requestClosure {
+            return requestClosure(permissions)
+        } else {
+            return requestReturnValue
+        }
     }
 
 }
@@ -1112,39 +1217,6 @@ class NotificationsManagingMock: NotificationsManaging {
     func requestPermissions() {
         requestPermissionsCallsCount += 1
         requestPermissionsClosure?()
-    }
-
-}
-class PermissionsManagingMock: PermissionsManaging {
-
-
-    var requiresPermission: AnyPublisher<Bool, Never> {
-        get { return underlyingRequiresPermission }
-        set(value) { underlyingRequiresPermission = value }
-    }
-    var underlyingRequiresPermission: AnyPublisher<Bool, Never>!
-    var permissionStatus: AnyPublisher<[Permission: PermissionStatus], Never> {
-        get { return underlyingPermissionStatus }
-        set(value) { underlyingPermissionStatus = value }
-    }
-    var underlyingPermissionStatus: AnyPublisher<[Permission: PermissionStatus], Never>!
-
-
-    //MARK: - request
-
-    var requestCallsCount = 0
-    var requestCalled: Bool {
-        return requestCallsCount > 0
-    }
-    var requestReceivedPermission: Permission?
-    var requestReceivedInvocations: [Permission] = []
-    var requestClosure: ((Permission) -> Void)?
-
-    func request(_ permission: Permission) {
-        requestCallsCount += 1
-        requestReceivedPermission = permission
-        requestReceivedInvocations.append(permission)
-        requestClosure?(permission)
     }
 
 }

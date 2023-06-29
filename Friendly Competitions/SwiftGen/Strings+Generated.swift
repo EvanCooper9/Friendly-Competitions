@@ -51,6 +51,18 @@ internal enum L10n {
     internal static let move = L10n.tr("Localizable", "ActivitySummaryInfo.move", fallback: "Move")
     /// Stand
     internal static let stand = L10n.tr("Localizable", "ActivitySummaryInfo.stand", fallback: "Stand")
+    internal enum MissingPermissions {
+      /// Request
+      internal static let cta = L10n.tr("Localizable", "ActivitySummaryInfo.MissingPermissions.cta", fallback: "Request")
+      /// Missing HealthKit permissions for reading rings
+      internal static let message = L10n.tr("Localizable", "ActivitySummaryInfo.MissingPermissions.message", fallback: "Missing HealthKit permissions for reading rings")
+    }
+    internal enum NotFound {
+      /// Check
+      internal static let cta = L10n.tr("Localizable", "ActivitySummaryInfo.NotFound.cta", fallback: "Check")
+      /// Couldn't find your rings for today. Check HealthKit permissions.
+      internal static let message = L10n.tr("Localizable", "ActivitySummaryInfo.NotFound.message", fallback: "Couldn't find your rings for today. Check HealthKit permissions.")
+    }
     internal enum Value {
       /// -
       internal static let empty = L10n.tr("Localizable", "ActivitySummaryInfo.Value.empty", fallback: "-")
@@ -61,6 +73,22 @@ internal enum L10n {
     internal static let missingEmail = L10n.tr("Localizable", "AuthenticationError.missingEmail", fallback: "Missing email")
     /// Passwords don't match
     internal static let passwordMatch = L10n.tr("Localizable", "AuthenticationError.passwordMatch", fallback: "Passwords don't match")
+  }
+  internal enum Banner {
+    internal enum Competition {
+      internal enum MissingData {
+        /// Check
+        internal static let cta = L10n.tr("Localizable", "Banner.Competition.MissingData.cta", fallback: "Check")
+        /// Can't find any data. Check HealthKit permissions.
+        internal static let message = L10n.tr("Localizable", "Banner.Competition.MissingData.message", fallback: "Can't find any data. Check HealthKit permissions.")
+      }
+      internal enum MissingPermissions {
+        /// Request
+        internal static let cta = L10n.tr("Localizable", "Banner.Competition.MissingPermissions.cta", fallback: "Request")
+        /// Missing HealthKit permissions to count your score.
+        internal static let message = L10n.tr("Localizable", "Banner.Competition.MissingPermissions.message", fallback: "Missing HealthKit permissions to count your score.")
+      }
+    }
   }
   internal enum Competition {
     internal enum Action {
@@ -451,8 +479,6 @@ internal enum L10n {
       internal enum HideName {
         /// Turn this off to hide your name in competitions. Your friends will still see your name.
         internal static let description = L10n.tr("Localizable", "Profile.Privacy.HideName.description", fallback: "Turn this off to hide your name in competitions. Your friends will still see your name.")
-        /// Learn more
-        internal static let learnMore = L10n.tr("Localizable", "Profile.Privacy.HideName.learnMore", fallback: "Learn more")
         /// Show name
         internal static let title = L10n.tr("Localizable", "Profile.Privacy.HideName.title", fallback: "Show name")
       }

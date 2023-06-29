@@ -16,6 +16,10 @@
 "ActivitySummaryInfo.exercise" = "Exercise";
 "ActivitySummaryInfo.stand" = "Stand";
 "ActivitySummaryInfo.Value.empty" = "-";
+"ActivitySummaryInfo.MissingPermissions.message" = "Missing HealthKit permissions for reading rings";
+"ActivitySummaryInfo.MissingPermissions.cta" = "Request";
+"ActivitySummaryInfo.NotFound.message" = "Couldn't find your rings for today. Check HealthKit permissions.";
+"ActivitySummaryInfo.NotFound.cta" = "Check";
 
 // About
 "About.title" = "About";
@@ -237,3 +241,9 @@
 "WorkoutMetric.Distance.description" = "Distance";
 "WorkoutMetric.HeartRate.description" = "Heart rate";
 "WorkoutMetric.Steps.description" = "Steps";
+
+// Banner
+"Banner.Competition.MissingPermissions.message" = "Missing HealthKit permissions to count your score.";
+"Banner.Competition.MissingPermissions.cta" = "Request";
+"Banner.Competition.MissingData.message" = "Can't find any data. Check HealthKit permissions.";
+"Banner.Competition.MissingData.cta" = "Check";

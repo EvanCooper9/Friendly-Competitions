@@ -35,7 +35,6 @@ final class AppState: AppStateProviding {
         didBecomeActive = didBecomeActiveSubject.share(replay: 1).eraseToAnyPublisher()
 
         UIApplication.didBecomeActiveNotification.publisher
-            .first()
             .mapToValue(true)
             .sink(withUnretained: self) { $0.didBecomeActiveSubject.send($1) }
             .store(in: &cancellabes)
