@@ -14,7 +14,6 @@ final class HomeViewModelTests: FCTestCase {
     private var appState: AppStateProvidingMock!
     private var competitionsManager: CompetitionsManagingMock!
     private var friendsManager: FriendsManagingMock!
-    private var permissionsManager: PermissionsManagingMock!
     private var premiumManager: PremiumManagingMock!
     private var scheduler: TestSchedulerOf<RunLoop>!
     private var userManager: UserManagingMock!
@@ -28,7 +27,6 @@ final class HomeViewModelTests: FCTestCase {
         appState = .init()
         competitionsManager = .init()
         friendsManager = .init()
-        permissionsManager = .init()
         premiumManager = .init()
         scheduler = .init(now: .init(.now))
         userManager = .init()
@@ -42,7 +40,6 @@ final class HomeViewModelTests: FCTestCase {
         friendsManager.friends = .never()
         friendsManager.friendRequests = .never()
         friendsManager.friendActivitySummaries = .never()
-        permissionsManager.requiresPermission = .never()
         premiumManager.premium = .never()
         userManager.userPublisher = .just(.evan)
         
@@ -51,30 +48,9 @@ final class HomeViewModelTests: FCTestCase {
         container.appState.register { self.appState }
         container.competitionsManager.register { self.competitionsManager }
         container.friendsManager.register { self.friendsManager }
-        container.permissionsManager.register { self.permissionsManager }
         container.premiumManager.register { self.premiumManager }
         container.scheduler.register { self.scheduler.eraseToAnyScheduler() }
         container.userManager.register { self.userManager }
-    }
-
-    func testThatActivitySummaryUpdates() {
-        let expectation = expectation(description: #function)
-
-        let subject = CurrentValueSubject<ActivitySummary?, Never>(nil)
-        activitySummaryManager.activitySummary = subject.eraseToAnyPublisher()
-
-        let ac = ActivitySummary.mock
-
-        let viewModel = HomeViewModel()
-        viewModel.$activitySummary
-            .expect(nil, nil, ac, nil, ac, expectation: expectation)
-            .store(in: &cancellables)
-
-        subject.send(ac)
-        subject.send(nil)
-        subject.send(ac)
-        scheduler.advance()
-        waitForExpectations(timeout: 1)
     }
 
     func testThatCompetitionsUpdates() {
@@ -143,24 +119,6 @@ final class HomeViewModelTests: FCTestCase {
         friendRequests.send([.andrew])
         scheduler.advance()
 
-        waitForExpectations(timeout: 1)
-    }
-
-    func testThatRequiresPermissionUpdates() {
-        let expectation = expectation(description: #function)
-
-        let subject = CurrentValueSubject<Bool, Never>(true)
-        permissionsManager.requiresPermission = subject.eraseToAnyPublisher()
-
-        let viewModel = HomeViewModel()
-        viewModel.$requiresPermissions
-            .expect(false, true, false, true, false, expectation: expectation)
-            .store(in: &cancellables)
-
-        subject.send(false)
-        subject.send(true)
-        subject.send(false)
-        scheduler.advance()
         waitForExpectations(timeout: 1)
     }
 

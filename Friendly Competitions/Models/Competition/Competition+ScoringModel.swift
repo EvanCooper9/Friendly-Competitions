@@ -112,3 +112,16 @@ extension Competition.ScoringModel: Codable {
         return nil
     }
 }
+
+extension Competition.ScoringModel {
+    var requiredPermissions: [Permission] {
+        switch self {
+        case .activityRingCloseCount, .percentOfGoals, .rawNumbers:
+            return [.health(.activitySummaryType)]
+        case .stepCount:
+            return [.health(.stepCount)]
+        case let .workout(workoutType, metrics):
+            return workoutType.requiredPermissions(for: metrics)
+        }
+    }
+}

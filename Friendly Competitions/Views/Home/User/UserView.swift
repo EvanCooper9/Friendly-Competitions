@@ -14,7 +14,7 @@ struct UserView: View {
     var body: some View {
         List {
             Section {
-                ActivitySummaryInfoView(activitySummary: viewModel.activitySummary)
+                ActivitySummaryInfoView(source: .other(viewModel.activitySummary))
             } header: {
                 Text(L10n.User.Activity.title)
             }

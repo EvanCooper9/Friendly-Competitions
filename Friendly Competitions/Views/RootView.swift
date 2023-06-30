@@ -32,12 +32,6 @@ struct RootView_Previews: PreviewProvider {
         friendsManager.friendRequests = .just([friend])
         friendsManager.friendActivitySummaries = .just([friend.id: .mock])
 
-        permissionsManager.requiresPermission = .just(false)
-        permissionsManager.permissionStatus = .just([
-            .health: .authorized,
-            .notifications: .authorized
-        ])
-
         searchManager.searchForUsersWithIDsReturnValue = .just([.evan])
     }
 

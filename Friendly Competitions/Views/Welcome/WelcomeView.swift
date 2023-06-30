@@ -1,3 +1,4 @@
+import ECKit
 import SwiftUI
 
 struct WelcomeView: View {
@@ -35,23 +36,46 @@ struct WelcomeView: View {
         .sheet(isPresented: $viewModel.showEmailSignIn) {
             EmailSignInView()
         }
+        .animation(.default, value: viewModel.signInOptions)
     }
 
     @ViewBuilder
     private var buttons: some View {
-        SignInWithAppleButton(action: viewModel.signInWithAppleTapped)
 
-        Button(action: viewModel.signInWithEmailTapped) {
-            Label(L10n.SignIn.email, systemImage: .envelopeFill)
-                .signInStyle()
-        }
-        .buttonStyle(.borderedProminent)
+        #if DEBUG
+        DeveloperMenu()
+            .font(.title)
+            .padding()
+        #endif
 
-        Button(action: viewModel.signInAnonymouslyTapped) {
-            Label(L10n.SignIn.anonymously, systemImage: .personCropCircleBadgeQuestionmarkFill)
-                .signInStyle()
+        ForEach(enumerated: viewModel.signInOptions) { index, option in
+            switch option {
+            case .anonymous:
+                Button(action: viewModel.signInAnonymouslyTapped) {
+                    Label(L10n.SignIn.anonymously, systemImage: .personCropCircleBadgeQuestionmarkFill)
+                        .signInStyle()
+                }
+                .buttonStyle(.bordered)
+                .zIndex(Double(viewModel.signInOptions.count - index))
+            case .apple:
+                SignInWithAppleButton(action: viewModel.signInWithAppleTapped)
+                    .zIndex(Double(viewModel.signInOptions.count - index))
+            case .email:
+                Button(action: viewModel.signInWithEmailTapped) {
+                    Label(L10n.SignIn.email, systemImage: .envelopeFill)
+                        .signInStyle()
+                }
+                .buttonStyle(.borderedProminent)
+                .zIndex(Double(viewModel.signInOptions.count - index))
+            }
         }
-        .buttonStyle(.bordered)
+        .transition(.opacity.combined(with: .move(edge: .bottom)))
+
+        if viewModel.showMoreSignInOptionsButton {
+            Divider()
+                .padding(.vertical)
+            Button("More options", action: viewModel.moreOptionsTapped)
+        }
     }
 }
 

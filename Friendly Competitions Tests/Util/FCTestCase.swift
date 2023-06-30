@@ -32,11 +32,9 @@ class FCTestCase: XCTestCase {
         container.environmentManager.register { fatalError("Use a mock") }
         container.friendsManager.register { fatalError("Use a mock") }
         container.healthKitManager.register { fatalError("Use a mock") }
-        container.healthKitManagerCache.register { fatalError("Use a mock") }
         container.healthKitDataHelperBuilder.register { fatalError("Use a mock") }
         container.healthStore.register { fatalError("Use a mock") }
         container.notificationsManager.register { fatalError("Use a mock") }
-        container.permissionsManager.register { fatalError("Use a mock") }
         container.premiumManager.register { fatalError("Use a mock") }
         container.scheduler.register { fatalError("Use a mock") }
         container.searchClient.register { fatalError("Use a mock") }

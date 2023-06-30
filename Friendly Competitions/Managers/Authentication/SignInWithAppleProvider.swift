@@ -1,3 +1,4 @@
+import Algorithms
 import AuthenticationServices
 import Combine
 import ECKit
@@ -107,7 +108,7 @@ private final class SignInWithAppleDelegate: NSObject, ASAuthorizationController
                     guard strongSelf.environmentManager.environment.isDebug else { return .just(authUser) }
 
                     let displayName = [appleIDCredential.fullName?.givenName, appleIDCredential.fullName?.familyName]
-                        .compactMap { $0 }
+                        .compacted()
                         .joined(separator: " ")
 
                     // The display name will be empty after the first sign in. Make sure not to update
@@ -123,7 +124,7 @@ private final class SignInWithAppleDelegate: NSObject, ASAuthorizationController
             user.link(with: credential)
                 .flatMapLatest { _ -> AnyPublisher<AuthUser, Error> in
                     let displayName = [appleIDCredential.fullName?.givenName, appleIDCredential.fullName?.familyName]
-                        .compactMap { $0 }
+                        .compacted()
                         .joined(separator: " ")
 
                     // The display name will be empty after the first sign in. Make sure not to update

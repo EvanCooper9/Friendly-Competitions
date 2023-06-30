@@ -6,12 +6,23 @@ import Foundation
 
 final class WelcomeViewModel: ObservableObject {
 
+    enum SignInOptions: String, Identifiable {
+        case anonymous
+        case apple
+        case email
+
+        var id: String { rawValue }
+    }
+
     // MARK: - Public Properties
 
     let appNape = Bundle.main.displayName
     @Published private(set) var loading = false
     @Published var showAnonymousSignInConfirmation = false
     @Published var showEmailSignIn = false
+
+    @Published var showMoreSignInOptionsButton = true
+    @Published var signInOptions: [SignInOptions] = [.apple]
 
     // MARK: - Private Properties
 
@@ -50,5 +61,10 @@ final class WelcomeViewModel: ObservableObject {
 
     func confirmAnonymousSignIn() {
         signInSubject.send(.anonymous)
+    }
+
+    func moreOptionsTapped() {
+        signInOptions = [.apple, .email, .anonymous]
+        showMoreSignInOptionsButton = false
     }
 }

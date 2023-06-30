@@ -53,7 +53,11 @@ final class AuthenticationManager: AuthenticationManaging {
     func signIn(with authenticationMethod: AuthenticationMethod) -> AnyPublisher<Void, Error> {
         switch authenticationMethod {
         case .anonymous:
-            return signInAnonymously()
+            createdUserSubject = .init(bufferSize: 1)
+            return auth.signIn(with: .anonymous)
+                .flatMapLatest(withUnretained: self) { $0.createUser(from: $1) }
+                .mapToVoid()
+                .eraseToAnyPublisher()
         case .apple:
             if let user = auth.user {
                 return signInWithAppleProvider.link(with: user)
@@ -209,14 +213,6 @@ final class AuthenticationManager: AuthenticationManaging {
             .set(value: user)
             .mapToValue(user)
             .handleEvents(withUnretained: self, receiveOutput: { $0.createdUserSubject.send($1) })
-            .eraseToAnyPublisher()
-    }
-
-    private func signInAnonymously() -> AnyPublisher<Void, Error> {
-        createdUserSubject = .init(bufferSize: 1)
-        return auth.signIn(with: .anonymous)
-            .flatMapLatest(withUnretained: self) { $0.createUser(from: $1) }
-            .mapToVoid()
             .eraseToAnyPublisher()
     }
 }

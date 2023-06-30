@@ -42,7 +42,6 @@ struct HomeView: View {
                 }
             }
             .sheet(isPresented: $presentAbout, content: AboutView.init)
-            .sheet(isPresented: $viewModel.requiresPermissions, content: PermissionsView.init)
             .sheet(isPresented: $viewModel.showPaywall, content: PaywallView.init)
             .sheet(isPresented: $viewModel.showAnonymousAccountBlocker, content: CreateAccountView.init)
             .withLoadingOverlay(isLoading: viewModel.loadingDeepLink)
@@ -65,13 +64,9 @@ struct HomeView: View {
 
     private var activitySummary: some View {
         Section {
-            ActivitySummaryInfoView(activitySummary: viewModel.activitySummary)
+            ActivitySummaryInfoView(source: .local)
         } header: {
             Text(L10n.Home.Section.Activity.title).font(.title3)
-        } footer: {
-            if viewModel.activitySummary == nil {
-                Text(L10n.Home.Section.Activity.missing)
-            }
         }
     }
 
@@ -139,7 +134,8 @@ struct HomeView: View {
 struct HomeView_Previews: PreviewProvider {
 
     private static func setupMocks() {
-        activitySummaryManager.activitySummary = .just(.mock)
+        activitySummaryManager.activitySummary = .just(nil)
+        healthKitManager.shouldRequestReturnValue = .just(false)
 
         competitionsManager.competitions = .just([.mock, .mockInvited, .mockOld, .mockPublic])
         competitionsManager.standingsPublisherForReturnValue = .just([.mock(for: .evan)])
@@ -147,12 +143,6 @@ struct HomeView_Previews: PreviewProvider {
         friendsManager.friends = .just([.gabby])
         friendsManager.friendRequests = .just([.andrew])
         friendsManager.friendActivitySummaries = .just([User.gabby.id: .mock])
-
-        permissionsManager.requiresPermission = .just(false)
-        permissionsManager.permissionStatus = .just([
-            .health: .authorized,
-            .notifications: .authorized
-        ])
 
         searchManager.searchForUsersWithIDsReturnValue = .just([.evan])
     }

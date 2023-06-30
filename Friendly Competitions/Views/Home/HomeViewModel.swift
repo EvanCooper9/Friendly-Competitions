@@ -15,11 +15,9 @@ final class HomeViewModel: ObservableObject {
 
     @Published var navigationDestinations = [NavigationDestination]()
 
-    @Published private(set) var activitySummary: ActivitySummary?
     @Published private(set) var competitions = [Competition]()
     @Published private(set) var friendRows = [FriendRow]()
     @Published private(set) var invitedCompetitions = [Competition]()
-    @Published var requiresPermissions = false
     @Published private(set) var title = Bundle.main.name
     @Published private(set) var showDeveloper = false
     @Published private(set) var loadingDeepLink = false
@@ -36,7 +34,6 @@ final class HomeViewModel: ObservableObject {
     @Injected(\.analyticsManager) private var analyticsManager
     @Injected(\.competitionsManager) private var competitionsManager
     @Injected(\.friendsManager) private var friendsManager
-    @Injected(\.permissionsManager) private var permissionsManager
     @Injected(\.premiumManager) private var premiumManager
     @Injected(\.scheduler) private var scheduler
     @Injected(\.userManager) private var userManager
@@ -85,11 +82,6 @@ final class HomeViewModel: ObservableObject {
             }
             .receive(on: scheduler)
             .assign(to: &$navigationDestinations)
-
-        activitySummaryManager.activitySummary
-            .removeDuplicates()
-            .receive(on: scheduler)
-            .assign(to: &$activitySummary)
 
         competitionsManager.competitions
             .removeDuplicates()
@@ -145,11 +137,6 @@ final class HomeViewModel: ObservableObject {
             }
             .receive(on: scheduler)
             .assign(to: &$friendRows)
-
-        permissionsManager
-            .requiresPermission
-            .receive(on: scheduler)
-            .assign(to: &$requiresPermissions)
 
         Publishers
             .CombineLatest3(
