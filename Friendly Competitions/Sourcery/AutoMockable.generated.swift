@@ -1142,13 +1142,18 @@ class HealthStoringMock: HealthStoring {
     }
     var enableBackgroundDeliveryForReceivedPermissionType: HealthKitPermissionType?
     var enableBackgroundDeliveryForReceivedInvocations: [HealthKitPermissionType] = []
-    var enableBackgroundDeliveryForClosure: ((HealthKitPermissionType) -> Void)?
+    var enableBackgroundDeliveryForReturnValue: AnyPublisher<Bool, Error>!
+    var enableBackgroundDeliveryForClosure: ((HealthKitPermissionType) -> AnyPublisher<Bool, Error>)?
 
-    func enableBackgroundDelivery(for permissionType: HealthKitPermissionType) {
+    func enableBackgroundDelivery(for permissionType: HealthKitPermissionType) -> AnyPublisher<Bool, Error> {
         enableBackgroundDeliveryForCallsCount += 1
         enableBackgroundDeliveryForReceivedPermissionType = permissionType
         enableBackgroundDeliveryForReceivedInvocations.append(permissionType)
-        enableBackgroundDeliveryForClosure?(permissionType)
+        if let enableBackgroundDeliveryForClosure = enableBackgroundDeliveryForClosure {
+            return enableBackgroundDeliveryForClosure(permissionType)
+        } else {
+            return enableBackgroundDeliveryForReturnValue
+        }
     }
 
     //MARK: - shouldRequest

@@ -18,6 +18,7 @@ final class HealthKitManager: HealthKitManaging {
 
     // MARK: - Private Properties
 
+    @Injected(\.analyticsManager) private var analyticsManager
     @Injected(\.healthStore) private var healthStore
 
     private let backgroundDeliveryReceivedSubject = PassthroughSubject<Void, Never>()
@@ -53,7 +54,12 @@ final class HealthKitManager: HealthKitManaging {
     }
 
     func shouldRequest(_ permissions: [HealthKitPermissionType]) -> AnyPublisher<Bool, Error> {
-        healthStore.shouldRequest(permissions)
+        healthStore
+            .shouldRequest(permissions)
+            .handleEvents(withUnretained: self, receiveOutput: { strongSelf, shouldRequest in
+                strongSelf.analyticsManager.log(event: .healthKitShouldRequestPermissions(permissions: permissions, shouldRequest: shouldRequest))
+            })
+            .eraseToAnyPublisher()
     }
 
     func request(_ permissions: [HealthKitPermissionType]) -> AnyPublisher<Void, Error> {
@@ -83,6 +89,22 @@ final class HealthKitManager: HealthKitManaging {
             }
             healthStore.execute(query)
             healthStore.enableBackgroundDelivery(for: permission)
+                .first()
+                .sink(withUnretained: self, receiveCompletion: { strongSelf, completion in
+                    switch completion {
+                    case .finished:
+                        break
+                    case .failure(let error):
+                        strongSelf.analyticsManager.log(event: .healthKitRegisterForBackgroundDeliveryFailure(permission: permission, error: error.localizedDescription))
+                    }
+                }, receiveValue: { strongSelf, success in
+                    if success {
+                        strongSelf.analyticsManager.log(event: .healthKitRegisterForBackgroundDeliverySuccess(permission: permission))
+                    } else {
+                        strongSelf.analyticsManager.log(event: .healthKitRegisterForBackgroundDeliveryFailure(permission: permission, error: nil))
+                    }
+                })
+                .store(in: &cancellables)
         }
     }
 }
