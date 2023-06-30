@@ -1,3 +1,4 @@
+import ECKit
 import SwiftUI
 
 struct WelcomeView: View {
@@ -47,7 +48,7 @@ struct WelcomeView: View {
             .padding()
         #endif
 
-        ForEach(Array(viewModel.signInOptions.enumerated()), id: \.element.id) { index, option in
+        ForEach(enumerated: viewModel.signInOptions) { index, option in
             switch option {
             case .anonymous:
                 Button(action: viewModel.signInAnonymouslyTapped) {
@@ -56,11 +57,9 @@ struct WelcomeView: View {
                 }
                 .buttonStyle(.bordered)
                 .zIndex(Double(viewModel.signInOptions.count - index))
-                .id(option.id)
             case .apple:
                 SignInWithAppleButton(action: viewModel.signInWithAppleTapped)
                     .zIndex(Double(viewModel.signInOptions.count - index))
-                    .id(option.id)
             case .email:
                 Button(action: viewModel.signInWithEmailTapped) {
                     Label(L10n.SignIn.email, systemImage: .envelopeFill)
@@ -68,7 +67,6 @@ struct WelcomeView: View {
                 }
                 .buttonStyle(.borderedProminent)
                 .zIndex(Double(viewModel.signInOptions.count - index))
-                .id(option.id)
             }
         }
         .transition(.opacity.combined(with: .move(edge: .bottom)))

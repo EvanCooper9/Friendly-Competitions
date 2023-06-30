@@ -1,3 +1,4 @@
+import Algorithms
 import Combine
 import CombineExt
 import ECKit
@@ -35,7 +36,7 @@ final class HealthKitManager: HealthKitManaging {
             }
             .combineLatest()
             .sink(withUnretained: self) { strongSelf, permissions in
-                strongSelf.registerPermissionsForBackgroundDelivery(permissions.compactMap { $0 })
+                strongSelf.registerPermissionsForBackgroundDelivery(Array(permissions.compacted()))
             }
             .store(in: &cancellables)
     }
