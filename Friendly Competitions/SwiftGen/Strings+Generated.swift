@@ -229,10 +229,16 @@ internal enum L10n {
     internal static let areYouSureCannotBeUndone = L10n.tr("Localizable", "Confirmation.areYouSureCannotBeUndone", fallback: "Are you sure? This cannot be undone.")
   }
   internal enum CreateAccount {
+    /// Sign up with Apple
+    internal static let apple = L10n.tr("Localizable", "CreateAccount.apple", fallback: "Sign up with Apple")
     /// Create an account so that you can receive notifications and create competitions, and more.
     /// 
     /// Don't worry, all of your data will be migrated to your new account.
     internal static let desctiption = L10n.tr("Localizable", "CreateAccount.desctiption", fallback: "Create an account so that you can receive notifications and create competitions, and more.\n\nDon't worry, all of your data will be migrated to your new account.")
+    /// Sign up with email
+    internal static let email = L10n.tr("Localizable", "CreateAccount.email", fallback: "Sign up with email")
+    /// More options
+    internal static let moreOptions = L10n.tr("Localizable", "CreateAccount.moreOptions", fallback: "More options")
     /// Create account
     internal static let title = L10n.tr("Localizable", "CreateAccount.title", fallback: "Create account")
   }

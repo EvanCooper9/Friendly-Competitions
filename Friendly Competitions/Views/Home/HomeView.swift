@@ -25,7 +25,12 @@ struct HomeView: View {
             }
             .navigationBarTitle(viewModel.title)
             .toolbar {
-                HStack {
+                ToolbarItemGroup {
+                    // Text view workaround for SwiftUI bug
+                    // Keep toolbar items tappable after dismissing sheet
+                    let isShowingSheet = presentAbout || viewModel.navigationDestinations.contains(.profile)
+                    Text(isShowingSheet  ? " " : "")
+
                     if viewModel.showDeveloper {
                         DeveloperMenu()
                     }
