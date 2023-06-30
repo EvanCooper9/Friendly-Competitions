@@ -7,13 +7,17 @@ import XCTest
 
 final class HealthKitManagerTests: FCTestCase {
 
+    private var analyticsManager: AnalyticsManagingMock!
     private var healthStore: HealthStoringMock!
     private var cancellables: Cancellables!
 
     override func setUp() {
         super.setUp()
 
+        analyticsManager = .init()
         healthStore = .init()
+
+        container.analyticsManager.register { self.analyticsManager }
         container.healthStore.register { self.healthStore }
 
         cancellables = .init()
@@ -23,6 +27,7 @@ final class HealthKitManagerTests: FCTestCase {
 
     func testThatItRegistersForBackgroundDelivery() {
 
+        healthStore.enableBackgroundDeliveryForReturnValue = .just(true)
         healthStore.shouldRequestClosure = { permission in
             guard let hkSampleType = permission.first!.objectType as? HKSampleType else { return .just(true) }
             return .just(false)
@@ -33,6 +38,7 @@ final class HealthKitManagerTests: FCTestCase {
         let expectedCount = HealthKitPermissionType.allCases
             .compactMap { $0.objectType as? HKSampleType }
             .count
+        
         XCTAssertEqual(healthStore.enableBackgroundDeliveryForCallsCount, expectedCount)
     }
 
@@ -40,6 +46,8 @@ final class HealthKitManagerTests: FCTestCase {
         let expectation = self.expectation(description: #function)
         let expected: [(HealthKitPermissionType, Bool)] = [(.activitySummaryType, false), (.workoutType, true)]
         expectation.expectedFulfillmentCount = expected.count
+
+        healthStore.enableBackgroundDeliveryForReturnValue = .just(true)
 
         let manager = HealthKitManager()
         expected.forEach { expectedPermission, expectedValue in
@@ -56,6 +64,8 @@ final class HealthKitManagerTests: FCTestCase {
         let expectation = self.expectation(description: #function)
         let expected: [HealthKitPermissionType] = [.activitySummaryType, .workoutType]
         expectation.expectedFulfillmentCount = expected.count
+
+        healthStore.enableBackgroundDeliveryForReturnValue = .just(true)
 
         let manager = HealthKitManager()
         expected.forEach { expectedPermission in
