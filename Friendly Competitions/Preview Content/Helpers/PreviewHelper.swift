@@ -10,11 +10,11 @@ private enum Dependencies {
     static let activitySummaryManager = ActivitySummaryManagingMock()
     static let analyticsManager = AnalyticsManagingMock()
     static let authenticationManager = AuthenticationManagingMock()
-    static let bannerMananger = BannerManagingMock()
     static let competitionsManager = CompetitionsManagingMock()
     static let friendsManager = FriendsManagingMock()
     static let healthKitManager = HealthKitManagingMock()
     static let healthStore = HealthStoringMock()
+    static let notificationsManager = NotificationsManagingMock()
     static let searchManager = SearchManagingMock()
     static let scheduler = AnySchedulerOf<RunLoop>.main
     static let storageManager = StorageManagingMock()
@@ -30,11 +30,11 @@ private enum Dependencies {
         Container.shared.activitySummaryManager.register { activitySummaryManager }
         Container.shared.analyticsManager.register { analyticsManager }
         Container.shared.authenticationManager.register { authenticationManager }
-        Container.shared.bannerManager.register { bannerMananger }
         Container.shared.competitionsManager.register { competitionsManager }
         Container.shared.friendsManager.register { friendsManager }
         Container.shared.healthKitManager.register { healthKitManager }
         Container.shared.healthStore.register { healthStore }
+        Container.shared.notificationsManager.register { notificationsManager }
         Container.shared.searchManager.register { searchManager }
         Container.shared.scheduler.register { scheduler }
         Container.shared.storageManager.register { storageManager }
@@ -52,8 +52,6 @@ private enum Dependencies {
 
         authenticationManager.emailVerified = .just(true)
         authenticationManager.loggedIn = .just(true)
-
-        bannerMananger.banner = .never()
 
         competitionsManager.competitions = .just([])
         competitionsManager.competitionPublisherForClosure = { _ in .never() }
@@ -92,11 +90,11 @@ extension PreviewProvider {
     static var activitySummaryManager: ActivitySummaryManagingMock { Dependencies.activitySummaryManager }
     static var analyticsManager: AnalyticsManagingMock { Dependencies.analyticsManager }
     static var authenticationManager: AuthenticationManagingMock { Dependencies.authenticationManager }
-    static var bannerManager: BannerManagingMock { Dependencies.bannerMananger }
     static var competitionsManager: CompetitionsManagingMock { Dependencies.competitionsManager }
     static var friendsManager: FriendsManagingMock { Dependencies.friendsManager }
     static var healthKitManager: HealthKitManagingMock { Dependencies.healthKitManager }
     static var healthStore: HealthStoringMock { Dependencies.healthStore }
+    static var notificationsManager: NotificationsManagingMock { Dependencies.notificationsManager }
     static var searchManager: SearchManagingMock { Dependencies.searchManager }
     static var scheduler: AnySchedulerOf<RunLoop> { Dependencies.scheduler }
     static var storageManager: StorageManagingMock { Dependencies.storageManager }

@@ -261,11 +261,7 @@
 		EDC827832A4D2E7200B1A68E /* CompetitionViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC827822A4D2E7200B1A68E /* CompetitionViewModelTests.swift */; };
 		EDC827852A4D35BC00B1A68E /* HealthKitManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC827842A4D35BC00B1A68E /* HealthKitManagerTests.swift */; };
 		EDC8916A2A41552D00749917 /* ActivitySummaryInfoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC891692A41552D00749917 /* ActivitySummaryInfoViewModel.swift */; };
-		EDC8916E2A429F0400749917 /* BannerContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC8916C2A429F0400749917 /* BannerContainer.swift */; };
-		EDC8916F2A429F0400749917 /* BannerContainerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC8916D2A429F0400749917 /* BannerContainerViewModel.swift */; };
 		EDC891712A42A40800749917 /* Banner.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC891702A42A40800749917 /* Banner.swift */; };
-		EDC891742A42A4CC00749917 /* BannerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC891732A42A4CC00749917 /* BannerManager.swift */; };
-		EDC891762A42A79F00749917 /* BannerManager+Factory.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC891752A42A79F00749917 /* BannerManager+Factory.swift */; };
 		EDC891782A437F0700749917 /* ActivitySummaryInfoSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC891772A437F0700749917 /* ActivitySummaryInfoSource.swift */; };
 		EDC976362A3E326D00DE7ABE /* TextFieldWithSecureToggle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC976352A3E326D00DE7ABE /* TextFieldWithSecureToggle.swift */; };
 		EDC976392A3E376900DE7ABE /* VerifyEmailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC976372A3E376900DE7ABE /* VerifyEmailViewModel.swift */; };
@@ -524,11 +520,7 @@
 		EDC827822A4D2E7200B1A68E /* CompetitionViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionViewModelTests.swift; sourceTree = "<group>"; };
 		EDC827842A4D35BC00B1A68E /* HealthKitManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitManagerTests.swift; sourceTree = "<group>"; };
 		EDC891692A41552D00749917 /* ActivitySummaryInfoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitySummaryInfoViewModel.swift; sourceTree = "<group>"; };
-		EDC8916C2A429F0400749917 /* BannerContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerContainer.swift; sourceTree = "<group>"; };
-		EDC8916D2A429F0400749917 /* BannerContainerViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerContainerViewModel.swift; sourceTree = "<group>"; };
 		EDC891702A42A40800749917 /* Banner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Banner.swift; sourceTree = "<group>"; };
-		EDC891732A42A4CC00749917 /* BannerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerManager.swift; sourceTree = "<group>"; };
-		EDC891752A42A79F00749917 /* BannerManager+Factory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BannerManager+Factory.swift"; sourceTree = "<group>"; };
 		EDC891772A437F0700749917 /* ActivitySummaryInfoSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitySummaryInfoSource.swift; sourceTree = "<group>"; };
 		EDC976352A3E326D00DE7ABE /* TextFieldWithSecureToggle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldWithSecureToggle.swift; sourceTree = "<group>"; };
 		EDC976372A3E376900DE7ABE /* VerifyEmailViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VerifyEmailViewModel.swift; sourceTree = "<group>"; };
@@ -611,13 +603,13 @@
 			isa = PBXGroup;
 			children = (
 				C132336427BEB58B00196D81 /* AppIcon.swift */,
+				EDC891702A42A40800749917 /* Banner.swift */,
 				C1401F8A26D94D1C0080F74F /* ImmutableListItemView.swift */,
 				EDC976352A3E326D00DE7ABE /* TextFieldWithSecureToggle.swift */,
 				C123C9D327A88D3200375F73 /* UserInfoSection.swift */,
 				C123C9CC27A863F100375F73 /* UserHashIDPill.swift */,
 				ED32ED282A217E460098E9A2 /* SignInWithAppleButton.swift */,
 				EDC891682A41551E00749917 /* Activity Summary Info */,
-				EDC8916B2A429EF400749917 /* Banner Container */,
 				ED901B4B280247D900FE619E /* Competition Details */,
 				ED82AB102A3E1E1B00334F51 /* Email Sign In */,
 				ED901B692802524900FE619E /* Firebase Image */,
@@ -894,7 +886,6 @@
 				ED879C2729A40D070007DB91 /* Activity Summary */,
 				ED7881AE2850F70C00C7F6CB /* Analytics */,
 				ED7881A92850F6B400C7F6CB /* Authentication */,
-				EDC891722A42A4C000749917 /* Banner */,
 				ED879C2A29A40D660007DB91 /* Competitions */,
 				EDD894FE29634038009636E6 /* Environment */,
 				ED2B88F52A1F057F0043AD87 /* Feature Flag */,
@@ -1659,25 +1650,6 @@
 			path = "Activity Summary Info";
 			sourceTree = "<group>";
 		};
-		EDC8916B2A429EF400749917 /* Banner Container */ = {
-			isa = PBXGroup;
-			children = (
-				EDC8916C2A429F0400749917 /* BannerContainer.swift */,
-				EDC8916D2A429F0400749917 /* BannerContainerViewModel.swift */,
-			);
-			path = "Banner Container";
-			sourceTree = "<group>";
-		};
-		EDC891722A42A4C000749917 /* Banner */ = {
-			isa = PBXGroup;
-			children = (
-				EDC891702A42A40800749917 /* Banner.swift */,
-				EDC891732A42A4CC00749917 /* BannerManager.swift */,
-				EDC891752A42A79F00749917 /* BannerManager+Factory.swift */,
-			);
-			path = Banner;
-			sourceTree = "<group>";
-		};
 		EDD894F829628CE4009636E6 /* Premium */ = {
 			isa = PBXGroup;
 			children = (
@@ -2010,9 +1982,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				ED81438A29EF110200764730 /* HideNameLearnMoreView.swift in Sources */,
-				EDC891742A42A4CC00749917 /* BannerManager.swift in Sources */,
 				ED879C3D29A411090007DB91 /* AuthenticationManager+Factory.swift in Sources */,
-				EDC891762A42A79F00749917 /* BannerManager+Factory.swift in Sources */,
 				ED1B85C629C904CC008DB1F6 /* UserView.swift in Sources */,
 				ED879C5F29A414AB0007DB91 /* Storage+Factory.swift in Sources */,
 				ED32ED272A217CAF0098E9A2 /* WelcomeViewModel.swift in Sources */,
@@ -2076,7 +2046,6 @@
 				C1691DD926D5603D006FFA30 /* ActivityRingView.swift in Sources */,
 				ED901B5128024D5F00FE619E /* Text+Extensions.swift in Sources */,
 				ED438FF727F7B3B600D72F99 /* View+ConfirmationDialog.swift in Sources */,
-				EDC8916E2A429F0400749917 /* BannerContainer.swift in Sources */,
 				ED438FFB27F7D18600D72F99 /* AnalyticsManager.swift in Sources */,
 				ED1B5CFF296DBD2400122D7E /* PaywallViewModel.swift in Sources */,
 				ED2B88F42A1F048D0043AD87 /* DatabaseSettingsManager.swift in Sources */,
@@ -2188,7 +2157,6 @@
 				ED48783228295A2100AC1E2C /* InviteFriendsAction.swift in Sources */,
 				ED3983B42A1F0AE400279929 /* DatabaseSettingsStore.swift in Sources */,
 				C1C8B24326F3FB47008D6B1B /* ActivitySummaryManager.swift in Sources */,
-				EDC8916F2A429F0400749917 /* BannerContainerViewModel.swift in Sources */,
 				ED1B85C029C904CC008DB1F6 /* DeveloperMenu.swift in Sources */,
 				ED9F255D29A43544008C9967 /* DateToStartOfDay.swift in Sources */,
 				ED1B85C829C904CC008DB1F6 /* AboutViewModel.swift in Sources */,

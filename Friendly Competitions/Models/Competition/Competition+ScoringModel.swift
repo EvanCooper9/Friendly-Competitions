@@ -117,11 +117,12 @@ extension Competition.ScoringModel {
     var requiredPermissions: [Permission] {
         switch self {
         case .activityRingCloseCount, .percentOfGoals, .rawNumbers:
-            return [.health(.activitySummaryType)]
+            return [.health(.activitySummaryType), .notifications]
         case .stepCount:
-            return [.health(.stepCount)]
+            return [.health(.stepCount), .notifications]
         case let .workout(workoutType, metrics):
             return workoutType.requiredPermissions(for: metrics)
+                .appending(.notifications)
         }
     }
 }
