@@ -18,7 +18,6 @@ final class CompetitionViewModelTests: FCTestCase {
     private var searchManager = SearchManagingMock()
     private var userManager = UserManagingMock()
     private var workoutManager = WorkoutManagingMock()
-
     private var cancellables = Cancellables()
 
     override func setUp() {

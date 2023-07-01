@@ -6,13 +6,11 @@ import XCTest
 
 final class EnvironmentManagerTests: FCTestCase {
 
-    private var environmentCache: EnvironmentCacheMock!
-    private var cancellables: Cancellables!
+    private var environmentCache = EnvironmentCacheMock()
+    private var cancellables = Cancellables()
 
     override func setUp() {
         super.setUp()
-        environmentCache = .init()
-        cancellables = .init()
         container.environmentCache.register { self.environmentCache }
     }
 

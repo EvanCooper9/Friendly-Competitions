@@ -7,30 +7,20 @@ import XCTest
 
 final class FriendsManagerTests: FCTestCase {
     
-    private var api: APIMock!
-    private var appState: AppStateProvidingMock!
-    private var database: DatabaseMock!
-    private var searchManager: SearchManagingMock!
-    private var userManager: UserManagingMock!
-    
-    private var cancellables: Cancellables!
+    private var api = APIMock()
+    private var appState = AppStateProvidingMock()
+    private var database = DatabaseMock()
+    private var searchManager = SearchManagingMock()
+    private var userManager = UserManagingMock()
+    private var cancellables = Cancellables()
     
     override func setUp() {
         super.setUp()
-        
-        api = .init()
-        appState = .init()
-        database = .init()
-        searchManager = .init()
-        userManager = .init()
-        
         container.api.register { self.api }
         container.appState.register { self.appState }
         container.database.register { self.database }
         container.searchManager.register { self.searchManager }
         container.userManager.register { self.userManager }
-        
-        cancellables = .init()
     }
     
     func testThatItFetchesAndUpdatesFriends() {

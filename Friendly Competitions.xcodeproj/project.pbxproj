@@ -193,7 +193,6 @@
 		ED879BFB29A06AAB0007DB91 /* ActivitySummaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED879BFA29A06AAB0007DB91 /* ActivitySummaryTests.swift */; };
 		ED879C0129A06E850007DB91 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED879C0029A06E850007DB91 /* Database.swift */; };
 		ED879C0329A07A820007DB91 /* Database+Firebase.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED879C0229A07A820007DB91 /* Database+Firebase.swift */; };
-		ED879C0529A088780007DB91 /* Container+SetupMocks.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED879C0429A088780007DB91 /* Container+SetupMocks.swift */; };
 		ED879C0729A13C250007DB91 /* HealthKitQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED879C0629A13C250007DB91 /* HealthKitQuery.swift */; };
 		ED879C0929A1494A0007DB91 /* MockError.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED879C0829A1494A0007DB91 /* MockError.swift */; };
 		ED879C0F29A151600007DB91 /* Database+Mock.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED879C0E29A151600007DB91 /* Database+Mock.swift */; };
@@ -457,7 +456,6 @@
 		ED879BFA29A06AAB0007DB91 /* ActivitySummaryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitySummaryTests.swift; sourceTree = "<group>"; };
 		ED879C0029A06E850007DB91 /* Database.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
 		ED879C0229A07A820007DB91 /* Database+Firebase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Database+Firebase.swift"; sourceTree = "<group>"; };
-		ED879C0429A088780007DB91 /* Container+SetupMocks.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Container+SetupMocks.swift"; sourceTree = "<group>"; };
 		ED879C0629A13C250007DB91 /* HealthKitQuery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitQuery.swift; sourceTree = "<group>"; };
 		ED879C0829A1494A0007DB91 /* MockError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockError.swift; sourceTree = "<group>"; };
 		ED879C0E29A151600007DB91 /* Database+Mock.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Database+Mock.swift"; sourceTree = "<group>"; };
@@ -667,7 +665,6 @@
 		C1300FDD27C96422002E2C52 /* Util */ = {
 			isa = PBXGroup;
 			children = (
-				ED879C0429A088780007DB91 /* Container+SetupMocks.swift */,
 				ED1CFA9C2864B92A00192E49 /* Publisher+Extensions.swift */,
 				ED4F722529C9610E007C5864 /* FCTestCase.swift */,
 				ED58C99429ABAE9800393468 /* Extensions */,
@@ -1975,7 +1972,6 @@
 				ED879C0929A1494A0007DB91 /* MockError.swift in Sources */,
 				C1E35D4C27B4606200833EB2 /* Competition+ScoringModelTests.swift in Sources */,
 				C1E35D4227B45D6300833EB2 /* CompetitionTests.swift in Sources */,
-				ED879C0529A088780007DB91 /* Container+SetupMocks.swift in Sources */,
 				ED58C99129AAA22C00393468 /* SearchManagerTests.swift in Sources */,
 				EDBDFB4D29D0AED7003E6278 /* CompetitionResultsViewModelTests.swift in Sources */,
 			);

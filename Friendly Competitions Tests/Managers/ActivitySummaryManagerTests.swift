@@ -10,33 +10,22 @@ import XCTest
 
 final class ActivitySummaryManagerTests: FCTestCase {
     
-    private var cache: ActivitySummaryCacheMock!
-    private var healthKitManager: HealthKitManagingMock!
-    private var healthKitDataHelperBuilder: HealthKitDataHelperBuildingMock<[ActivitySummary]>!
-    private var database: DatabaseMock!
-    private var scheduler: TestSchedulerOf<RunLoop>!
-    private var userManager: UserManagingMock!
-
-    private var cancellables: Cancellables!
-
-    private var manager: ActivitySummaryManager!
+    private var cache = ActivitySummaryCacheMock()
+    private var healthKitManager = HealthKitManagingMock()
+    private var healthKitDataHelperBuilder = HealthKitDataHelperBuildingMock<[ActivitySummary]>()
+    private var database = DatabaseMock()
+    private var scheduler = TestSchedulerOf<RunLoop>(now: .init(.now))
+    private var userManager = UserManagingMock()
+    private var cancellables = Cancellables()
     
     override func setUp() {
         super.setUp()
-        cache = .init()
-        healthKitManager = .init()
-        healthKitDataHelperBuilder = .init()
-        database = .init()
-        scheduler = .init(now: .init(.now))
-        userManager = .init()
-
         container.activitySummaryCache.register { self.cache }
         container.healthKitManager.register { self.healthKitManager }
         container.healthKitDataHelperBuilder.register { self.healthKitDataHelperBuilder }
         container.database.register { self.database }
         container.scheduler.register { self.scheduler.eraseToAnyScheduler() }
         container.userManager.register { self.userManager }
-        cancellables = .init()
     }
     
     func testThatItFetchesActivitySummariesAndSetsCurrentOnSuccess() {

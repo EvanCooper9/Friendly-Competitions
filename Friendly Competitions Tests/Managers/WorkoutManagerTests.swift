@@ -10,24 +10,17 @@ import XCTest
 
 final class WorkoutManagerTests: FCTestCase {
 
-    private var cache: WorkoutCacheMock!
-    private var competitionsManager: CompetitionsManagingMock!
-    private var healthKitManager: HealthKitManagingMock!
-    private var healthKitDataHelperBuilder: HealthKitDataHelperBuildingMock<[Workout]>!
-    private var database: DatabaseMock!
-    private var scheduler: TestSchedulerOf<RunLoop>!
-    private var userManager: UserManagingMock!
-    private var cancellables: Cancellables!
+    private var cache = WorkoutCacheMock()
+    private var competitionsManager = CompetitionsManagingMock()
+    private var healthKitManager = HealthKitManagingMock()
+    private var healthKitDataHelperBuilder = HealthKitDataHelperBuildingMock<[Workout]>()
+    private var database = DatabaseMock()
+    private var scheduler = TestSchedulerOf<RunLoop>(now: .init(.now))
+    private var userManager = UserManagingMock()
+    private var cancellables = Cancellables()
 
     override func setUp() {
         super.setUp()
-        cache = .init()
-        competitionsManager = .init()
-        healthKitManager = .init()
-        healthKitDataHelperBuilder = .init()
-        database = .init()
-        scheduler = .init(now: .init(.now))
-        userManager = .init()
 
         container.competitionsManager.register { self.competitionsManager }
         container.healthKitManager.register { self.healthKitManager }
@@ -37,7 +30,6 @@ final class WorkoutManagerTests: FCTestCase {
         container.userManager.register { self.userManager }
         container.workoutCache.register { self.cache }
 
-        cancellables = .init()
         competitionsManager.competitions = .just([])
     }
 
