@@ -15,7 +15,7 @@ final class WorkoutManagerTests: FCTestCase {
     private var healthKitManager = HealthKitManagingMock()
     private var healthKitDataHelperBuilder = HealthKitDataHelperBuildingMock<[Workout]>()
     private var database = DatabaseMock()
-    private var scheduler = TestSchedulerOf<RunLoop>()
+    private var scheduler = TestSchedulerOf<RunLoop>(now: .init(.now))
     private var userManager = UserManagingMock()
     private var cancellables = Cancellables()
 
