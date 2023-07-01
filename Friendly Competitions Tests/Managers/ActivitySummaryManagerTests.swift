@@ -43,7 +43,6 @@ final class ActivitySummaryManagerTests: FCTestCase {
         
         let manager = ActivitySummaryManager()
         manager.activitySummary
-            .print("activitySummary")
             .dropFirst()
             .sink { activitySummary in
                 XCTAssertEqual(activitySummary, expected.first)

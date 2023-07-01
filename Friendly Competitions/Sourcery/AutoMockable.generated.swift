@@ -73,7 +73,11 @@ class ActivitySummaryCacheMock: ActivitySummaryCache {
 class ActivitySummaryManagingMock: ActivitySummaryManaging {
 
 
-    var activitySummary: AnyPublisher<ActivitySummary?, Never>!
+    var activitySummary: AnyPublisher<ActivitySummary?, Never> {
+        get { return underlyingActivitySummary }
+        set(value) { underlyingActivitySummary = value }
+    }
+    var underlyingActivitySummary: AnyPublisher<ActivitySummary?, Never>!
 
 
     //MARK: - activitySummaries

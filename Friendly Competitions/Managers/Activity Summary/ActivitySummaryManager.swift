@@ -10,13 +10,20 @@ import HealthKit
 
 // sourcery: AutoMockable
 protocol ActivitySummaryManaging {
-    var activitySummary: AnyPublisher<ActivitySummary?, Never>! { get }
+    var activitySummary: AnyPublisher<ActivitySummary?, Never> { get }
     func activitySummaries(in dateInterval: DateInterval) -> AnyPublisher<[ActivitySummary], Error>
 }
 
 final class ActivitySummaryManager: ActivitySummaryManaging {
 
-    private(set) var activitySummary: AnyPublisher<ActivitySummary?, Never>!
+    // MARK: - Public Properties
+
+    var activitySummary: AnyPublisher<ActivitySummary?, Never> {
+        activitySummarySubject
+            .removeDuplicates()
+            .receive(on: scheduler)
+            .eraseToAnyPublisher()
+    }
 
     // MARK: - Private Properties
 
@@ -49,12 +56,6 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
         } upload: { [weak self] data in
             self?.upload(activitySummaries: data) ?? .just(())
         }
-
-        activitySummary = activitySummarySubject
-            .print("subject")
-            .removeDuplicates()
-            .receive(on: scheduler)
-            .eraseToAnyPublisher()
 
         let storedActivitySummary = cache.activitySummary
         activitySummarySubject.send(storedActivitySummary?.date.isToday == true ? storedActivitySummary : nil)
