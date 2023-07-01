@@ -7,17 +7,13 @@ import XCTest
 
 final class ProfileViewModelTests: FCTestCase {
 
-    private var authenticationManager: AuthenticationManagingMock!
-    private var premiumManager: PremiumManagingMock!
-    private var userManager: UserManagingMock!
-    private var cancellables: Cancellables!
+    private var authenticationManager = AuthenticationManagingMock()
+    private var premiumManager = PremiumManagingMock()
+    private var userManager = UserManagingMock()
+    private var cancellables = Cancellables()
 
     override func setUp() {
         super.setUp()
-
-        authenticationManager = .init()
-        premiumManager = .init()
-        userManager = .init()
 
         container.authenticationManager.register { self.authenticationManager }
         container.premiumManager.register { self.premiumManager }
@@ -25,8 +21,6 @@ final class ProfileViewModelTests: FCTestCase {
 
         premiumManager.premium = .never()
         userManager.updateWithReturnValue = .never()
-
-        cancellables = .init()
     }
 
     func testThatIsAnonymouseAccountIsCorrect() {

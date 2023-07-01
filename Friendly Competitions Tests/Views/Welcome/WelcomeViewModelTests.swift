@@ -6,15 +6,11 @@ import XCTest
 
 final class WelcomeViewModelTests: FCTestCase {
 
-    private var authenticationManager: AuthenticationManagingMock!
-    private var cancellables: Cancellables!
+    private var authenticationManager = AuthenticationManagingMock()
+    private var cancellables = Cancellables()
 
     override func setUp() {
         super.setUp()
-
-        authenticationManager = .init()
-        cancellables = .init()
-
         container.authenticationManager.register { self.authenticationManager }
     }
 

@@ -8,34 +8,20 @@ import XCTest
 
 final class CompetitionViewModelTests: FCTestCase {
 
-    private var activitySummaryManager: ActivitySummaryManagingMock!
-    private var api: APIMock!
-    private var appState: AppStateProvidingMock!
-    private var competitionsManager: CompetitionsManagingMock!
-    private var healthKitManager: HealthKitManagingMock!
-    private var notificationsManager: NotificationsManagingMock!
-    private var scheduler: TestSchedulerOf<RunLoop>!
-    private var searchManager: SearchManagingMock!
-    private var userManager: UserManagingMock!
-    private var workoutManager: WorkoutManagingMock!
-
-    private var cancellables: Cancellables!
+    private var activitySummaryManager = ActivitySummaryManagingMock()
+    private var api = APIMock()
+    private var appState = AppStateProvidingMock()
+    private var competitionsManager = CompetitionsManagingMock()
+    private var healthKitManager = HealthKitManagingMock()
+    private var notificationsManager = NotificationsManagingMock()
+    private var scheduler = TestSchedulerOf<RunLoop>(now: .init(.now))
+    private var searchManager = SearchManagingMock()
+    private var userManager = UserManagingMock()
+    private var workoutManager = WorkoutManagingMock()
+    private var cancellables = Cancellables()
 
     override func setUp() {
         super.setUp()
-
-        activitySummaryManager = .init()
-        api = .init()
-        appState = .init()
-        competitionsManager = .init()
-        healthKitManager = .init()
-        notificationsManager = .init()
-        scheduler = .init(now: .init(.now))
-        searchManager = .init()
-        userManager = .init()
-        workoutManager = .init()
-
-        cancellables = .init()
 
         container.activitySummaryManager.register { self.activitySummaryManager }
         container.api.register { self.api }

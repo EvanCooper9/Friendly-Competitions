@@ -7,23 +7,16 @@ import XCTest
 
 final class CompetitionsManagerTests: FCTestCase {
     
-    private var api: APIMock!
-    private var appState: AppStateProvidingMock!
-    private var analyticsManager: AnalyticsManagingMock!
-    private var cache: CompetitionCacheMock!
-    private var database: DatabaseMock!
-    private var userManager: UserManagingMock!
-    
-    private var cancellables: Cancellables!
+    private var api = APIMock()
+    private var appState = AppStateProvidingMock()
+    private var analyticsManager = AnalyticsManagingMock()
+    private var cache = CompetitionCacheMock()
+    private var database = DatabaseMock()
+    private var userManager = UserManagingMock()
+    private var cancellables = Cancellables()
     
     override func setUp() {
         super.setUp()
-        api = .init()
-        appState = .init()
-        analyticsManager = .init()
-        cache = .init()
-        database = .init()
-        userManager = .init()
         
         container.api.register { self.api }
         container.appState.register { self.appState }
@@ -31,7 +24,6 @@ final class CompetitionsManagerTests: FCTestCase {
         container.competitionCache.register { self.cache }
         container.database.register { self.database }
         container.userManager.register { self.userManager }
-        cancellables = .init()
         
         appState.didBecomeActive = .never()
     }

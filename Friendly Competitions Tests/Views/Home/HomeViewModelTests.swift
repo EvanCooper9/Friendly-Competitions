@@ -9,28 +9,18 @@ import XCTest
 
 final class HomeViewModelTests: FCTestCase {
 
-    private var activitySummaryManager: ActivitySummaryManagingMock!
-    private var analyticsManager: AnalyticsManagingMock!
-    private var appState: AppStateProvidingMock!
-    private var competitionsManager: CompetitionsManagingMock!
-    private var friendsManager: FriendsManagingMock!
-    private var premiumManager: PremiumManagingMock!
-    private var scheduler: TestSchedulerOf<RunLoop>!
-    private var userManager: UserManagingMock!
-
-    private var cancellables: Cancellables!
+    private var activitySummaryManager = ActivitySummaryManagingMock()
+    private var analyticsManager = AnalyticsManagingMock()
+    private var appState = AppStateProvidingMock()
+    private var competitionsManager = CompetitionsManagingMock()
+    private var friendsManager = FriendsManagingMock()
+    private var premiumManager = PremiumManagingMock()
+    private var scheduler = TestSchedulerOf<RunLoop>(now: .init(.now))
+    private var userManager = UserManagingMock()
+    private var cancellables = Cancellables()
 
     override func setUp() {
         super.setUp()
-        activitySummaryManager = .init()
-        analyticsManager = .init()
-        appState = .init()
-        competitionsManager = .init()
-        friendsManager = .init()
-        premiumManager = .init()
-        scheduler = .init(now: .init(.now))
-        userManager = .init()
-        cancellables = .init()
 
         activitySummaryManager.activitySummary = .never()
         appState.deepLink = .never()

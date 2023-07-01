@@ -8,26 +8,16 @@ import XCTest
 
 final class CompetitionResultsViewModelTests: FCTestCase {
 
-    private var activitySummaryManager: ActivitySummaryManagingMock!
-    private var competitionsManager: CompetitionsManagingMock!
-    private var premiumManager: PremiumManagingMock!
-    private var scheduler: TestSchedulerOf<RunLoop>!
-    private var userManager: UserManagingMock!
-    private var workoutManager: WorkoutManagingMock!
-
-    private var cancellables: Cancellables!
+    private var activitySummaryManager = ActivitySummaryManagingMock()
+    private var competitionsManager = CompetitionsManagingMock()
+    private var premiumManager = PremiumManagingMock()
+    private var scheduler = TestSchedulerOf<RunLoop>(now: .init(.now))
+    private var userManager = UserManagingMock()
+    private var workoutManager = WorkoutManagingMock()
+    private var cancellables = Cancellables()
 
     override func setUp() {
         super.setUp()
-
-        activitySummaryManager = .init()
-        competitionsManager = .init()
-        premiumManager = .init()
-        scheduler = .init(now: .init(.now))
-        userManager = .init()
-        workoutManager = .init()
-
-        cancellables = .init()
 
         container.activitySummaryManager.register { self.activitySummaryManager }
         container.competitionsManager.register { self.competitionsManager }
