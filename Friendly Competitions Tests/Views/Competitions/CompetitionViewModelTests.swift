@@ -8,34 +8,21 @@ import XCTest
 
 final class CompetitionViewModelTests: FCTestCase {
 
-    private var activitySummaryManager: ActivitySummaryManagingMock!
-    private var api: APIMock!
-    private var appState: AppStateProvidingMock!
-    private var competitionsManager: CompetitionsManagingMock!
-    private var healthKitManager: HealthKitManagingMock!
-    private var notificationsManager: NotificationsManagingMock!
-    private var scheduler: TestSchedulerOf<RunLoop>!
-    private var searchManager: SearchManagingMock!
-    private var userManager: UserManagingMock!
-    private var workoutManager: WorkoutManagingMock!
+    private var activitySummaryManager = ActivitySummaryManagingMock()
+    private var api = APIMock()
+    private var appState = AppStateProvidingMock()
+    private var competitionsManager = CompetitionsManagingMock()
+    private var healthKitManager = HealthKitManagingMock()
+    private var notificationsManager = NotificationsManagingMock()
+    private var scheduler = TestSchedulerOf<RunLoop>(now: .init(.now))
+    private var searchManager = SearchManagingMock()
+    private var userManager = UserManagingMock()
+    private var workoutManager = WorkoutManagingMock()
 
-    private var cancellables: Cancellables!
+    private var cancellables = Cancellables()
 
     override func setUp() {
         super.setUp()
-
-        activitySummaryManager = .init()
-        api = .init()
-        appState = .init()
-        competitionsManager = .init()
-        healthKitManager = .init()
-        notificationsManager = .init()
-        scheduler = .init(now: .init(.now))
-        searchManager = .init()
-        userManager = .init()
-        workoutManager = .init()
-
-        cancellables = .init()
 
         container.activitySummaryManager.register { self.activitySummaryManager }
         container.api.register { self.api }
@@ -58,49 +45,76 @@ final class CompetitionViewModelTests: FCTestCase {
         userManager.userPublisher = .just(.evan)
     }
 
-    func testThatBannerShowsMissingPermissions() {
+    func testThatBannerHasHealthKitPermissionsMissing() {
         appState.didBecomeActive = .just(true)
         healthKitManager.shouldRequestReturnValue = .just(true)
+        notificationsManager.permissionStatusReturnValue = .just(.authorized)
 
         let viewModel = CompetitionViewModel(competition: .mock)
         scheduler.advance(by: .seconds(1))
 
-        XCTAssertEqual(viewModel.banner, .missingCompetitionPermissions)
+        XCTAssertEqual(viewModel.banners, [.healthKitPermissionsMissing])
     }
 
-    func testThatBannerShowsMissingData() {
+    func testThatBannersHasHealthKitDataMissing() {
         appState.didBecomeActive = .just(true)
         healthKitManager.shouldRequestReturnValue = .just(false)
         activitySummaryManager.activitySummariesInReturnValue = .just([])
+        notificationsManager.permissionStatusReturnValue = .just(.authorized)
 
         let viewModel = CompetitionViewModel(competition: .mock)
         scheduler.advance(by: .seconds(1))
 
-        XCTAssertEqual(viewModel.banner, .missingCompetitionData)
+        XCTAssertEqual(viewModel.banners, [.healthKitDataMissing])
+    }
+
+    func testThatBannersHasNotificationPermissionsDenied() {
+        appState.didBecomeActive = .just(true)
+        healthKitManager.shouldRequestReturnValue = .just(false)
+        activitySummaryManager.activitySummariesInReturnValue = .just([.mock])
+        notificationsManager.permissionStatusReturnValue = .just(.denied)
+
+        let viewModel = CompetitionViewModel(competition: .mock)
+        scheduler.advance(by: .seconds(1))
+
+        XCTAssertEqual(viewModel.banners, [.notificationPermissionsDenied])
+    }
+
+    func testThatBannersHasNotificationPermissionsMissing() {
+        appState.didBecomeActive = .just(true)
+        healthKitManager.shouldRequestReturnValue = .just(false)
+        activitySummaryManager.activitySummariesInReturnValue = .just([.mock])
+        notificationsManager.permissionStatusReturnValue = .just(.notDetermined)
+
+        let viewModel = CompetitionViewModel(competition: .mock)
+        scheduler.advance(by: .seconds(1))
+
+        XCTAssertEqual(viewModel.banners, [.notificationPermissionsMissing])
     }
 
     func testThatBannerIsNil() {
         appState.didBecomeActive = .just(true)
         healthKitManager.shouldRequestReturnValue = .just(false)
         activitySummaryManager.activitySummariesInReturnValue = .just([.mock])
+        notificationsManager.permissionStatusReturnValue = .just(.authorized)
 
         let viewModel = CompetitionViewModel(competition: .mock)
         scheduler.advance(by: .seconds(1))
 
-        XCTAssertNil(viewModel.banner)
+        XCTAssertTrue(viewModel.banners.isEmpty)
     }
 
-    func testThatTappingBannerRequestsPermissions() {
+    func testThatTappingBannerRequestsHealthKitPermissions() {
         let expectation = self.expectation(description: #function)
-        let expected = [nil, Banner.missingCompetitionPermissions, nil]
+        let expected = [[], [Banner.healthKitPermissionsMissing], []]
 
         appState.didBecomeActive = .just(true)
         healthKitManager.shouldRequestReturnValue = .just(true)
+        notificationsManager.permissionStatusReturnValue = .just(.authorized)
 
         let viewModel = CompetitionViewModel(competition: .mock)
-        viewModel.$banner
+        viewModel.$banners
             .removeDuplicates()
-            .print("banner")
             .collect(expected.count)
             .expect(expected, expectation: expectation)
             .store(in: &cancellables)
@@ -111,10 +125,39 @@ final class CompetitionViewModelTests: FCTestCase {
         healthKitManager.shouldRequestReturnValue = .just(false)
         healthKitManager.requestReturnValue = .just(())
         
-        viewModel.tapped(banner: .missingCompetitionPermissions)
+        viewModel.tapped(banner: .healthKitPermissionsMissing)
         scheduler.advance()
 
         waitForExpectations(timeout: 1)
         XCTAssertEqual(healthKitManager.requestCallsCount, 1)
+    }
+
+    func testThatTappingBannerRequestsNotificationPermissions() {
+        let expectation = self.expectation(description: #function)
+        let expected = [[], [Banner.notificationPermissionsMissing], []]
+
+        appState.didBecomeActive = .just(true)
+        healthKitManager.shouldRequestReturnValue = .just(false)
+        activitySummaryManager.activitySummariesInReturnValue = .just([.mock])
+        notificationsManager.permissionStatusReturnValue = .just(.notDetermined)
+
+        let viewModel = CompetitionViewModel(competition: .mock)
+        viewModel.$banners
+            .removeDuplicates()
+            .print("banners")
+            .collect(expected.count)
+            .expect(expected, expectation: expectation)
+            .store(in: &cancellables)
+
+        scheduler.advance(by: .seconds(1))
+
+        notificationsManager.permissionStatusReturnValue = .just(.authorized)
+        notificationsManager.requestPermissionsReturnValue = .just(true)
+
+        viewModel.tapped(banner: .notificationPermissionsMissing)
+        scheduler.advance()
+
+        waitForExpectations(timeout: 1)
+        XCTAssertEqual(notificationsManager.requestPermissionsCallsCount, 1)
     }
 }
