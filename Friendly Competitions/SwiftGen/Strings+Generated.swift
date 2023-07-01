@@ -75,19 +75,29 @@ internal enum L10n {
     internal static let passwordMatch = L10n.tr("Localizable", "AuthenticationError.passwordMatch", fallback: "Passwords don't match")
   }
   internal enum Banner {
-    internal enum Competition {
-      internal enum MissingData {
-        /// Check
-        internal static let cta = L10n.tr("Localizable", "Banner.Competition.MissingData.cta", fallback: "Check")
-        /// Can't find any data. Check HealthKit permissions.
-        internal static let message = L10n.tr("Localizable", "Banner.Competition.MissingData.message", fallback: "Can't find any data. Check HealthKit permissions.")
-      }
-      internal enum MissingPermissions {
-        /// Request
-        internal static let cta = L10n.tr("Localizable", "Banner.Competition.MissingPermissions.cta", fallback: "Request")
-        /// Missing HealthKit permissions to count your score.
-        internal static let message = L10n.tr("Localizable", "Banner.Competition.MissingPermissions.message", fallback: "Missing HealthKit permissions to count your score.")
-      }
+    internal enum HealthKitDataMissing {
+      /// Check
+      internal static let cta = L10n.tr("Localizable", "Banner.HealthKitDataMissing.cta", fallback: "Check")
+      /// Can't find any data. Check HealthKit permissions.
+      internal static let message = L10n.tr("Localizable", "Banner.HealthKitDataMissing.message", fallback: "Can't find any data. Check HealthKit permissions.")
+    }
+    internal enum HealthKitPermissionsMissing {
+      /// Request
+      internal static let cta = L10n.tr("Localizable", "Banner.HealthKitPermissionsMissing.cta", fallback: "Request")
+      /// Missing HealthKit permissions to count your score.
+      internal static let message = L10n.tr("Localizable", "Banner.HealthKitPermissionsMissing.message", fallback: "Missing HealthKit permissions to count your score.")
+    }
+    internal enum NotificationPermissionsDenied {
+      /// Change
+      internal static let cta = L10n.tr("Localizable", "Banner.NotificationPermissionsDenied.cta", fallback: "Change")
+      /// Notification permissions denied. You won't be updated.
+      internal static let message = L10n.tr("Localizable", "Banner.NotificationPermissionsDenied.message", fallback: "Notification permissions denied. You won't be updated.")
+    }
+    internal enum NotificationPermissionsMissing {
+      /// Request
+      internal static let cta = L10n.tr("Localizable", "Banner.NotificationPermissionsMissing.cta", fallback: "Request")
+      /// Missing Notification permissions to keep you updated.
+      internal static let message = L10n.tr("Localizable", "Banner.NotificationPermissionsMissing.message", fallback: "Missing Notification permissions to keep you updated.")
     }
   }
   internal enum Competition {

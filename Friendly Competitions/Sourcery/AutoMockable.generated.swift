@@ -585,65 +585,6 @@ class AuthenticationManagingMock: AuthenticationManaging {
     }
 
 }
-class BannerManagingMock: BannerManaging {
-
-
-    var banner: AnyPublisher<Banner?, Never> {
-        get { return underlyingBanner }
-        set(value) { underlyingBanner = value }
-    }
-    var underlyingBanner: AnyPublisher<Banner?, Never>!
-    var bannerTapped: AnyPublisher<Banner, Never> {
-        get { return underlyingBannerTapped }
-        set(value) { underlyingBannerTapped = value }
-    }
-    var underlyingBannerTapped: AnyPublisher<Banner, Never>!
-
-
-    //MARK: - push
-
-    var pushBannerCallsCount = 0
-    var pushBannerCalled: Bool {
-        return pushBannerCallsCount > 0
-    }
-    var pushBannerReceivedBanner: Banner?
-    var pushBannerReceivedInvocations: [Banner] = []
-    var pushBannerClosure: ((Banner) -> Void)?
-
-    func push(banner: Banner) {
-        pushBannerCallsCount += 1
-        pushBannerReceivedBanner = banner
-        pushBannerReceivedInvocations.append(banner)
-        pushBannerClosure?(banner)
-    }
-
-    //MARK: - pop
-
-    var popCallsCount = 0
-    var popCalled: Bool {
-        return popCallsCount > 0
-    }
-    var popClosure: (() -> Void)?
-
-    func pop() {
-        popCallsCount += 1
-        popClosure?()
-    }
-
-    //MARK: - tapped
-
-    var tappedCallsCount = 0
-    var tappedCalled: Bool {
-        return tappedCallsCount > 0
-    }
-    var tappedClosure: (() -> Void)?
-
-    func tapped() {
-        tappedCallsCount += 1
-        tappedClosure?()
-    }
-
-}
 class CompetitionCacheMock: CompetitionCache {
 
 
@@ -1204,12 +1145,25 @@ class HealthStoringMock: HealthStoring {
 class NotificationsManagingMock: NotificationsManaging {
 
 
-    var permissionStatus: AnyPublisher<PermissionStatus, Never> {
-        get { return underlyingPermissionStatus }
-        set(value) { underlyingPermissionStatus = value }
-    }
-    var underlyingPermissionStatus: AnyPublisher<PermissionStatus, Never>!
 
+
+    //MARK: - permissionStatus
+
+    var permissionStatusCallsCount = 0
+    var permissionStatusCalled: Bool {
+        return permissionStatusCallsCount > 0
+    }
+    var permissionStatusReturnValue: AnyPublisher<PermissionStatus, Never>!
+    var permissionStatusClosure: (() -> AnyPublisher<PermissionStatus, Never>)?
+
+    func permissionStatus() -> AnyPublisher<PermissionStatus, Never> {
+        permissionStatusCallsCount += 1
+        if let permissionStatusClosure = permissionStatusClosure {
+            return permissionStatusClosure()
+        } else {
+            return permissionStatusReturnValue
+        }
+    }
 
     //MARK: - requestPermissions
 
@@ -1217,11 +1171,16 @@ class NotificationsManagingMock: NotificationsManaging {
     var requestPermissionsCalled: Bool {
         return requestPermissionsCallsCount > 0
     }
-    var requestPermissionsClosure: (() -> Void)?
+    var requestPermissionsReturnValue: AnyPublisher<Bool, Error>!
+    var requestPermissionsClosure: (() -> AnyPublisher<Bool, Error>)?
 
-    func requestPermissions() {
+    func requestPermissions() -> AnyPublisher<Bool, Error> {
         requestPermissionsCallsCount += 1
-        requestPermissionsClosure?()
+        if let requestPermissionsClosure = requestPermissionsClosure {
+            return requestPermissionsClosure()
+        } else {
+            return requestPermissionsReturnValue
+        }
     }
 
 }

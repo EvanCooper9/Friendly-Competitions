@@ -2,7 +2,7 @@ import Combine
 import SwiftUI
 import SwiftUIX
 
-enum Banner: CaseIterable {
+enum Banner: String, CaseIterable, Identifiable {
 
     struct Configuration {
 
@@ -19,17 +19,30 @@ enum Banner: CaseIterable {
         let background: Color
     }
 
-    case missingCompetitionPermissions
-    case missingCompetitionData
+    // HealthKit Permissions & Data
+    case healthKitPermissionsMissing
+    case healthKitDataMissing
+
+    // Notification Permissions
+    case notificationPermissionsMissing
+    case notificationPermissionsDenied
+
+    var id: RawValue { rawValue }
 
     var configuration: Configuration {
         switch self {
-        case .missingCompetitionPermissions:
-            return .error(message: L10n.Banner.Competition.MissingPermissions.message,
-                          cta: L10n.Banner.Competition.MissingPermissions.cta)
-        case .missingCompetitionData:
-            return .warning(message: L10n.Banner.Competition.MissingData.message,
-                            cta: UIApplication.shared.canOpenURL(.health) ? L10n.Banner.Competition.MissingData.cta : nil)
+        case .healthKitPermissionsMissing:
+            return .error(message: L10n.Banner.HealthKitPermissionsMissing.message,
+                          cta: L10n.Banner.HealthKitPermissionsMissing.cta)
+        case .healthKitDataMissing:
+            return .warning(message: L10n.Banner.HealthKitDataMissing.message,
+                            cta: UIApplication.shared.canOpenURL(.health) ? L10n.Banner.HealthKitDataMissing.cta : nil)
+        case .notificationPermissionsMissing:
+            return .warning(message: L10n.Banner.NotificationPermissionsMissing.message,
+                            cta: L10n.Banner.NotificationPermissionsMissing.cta)
+        case .notificationPermissionsDenied:
+            return .error(message: L10n.Banner.NotificationPermissionsDenied.message,
+                          cta: L10n.Banner.NotificationPermissionsDenied.cta)
         }
     }
 
@@ -42,9 +55,11 @@ enum Banner: CaseIterable {
             }
 
             Text(configuration.message)
+                .lineLimit(2)
                 .bold()
                 .foregroundColor(configuration.foreground)
                 .frame(maxWidth: .infinity, alignment: .leading)
+                .minimumScaleFactor(0.5)
 
             if let action = configuration.action {
                 Button(action.cta, action: tapped)
@@ -55,7 +70,9 @@ enum Banner: CaseIterable {
                     .cornerRadius(10)
             }
         }
+        .padding()
         .background(configuration.background)
+        .cornerRadius(10)
     }
 }
 
@@ -93,9 +110,6 @@ struct Banner_Previews: PreviewProvider {
                 banner.view {
                     // do nothing
                 }
-                .padding()
-                .background(banner.configuration.background)
-                .cornerRadius(10)
             }
         }
         .padding()
