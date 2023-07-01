@@ -5,60 +5,50 @@ import UIKit
 
 // sourcery: AutoMockable
 protocol NotificationsManaging {
-    var permissionStatus: AnyPublisher<PermissionStatus, Never> { get }
-    func requestPermissions()
+    func permissionStatus() -> AnyPublisher<PermissionStatus, Never>
+    func requestPermissions() -> AnyPublisher<Bool, Error>
 }
 
 final class NotificationsManager: NSObject, NotificationsManaging {
 
-    // MARK: - Public Properties
-
-    let permissionStatus: AnyPublisher<PermissionStatus, Never>
-
     // MARK: - Private Properties
 
-    @Injected(\.api) private var api
     @Injected(\.appState) private var appState
     @Injected(\.analyticsManager) private var analyticsManager
-    @Injected(\.competitionsManager) private var competitionsManager
-
-    private let _permissionStatus: CurrentValueSubject<PermissionStatus, Never>
-
-    // MARK: - Lifecycle
-
-    override init() {
-        _permissionStatus = .init(.done)
-        permissionStatus = _permissionStatus.eraseToAnyPublisher()
-
-        super.init()
-
-        UNUserNotificationCenter.current().getNotificationSettings { [weak self] settings in
-            guard let self = self else { return }
-            if settings.authorizationStatus == .authorized {
-                DispatchQueue.main.async { [weak self] in
-                    self?.setupNotifications()
-                }
-            }
-            self._permissionStatus.send(settings.authorizationStatus.permissionStatus)
-        }
-    }
 
     // MARK: - Public Methods
 
-    func requestPermissions() {
-        UNUserNotificationCenter.current().requestAuthorization(
-            options: [.alert, .badge, .sound],
-            completionHandler: { [weak self] authorized, _ in
-                guard let self = self else { return }
-                self.analyticsManager.log(event: .notificationPermissions(authorized: authorized))
-                if authorized {
-                    DispatchQueue.main.async {
-                        self.setupNotifications()
+    func permissionStatus() -> AnyPublisher<PermissionStatus, Never> {
+        Future { promise in
+            UNUserNotificationCenter.current().getNotificationSettings { settings in
+                promise(.success(settings.authorizationStatus.permissionStatus))
+            }
+        }
+        .eraseToAnyPublisher()
+    }
+
+    func requestPermissions() -> AnyPublisher<Bool, Error> {
+        Future { [weak self] promise in
+            UNUserNotificationCenter.current().requestAuthorization(
+                options: [.alert, .badge, .sound],
+                completionHandler: { [weak self] authorized, error in
+                    guard let self else { return }
+                    self.analyticsManager.log(event: .notificationPermissions(authorized: authorized))
+                    if authorized {
+                        DispatchQueue.main.async {
+                            self.setupNotifications()
+                        }
+                    }
+
+                    if let error {
+                        promise(.failure(error))
+                    } else {
+                        promise(.success(authorized))
                     }
                 }
-                self._permissionStatus.send(authorized ? .authorized : .denied)
-            }
-        )
+            )
+        }
+        .eraseToAnyPublisher()
     }
 
     // MARK: - Private Methods

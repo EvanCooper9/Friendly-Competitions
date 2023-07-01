@@ -1,3 +1,4 @@
+import ECKit
 import Factory
 import SwiftUI
 import SwiftUIX
@@ -13,18 +14,14 @@ struct CompetitionView: View {
     }
 
     var body: some View {
-        List {
-
-            if let banner = viewModel.banner {
-                Section {
+        CustomList {
+            if viewModel.banners.isNotEmpty {
+                ItemStack(models: viewModel.banners) { banner in
                     banner.view {
                         viewModel.tapped(banner: banner)
                     }
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .padding(banner.configuration.background)
                 }
-                .listRowInsets(.zero)
-                .transition(.opacity)
+                .padding(.horizontal)
             }
 
             standings
@@ -43,13 +40,16 @@ struct CompetitionView: View {
                     isPublic: $viewModel.competition.isPublic
                 )
             } else {
-                ForEach(viewModel.details, id: \.value) { detail in
-                    ImmutableListItemView(value: detail.value, valueType: detail.valueType)
+                CustomListSection {
+                    ForEach(viewModel.details, id: \.value) { detail in
+                        ImmutableListItemView(value: detail.value, valueType: detail.valueType)
+                    }
                 }
             }
 
             actions
         }
+        .background(.secondarySystemBackground)
         .navigationTitle(viewModel.competition.name)
         .toolbar {
             if viewModel.canEdit {
@@ -71,11 +71,11 @@ struct CompetitionView: View {
             ]
         )
         .withLoadingOverlay(isLoading: viewModel.loading)
-        .animation(.default, value: viewModel.banner)
+        .animation(.default, value: viewModel.banners)
     }
 
     private var standings: some View {
-        Section {
+        CustomListSection {
             if viewModel.loadingStandings {
                 ProgressView()
             } else {
@@ -96,13 +96,13 @@ struct CompetitionView: View {
     }
 
     private var results: some View {
-        Section {
+        CustomListSection {
             NavigationLink(L10n.Competition.Results.results, value: NavigationDestination.competitionResults(viewModel.competition))
         }
     }
 
     private var actions: some View {
-        Section {
+        CustomListSection {
             ForEach(viewModel.actions, id: \.self) { action in
                 Button {
                     viewModel.perform(action)
@@ -146,6 +146,7 @@ struct CompetitionView_Previews: PreviewProvider {
         competitionsManager.standingsPublisherForReturnValue = .just(standings)
 
         healthKitManager.shouldRequestReturnValue = .just(true)
+        notificationsManager.permissionStatusReturnValue = .just(.notDetermined)
 
         searchManager.searchForUsersWithIDsReturnValue = .just(participants)
     }

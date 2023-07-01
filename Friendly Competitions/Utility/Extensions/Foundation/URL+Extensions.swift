@@ -1,5 +1,6 @@
 import ECKit
 import Foundation
+import UIKit
 
 extension URL {
     static let termsOfService = URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!
@@ -7,6 +8,7 @@ extension URL {
     static let developer = URL(string: "https://evancooper.tech")!
     static let gitHub = URL(string: "https://github.com/EvanCooper9/Friendly-Competitions")!
     static let health = URL(string: "x-apple-health://")!
+    static let notificationSettings = URL(string: UIApplication.openNotificationSettingsURLString)!
 
     static func featureRequest(with userID: User.ID) -> URL {
         URL(string: "https://www.reddit.com/r/friendlycompetitions/submit")!

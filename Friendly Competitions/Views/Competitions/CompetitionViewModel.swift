@@ -15,7 +15,7 @@ final class CompetitionViewModel: ObservableObject {
 
     // MARK: - Public Properties
 
-    @Published private(set) var banner: Banner?
+    @Published private(set) var banners = [Banner]()
     @Published private(set) var canEdit = false
     var confirmationTitle: String { actionRequiringConfirmation?.confirmationTitle ?? "" }
     @Published var confirmationRequired = false
@@ -284,21 +284,19 @@ final class CompetitionViewModel: ObservableObject {
             .CombineLatest3(appState.didBecomeActive, $competition, didRequestPermissions)
             .flatMapLatest(withUnretained: self) { strongSelf, result in
                 let (_, competition, _) = result
-                return competition
-                    .scoringBanner(
-                        activitySummaryManager: strongSelf.activitySummaryManager,
-                        healthKitManager: strongSelf.healthKitManager,
-                        notificationsManager: strongSelf.notificationManager
-                    )
+                return competition.banners(
+                    activitySummaryManager: strongSelf.activitySummaryManager,
+                    healthKitManager: strongSelf.healthKitManager,
+                    notificationsManager: strongSelf.notificationManager
+                )
             }
             .delay(for: .seconds(1), scheduler: scheduler)
-            .sink(withUnretained: self) { $0.banner = $1 }
-            .store(in: &cancellables)
+            .assign(to: &$banners)
     }
 
     func tapped(banner: Banner) {
         switch banner {
-        case .missingCompetitionPermissions:
+        case .healthKitPermissionsMissing:
             let requiredHealthPermissions = competition.scoringModel
                 .requiredPermissions
                 .compactMap { permission in
@@ -314,18 +312,30 @@ final class CompetitionViewModel: ObservableObject {
                 .catchErrorJustReturn(())
                 .receive(on: scheduler)
                 .sink(withUnretained: self) { strongSelf in
-                    strongSelf.banner = nil
+                    strongSelf.banners.remove(banner)
                     strongSelf.didRequestPermissions.send()
                 }
                 .store(in: &cancellables)
-        case .missingCompetitionData:
+        case .healthKitDataMissing:
             UIApplication.shared.open(.health)
+        case .notificationPermissionsMissing:
+            notificationManager.requestPermissions()
+                .mapToVoid()
+                .catchErrorJustReturn(())
+                .receive(on: scheduler)
+                .sink(withUnretained: self) { strongSelf in
+                    strongSelf.banners.remove(banner)
+                    strongSelf.didRequestPermissions.send()
+                }
+                .store(in: &cancellables)
+        case .notificationPermissionsDenied:
+            UIApplication.shared.open(.notificationSettings)
         }
     }
 }
 
 extension Competition {
-    func scoringBanner(activitySummaryManager: ActivitySummaryManaging, healthKitManager: HealthKitManaging, notificationsManager: NotificationsManaging) -> AnyPublisher<Banner?, Never> {
+    func banners(activitySummaryManager: ActivitySummaryManaging, healthKitManager: HealthKitManaging, notificationsManager: NotificationsManaging) -> AnyPublisher<[Banner], Never> {
         scoringModel.requiredPermissions
             .map { permission -> AnyPublisher<Banner?, Never> in
                 switch permission {
@@ -333,7 +343,7 @@ extension Competition {
                     return healthKitManager.shouldRequest([healthKitPermissionType])
                         .catchErrorJustReturn(false)
                         .flatMapLatest { shouldRequest -> AnyPublisher<Banner?, Never> in
-                            guard !shouldRequest else { return .just(.missingCompetitionPermissions) }
+                            guard !shouldRequest else { return .just(.healthKitPermissionsMissing) }
                             guard self.isActive else { return .just(nil) }
 
                             let dateInterval = DateInterval(start: self.start, end: self.end)
@@ -341,8 +351,8 @@ extension Competition {
                             case .activeEnergy, .appleExerciseTime, .appleMoveTime, .appleStandTime, .appleStandHour, .activitySummaryType:
                                 return activitySummaryManager
                                     .activitySummaries(in: dateInterval)
-                                    .map { $0.isEmpty ? .missingCompetitionData : nil }
-                                    .catchErrorJustReturn(.missingCompetitionData)
+                                    .map { $0.isEmpty ? .healthKitDataMissing : nil }
+                                    .catchErrorJustReturn(.healthKitDataMissing)
                                     .eraseToAnyPublisher()
                             default:
                                 return .just(nil)
@@ -350,11 +360,22 @@ extension Competition {
                         }
                         .eraseToAnyPublisher()
                 case .notifications:
-                    return .just(nil)
+                    return notificationsManager.permissionStatus()
+                        .map { permissionStatus -> Banner? in
+                            switch permissionStatus {
+                            case .authorized, .done:
+                                return nil
+                            case .denied:
+                                return .notificationPermissionsDenied
+                            case .notDetermined:
+                                return .notificationPermissionsMissing
+                            }
+                        }
+                        .eraseToAnyPublisher()
                 }
             }
             .combineLatest()
-            .compactMap(\.first)
+            .compactMapMany { $0 }
             .first()
             .eraseToAnyPublisher()
     }

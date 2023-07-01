@@ -246,7 +246,12 @@
 "WorkoutMetric.Steps.description" = "Steps";
 
 // Banner
-"Banner.Competition.MissingPermissions.message" = "Missing HealthKit permissions to count your score.";
-"Banner.Competition.MissingPermissions.cta" = "Request";
-"Banner.Competition.MissingData.message" = "Can't find any data. Check HealthKit permissions.";
-"Banner.Competition.MissingData.cta" = "Check";
+"Banner.HealthKitPermissionsMissing.message" = "Missing HealthKit permissions to count your score.";
+"Banner.HealthKitPermissionsMissing.cta" = "Request";
+"Banner.HealthKitDataMissing.message" = "Can't find any data. Check HealthKit permissions.";
+"Banner.HealthKitDataMissing.cta" = "Check";
+
+"Banner.NotificationPermissionsMissing.message" = "Missing Notification permissions to keep you updated.";
+"Banner.NotificationPermissionsMissing.cta" = "Request";
+"Banner.NotificationPermissionsDenied.message" = "Notification permissions denied. You won't be updated.";
+"Banner.NotificationPermissionsDenied.cta" = "Change";
