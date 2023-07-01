@@ -43,6 +43,7 @@ final class ActivitySummaryManagerTests: FCTestCase {
         
         let manager = ActivitySummaryManager()
         manager.activitySummary
+            .print("activitySummary")
             .dropFirst()
             .sink { activitySummary in
                 XCTAssertEqual(activitySummary, expected.first)
@@ -58,6 +59,11 @@ final class ActivitySummaryManagerTests: FCTestCase {
             }
             .store(in: &cancellables)
         
+        healthKitDataHelperBuilder.healthKitDataHelper
+            .fetch(dateInterval: .dataFetchDefault)
+            .sink()
+            .store(in: &cancellables)
+
         scheduler.advance()
         
         waitForExpectations(timeout: 1)
