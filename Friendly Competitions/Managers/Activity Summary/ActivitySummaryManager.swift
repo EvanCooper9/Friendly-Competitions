@@ -45,7 +45,7 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
         helper = healthKitDataHelperBuilder.bulid { [weak self] dateInterval in
             let activitySummaries = self?.activitySummaries(in: dateInterval) ?? .just([])
             return activitySummaries
-                .handleEvents(receiveOutput: { [weak self] activitySummaries in
+                .handleEvents(receiveOutput: { activitySummaries in
                     if let activitySummary = activitySummaries.last, activitySummary.date.isToday {
                         self?.activitySummarySubject.send(activitySummary)
                     } else {
