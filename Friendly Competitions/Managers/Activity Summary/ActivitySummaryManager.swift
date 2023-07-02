@@ -43,7 +43,16 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
 
     init() {
         helper = healthKitDataHelperBuilder.bulid { [weak self] dateInterval in
-            self?.activitySummaries(in: dateInterval) ?? .just([])
+            let activitySummaries = self?.activitySummaries(in: dateInterval) ?? .just([])
+            return activitySummaries
+                .handleEvents(receiveOutput: { activitySummaries in
+                    if let activitySummary = activitySummaries.last, activitySummary.date.isToday {
+                        self?.activitySummarySubject.send(activitySummary)
+                    } else {
+                        self?.activitySummarySubject.send(nil)
+                    }
+                })
+                .eraseToAnyPublisher()
         } upload: { [weak self] data in
             self?.upload(activitySummaries: data) ?? .just(())
         }
@@ -59,16 +68,11 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
 
     func activitySummaries(in dateInterval: DateInterval) -> AnyPublisher<[ActivitySummary], Error> {
         Future { [weak self] promise in
-            let query = ActivitySummaryQuery(predicate: dateInterval.activitySummaryPredicate) { [weak self] result in
+            let query = ActivitySummaryQuery(predicate: dateInterval.activitySummaryPredicate) { result in
                 switch result {
                 case .failure(let error):
                     promise(.failure(error))
                 case .success(let activitySummaries):
-                    if let activitySummary = activitySummaries.last, activitySummary.date.isToday {
-                        self?.activitySummarySubject.send(activitySummary)
-                    } else {
-                        self?.activitySummarySubject.send(nil)
-                    }
                     promise(.success(activitySummaries))
                 }
             }

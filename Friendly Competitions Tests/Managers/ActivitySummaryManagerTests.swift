@@ -58,6 +58,11 @@ final class ActivitySummaryManagerTests: FCTestCase {
             }
             .store(in: &cancellables)
         
+        healthKitDataHelperBuilder.healthKitDataHelper
+            .fetch(dateInterval: .dataFetchDefault)
+            .sink()
+            .store(in: &cancellables)
+
         scheduler.advance()
         
         waitForExpectations(timeout: 1)

@@ -26,6 +26,7 @@ final class DataUploadingAppService: AppService {
                     strongSelf.workoutManager = Container.shared.workoutManager.resolve()
                 } else {
                     strongSelf.activitySummaryManager = nil
+                    strongSelf.stepCountManager = nil
                     strongSelf.workoutManager = nil
                 }
             }
