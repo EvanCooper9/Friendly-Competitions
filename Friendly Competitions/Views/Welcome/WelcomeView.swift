@@ -14,9 +14,13 @@ struct WelcomeView: View {
                         .font(.title)
                         .bold()
                     Text(Bundle.main.name)
+                        .foregroundLinearGradient(.init(colors: [
+                            Asset.Colors.Branded.red.swiftUIColor,
+                            Asset.Colors.Branded.green.swiftUIColor,
+                            Asset.Colors.Branded.blue.swiftUIColor
+                        ]))
                         .font(.title)
                         .bold()
-                        .foregroundColor(.blue)
                 }
                 Text(L10n.Welcome.description)
                     .font(.title3)
@@ -25,8 +29,8 @@ struct WelcomeView: View {
             .maxHeight(.infinity)
 
             buttons
-                .padding(.horizontal)
         }
+        .padding(.horizontal)
         .confirmationDialog(L10n.Confirmation.areYouSure, isPresented: $viewModel.showAnonymousSignInConfirmation, titleVisibility: .visible) {
             Button(L10n.Generics.continue, action: viewModel.confirmAnonymousSignIn)
         } message: {
@@ -74,7 +78,7 @@ struct WelcomeView: View {
         if viewModel.showMoreSignInOptionsButton {
             Divider()
                 .padding(.vertical)
-            Button("More options", action: viewModel.moreOptionsTapped)
+            Button(L10n.CreateAccount.moreOptions, action: viewModel.moreOptionsTapped)
         }
     }
 }

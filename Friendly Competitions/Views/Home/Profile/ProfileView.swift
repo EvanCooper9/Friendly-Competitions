@@ -43,15 +43,11 @@ struct ProfileView: View {
         Section {
             if viewModel.isAnonymousAccount {
                 Button(L10n.Profile.Account.createAccount, systemImage: .personCropCircleBadgePlus, action: viewModel.signUpTapped)
-                #if DEBUG
                 Button(L10n.Profile.Account.signOut, systemImage: .personCropCircleBadgeMinus, action: viewModel.signOutTapped)
-                #endif
             } else {
                 Button(L10n.Profile.Account.signOut, systemImage: .personCropCircleBadgeMinus, action: viewModel.signOutTapped)
-                Button(action: viewModel.deleteAccountTapped) {
-                    Label(L10n.Profile.Account.deleteAccount, systemImage: .trash)
-                        .foregroundColor(.red)
-                }
+                Button(L10n.Profile.Account.deleteAccount, systemImage: .trash, action: viewModel.deleteAccountTapped)
+                    .foregroundColor(.red)
             }
         } header: {
             Text(L10n.Profile.Account.title)
