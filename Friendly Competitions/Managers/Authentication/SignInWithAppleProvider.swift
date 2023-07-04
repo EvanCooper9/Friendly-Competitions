@@ -118,7 +118,11 @@ private final class SignInWithAppleDelegate: NSObject, ASAuthorizationController
                     return authUser.set(displayName: displayName)
                 }
                 .first()
-                .sink(withUnretained: self) { $0.signedInSubject.send($1) }
+                .sink(withUnretained: self, receiveCompletion: { strongSelf, completion in
+                    strongSelf.linkedSubject.send(completion: completion)
+                }, receiveValue: { strongSelf, user in
+                    strongSelf.linkedSubject.send(user)
+                })
                 .store(in: &cancellables)
         case .link(let user):
             user.link(with: credential)
@@ -133,7 +137,11 @@ private final class SignInWithAppleDelegate: NSObject, ASAuthorizationController
                     guard !displayName.isEmpty, displayName != user.displayName else { return .just(user) }
                     return user.set(displayName: displayName)
                 }
-                .sink(withUnretained: self) { $0.linkedSubject.send($1) }
+                .sink(withUnretained: self, receiveCompletion: { strongSelf, completion in
+                    strongSelf.linkedSubject.send(completion: completion)
+                }, receiveValue: { strongSelf, user in
+                    strongSelf.linkedSubject.send(user)
+                })
                 .store(in: &cancellables)
         }
     }
