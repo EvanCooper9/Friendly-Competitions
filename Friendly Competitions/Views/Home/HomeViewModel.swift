@@ -96,10 +96,10 @@ final class HomeViewModel: ObservableObject {
         Publishers
             .CombineLatest4($competitions, $invitedCompetitions, $friendRows, appState.deepLink)
             .map { [weak self] competitions, invitedCompetitions, friendRows, deepLink -> [NavigationDestination] in
-                guard let strongSelf = self else { return [] }
+                guard let self else { return [] }
                 let homeScreenCompetitionIDs = Set(competitions.map(\.id) + invitedCompetitions.map(\.id))
                 let homeScreenFriendIDs = Set(friendRows.map(\.user.id))
-                return strongSelf.navigationDestinations.filter { navigationDestination in
+                return self.navigationDestinations.filter { navigationDestination in
                     // accont for deep link to ensure that if comp/friend lists updates, then the deep link isn't dismissed
                     switch (navigationDestination, deepLink) {
                     case (.competition(let competition), .competition(id: let deepLinkedCompeititonID)):

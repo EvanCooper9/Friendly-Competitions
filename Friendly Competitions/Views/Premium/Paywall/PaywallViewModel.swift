@@ -44,9 +44,6 @@ final class PaywallViewModel: ObservableObject {
         purchaseSubject
             .withLatestFrom($offers)
             .compactMap { $0.first(where: \.selected) }
-            .handleEvents(withUnretained: self, receiveOutput: { _, _ in
-
-            })
             .flatMapLatest(withUnretained: self) { strongSelf, offer in
                 strongSelf.premiumManager
                     .purchase(offer.product)

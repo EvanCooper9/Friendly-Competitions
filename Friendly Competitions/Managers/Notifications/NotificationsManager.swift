@@ -28,7 +28,7 @@ final class NotificationsManager: NSObject, NotificationsManaging {
     }
 
     func requestPermissions() -> AnyPublisher<Bool, Error> {
-        Future { [weak self] promise in
+        Future { promise in
             UNUserNotificationCenter.current().requestAuthorization(
                 options: [.alert, .badge, .sound],
                 completionHandler: { [weak self] authorized, error in

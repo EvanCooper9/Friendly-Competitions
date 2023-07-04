@@ -81,10 +81,10 @@ final class PremiumManager: PremiumManaging {
 
         customerInfoTask = .init { [weak self] in
             for try await _ in Purchases.shared.customerInfoStream {
-                guard let strongSelf = self else { return }
-                strongSelf.restorePurchases()
+                guard let self else { return }
+                self.restorePurchases()
                     .sink()
-                    .store(in: &strongSelf.cancellables)
+                    .store(in: &self.cancellables)
             }
         }
     }
@@ -96,7 +96,7 @@ final class PremiumManager: PremiumManaging {
         guard let package = currentOffering?.package(identifier: product.id) else { return .just(()) }
 
         return Future { [weak self] promise in
-            guard let strongSelf = self else { return }
+            guard let self else { return }
             Purchases.shared.purchase(package: package) { _, customerInfo, error, cancelled in
                 if let error = error {
                     promise(.failure(error))
@@ -104,12 +104,12 @@ final class PremiumManager: PremiumManaging {
                 }
 
                 guard !cancelled else {
-                    strongSelf.analyticsManager.log(event: .premiumPurchaseCancelled(id: product.id))
+                    self.analyticsManager.log(event: .premiumPurchaseCancelled(id: product.id))
                     promise(.failure(PurchaseError.cancelled))
                     return
                 }
 
-                let entitlement = customerInfo?.entitlements[strongSelf.entitlementIdentifier]
+                let entitlement = customerInfo?.entitlements[self.entitlementIdentifier]
                 let premium = Premium(
                     id: product.id,
                     title: product.title,
@@ -117,8 +117,8 @@ final class PremiumManager: PremiumManaging {
                     renews: entitlement?.willRenew ?? false,
                     expiry: entitlement?.expirationDate
                 )
-                strongSelf.analyticsManager.log(event: .premiumPurchased(id: premium.id))
-                strongSelf.premiumSubject.send(premium)
+                self.analyticsManager.log(event: .premiumPurchased(id: premium.id))
+                self.premiumSubject.send(premium)
                 promise(.success(()))
             }
         }
@@ -170,8 +170,8 @@ final class PremiumManager: PremiumManaging {
 
     private func login() -> AnyPublisher<Void, Error> {
         Future { [weak self] promise in
-            guard let strongSelf = self else { return }
-            Purchases.shared.logIn(strongSelf.userManager.user.id) { _, _, error in
+            guard let self else { return }
+            Purchases.shared.logIn(self.userManager.user.id) { _, _, error in
                 if let error {
                     promise(.failure(error))
                 } else {
@@ -184,13 +184,13 @@ final class PremiumManager: PremiumManaging {
 
     private func fetchStore() -> AnyPublisher<Void, Error> {
         Future { [weak self] promise in
-            guard let strongSelf = self else { return }
+            guard let self else { return }
             Purchases.shared.getOfferings { offerings, error in
                 if let error {
                     promise(.failure(error))
                     return
                 }
-                strongSelf.currentOffering = offerings?.current
+                self.currentOffering = offerings?.current
                 guard let packages = offerings?.current?.availablePackages else {
                     promise(.success(()))
                     return
@@ -216,7 +216,7 @@ final class PremiumManager: PremiumManaging {
                         )
                     }
 
-                    strongSelf.productsSubject.send(products)
+                    self.productsSubject.send(products)
                     promise(.success(()))
                 }
             }
