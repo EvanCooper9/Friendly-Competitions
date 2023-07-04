@@ -24,7 +24,8 @@ final class ActivitySummaryQuery: HealthKitQuery {
         underlyingQuery = HKActivitySummaryQuery(predicate: predicate, resultsHandler: { _, results, error in
             if let error {
                 error.reportToCrashlytics(userInfo: [
-                    "queryType": String(describing: Self.self)
+                    "queryType": String(describing: Self.self),
+                    "predicateFormat": predicate.predicateFormat
                 ])
                 resultsHandler(.failure(error))
             } else {
@@ -50,7 +51,8 @@ final class WorkoutQuery: HealthKitQuery {
         underlyingQuery = HKSampleQuery(sampleType: sampleType, predicate: predicate, limit: 0, sortDescriptors: [startDateSort]) { _, workouts, error in
             if let error {
                 error.reportToCrashlytics(userInfo: [
-                    "queryType": String(describing: Self.self)
+                    "queryType": String(describing: Self.self),
+                    "predicateFormat": predicate.predicateFormat
                 ])
                 resultsHandler(.failure(error))
             } else {
@@ -78,7 +80,8 @@ final class StepsQuery: HealthKitQuery {
             quantitySamplePredicate: predicate) { _, stats, error in
                 if let error {
                     error.reportToCrashlytics(userInfo: [
-                        "queryType": String(describing: Self.self)
+                        "queryType": String(describing: Self.self),
+                        "predicateFormat": predicate.predicateFormat
                     ])
                     resultsHandler(.failure(error))
                 } else {
@@ -102,7 +105,8 @@ final class SampleQuery: HealthKitQuery {
         underlyingQuery = HKSampleQuery(sampleType: sampleType, predicate: predicate, limit: 0, sortDescriptors: nil) { _, samples, error in
             if let error {
                 error.reportToCrashlytics(userInfo: [
-                    "queryType": String(describing: Self.self)
+                    "queryType": String(describing: Self.self),
+                    "predicateFormat": predicate.predicateFormat
                 ])
                 resultsHandler(.failure(error))
             } else if let samples {
