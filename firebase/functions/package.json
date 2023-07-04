@@ -20,7 +20,7 @@
     "@typescript-eslint/parser": "^3.8.0",
     "eslint": "^7.6.0",
     "eslint-config-google": "^0.14.0",
-    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-import": "^2.27.5",
     "firebase-functions-test": "^0.2.0",
     "typescript": "^4.3.5"
   },
