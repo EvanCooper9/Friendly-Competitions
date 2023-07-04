@@ -68,7 +68,7 @@ final class InviteFriendsViewModel: ObservableObject {
                     .eraseToAnyPublisher()
             }
             .combineLatest(alreadyInvited, incomingRequests)
-            .map { users, alreadyInvited, incomingRequests -> [RowConfig] in
+            .map { [weak self] users, alreadyInvited, incomingRequests -> [RowConfig] in
                 users.map { friend in
                     let hasIncomingInvite = incomingRequests.contains(friend.id)
                     return RowConfig(
@@ -79,17 +79,16 @@ final class InviteFriendsViewModel: ObservableObject {
                             L10n.InviteFriends.accept :
                             (alreadyInvited.contains(friend.id) ? L10n.InviteFriends.invited : L10n.InviteFriends.invite),
                         buttonDisabled: alreadyInvited.contains(friend.id),
-                        buttonAction: { [weak self, friend] in
-                            guard let self else { return }
+                        buttonAction: { [friend] in
                             switch action {
                             case .addFriend:
                                 if hasIncomingInvite {
-                                    self.acceptSubject.send(friend)
+                                    self?.acceptSubject.send(friend)
                                 } else {
-                                    self.inviteSubject.send(friend)
+                                    self?.inviteSubject.send(friend)
                                 }
                             case .competitionInvite:
-                                self.inviteSubject.send(friend)
+                                self?.inviteSubject.send(friend)
                             }
                         }
                     )
