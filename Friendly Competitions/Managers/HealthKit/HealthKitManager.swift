@@ -57,7 +57,8 @@ final class HealthKitManager: HealthKitManaging {
         healthStore
             .shouldRequest(permissions)
             .handleEvents(withUnretained: self, receiveOutput: { strongSelf, shouldRequest in
-                strongSelf.analyticsManager.log(event: .healthKitShouldRequestPermissions(permissions: permissions, shouldRequest: shouldRequest))
+                let permissionsString = permissions.map(\.rawValue).joined(separator: "_")
+                strongSelf.analyticsManager.log(event: .healthKitShouldRequestPermissions(permissionsString: permissionsString, shouldRequest: shouldRequest))
             })
             .eraseToAnyPublisher()
     }
@@ -95,13 +96,13 @@ final class HealthKitManager: HealthKitManaging {
                     case .finished:
                         break
                     case .failure(let error):
-                        strongSelf.analyticsManager.log(event: .healthKitRegisterForBackgroundDeliveryFailure(permission: permission, error: error.localizedDescription))
+                        strongSelf.analyticsManager.log(event: .healthKitRegisterBGDeliveryFailure(permission: permission, error: error.localizedDescription))
                     }
                 }, receiveValue: { strongSelf, success in
                     if success {
-                        strongSelf.analyticsManager.log(event: .healthKitRegisterForBackgroundDeliverySuccess(permission: permission))
+                        strongSelf.analyticsManager.log(event: .healthKitRegisterBGDeliverySuccess(permission: permission))
                     } else {
-                        strongSelf.analyticsManager.log(event: .healthKitRegisterForBackgroundDeliveryFailure(permission: permission, error: nil))
+                        strongSelf.analyticsManager.log(event: .healthKitRegisterBGDeliveryFailure(permission: permission, error: nil))
                     }
                 })
                 .store(in: &cancellables)

@@ -247,9 +247,9 @@ final class CompetitionViewModel: ObservableObject {
             )
             .combineLatest($currentStandingsMaximum)
             .map { [weak self] standingsAndParticipants, limit in
-                guard let strongSelf = self else { return [] }
+                guard let self else { return [] }
                 let (standings, participants) = standingsAndParticipants
-                let currentUser = strongSelf.userManager.user
+                let currentUser = self.userManager.user
                 var rows = standings
                     .sorted(by: \.rank)
                     .dropLast(max(0, standings.count - limit))

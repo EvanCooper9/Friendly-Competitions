@@ -34,9 +34,9 @@ final class WorkoutManager: WorkoutManaging {
 
     init() {
         helper = healthKitDataHelperBuilder.bulid { [weak self] dateInterval in
-            guard let strongSelf = self else { return .just([]) }
-            let publishers = strongSelf.cache.workoutMetrics.map { workoutType, metrics in
-                strongSelf.workouts(of: workoutType, with: metrics, in: dateInterval)
+            guard let self else { return .just([]) }
+            let publishers = self.cache.workoutMetrics.map { workoutType, metrics in
+                self.workouts(of: workoutType, with: metrics, in: dateInterval)
             }
             return Publishers
                 .ZipMany(publishers)
@@ -55,8 +55,8 @@ final class WorkoutManager: WorkoutManaging {
 
     func workouts(of type: WorkoutType, with metrics: [WorkoutMetric], in dateInterval: DateInterval) -> AnyPublisher<[Workout], Error> {
         .fromAsync { [weak self] in
-            guard let strongSelf = self else { return [] }
-            let points = try await strongSelf.requestWorkouts(ofType: type, metrics: metrics, during: dateInterval)
+            guard let self else { return [] }
+            let points = try await self.requestWorkouts(ofType: type, metrics: metrics, during: dateInterval)
             var workouts = [Workout]()
             points.forEach { date, pointsBySampleType in
 
@@ -143,11 +143,11 @@ final class WorkoutManager: WorkoutManaging {
 
                 return (workoutTypes, dateInterval ?? .dataFetchDefault)
             }
-            .flatMapAsync { [weak self] workoutTypes, dateInterval in
+            .flatMapAsync { workoutTypes, dateInterval in
                 try await withThrowingTaskGroup(of: (WorkoutType, [Date: [HKQuantityType: Double]]).self) { group -> [Workout] in
                     workoutTypes.forEach { workoutType, workoutMetrics in
                         group.addTask { [weak self] in
-                            guard let self = self else { return (workoutType, [:]) }
+                            guard let self else { return (workoutType, [:]) }
                             let points = try await self.requestWorkouts(ofType: workoutType, metrics: workoutMetrics, during: dateInterval)
                             return (workoutType, points)
                         }
@@ -192,7 +192,7 @@ final class WorkoutManager: WorkoutManaging {
         return try await withThrowingTaskGroup(of: [Date: [HKQuantityType: Double]].self) { group -> [Date: [HKQuantityType: Double]] in
             workouts.forEach { workout in
                 group.addTask { [weak self] in
-                    guard let self = self else { return [:] }
+                    guard let self else { return [:] }
                     return try await self.pointsByDateByMetric(for: workout, metrics: metrics)
                 }
             }
@@ -233,8 +233,8 @@ final class WorkoutManager: WorkoutManaging {
     /// - Throws: Any errors from  HealthKit
     /// - Returns: Points by date by sample type
     private func pointsByDateByMetric(for workout: HKWorkout, metrics: [WorkoutMetric]) async throws -> [Date: [HKQuantityType: Double]] {
-        try await withThrowingTaskGroup(of: (HKQuantityType, [Date: Double]).self) { [weak self] group -> [Date: [HKQuantityType: Double]] in
-            guard let self = self, let workoutType = WorkoutType(hkWorkoutActivityType: workout.workoutActivityType) else { return [:] }
+        try await withThrowingTaskGroup(of: (HKQuantityType, [Date: Double]).self) { group -> [Date: [HKQuantityType: Double]] in
+            guard let workoutType = WorkoutType(hkWorkoutActivityType: workout.workoutActivityType) else { return [:] }
 
             metrics
                 .compactMap { metric -> (HKQuantityType, WorkoutMetric)? in
@@ -243,7 +243,7 @@ final class WorkoutManager: WorkoutManaging {
                 }
                 .forEach { sample, metric in
                     group.addTask { [weak self] in
-                        guard let self = self else { return (sample, [:]) }
+                        guard let self else { return (sample, [:]) }
 
                         let pointsByDate: [Date: Double]
                         switch metric {

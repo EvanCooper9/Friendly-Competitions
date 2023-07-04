@@ -39,8 +39,8 @@ final class SearchManager: SearchManaging {
         } else {
             return userIndex.search(query: name)
                 .filterMany { [weak self] user in
-                    guard let strongSelf = self else { return false }
-                    guard user.id != strongSelf.userManager.user.id else { return false }
+                    guard let self else { return false }
+                    guard user.id != self.userManager.user.id else { return false }
                     return user.searchable ?? false
                 }
         }
