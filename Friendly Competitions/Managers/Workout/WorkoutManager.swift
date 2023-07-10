@@ -35,12 +35,29 @@ final class WorkoutManager: WorkoutManaging {
     init() {
         helper = healthKitDataHelperBuilder.bulid { [weak self] dateInterval in
             guard let self else { return .just([]) }
-            let publishers = self.cache.workoutMetrics.map { workoutType, metrics in
-                self.workouts(of: workoutType, with: metrics, in: dateInterval)
-            }
-            return Publishers
-                .ZipMany(publishers)
-                .map { $0.reduce([], +) }
+            return self.competitionsManager.competitions
+                .compactMapMany { competition in
+                    switch competition.scoringModel {
+                    case let .workout(workoutType, workoutMetrics):
+                        return (workoutType, workoutMetrics)
+                    default:
+                        return nil
+                    }
+                }
+                .setFailureType(to: Error.self)
+                .flatMapLatest { types in
+                    types.map { (workoutType: WorkoutType, workoutMetrics: [WorkoutMetric]) in
+                        let permissions = workoutMetrics.compactMap { $0.permission(for: workoutType) }
+                        return self.healthKitManager.shouldRequest(permissions)
+                            .flatMapLatest { shouldRequest -> AnyPublisher<[Workout], Error> in
+                                guard !shouldRequest else { return .just([]) }
+                                return self.workouts(of: workoutType, with: workoutMetrics, in: dateInterval)
+                            }
+                            .eraseToAnyPublisher()
+                    }
+                    .combineLatest()
+                    .map { $0.reduce([Workout](), +) }
+                }
                 .eraseToAnyPublisher()
         } upload: { [weak self] workouts in
             self?.upload(workouts: workouts) ?? .just(())

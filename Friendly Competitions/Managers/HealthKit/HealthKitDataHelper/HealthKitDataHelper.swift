@@ -50,6 +50,9 @@ final class HealthKitDataHelper<Data>: HealthKitDataHelping {
             .store(in: &cancellables)
 
         dateInterval()
+            .prepend(.dataFetchDefault)
+            .debounce(for: .seconds(1), scheduler: scheduler)
+            .print(#function)
             .sink(withUnretained: self, receiveValue: { $0.fetchAndUpload.send($1) })
             .store(in: &cancellables)
 

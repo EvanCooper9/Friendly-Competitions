@@ -26,7 +26,14 @@ final class StepCountManager: StepCountManaging {
 
     init() {
         helper = healthKitDataHelperBuilder.bulid { [weak self] dateInterval in
-            self?.stepCounts(in: dateInterval) ?? .just([])
+            guard let self else { return .just([]) }
+            return self.healthKitManager
+                .shouldRequest([.stepCount])
+                .flatMapLatest { shouldRequest -> AnyPublisher<[StepCount], Error> in
+                    guard !shouldRequest else { return .just([]) }
+                    return self.stepCounts(in: dateInterval)
+                }
+                .eraseToAnyPublisher()
         } upload: { [weak self] stepCounts in
             self?.upload(stepCounts: stepCounts) ?? .just(())
         }

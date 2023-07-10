@@ -43,13 +43,18 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
 
     init() {
         helper = healthKitDataHelperBuilder.bulid { [weak self] dateInterval in
-            let activitySummaries = self?.activitySummaries(in: dateInterval) ?? .just([])
-            return activitySummaries
+            guard let self else { return .just([]) }
+            return self.healthKitManager
+                .shouldRequest([.activitySummaryType])
+                .flatMapLatest { shouldRequest -> AnyPublisher<[ActivitySummary], Error> in
+                    guard !shouldRequest else { return .just([]) }
+                    return self.activitySummaries(in: dateInterval)
+                }
                 .handleEvents(receiveOutput: { activitySummaries in
                     if let activitySummary = activitySummaries.last, activitySummary.date.isToday {
-                        self?.activitySummarySubject.send(activitySummary)
+                        self.activitySummarySubject.send(activitySummary)
                     } else {
-                        self?.activitySummarySubject.send(nil)
+                        self.activitySummarySubject.send(nil)
                     }
                 })
                 .eraseToAnyPublisher()
