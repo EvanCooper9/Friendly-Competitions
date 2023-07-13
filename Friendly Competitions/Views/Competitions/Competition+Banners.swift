@@ -47,7 +47,9 @@ extension Competition {
         return healthKitManager.shouldRequest(permissions)
             .catchErrorJustReturn(false)
             .flatMapLatest { shouldRequest -> AnyPublisher<Banner?, Never> in
-                guard shouldRequest else { return .just(.healthKitPermissionsMissing) }
+                guard !shouldRequest else {
+                    return .just(.healthKitPermissionsMissing)
+                }
                 return dataPublisher
                     .map { $0.isEmpty ? .healthKitDataMissing : nil }
                     .catchErrorJustReturn(.healthKitDataMissing)

@@ -7,14 +7,6 @@ import XCTest
 
 final class CreateAccountViewModelTests: FCTestCase {
 
-    private var authenticationManager = AuthenticationManagingMock()
-    private var cancellables = Cancellables()
-
-    override func setUp() {
-        super.setUp()
-        container.authenticationManager.register { self.authenticationManager }
-    }
-
     func testThatSignInWithAppleIsTriggered() {
         authenticationManager.signInWithReturnValue = .just(())
 

@@ -4,7 +4,7 @@ import Factory
 import Foundation
 import HealthKit
 
-// sourcery: Mockable
+// sourcery: AutoMockable
 protocol StepCountManaging {
     func stepCounts(in dateInterval: DateInterval) -> AnyPublisher<[StepCount], Error>
 }
@@ -13,30 +13,20 @@ final class StepCountManager: StepCountManaging {
 
     // MARK: - Private Properties
 
+    @Injected(\.competitionsManager) private var competitionsManager
     @Injected(\.healthKitManager) private var healthKitManager
-    @Injected(\.healthKitDataHelperBuilder) private var healthKitDataHelperBuilder
     @Injected(\.database) private var database
     @Injected(\.userManager) private var userManager
-
-    private var helper: (any HealthKitDataHelping<[StepCount]>)!
 
     private var cancellables = Cancellables()
 
     // MARK: - Lifecycle
 
     init() {
-        helper = healthKitDataHelperBuilder.bulid { [weak self] dateInterval in
-            guard let self else { return .just([]) }
-            return self.healthKitManager
-                .shouldRequest([.stepCount])
-                .flatMapLatest { shouldRequest -> AnyPublisher<[StepCount], Error> in
-                    guard !shouldRequest else { return .just([]) }
-                    return self.stepCounts(in: dateInterval)
-                }
-                .eraseToAnyPublisher()
-        } upload: { [weak self] stepCounts in
-            self?.upload(stepCounts: stepCounts) ?? .just(())
-        }
+        healthKitManager.registerBackgroundDeliveryTask(fetchAndUpload())
+        fetchAndUpload()
+            .sink()
+            .store(in: &cancellables)
     }
 
     // MARK: - Public Methods
@@ -45,9 +35,12 @@ final class StepCountManager: StepCountManaging {
         guard let days = Calendar.current.dateComponents([.day], from: dateInterval.start, to: dateInterval.end).day else { return .just([]) }
         return (0 ..< days)
             .compactMap { offset -> AnyPublisher<StepCount, Error>? in
-                let start = dateInterval.start.addingTimeInterval(24.hours * TimeInterval(offset))
-                let end = start.addingTimeInterval(24.hours - 1.seconds)
-                guard start < .now else { return nil }
+                let start = Calendar.current
+                    .startOfDay(for: dateInterval.start)
+                    .addingTimeInterval(TimeInterval(offset).days)
+                let end = Calendar.current
+                    .startOfDay(for: start)
+                    .addingTimeInterval(24.hours - 1.seconds)
 
                 let predicate = HKQuery.predicateForSamples(withStart: start, end: end)
                 return Future { [weak self] promise in
@@ -68,6 +61,36 @@ final class StepCountManager: StepCountManaging {
     }
 
     // MARK: - Private Methods
+
+    private func fetchAndUpload() -> AnyPublisher<Void, Never> {
+        competitionsManager.competitions
+            .print("competitions")
+            .filterMany { competition in
+                guard competition.isActive else { return false }
+                switch competition.scoringModel {
+                case .stepCount:
+                    return true
+                case .activityRingCloseCount, .percentOfGoals, .rawNumbers, .workout:
+                    return false
+                }
+            }
+            .map { $0.dateInterval?.combined(with: .dataFetchDefault) ?? .dataFetchDefault }
+            .removeDuplicates()
+            .flatMapLatest(withUnretained: self) { strongSelf, dateInterval in
+                strongSelf.healthKitManager.shouldRequest([.stepCount])
+                    .flatMapLatest { shouldRequest -> AnyPublisher<[StepCount], Error> in
+                        guard !shouldRequest else { return .just([]) }
+                        return strongSelf.stepCounts(in: dateInterval)
+                    }
+                    .catchErrorJustReturn([])
+                    .eraseToAnyPublisher()
+            }
+            .flatMapLatest(withUnretained: self) { strongSelf, stepCounts in
+                strongSelf.upload(stepCounts: stepCounts)
+                    .catchErrorJustReturn(())
+            }
+            .eraseToAnyPublisher()
+    }
 
     private func upload(stepCounts: [StepCount]) -> AnyPublisher<Void, Error> {
 

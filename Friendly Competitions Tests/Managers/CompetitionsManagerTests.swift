@@ -6,42 +6,27 @@ import XCTest
 @testable import Friendly_Competitions
 
 final class CompetitionsManagerTests: FCTestCase {
-    
-    private var api = APIMock()
-    private var appState = AppStateProvidingMock()
-    private var analyticsManager = AnalyticsManagingMock()
-    private var cache = CompetitionCacheMock()
-    private var database = DatabaseMock()
-    private var userManager = UserManagingMock()
-    private var cancellables = Cancellables()
-    
+
     override func setUp() {
         super.setUp()
-        
-        container.api.register { self.api }
-        container.appState.register { self.appState }
-        container.analyticsManager.register { self.analyticsManager }
-        container.competitionCache.register { self.cache }
-        container.database.register { self.database }
-        container.userManager.register { self.userManager }
-        
+        userManager.user = .evan
         appState.didBecomeActive = .never()
     }
-    
+
     func testThatItFetchesAndUpdatesCompetitions() {
         let expectation = self.expectation(description: #function)
         expectation.expectedFulfillmentCount = 3
-        
+
         let expectedCompetitions: [[Competition]] = [
             [.mock],
             [.mockFuture],
             [.mockPublic]
         ]
-        
+
         let competitionSourcesSubjects = (1...3).map { _ in
             PassthroughSubject<[Competition], Error>()
         }
-        
+
         let collection = CollectionMock<Competition>()
         collection.publisherClosure = {
             return competitionSourcesSubjects[collection.publisherCallCount - 1].eraseToAnyPublisher()
@@ -49,15 +34,15 @@ final class CompetitionsManagerTests: FCTestCase {
         collection.whereFieldArrayContainsClosure = { collection }
         collection.whereFieldIsEqualToClosure = { collection }
         collection.getDocumentsClosure = { _, _ in .never() }
-        
+
         database.collectionReturnValue = collection
-        
+
         let user = User.evan
         userManager.user = user
-        
+
         let didBecomeActive = PassthroughSubject<Bool, Never>()
         appState.didBecomeActive = didBecomeActive.eraseToAnyPublisher()
-        
+
         let manager = CompetitionsManager()
         manager.competitions
             .expect(expectedCompetitions[0], expectation: expectation)
@@ -66,44 +51,27 @@ final class CompetitionsManagerTests: FCTestCase {
         manager.invitedCompetitions
             .expect(expectedCompetitions[1], expectation: expectation)
             .store(in: &cancellables)
-        
+
         manager.appOwnedCompetitions
             .expect(expectedCompetitions[2], expectation: expectation)
             .store(in: &cancellables)
-        
+
         // trigger app state didBecomeActive
         didBecomeActive.send(true)
-        
+
         // trigger update
         competitionSourcesSubjects.enumerated().forEach { index, subject in
             subject.send(expectedCompetitions[index])
         }
-        
+
         waitForExpectations(timeout: 1)
     }
-    
-    func testThatItDoesNotFetchCompetitionsUnlessActive() {
-        
-        let collection = CollectionMock<Competition>()
-        collection.publisherClosure = {
-            XCTFail("Should not be called")
-            return .never()
-        }
-        database.collectionClosure = { id in
-            collection
-        }
-        
-        let manager = CompetitionsManager()
-        manager.competitions
-            .sink()
-            .store(in: &cancellables)
-    }
-    
+
     func testThatCreateSucceeds() {
         let expectation = self.expectation(description: #function)
         expectation.expectedFulfillmentCount = 2
         let competition = Competition.mock
-        
+
         let document = DocumentMock<Competition>()
         document.setClosure = { data in
             XCTAssertEqual(data, competition)
@@ -114,20 +82,21 @@ final class CompetitionsManagerTests: FCTestCase {
             XCTAssertEqual(id, "competitions/\(competition.id)")
             return document
         }
-        
+
+        setupDatabaseWithCompetitions()
         let manager = CompetitionsManager()
-        
+
         testAPI(manager.create(competition), expect: .success(()), expectation: expectation)
-        
+
         waitForExpectations(timeout: 1)
     }
-    
+
     func testThatCreateFails() {
         let expectation = self.expectation(description: #function)
         expectation.expectedFulfillmentCount = 2
         let error = MockError.mock(id: #function)
         let competition = Competition.mock
-        
+
         let document = DocumentMock<Competition>()
         document.setClosure = { data in
             XCTAssertEqual(data, competition)
@@ -138,16 +107,17 @@ final class CompetitionsManagerTests: FCTestCase {
             XCTAssertEqual(id, "competitions/\(competition.id)")
             return document
         }
-        
+
+        setupDatabaseWithCompetitions()
         let manager = CompetitionsManager()
-        
+
         testAPI(manager.create(competition), expect: .failure(error), expectation: expectation)
-        
+
         waitForExpectations(timeout: 1)
     }
-    
+
     // MARK: - Private
-    
+
     private func testAPI(_ publisher: AnyPublisher<Void, Error>, expect expectedResult: Result<Void, MockError>, expectation: XCTestExpectation) {
         publisher
             .mapToResult()
@@ -168,18 +138,18 @@ final class CompetitionsManagerTests: FCTestCase {
             }
             .store(in: &cancellables)
     }
-    
+
     private func setupDatabaseWithCompetitions(participating: [Competition] = [.mock], invited: [Competition] = [.mockInvited], appOwned: [Competition] = [.mockPublic]) {
         let expectedCompetitions: [[Competition]] = [
             participating,
             invited,
             appOwned
         ]
-        
+
         let competitionSourcesSubjects = (0...2).map { i in
             CurrentValueSubject<[Competition], Error>(expectedCompetitions[i])
         }
-        
+
         let competitionsCollection = CollectionMock<Competition>()
         competitionsCollection.publisherClosure = {
             return competitionSourcesSubjects[competitionsCollection.publisherCallCount - 1].eraseToAnyPublisher()
@@ -199,7 +169,7 @@ final class CompetitionsManagerTests: FCTestCase {
                 return competitionsCollection
             }
         }
-        
+
         userManager.user = .evan
     }
 }

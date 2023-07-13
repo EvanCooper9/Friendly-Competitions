@@ -8,23 +8,8 @@ import XCTest
 
 final class CompetitionResultsViewModelTests: FCTestCase {
 
-    private var activitySummaryManager = ActivitySummaryManagingMock()
-    private var competitionsManager = CompetitionsManagingMock()
-    private var premiumManager = PremiumManagingMock()
-    private var scheduler = TestSchedulerOf<RunLoop>(now: .init(.now))
-    private var userManager = UserManagingMock()
-    private var workoutManager = WorkoutManagingMock()
-    private var cancellables = Cancellables()
-
     override func setUp() {
         super.setUp()
-
-        container.activitySummaryManager.register { self.activitySummaryManager }
-        container.competitionsManager.register { self.competitionsManager }
-        container.premiumManager.register { self.premiumManager }
-        container.scheduler.register { self.scheduler.eraseToAnyScheduler() }
-        container.userManager.register { self.userManager }
-        container.workoutManager.register { self.workoutManager }
 
         activitySummaryManager.activitySummariesInReturnValue = .just([])
         premiumManager.premium = .just(nil)

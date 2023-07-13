@@ -9,16 +9,6 @@ import XCTest
 
 final class HomeViewModelTests: FCTestCase {
 
-    private var activitySummaryManager = ActivitySummaryManagingMock()
-    private var analyticsManager = AnalyticsManagingMock()
-    private var appState = AppStateProvidingMock()
-    private var competitionsManager = CompetitionsManagingMock()
-    private var friendsManager = FriendsManagingMock()
-    private var premiumManager = PremiumManagingMock()
-    private var scheduler = TestSchedulerOf<RunLoop>(now: .init(.now))
-    private var userManager = UserManagingMock()
-    private var cancellables = Cancellables()
-
     override func setUp() {
         super.setUp()
 
@@ -32,15 +22,6 @@ final class HomeViewModelTests: FCTestCase {
         friendsManager.friendActivitySummaries = .never()
         premiumManager.premium = .never()
         userManager.userPublisher = .just(.evan)
-        
-        container.activitySummaryManager.register { self.activitySummaryManager }
-        container.analyticsManager.register { self.analyticsManager }
-        container.appState.register { self.appState }
-        container.competitionsManager.register { self.competitionsManager }
-        container.friendsManager.register { self.friendsManager }
-        container.premiumManager.register { self.premiumManager }
-        container.scheduler.register { self.scheduler.eraseToAnyScheduler() }
-        container.userManager.register { self.userManager }
     }
 
     func testThatCompetitionsUpdates() {
