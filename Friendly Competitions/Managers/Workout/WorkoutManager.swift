@@ -67,7 +67,7 @@ final class WorkoutManager: WorkoutManaging {
 
         return competitionsManager.competitions
             .filterMany(\.isActive)
-            .map { competitions in
+            .map { competitions -> [CompetitionFetchData] in
                 competitions.compactMap { competition in
                     let dateInterval = DateInterval(start: competition.start, end: competition.end)
                     switch competition.scoringModel {
@@ -80,8 +80,8 @@ final class WorkoutManager: WorkoutManaging {
                     }
                 }
             }
-            .flatMapLatest { results in
-                results.map { fetchData in
+            .flatMapLatest { results -> AnyPublisher<[Workout], Never> in
+                results.map { (fetchData: CompetitionFetchData) in
                     let permissions = fetchData.workoutMetrics.compactMap { $0.permission(for: fetchData.workoutType) }
                     return self.healthKitManager.shouldRequest(permissions)
                         .flatMapLatest { shouldRequest -> AnyPublisher<[Workout], Error> in
@@ -93,6 +93,7 @@ final class WorkoutManager: WorkoutManaging {
                 }
                 .combineLatest()
                 .map { $0.reduce([Workout](), +) }
+                .eraseToAnyPublisher()
             }
             .flatMapLatest(withUnretained: self) { strongSelf, workouts in
                 strongSelf.upload(workouts: workouts)
