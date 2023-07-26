@@ -7,14 +7,6 @@ import XCTest
 
 final class RootViewModelTests: FCTestCase {
     
-    private var appState = AppStateProvidingMock()
-    private var cancellables = Cancellables()
-    
-    override func setUp() {
-        super.setUp()
-        container.appState.register { self.appState }
-    }
-    
     func testThatTabChangesToHomeOnDeepLink() {
         let expectation = self.expectation(description: #function)
         

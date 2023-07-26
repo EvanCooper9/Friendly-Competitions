@@ -7,17 +7,8 @@ import XCTest
 
 final class ProfileViewModelTests: FCTestCase {
 
-    private var authenticationManager = AuthenticationManagingMock()
-    private var premiumManager = PremiumManagingMock()
-    private var userManager = UserManagingMock()
-    private var cancellables = Cancellables()
-
     override func setUp() {
         super.setUp()
-
-        container.authenticationManager.register { self.authenticationManager }
-        container.premiumManager.register { self.premiumManager }
-        container.userManager.register { self.userManager }
 
         premiumManager.premium = .never()
         userManager.updateWithReturnValue = .never()

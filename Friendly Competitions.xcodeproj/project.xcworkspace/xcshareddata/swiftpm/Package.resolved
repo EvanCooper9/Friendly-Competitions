@@ -42,7 +42,7 @@
       "location" : "https://github.com/EvanCooper9/ECKit",
       "state" : {
         "branch" : "main",
-        "revision" : "9264abd06b2624b6b9e0a96712d9b6033d15c6e4"
+        "revision" : "18f9c30fd6bb667802bbfa2a188c069f2a63ccf9"
       }
     },
     {
@@ -50,8 +50,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/hmlongco/Factory",
       "state" : {
-        "revision" : "bf4e0ab7cfc45a921856d9ca196d834b7abf15a0",
-        "version" : "2.1.5"
+        "revision" : "061b3afe0358a0da7ce568f8272c847910be3dd7",
+        "version" : "2.2.0"
       }
     },
     {
@@ -68,8 +68,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/firebase/firebase-ios-sdk",
       "state" : {
-        "revision" : "e700a8f40c87c31cab7984875fcc1225d96b25bf",
-        "version" : "10.11.0"
+        "revision" : "a580250a9ff49ec38da5430cef20f88ddc831db2",
+        "version" : "10.12.0"
       }
     },
     {
@@ -77,8 +77,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/GoogleAppMeasurement.git",
       "state" : {
-        "revision" : "62e3a0c09a75e2637f5300d46f05a59313f1c286",
-        "version" : "10.11.0"
+        "revision" : "0a226a8c50494c4cb877fbde27ab6374520a3354",
+        "version" : "10.12.0"
       }
     },
     {
@@ -145,6 +145,15 @@
       }
     },
     {
+      "identity" : "popovers",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/aheze/Popovers",
+      "state" : {
+        "branch" : "main",
+        "revision" : "54728a9ca199ffbffe444d5b04a9354f6a02da7c"
+      }
+    },
+    {
       "identity" : "promises",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/promises.git",
@@ -158,8 +167,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/RevenueCat/purchases-ios",
       "state" : {
-        "revision" : "4e0d23e01f58ac0c713585c2f2c498123188e530",
-        "version" : "4.24.0"
+        "revision" : "8d16e02c96efbcf58eaf7eef2e595942d935f572",
+        "version" : "4.25.0"
       }
     },
     {
@@ -204,7 +213,7 @@
       "location" : "https://github.com/SwiftUIX/SwiftUIX",
       "state" : {
         "branch" : "master",
-        "revision" : "161f390e594f595c80f51ec5866b72d9ccaebc3d"
+        "revision" : "47b1cc0e4bbaa75ecc026adabf60110363696918"
       }
     },
     {

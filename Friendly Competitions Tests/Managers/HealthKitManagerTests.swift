@@ -7,16 +7,8 @@ import XCTest
 
 final class HealthKitManagerTests: FCTestCase {
 
-    private var analyticsManager = AnalyticsManagingMock()
-    private var healthStore = HealthStoringMock()
-    private var cancellables = Cancellables()
-
     override func setUp() {
         super.setUp()
-
-        container.analyticsManager.register { self.analyticsManager }
-        container.healthStore.register { self.healthStore }
-
         healthStore.shouldRequestReturnValue = .never()
     }
 

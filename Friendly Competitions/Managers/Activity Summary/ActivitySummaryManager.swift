@@ -18,23 +18,21 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
 
     // MARK: - Public Properties
 
-    var activitySummary: AnyPublisher<ActivitySummary?, Never> {
+    private(set) lazy var activitySummary: AnyPublisher<ActivitySummary?, Never> = {
         activitySummarySubject
             .removeDuplicates()
             .receive(on: scheduler)
             .eraseToAnyPublisher()
-    }
+    }()
 
     // MARK: - Private Properties
 
     @Injected(\.activitySummaryCache) private var cache
+    @Injected(\.competitionsManager) private var competitionsManager
     @Injected(\.healthKitManager) private var healthKitManager
-    @Injected(\.healthKitDataHelperBuilder) private var healthKitDataHelperBuilder
     @Injected(\.database) private var database
     @Injected(\.scheduler) private var scheduler
     @Injected(\.userManager) private var userManager
-
-    private var helper: (any HealthKitDataHelping<[ActivitySummary]>)!
 
     private var activitySummarySubject = ReplaySubject<ActivitySummary?, Never>(bufferSize: 1)
     private var cancellables = Cancellables()
@@ -42,25 +40,15 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
     // MARK: - Lifecycle
 
     init() {
-        helper = healthKitDataHelperBuilder.bulid { [weak self] dateInterval in
-            let activitySummaries = self?.activitySummaries(in: dateInterval) ?? .just([])
-            return activitySummaries
-                .handleEvents(receiveOutput: { activitySummaries in
-                    if let activitySummary = activitySummaries.last, activitySummary.date.isToday {
-                        self?.activitySummarySubject.send(activitySummary)
-                    } else {
-                        self?.activitySummarySubject.send(nil)
-                    }
-                })
-                .eraseToAnyPublisher()
-        } upload: { [weak self] data in
-            self?.upload(activitySummaries: data) ?? .just(())
-        }
-
         let storedActivitySummary = cache.activitySummary
         activitySummarySubject.send(storedActivitySummary?.date.isToday == true ? storedActivitySummary : nil)
         activitySummary
             .sink(withUnretained: self) { $0.cache.activitySummary = $1 }
+            .store(in: &cancellables)
+
+        healthKitManager.registerBackgroundDeliveryTask(fetchAndUpload())
+        fetchAndUpload()
+            .sink()
             .store(in: &cancellables)
     }
 
@@ -82,6 +70,43 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
     }
 
     // MARK: - Private Methods
+
+    private func fetchAndUpload() -> AnyPublisher<Void, Never> {
+        competitionsManager.competitions
+            .filterMany { competition in
+                guard competition.isActive else { return false }
+                switch competition.scoringModel {
+                case .activityRingCloseCount, .percentOfGoals, .rawNumbers:
+                    return true
+                case .stepCount, .workout:
+                    return false
+                }
+            }
+            .map { $0.dateInterval?.combined(with: .dataFetchDefault) ?? .dataFetchDefault }
+            .removeDuplicates()
+            .flatMapLatest(withUnretained: self) { strongSelf, dateInterval in
+                strongSelf.healthKitManager
+                    .shouldRequest([.activitySummaryType])
+                    .flatMapLatest { shouldRequest -> AnyPublisher<[ActivitySummary], Error> in
+                        guard !shouldRequest else { return .just([]) }
+                        return strongSelf.activitySummaries(in: dateInterval)
+                    }
+                    .catchErrorJustReturn([])
+                    .eraseToAnyPublisher()
+            }
+            .handleEvents(withUnretained: self, receiveOutput: { strongSelf, activitySummaries in
+                if let activitySummary = activitySummaries.last, activitySummary.date.isToday {
+                    strongSelf.activitySummarySubject.send(activitySummary)
+                } else {
+                    strongSelf.activitySummarySubject.send(nil)
+                }
+            })
+            .flatMapLatest(withUnretained: self) { strongSelf, activitySummaries in
+                strongSelf.upload(activitySummaries: activitySummaries)
+                    .catchErrorJustReturn(())
+            }
+            .eraseToAnyPublisher()
+    }
 
     private func upload(activitySummaries: [ActivitySummary]) -> AnyPublisher<Void, Error> {
         let activitySummaries = activitySummaries.map { $0.with(userID: userManager.user.id) }

@@ -1399,6 +1399,34 @@ class SignInWithAppleProvidingMock: SignInWithAppleProviding {
     }
 
 }
+class StepCountManagingMock: StepCountManaging {
+
+
+
+
+    //MARK: - stepCounts
+
+    var stepCountsInCallsCount = 0
+    var stepCountsInCalled: Bool {
+        return stepCountsInCallsCount > 0
+    }
+    var stepCountsInReceivedDateInterval: DateInterval?
+    var stepCountsInReceivedInvocations: [DateInterval] = []
+    var stepCountsInReturnValue: AnyPublisher<[StepCount], Error>!
+    var stepCountsInClosure: ((DateInterval) -> AnyPublisher<[StepCount], Error>)?
+
+    func stepCounts(in dateInterval: DateInterval) -> AnyPublisher<[StepCount], Error> {
+        stepCountsInCallsCount += 1
+        stepCountsInReceivedDateInterval = dateInterval
+        stepCountsInReceivedInvocations.append(dateInterval)
+        if let stepCountsInClosure = stepCountsInClosure {
+            return stepCountsInClosure(dateInterval)
+        } else {
+            return stepCountsInReturnValue
+        }
+    }
+
+}
 class StorageMock: Storage {
 
 
@@ -1509,13 +1537,6 @@ class UserManagingMock: UserManaging {
             return updateWithReturnValue
         }
     }
-
-}
-class WorkoutCacheMock: WorkoutCache {
-
-
-    var workoutMetrics: [WorkoutType: [WorkoutMetric]] = [:]
-
 
 }
 class WorkoutManagingMock: WorkoutManaging {

@@ -6,22 +6,6 @@ import XCTest
 
 final class AuthenticationManagerTests: FCTestCase {
 
-    private var auth = AuthProvidingMock()
-    private var authenticationCache = AuthenticationCacheMock()
-    private var database = DatabaseMock()
-    private var scheduler = TestSchedulerOf<RunLoop>(now: .init(.now))
-    private var signInWithAppleProvider = SignInWithAppleProvidingMock()
-    private var cancellables = Cancellables()
-
-    override func setUp() {
-        super.setUp()
-        container.auth.register { self.auth }
-        container.authenticationCache.register { self.authenticationCache }
-        container.database.register { self.database }
-        container.scheduler.register { self.scheduler.eraseToAnyScheduler() }
-        container.signInWithAppleProvider.register { self.signInWithAppleProvider }
-    }
-
     func testThatLoggedInIsFalseOnLaunch() {
         let expectation = self.expectation(description: #function)
 

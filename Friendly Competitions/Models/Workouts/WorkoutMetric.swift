@@ -49,6 +49,24 @@ extension WorkoutMetric: Identifiable {
 }
 
 extension WorkoutMetric {
+
+    func permission(for workoutType: WorkoutType) -> HealthKitPermissionType? {
+        switch (self, workoutType) {
+        case (.distance, .cycling):
+            return .distanceCycling
+        case (.distance, .running), (.distance, .walking):
+            return .distanceWalkingRunning
+        case (.distance, .swimming):
+            return .distanceSwimming
+        case (.heartRate, _):
+            return .heartRate
+        case (.steps, .running), (.steps, .walking):
+            return .stepCount
+        default:
+            return nil
+        }
+    }
+
     func sample(for workoutType: WorkoutType) -> HKQuantityType? {
         switch (self, workoutType) {
         case (.distance, .cycling):
