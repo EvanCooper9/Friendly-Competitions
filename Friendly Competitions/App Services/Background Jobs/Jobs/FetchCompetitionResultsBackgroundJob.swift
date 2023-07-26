@@ -15,9 +15,9 @@ final class FetchCompetitionResultsBackgroundJob: BackgroundJob {
     func execute() -> AnyPublisher<Void, Never> {
         authenticationManager.loggedIn
             .setFailureType(to: Error.self)
-            .flatMapLatest { loggedIn -> AnyPublisher<Void, Error> in
+            .flatMapLatest(withUnretained: self) { strongSelf, loggedIn -> AnyPublisher<Void, Error> in
                 guard loggedIn else { return .just(()) }
-                return self.competitionsManager
+                return strongSelf.competitionsManager
                     .results(for: self.competitionIDForResults)
                     .mapToVoid()
                     .eraseToAnyPublisher()

@@ -57,6 +57,7 @@ final class CompetitionViewModel: ObservableObject {
     @Injected(\.notificationsManager) private var notificationManager
     @Injected(\.scheduler) private var scheduler
     @Injected(\.searchManager) private var searchManager
+    @Injected(\.stepCountManager) private var stepCountManager
     @Injected(\.userManager) private var userManager
     @Injected(\.workoutManager) private var workoutManager
 
@@ -247,9 +248,9 @@ final class CompetitionViewModel: ObservableObject {
             )
             .combineLatest($currentStandingsMaximum)
             .map { [weak self] standingsAndParticipants, limit in
-                guard let strongSelf = self else { return [] }
+                guard let self else { return [] }
                 let (standings, participants) = standingsAndParticipants
-                let currentUser = strongSelf.userManager.user
+                let currentUser = self.userManager.user
                 var rows = standings
                     .sorted(by: \.rank)
                     .dropLast(max(0, standings.count - limit))
@@ -287,7 +288,9 @@ final class CompetitionViewModel: ObservableObject {
                 return competition.banners(
                     activitySummaryManager: strongSelf.activitySummaryManager,
                     healthKitManager: strongSelf.healthKitManager,
-                    notificationsManager: strongSelf.notificationManager
+                    notificationsManager: strongSelf.notificationManager,
+                    stepCountManager: strongSelf.stepCountManager,
+                    workoutManager: strongSelf.workoutManager
                 )
             }
             .delay(for: .seconds(1), scheduler: scheduler)
@@ -331,52 +334,5 @@ final class CompetitionViewModel: ObservableObject {
         case .notificationPermissionsDenied:
             UIApplication.shared.open(.notificationSettings)
         }
-    }
-}
-
-extension Competition {
-    func banners(activitySummaryManager: ActivitySummaryManaging, healthKitManager: HealthKitManaging, notificationsManager: NotificationsManaging) -> AnyPublisher<[Banner], Never> {
-        scoringModel.requiredPermissions
-            .map { permission -> AnyPublisher<Banner?, Never> in
-                switch permission {
-                case .health(let healthKitPermissionType):
-                    return healthKitManager.shouldRequest([healthKitPermissionType])
-                        .catchErrorJustReturn(false)
-                        .flatMapLatest { shouldRequest -> AnyPublisher<Banner?, Never> in
-                            guard !shouldRequest else { return .just(.healthKitPermissionsMissing) }
-                            guard self.isActive else { return .just(nil) }
-
-                            let dateInterval = DateInterval(start: self.start, end: self.end)
-                            switch healthKitPermissionType {
-                            case .activeEnergy, .appleExerciseTime, .appleMoveTime, .appleStandTime, .appleStandHour, .activitySummaryType:
-                                return activitySummaryManager
-                                    .activitySummaries(in: dateInterval)
-                                    .map { $0.isEmpty ? .healthKitDataMissing : nil }
-                                    .catchErrorJustReturn(.healthKitDataMissing)
-                                    .eraseToAnyPublisher()
-                            default:
-                                return .just(nil)
-                            }
-                        }
-                        .eraseToAnyPublisher()
-                case .notifications:
-                    return notificationsManager.permissionStatus()
-                        .map { permissionStatus -> Banner? in
-                            switch permissionStatus {
-                            case .authorized, .done:
-                                return nil
-                            case .denied:
-                                return .notificationPermissionsDenied
-                            case .notDetermined:
-                                return .notificationPermissionsMissing
-                            }
-                        }
-                        .eraseToAnyPublisher()
-                }
-            }
-            .combineLatest()
-            .compactMapMany { $0 }
-            .first()
-            .eraseToAnyPublisher()
     }
 }

@@ -150,11 +150,11 @@ extension DocumentReference: Document {
 
     var exists: AnyPublisher<Bool, Error> {
         Future { [weak self] promise in
-            guard let strongSelf = self else {
+            guard let self else {
                 promise(.success(false))
                 return
             }
-            strongSelf.getDocument { document, error in
+            self.getDocument { document, error in
                 if let error {
                     promise(.failure(error))
                 } else {
@@ -183,8 +183,8 @@ extension DocumentReference: Document {
 
     func update(fields data: [String : Any]) -> AnyPublisher<Void, Error> {
         Future { [weak self, path] promise in
-            guard let strongSelf = self else { return }
-            strongSelf.updateData(data) { error in
+            guard let self else { return }
+            self.updateData(data) { error in
 
                 let analyticsManager = Container.shared.analyticsManager()
                 analyticsManager.log(event: .databaseWrite(path: path))

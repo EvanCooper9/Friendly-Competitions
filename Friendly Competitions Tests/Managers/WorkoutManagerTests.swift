@@ -10,99 +10,113 @@ import XCTest
 
 final class WorkoutManagerTests: FCTestCase {
 
-    private var cache = WorkoutCacheMock()
-    private var competitionsManager = CompetitionsManagingMock()
-    private var healthKitManager = HealthKitManagingMock()
-    private var healthKitDataHelperBuilder = HealthKitDataHelperBuildingMock<[Workout]>()
-    private var database = DatabaseMock()
-    private var scheduler = TestSchedulerOf<RunLoop>(now: .init(.now))
-    private var userManager = UserManagingMock()
-    private var cancellables = Cancellables()
-
     override func setUp() {
         super.setUp()
+        userManager.user = .evan
+    }
 
-        container.competitionsManager.register { self.competitionsManager }
-        container.healthKitManager.register { self.healthKitManager }
-        container.healthKitDataHelperBuilder.register { self.healthKitDataHelperBuilder }
-        container.database.register { self.database }
-        container.scheduler.register { self.scheduler.eraseToAnyScheduler() }
-        container.userManager.register { self.userManager }
-        container.workoutCache.register { self.cache }
+    func testThatItRefetchesWhenCompetitionsChange() {
+        let competitionsSubject = PassthroughSubject<[Competition], Never>()
+        competitionsManager.competitions = competitionsSubject.eraseToAnyPublisher()
+        setupHealthKit(
+            workoutQueryFetchResult: .success([HKWorkout(activityType: .walking, start: .now, end: .now.addingTimeInterval(1.hours))]),
+            sampleQueryFetchResult: .success([.now: 1])
+        )
+        setupCached(workouts: [])
+        setupDatabaseForUpload()
 
-        competitionsManager.competitions = .just([])
+        let _ = WorkoutManager()
+
+        let scoringModel = Competition.ScoringModel.workout(.walking, [.distance]) 
+
+        let competitionA = Competition(name: #function, owner: "owner", participants: [], pendingParticipants: [], scoringModel: scoringModel, start: .now.addingTimeInterval(-1.days), end: .now.addingTimeInterval(1.days), repeats: true, isPublic: true, banner: nil)
+        competitionsSubject.send([competitionA])
+        let competitionB = Competition(name: #function, owner: "owner", participants: [], pendingParticipants: [], scoringModel: scoringModel, start: .now.addingTimeInterval(-2.days), end: .now.addingTimeInterval(2.days), repeats: true, isPublic: true, banner: nil)
+        competitionsSubject.send([competitionA, competitionB])
+
+        XCTAssertEqual(healthKitManager.executeCallsCount, scoringModel.expectedHealthKitQueryCount * 3) // [competitionA], [competitionA, competitionB]
     }
 
     func testThatItDoesNotUploadDuplicates() {
-        let expectation = self.expectation(description: #function)
+        let competitionsSubject = PassthroughSubject<[Competition], Never>()
+        competitionsManager.competitions = competitionsSubject.eraseToAnyPublisher()
+        setupHealthKit(
+            workoutQueryFetchResult: .success([HKWorkout(activityType: .walking, start: .now, end: .now.addingTimeInterval(1.hours))]),
+            sampleQueryFetchResult: .success([.now: 1])
+        )
+        setupCached(workouts: [])
 
-        let workoutA = Workout.mock()
-        let workoutB = Workout.mock(date: .now.addingTimeInterval(1.days))
+        let workoutDocument = DocumentMock<Workout>()
+        database.documentClosure = { _ in workoutDocument }
 
-        let firstWorkouts = [workoutA]
-        let secondWorkouts = [workoutA, workoutB]
-
-        expectation.expectedFulfillmentCount = 2 + (firstWorkouts + secondWorkouts).uniqued(on: \.id).count
-
-        userManager.user = .evan
-
-        let firstBatch = BatchMock<Workout>()
-        firstBatch.commitClosure = {
-            expectation.fulfill()
-            return .just(())
+        var seenWorkouts = Set<Workout>()
+        let batch = BatchMock<Workout>()
+        batch.setClosure = { workout, _ in
+            seenWorkouts.insert(workout)
+            self.setupCached(workouts: Array(seenWorkouts))
         }
-        firstBatch.setClosure = { workout, _ in
-            XCTAssertEqual(workout, firstWorkouts[firstBatch.setCallCount - 1])
-            expectation.fulfill()
-        }
+        batch.commitClosure = { .just(()) }
+        database.batchReturnValue = batch
 
-        let secondBatch = BatchMock<Workout>()
-        secondBatch.commitClosure = {
-            expectation.fulfill()
-            return .just(())
-        }
-        secondBatch.setClosure = { workout, _ in
-            let expectedWorkoutsForUpload = secondWorkouts.filter { workout in
-                !firstWorkouts.contains(workout)
+        let _ = WorkoutManager()
+
+        let scoringModel = Competition.ScoringModel.workout(.walking, [.distance])
+
+        let competitionA = Competition(name: #function, owner: "owner", participants: [], pendingParticipants: [], scoringModel: scoringModel, start: .now.addingTimeInterval(-1.days), end: .now.addingTimeInterval(1.days), repeats: true, isPublic: true, banner: nil)
+        competitionsSubject.send([competitionA])
+
+        let competitionB = Competition(name: #function, owner: "owner", participants: [], pendingParticipants: [], scoringModel: scoringModel, start: .now.addingTimeInterval(-2.days), end: .now.addingTimeInterval(2.days), repeats: true, isPublic: true, banner: nil)
+        competitionsSubject.send([competitionA, competitionB])
+
+        XCTAssertEqual(batch.setCallCount, seenWorkouts.count)
+    }
+
+    // MARK: - Private
+
+    private func setupHealthKit(workoutQueryFetchResult: Result<[HKWorkout], Error>?, sampleQueryFetchResult: Result<[Date: Double], Error>?) {
+        healthKitManager.shouldRequestReturnValue = .just(false)
+        healthKitManager.executeClosure = { query in
+            if let query = query as? WorkoutQuery {
+                query.resultsHandler(workoutQueryFetchResult!)
+            } else if let query = query as? SampleQuery {
+                query.resultsHandler(sampleQueryFetchResult!)
+            } else {
+                XCTFail("Unexpected query type")
             }
-            XCTAssertEqual(workout, expectedWorkoutsForUpload[secondBatch.setCallCount - 1])
-            expectation.fulfill()
+        }
+    }
+
+    private func setupCached(workouts: [Workout]) {
+        let cachedWorkoutCollection = CollectionMock<Workout>()
+        cachedWorkoutCollection.getDocumentsClosure = { _, source in
+            XCTAssertEqual(source, .cache)
+            return .just(workouts)
         }
 
-        database.documentReturnValue = DocumentMock<Workout>()
-        database.batchClosure = {
-            if self.database.batchCallsCount == 1 {
-                return firstBatch
-            } else if self.database.batchCallsCount == 2 {
-                return secondBatch
-            }
-            XCTFail("Too many calls to batch")
-            return BatchMock<Workout>()
+        database.collectionClosure = { path in
+            XCTAssertEqual(path, "users/\(self.userManager.user.id)/workouts")
+            return cachedWorkoutCollection
         }
+    }
 
-        let collection = CollectionMock<Workout>()
-        collection.getDocumentsClosure = { _, _ in
-            if collection.getDocumentsCallCount == 1 {
-                return .just([])
-            } else if collection.getDocumentsCallCount == 2 {
-                return .just(firstWorkouts)
-            }
-            XCTFail("Too many calls to getDocuments")
-            return .never()
+    private func setupDatabaseForUpload() {
+        let workoutDocument = DocumentMock<Workout>()
+        database.documentClosure = { _ in workoutDocument }
+
+        let batch = BatchMock<Workout>()
+        batch.setClosure = { _, _ in }
+        batch.commitClosure = { .just(()) }
+        database.batchReturnValue = batch
+    }
+}
+
+private extension Competition.ScoringModel {
+    var expectedHealthKitQueryCount: Int {
+        switch self {
+        case .activityRingCloseCount, .percentOfGoals, .rawNumbers, .stepCount:
+            return 1
+        case .workout(_, let metrics):
+            return metrics.count + 1
         }
-        database.collectionReturnValue = collection
-
-        let manager = WorkoutManager()
-        manager.workouts(of: .walking, with: [], in: .init())
-            .sink() // needed to retain manager
-            .store(in: &cancellables)
-
-        let healthKitDataHelper = healthKitDataHelperBuilder.healthKitDataHelper!
-        healthKitDataHelper.upload(data: firstWorkouts)
-            .flatMapLatest { healthKitDataHelper.upload(data: secondWorkouts) }
-            .sink()
-            .store(in: &cancellables)
-
-        waitForExpectations(timeout: 1)
     }
 }

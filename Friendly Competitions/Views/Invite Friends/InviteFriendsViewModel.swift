@@ -79,17 +79,16 @@ final class InviteFriendsViewModel: ObservableObject {
                             L10n.InviteFriends.accept :
                             (alreadyInvited.contains(friend.id) ? L10n.InviteFriends.invited : L10n.InviteFriends.invite),
                         buttonDisabled: alreadyInvited.contains(friend.id),
-                        buttonAction: { [weak self, friend] in
-                            guard let strongSelf = self else { return }
+                        buttonAction: { [friend] in
                             switch action {
                             case .addFriend:
                                 if hasIncomingInvite {
-                                    strongSelf.acceptSubject.send(friend)
+                                    self?.acceptSubject.send(friend)
                                 } else {
-                                    strongSelf.inviteSubject.send(friend)
+                                    self?.inviteSubject.send(friend)
                                 }
                             case .competitionInvite:
-                                strongSelf.inviteSubject.send(friend)
+                                self?.inviteSubject.send(friend)
                             }
                         }
                     )

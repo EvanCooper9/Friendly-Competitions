@@ -6,14 +6,6 @@ import XCTest
 
 final class EmailSignInViewModelTests: FCTestCase {
 
-    private var authenticationManager = AuthenticationManagingMock()
-    private var cancellables = Cancellables()
-
-    override func setUp() {
-        super.setUp()
-        container.authenticationManager.register { self.authenticationManager }
-    }
-
     func testThatSignInTriggersLoading() {
         let expectation = self.expectation(description: #function)
         let expected = [false, true, false]

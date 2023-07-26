@@ -29,12 +29,12 @@ extension Competition {
 
 extension Array where Element == Competition {
     var dateInterval: DateInterval? {
-        return reduce(nil) { dateInterval, competition in
-            guard let dateInterval else { return .init(start: competition.start, end: competition.end) }
-            return .init(
-                start: [dateInterval.start, competition.start].min()!,
-                end: [dateInterval.end, competition.end].max()!
-            )
+        reduce(nil) { existing, competition in
+            let dateInterval = DateInterval(start: competition.start, end: competition.end)
+            guard let existing else {
+                return dateInterval
+            }
+            return existing.combined(with: dateInterval)
         }
     }
 }

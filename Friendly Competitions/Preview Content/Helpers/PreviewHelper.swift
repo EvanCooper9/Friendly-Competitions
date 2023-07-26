@@ -23,7 +23,7 @@ private enum Dependencies {
     static let workoutManager = WorkoutManagingMock()
 
     static func register() {
-        Container.shared = Container()
+        Container.shared.reset()
         Container.shared.api.register { api }
         Container.shared.appServices.register { appServices }
         Container.shared.appState.register { appState }

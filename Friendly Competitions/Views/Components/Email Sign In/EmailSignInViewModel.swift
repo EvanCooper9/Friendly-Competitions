@@ -63,7 +63,7 @@ final class EmailSignInViewModel: ObservableObject {
                 strongSelf.authenticationManager
                     .sendPasswordReset(to: strongSelf.email)
                     .isLoading { strongSelf.loading = $0 }
-                    .handleEvents(withUnretained: self, receiveCompletion: { strongSelf, completion in
+                    .handleEvents(receiveCompletion: { completion in
                         switch completion {
                         case .failure(let error):
                             strongSelf.error = error

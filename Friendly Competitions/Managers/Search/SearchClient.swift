@@ -34,7 +34,7 @@ extension AlgoliaSearchClient.SearchClient: SearchClient {
 extension AlgoliaSearchClient.Index: SearchIndex {
     func search<ResultType: Decodable>(query: String) -> AnyPublisher<[ResultType], Error> {
         Future { promise in
-            self.search(query: .init(query)) { result in
+            search(query: .init(query)) { result in
                 switch result {
                 case .failure(let error):
                     promise(.failure(error))

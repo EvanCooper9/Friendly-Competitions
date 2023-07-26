@@ -30,12 +30,13 @@ enum AnalyticsEvent: Codable {
     // background jobs
     case backgroundNotificationReceived
     case backgroundNotificationFailedToParseJob
+    case backgroundNotificationHandled
     case backgroundJobReceived(job: [String: String])
     case backgroundJobStarted(jobType: String)
     case backgroundJobEnded(jobType: String)
 
     // HealthKit
-    case healthKitShouldRequestPermissions(permissions: [HealthKitPermissionType], shouldRequest: Bool)
-    case healthKitRegisterForBackgroundDeliverySuccess(permission: HealthKitPermissionType)
-    case healthKitRegisterForBackgroundDeliveryFailure(permission: HealthKitPermissionType, error: String?)
+    case healthKitShouldRequestPermissions(permissionsString: String, shouldRequest: Bool)
+    case healthKitRegisterBGDeliverySuccess(permission: HealthKitPermissionType)
+    case healthKitRegisterBGDeliveryFailure(permission: HealthKitPermissionType, error: String?)
 }

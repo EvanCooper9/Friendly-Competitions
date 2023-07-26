@@ -86,7 +86,8 @@ extension FirebaseAuth.User: AuthUser {
 
     func sendEmailVerification() -> AnyPublisher<Void, Error> {
         Future { [weak self] promise in
-            self?.sendEmailVerification { error in
+            guard let self else { return }
+            self.sendEmailVerification { error in
                 if let error {
                     promise(.failure(error))
                 } else {

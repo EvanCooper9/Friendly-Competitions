@@ -10,46 +10,29 @@ import XCTest
 
 final class ActivitySummaryManagerTests: FCTestCase {
     
-    private var cache = ActivitySummaryCacheMock()
-    private var healthKitManager = HealthKitManagingMock()
-    private var healthKitDataHelperBuilder = HealthKitDataHelperBuildingMock<[ActivitySummary]>()
-    private var database = DatabaseMock()
-    private var scheduler = TestSchedulerOf<RunLoop>(now: .init(.now))
-    private var userManager = UserManagingMock()
-    private var cancellables = Cancellables()
-    
     override func setUp() {
         super.setUp()
-        container.activitySummaryCache.register { self.cache }
-        container.healthKitManager.register { self.healthKitManager }
-        container.healthKitDataHelperBuilder.register { self.healthKitDataHelperBuilder }
-        container.database.register { self.database }
-        container.scheduler.register { self.scheduler.eraseToAnyScheduler() }
-        container.userManager.register { self.userManager }
+        userManager.user = .evan
     }
     
     func testThatItFetchesActivitySummariesAndSetsCurrentOnSuccess() {
         let expectation = self.expectation(description: #function)
         expectation.expectedFulfillmentCount = 2
-        
         let expected = [ActivitySummary.mock]
-        healthKitManager.executeClosure = { query in
-            guard let query = query as? ActivitySummaryQuery else {
-                XCTFail("Unexpected query type")
-                return
-            }
-            query.resultsHandler(.success(expected))
-        }
-        
+
+        competitionsManager.competitions = .just([])
+        setupHealthKit(fetchResult: .success(expected))
+        setupCached(activitySummaries: [])
+        setupDatabaseForUpload()
+
         let manager = ActivitySummaryManager()
         manager.activitySummary
-            .dropFirst()
             .sink { activitySummary in
                 XCTAssertEqual(activitySummary, expected.first)
                 expectation.fulfill()
             }
             .store(in: &cancellables)
-        
+
         manager.activitySummaries(in: .init())
             .ignoreFailure()
             .sink { activitySummaries in
@@ -57,28 +40,20 @@ final class ActivitySummaryManagerTests: FCTestCase {
                 expectation.fulfill()
             }
             .store(in: &cancellables)
-        
-        healthKitDataHelperBuilder.healthKitDataHelper
-            .fetch(dateInterval: .dataFetchDefault)
-            .sink()
-            .store(in: &cancellables)
 
         scheduler.advance()
-        
+
         waitForExpectations(timeout: 1)
     }
-    
+
     func testThatItSetsCurrentToNilOnFetchFailure() {
         let expectation = self.expectation(description: #function)
-        
-        healthKitManager.executeClosure = { query in
-            guard let query = query as? ActivitySummaryQuery else {
-                XCTFail("Unexpected query type")
-                return
-            }
-            query.resultsHandler(.failure(MockError.mock(id: #function)))
-        }
-        
+
+        competitionsManager.competitions = .just([])
+        setupHealthKit(fetchResult: .failure(MockError.mock(id: #function)))
+        setupCached(activitySummaries: [])
+        setupDatabaseForUpload()
+
         let manager = ActivitySummaryManager()
         manager.activitySummary
             .sink { activitySummary in
@@ -86,144 +61,99 @@ final class ActivitySummaryManagerTests: FCTestCase {
                 expectation.fulfill()
             }
             .store(in: &cancellables)
+        
         manager.activitySummaries(in: .init())
             .sink()
             .store(in: &cancellables)
-        
+
         scheduler.advance()
-        
+
         waitForExpectations(timeout: 1)
     }
-    
-    func testThatItUploadsCorrectly() {
-        let expectation = self.expectation(description: #function)
-        
-        let user = User.evan
-        userManager.user = user
-        let expected = [
-            ActivitySummary.mock.with(userID: user.id).with(date: .now.advanced(by: -2.days)),
-            ActivitySummary.mock.with(userID: user.id).with(date: .now.advanced(by: -1.days)),
-            ActivitySummary.mock.with(userID: user.id)
-        ]
-        expectation.expectedFulfillmentCount = expected.count + 1 // set each document + commit all
-        
+
+    func testThatItRefetchesWhenCompetitionsChange() {
+        let competitionsSubject = PassthroughSubject<[Competition], Never>()
+        competitionsManager.competitions = competitionsSubject.eraseToAnyPublisher()
+        setupHealthKit(fetchResult: .success([.mock]))
+        setupCached(activitySummaries: [])
+        setupDatabaseForUpload()
+
+        let manager = ActivitySummaryManager()
+        manager.activitySummary
+            .sink()
+            .store(in: &cancellables)
+
+        competitionsSubject.send([])
+        competitionsSubject.send([.mock])
+
+        XCTAssertEqual(healthKitManager.executeCallsCount, 2)
+    }
+
+    func testThatItDoesNotUploadDuplicates() {
+        let competitionsSubject = PassthroughSubject<[Competition], Never>()
+        competitionsManager.competitions = competitionsSubject.eraseToAnyPublisher()
+
+        let activitySummary = ActivitySummary.mock
+        setupHealthKit(fetchResult: .success([activitySummary]))
+        setupCached(activitySummaries: [])
+
+        let activitySummaryDocument = DocumentMock<ActivitySummary>()
+        database.documentClosure = { _ in activitySummaryDocument }
+
+        var seenActivitySummaries = Set<ActivitySummary>()
+        let batch = BatchMock<ActivitySummary>()
+        batch.setClosure = { activitySummary, _ in
+            seenActivitySummaries.insert(activitySummary)
+            self.setupCached(activitySummaries: Array(seenActivitySummaries))
+        }
+        batch.commitClosure = { .just(()) }
+        database.batchReturnValue = batch
+
+        let manager = ActivitySummaryManager()
+        manager.activitySummary
+            .sink()
+            .store(in: &cancellables)
+
+        competitionsSubject.send([])
+        competitionsSubject.send([.mock])
+        XCTAssertEqual(batch.setCallCount, seenActivitySummaries.count)
+    }
+
+    // MARK: - Private
+
+    private func setupHealthKit(fetchResult: Result<[ActivitySummary], Error>) {
+        healthKitManager.shouldRequestReturnValue = .just(false)
         healthKitManager.executeClosure = { query in
             guard let query = query as? ActivitySummaryQuery else {
                 XCTFail("Unexpected query type")
                 return
             }
-            query.resultsHandler(.success(expected))
+            query.resultsHandler(fetchResult)
         }
-        
-        let batchMock = BatchMock<ActivitySummary>()
-        batchMock.commitClosure = {
-            expectation.fulfill()
-            return .just(())
-        }
-        batchMock.setClosure = { activitySummary, document in
-            let expectedActivitySummary = expected[batchMock.setCallCount - 1]
-            XCTAssertEqual(activitySummary, expectedActivitySummary)
-            expectation.fulfill()
-        }
-        
-        database.batchClosure = { batchMock }
-        database.documentClosure = { path in
-            let expectedActivitySummary = expected[self.database.documentCallsCount - 1]
-            XCTAssertEqual(path, "users/\(user.id)/activitySummaries/\(expectedActivitySummary.id)")
-            return DocumentMock<ActivitySummary>()
-        }
-
-        let collection = CollectionMock<ActivitySummary>()
-        collection.getDocumentsClosure = { _, _ in .just([]) }
-        database.collectionReturnValue = collection
-        
-        let manager = ActivitySummaryManager()
-        manager.activitySummary
-            .sink()
-            .store(in: &cancellables)
-
-        healthKitDataHelperBuilder.healthKitDataHelper!
-            .fetch(dateInterval: .init())
-            .flatMapLatest(withUnretained: self) { strongSelf, activitySummaries in
-                XCTAssertEqual(activitySummaries, expected)
-                return strongSelf.healthKitDataHelperBuilder.healthKitDataHelper!.upload(data: activitySummaries)
-            }
-            .sink()
-            .store(in: &cancellables)
-        
-        waitForExpectations(timeout: 1)
     }
 
-    func testThatItDoesNotUploadDuplicates() {
-        let expectation = self.expectation(description: #function)
-
-        userManager.user = .evan
-
-        let activitySummaryA = ActivitySummary.mock.with(userID: userManager.user.id)
-        let activitySummaryB = ActivitySummary.mock.with(userID: userManager.user.id).with(date: .now.addingTimeInterval(1.days))
-
-        let firstActivitySummaries = [activitySummaryA]
-        let secondActivitySummaries = [activitySummaryA, activitySummaryB]
-
-        expectation.expectedFulfillmentCount = 2 + (firstActivitySummaries + secondActivitySummaries).uniqued(on: \.id).count
-
-        let firstBatch = BatchMock<ActivitySummary>()
-        firstBatch.commitClosure = {
-            expectation.fulfill()
-            return .just(())
-        }
-        firstBatch.setClosure = { activitySummary, _ in
-            XCTAssertEqual(activitySummary, firstActivitySummaries[firstBatch.setCallCount - 1])
-            expectation.fulfill()
+    private func setupCached(activitySummaries: [ActivitySummary]) {
+        let activitySummaries = activitySummaries.map { $0.with(userID: userManager.user.id) }
+        
+        let cachedActivitySummaryCollection = CollectionMock<ActivitySummary>()
+        cachedActivitySummaryCollection.getDocumentsClosure = { _, source in
+            XCTAssertEqual(source, .cache)
+            return .just(activitySummaries)
         }
 
-        let secondBatch = BatchMock<ActivitySummary>()
-        secondBatch.commitClosure = {
-            expectation.fulfill()
-            return .just(())
+        database.collectionClosure = { path in
+            XCTAssertEqual(path, "users/\(self.userManager.user.id)/activitySummaries")
+            return cachedActivitySummaryCollection
         }
-        secondBatch.setClosure = { activitySummary, _ in
-            let expectedActivitySummariesForUpload = secondActivitySummaries.filter { activitySummary in
-                !firstActivitySummaries.contains(activitySummary)
-            }
-            XCTAssertEqual(activitySummary, expectedActivitySummariesForUpload[secondBatch.setCallCount - 1])
-            expectation.fulfill()
-        }
+    }
 
-        database.documentReturnValue = DocumentMock<ActivitySummary>()
-        database.batchClosure = {
-            if self.database.batchCallsCount == 1 {
-                return firstBatch
-            } else if self.database.batchCallsCount == 2 {
-                return secondBatch
-            }
-            XCTFail("Too many calls to batch")
-            return BatchMock<ActivitySummary>()
-        }
+    private func setupDatabaseForUpload() {
+        let activitySummaryDocument = DocumentMock<ActivitySummary>()
+        database.documentClosure = { _ in activitySummaryDocument }
 
-        let collection = CollectionMock<ActivitySummary>()
-        collection.getDocumentsClosure = { _, _ in
-            if collection.getDocumentsCallCount == 1 {
-                return .just([])
-            } else if collection.getDocumentsCallCount == 2 {
-                return .just(firstActivitySummaries)
-            }
-            XCTFail("Too many calls to getDocuments")
-            return .never()
-        }
-        database.collectionReturnValue = collection
-
-        let manager = ActivitySummaryManager()
-        manager.activitySummary
-            .sink() // needed to retain manager
-            .store(in: &cancellables)
-
-        let healthKitDataHelper = healthKitDataHelperBuilder.healthKitDataHelper!
-        healthKitDataHelper.upload(data: firstActivitySummaries)
-            .flatMapLatest { healthKitDataHelper.upload(data: secondActivitySummaries) }
-            .sink()
-            .store(in: &cancellables)
-
-        waitForExpectations(timeout: 1)
+        let batch = BatchMock<ActivitySummary>()
+        batch.setClosure = { _, _ in }
+        batch.commitClosure = { .just(()) }
+        database.batchReturnValue = batch
     }
 }
