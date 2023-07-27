@@ -46,6 +46,7 @@ final class BackgroundJobsAppService: AppService {
             .combineLatest()
             .first()
             .mapToVoid()
+            .handleEvents(withUnretained: self, receiveOutput: { $0.analyticsManager.log(event: .backgroundNotificationHandled) })
             .eraseToAnyPublisher()
     }
 }

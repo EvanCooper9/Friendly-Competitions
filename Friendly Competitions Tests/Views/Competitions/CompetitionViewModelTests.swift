@@ -8,32 +8,10 @@ import XCTest
 
 final class CompetitionViewModelTests: FCTestCase {
 
-    private var activitySummaryManager = ActivitySummaryManagingMock()
-    private var api = APIMock()
-    private var appState = AppStateProvidingMock()
-    private var competitionsManager = CompetitionsManagingMock()
-    private var healthKitManager = HealthKitManagingMock()
-    private var notificationsManager = NotificationsManagingMock()
-    private var scheduler = TestSchedulerOf<RunLoop>(now: .init(.now))
-    private var searchManager = SearchManagingMock()
-    private var userManager = UserManagingMock()
-    private var workoutManager = WorkoutManagingMock()
-    private var cancellables = Cancellables()
-
     override func setUp() {
         super.setUp()
 
-        container.activitySummaryManager.register { self.activitySummaryManager }
-        container.api.register { self.api }
-        container.appState.register { self.appState }
-        container.competitionsManager.register { self.competitionsManager }
-        container.healthKitManager.register { self.healthKitManager }
-        container.notificationsManager.register { self.notificationsManager }
-        container.scheduler.register { self.scheduler.eraseToAnyScheduler() }
-        container.searchManager.register { self.searchManager }
-        container.userManager.register { self.userManager }
-        container.workoutManager.register { self.workoutManager }
-
+        activitySummaryManager.activitySummariesInReturnValue = .never()
         appState.didBecomeActive = .never()
         competitionsManager.competitionPublisherForReturnValue = .never()
         competitionsManager.resultsForReturnValue = .never()
@@ -107,7 +85,9 @@ final class CompetitionViewModelTests: FCTestCase {
         let expectation = self.expectation(description: #function)
         let expected = [[], [Banner.healthKitPermissionsMissing], []]
 
+        activitySummaryManager.activitySummariesInReturnValue = .just([])
         appState.didBecomeActive = .just(true)
+        competitionsManager.competitions = .just([])
         healthKitManager.shouldRequestReturnValue = .just(true)
         notificationsManager.permissionStatusReturnValue = .just(.authorized)
 
@@ -143,7 +123,6 @@ final class CompetitionViewModelTests: FCTestCase {
         let viewModel = CompetitionViewModel(competition: .mock)
         viewModel.$banners
             .removeDuplicates()
-            .print("banners")
             .collect(expected.count)
             .expect(expected, expectation: expectation)
             .store(in: &cancellables)

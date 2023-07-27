@@ -5,18 +5,8 @@ import XCTest
 
 final class NewCompetitionViewModelTests: FCTestCase {
 
-    private var competitionsManager = CompetitionsManagingMock()
-    private var database = DatabaseMock()
-    private var friendsManager = FriendsManagingMock()
-    private var userManager = UserManagingMock()
-
     override func setUp() {
         super.setUp()
-
-        container.competitionsManager.register { self.competitionsManager }
-        container.database.register { self.database }
-        container.friendsManager.register { self.friendsManager }
-        container.userManager.register { self.userManager }
 
         friendsManager.friends = .never()
         userManager.userPublisher = .never()

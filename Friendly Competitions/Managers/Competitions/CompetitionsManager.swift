@@ -76,11 +76,7 @@ final class CompetitionsManager: CompetitionsManaging {
         invitedCompetitions = invitedCompetitionsSubject.eraseToAnyPublisher()
         appOwnedCompetitions = appOwnedCompetitionsSubject.eraseToAnyPublisher()
 
-        appState.didBecomeActive
-            .filter { $0 }
-            .mapToVoid()
-            .sink(withUnretained: self) { $0.listenForCompetitions() }
-            .store(in: &cancellables)
+        listenForCompetitions()
     }
 
     // MARK: - Public Methods

@@ -30,6 +30,7 @@ enum AnalyticsEvent: Codable {
     // background jobs
     case backgroundNotificationReceived
     case backgroundNotificationFailedToParseJob
+    case backgroundNotificationHandled
     case backgroundJobReceived(job: [String: String])
     case backgroundJobStarted(jobType: String)
     case backgroundJobEnded(jobType: String)

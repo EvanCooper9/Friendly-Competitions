@@ -6,14 +6,6 @@ import XCTest
 
 final class WelcomeViewModelTests: FCTestCase {
 
-    private var authenticationManager = AuthenticationManagingMock()
-    private var cancellables = Cancellables()
-
-    override func setUp() {
-        super.setUp()
-        container.authenticationManager.register { self.authenticationManager }
-    }
-
     func testThatSignInWithAppleTappedTriggersAppleSignIn() {
         authenticationManager.signInWithReturnValue = .just(())
         let viewModel = WelcomeViewModel()
