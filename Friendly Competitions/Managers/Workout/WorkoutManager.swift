@@ -67,26 +67,24 @@ final class WorkoutManager: WorkoutManaging {
 
         return competitionsManager.competitions
             .filterMany(\.isActive)
-            .map { competitions -> [CompetitionFetchData] in
-                competitions.compactMap { competition in
-                    let dateInterval = DateInterval(start: competition.start, end: competition.end)
-                    switch competition.scoringModel {
-                    case let .workout(workoutType, workoutMetrics):
-                        return CompetitionFetchData(dateInterval: dateInterval,
-                                                    workoutType: workoutType,
-                                                    workoutMetrics: workoutMetrics)
-                    default:
-                        return nil
-                    }
+            .compactMapMany { competition in
+                let dateInterval = DateInterval(start: competition.start, end: competition.end)
+                switch competition.scoringModel {
+                case let .workout(workoutType, workoutMetrics):
+                    return CompetitionFetchData(dateInterval: dateInterval,
+                                                workoutType: workoutType,
+                                                workoutMetrics: workoutMetrics)
+                default:
+                    return nil
                 }
             }
-            .flatMapLatest { results -> AnyPublisher<[Workout], Never> in
+            .flatMapLatest(withUnretained: self) { strongSelf, results -> AnyPublisher<[Workout], Never> in
                 results.map { (fetchData: CompetitionFetchData) in
                     let permissions = fetchData.workoutMetrics.compactMap { $0.permission(for: fetchData.workoutType) }
-                    return self.healthKitManager.shouldRequest(permissions)
+                    return strongSelf.healthKitManager.shouldRequest(permissions)
                         .flatMapLatest { shouldRequest -> AnyPublisher<[Workout], Error> in
                             guard !shouldRequest else { return .just([]) }
-                            return self.workouts(of: fetchData.workoutType, with: fetchData.workoutMetrics, in: fetchData.dateInterval)
+                            return strongSelf.workouts(of: fetchData.workoutType, with: fetchData.workoutMetrics, in: fetchData.dateInterval)
                         }
                         .catchErrorJustReturn([])
                         .eraseToAnyPublisher()

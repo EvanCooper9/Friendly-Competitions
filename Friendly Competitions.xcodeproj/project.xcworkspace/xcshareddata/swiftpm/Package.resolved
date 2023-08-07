@@ -37,15 +37,6 @@
       }
     },
     {
-      "identity" : "eckit",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/EvanCooper9/ECKit",
-      "state" : {
-        "branch" : "main",
-        "revision" : "18f9c30fd6bb667802bbfa2a188c069f2a63ccf9"
-      }
-    },
-    {
       "identity" : "factory",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/hmlongco/Factory",

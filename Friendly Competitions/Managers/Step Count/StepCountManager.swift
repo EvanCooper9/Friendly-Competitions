@@ -64,7 +64,6 @@ final class StepCountManager: StepCountManaging {
 
     private func fetchAndUpload() -> AnyPublisher<Void, Never> {
         competitionsManager.competitions
-            .print("competitions")
             .filterMany { competition in
                 guard competition.isActive else { return false }
                 switch competition.scoringModel {
