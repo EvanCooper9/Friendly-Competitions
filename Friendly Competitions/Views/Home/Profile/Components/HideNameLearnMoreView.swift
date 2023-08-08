@@ -31,7 +31,7 @@ struct HideNameLearnMoreView: View {
                 .cornerRadius(15)
         }
         .padding()
-        .fittedDetents()
+        .fittedDetents(defaultDetents: [.large])
         .registerScreenView(name: "Hide Name Learn More")
     }
 }

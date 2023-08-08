@@ -24,10 +24,6 @@ struct CompetitionView: View {
 
             standings
 
-            if viewModel.showResults {
-                results
-            }
-
             CustomListSection {
                 ForEach(viewModel.details, id: \.value) { detail in
                     ImmutableListItemView(value: detail.value, valueType: detail.valueType)
@@ -75,12 +71,6 @@ struct CompetitionView: View {
             if viewModel.standings.isEmpty && !viewModel.loadingStandings {
                 Text(L10n.Competition.Standings.empty)
             }
-        }
-    }
-
-    private var results: some View {
-        CustomListSection {
-            NavigationLink(L10n.Competition.Results.results, value: NavigationDestination.competitionResults(viewModel.competition))
         }
     }
 

@@ -24,7 +24,6 @@ final class CompetitionViewModel: ObservableObject {
     @Published var pendingParticipants = [CompetitionParticipantRow.Config]()
     @Published var actions = [CompetitionViewAction]()
     @Published var showInviteFriend = false
-    @Published private(set) var showResults = false
     @Published private(set) var loading = false
     @Published private(set) var loadingStandings = false
     @Published private(set) var showShowMoreButton = false
@@ -61,7 +60,6 @@ final class CompetitionViewModel: ObservableObject {
     private let confirmActionSubject = PassthroughSubject<Void, Error>()
     private let performActionSubject = PassthroughSubject<CompetitionViewAction, Error>()
     private let fetchParticipantsSubject = PassthroughSubject<[String], Never>()
-    private let recordResultsSubject = PassthroughSubject<Void, Never>()
     private let didRequestPermissions = CurrentValueSubject<Void, Never>(())
     private var cancellables = Cancellables()
 
@@ -76,11 +74,6 @@ final class CompetitionViewModel: ObservableObject {
         userManager.userPublisher
             .map { $0.id == competition.owner }
             .assign(to: &$canEdit)
-
-        competitionsManager.results(for: competition.id)
-            .map(\.isNotEmpty)
-            .ignoreFailure()
-            .assign(to: &$showResults)
 
         $competition
             .combineLatest(userManager.userPublisher)
