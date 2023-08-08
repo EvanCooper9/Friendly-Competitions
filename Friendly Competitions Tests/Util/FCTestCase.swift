@@ -37,9 +37,16 @@ class FCTestCase: XCTestCase {
 
     var cancellables = Cancellables()
 
+    private var retainedObjects = [Any]()
+
     override func setUp() {
         super.setUp()
         register()
+    }
+
+    override func tearDown() {
+        super.tearDown()
+        retainedObjects = []
     }
 
     private func register() {
@@ -70,5 +77,9 @@ class FCTestCase: XCTestCase {
         Container.shared.storageManager.register { self.storageManager }
         Container.shared.userManager.register { self.userManager }
         Container.shared.workoutManager.register { self.workoutManager }
+    }
+
+    func retainDuringTest(_ object: Any) {
+
     }
 }

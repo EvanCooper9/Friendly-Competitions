@@ -73,7 +73,7 @@ struct CompetitionContainerView_Previews: PreviewProvider {
         searchManager.searchForUsersWithIDsReturnValue = .just(participants)
 
         // results
-        
+
         let results: [CompetitionResult] = (0...6).map { i in
             let refDate = Date.now
                 .advanced(by: -(Double(i) * 7.0).days)

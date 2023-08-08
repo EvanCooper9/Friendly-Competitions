@@ -25,7 +25,8 @@ final class WorkoutManagerTests: FCTestCase {
         setupCached(workouts: [])
         setupDatabaseForUpload()
 
-        let _ = WorkoutManager()
+        let workoutManager = WorkoutManager()
+        retainDuringTest(workoutManager)
 
         let scoringModel = Competition.ScoringModel.workout(.walking, [.distance]) 
 
@@ -58,7 +59,8 @@ final class WorkoutManagerTests: FCTestCase {
         batch.commitClosure = { .just(()) }
         database.batchReturnValue = batch
 
-        let _ = WorkoutManager()
+        let workoutManager = WorkoutManager()
+        retainDuringTest(workoutManager)
 
         let scoringModel = Competition.ScoringModel.workout(.walking, [.distance])
 

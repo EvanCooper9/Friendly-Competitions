@@ -77,7 +77,6 @@
 		ED07573529CA65FC00141AD4 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = ED07573429CA65FC00141AD4 /* FirebaseStorage */; };
 		ED07573729CA65FC00141AD4 /* FirebaseStorageCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = ED07573629CA65FC00141AD4 /* FirebaseStorageCombine-Community */; };
 		ED0C4BE029D31068003485CF /* FirestoreEncoderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED0C4BDF29D31068003485CF /* FirestoreEncoderTests.swift */; };
-		ED0C4BE429D315C0003485CF /* NewCompetitionViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED0C4BE329D315C0003485CF /* NewCompetitionViewModelTests.swift */; };
 		ED0C4BE729D496AC003485CF /* FirestoreDecoderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED0C4BE629D496AC003485CF /* FirestoreDecoderTests.swift */; };
 		ED130764295FFA5C00E0AC87 /* CompetitionResultsDataPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED130763295FFA5C00E0AC87 /* CompetitionResultsDataPoint.swift */; };
 		ED19724C283803850018FDFF /* WorkoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED19724B283803850018FDFF /* WorkoutTests.swift */; };
@@ -249,7 +248,6 @@
 		EDA61C0D2977276F00370C5C /* RootViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA61C0C2977276F00370C5C /* RootViewModel.swift */; };
 		EDA61C0F2977317E00370C5C /* FriendlyCompetitionsAppModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDA61C0E2977317E00370C5C /* FriendlyCompetitionsAppModel.swift */; };
 		EDAF6C47285277FF002BC0DD /* Nonce.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDAF6C46285277FF002BC0DD /* Nonce.swift */; };
-		EDBDFB4D29D0AED7003E6278 /* CompetitionResultsViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBDFB4C29D0AED7003E6278 /* CompetitionResultsViewModelTests.swift */; };
 		EDBF030829F755810010CF90 /* FriendlyCompetitionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBF030729F755810010CF90 /* FriendlyCompetitionsTests.swift */; };
 		EDBFB4062A5B8C88005D15BF /* Competition+Banners.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBFB4052A5B8C88005D15BF /* Competition+Banners.swift */; };
 		EDC5FC3F27FA7C1B00F2882D /* View+HUD.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC5FC3E27FA7C1B00F2882D /* View+HUD.swift */; };
@@ -346,7 +344,6 @@
 		ED039766295F5458003D4D80 /* CompetitionResultsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionResultsView.swift; sourceTree = "<group>"; };
 		ED039767295F5458003D4D80 /* CompetitionResultsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionResultsViewModel.swift; sourceTree = "<group>"; };
 		ED0C4BDF29D31068003485CF /* FirestoreEncoderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreEncoderTests.swift; sourceTree = "<group>"; };
-		ED0C4BE329D315C0003485CF /* NewCompetitionViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewCompetitionViewModelTests.swift; sourceTree = "<group>"; };
 		ED0C4BE629D496AC003485CF /* FirestoreDecoderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreDecoderTests.swift; sourceTree = "<group>"; };
 		ED130763295FFA5C00E0AC87 /* CompetitionResultsDataPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionResultsDataPoint.swift; sourceTree = "<group>"; };
 		ED19724B283803850018FDFF /* WorkoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutTests.swift; sourceTree = "<group>"; };
@@ -507,7 +504,6 @@
 		EDA61C0C2977276F00370C5C /* RootViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewModel.swift; sourceTree = "<group>"; };
 		EDA61C0E2977317E00370C5C /* FriendlyCompetitionsAppModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FriendlyCompetitionsAppModel.swift; sourceTree = "<group>"; };
 		EDAF6C46285277FF002BC0DD /* Nonce.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Nonce.swift; sourceTree = "<group>"; };
-		EDBDFB4C29D0AED7003E6278 /* CompetitionResultsViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionResultsViewModelTests.swift; sourceTree = "<group>"; };
 		EDBF030729F755810010CF90 /* FriendlyCompetitionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendlyCompetitionsTests.swift; sourceTree = "<group>"; };
 		EDBFB4052A5B8C88005D15BF /* Competition+Banners.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Competition+Banners.swift"; sourceTree = "<group>"; };
 		EDC5FC3E27FA7C1B00F2882D /* View+HUD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+HUD.swift"; sourceTree = "<group>"; };
@@ -1596,9 +1592,7 @@
 			isa = PBXGroup;
 			children = (
 				ED95D5CE29F03FF400990FBF /* CompetitionParticipantRowConfigTests.swift */,
-				EDBDFB4C29D0AED7003E6278 /* CompetitionResultsViewModelTests.swift */,
 				EDC827822A4D2E7200B1A68E /* CompetitionViewModelTests.swift */,
-				ED0C4BE329D315C0003485CF /* NewCompetitionViewModelTests.swift */,
 			);
 			path = Competitions;
 			sourceTree = "<group>";
@@ -1939,14 +1933,12 @@
 				ED9F256229A4366C008C9967 /* ActivitySummaryManagerTests.swift in Sources */,
 				ED1CFA9B2864AF1D00192E49 /* HomeViewModelTests.swift in Sources */,
 				ED9FB8C62A40B94100B09310 /* ProfileViewModelTests.swift in Sources */,
-				ED0C4BE429D315C0003485CF /* NewCompetitionViewModelTests.swift in Sources */,
 				ED19724E283803F60018FDFF /* WorkoutTypeTests.swift in Sources */,
 				ED58C98F29AAA1A600393468 /* SearchIndex+Mock.swift in Sources */,
 				ED879C0929A1494A0007DB91 /* MockError.swift in Sources */,
 				C1E35D4C27B4606200833EB2 /* Competition+ScoringModelTests.swift in Sources */,
 				C1E35D4227B45D6300833EB2 /* CompetitionTests.swift in Sources */,
 				ED58C99129AAA22C00393468 /* SearchManagerTests.swift in Sources */,
-				EDBDFB4D29D0AED7003E6278 /* CompetitionResultsViewModelTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
