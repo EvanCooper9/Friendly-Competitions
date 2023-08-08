@@ -73,20 +73,18 @@ struct CompetitionContainerView_Previews: PreviewProvider {
         searchManager.searchForUsersWithIDsReturnValue = .just(participants)
 
         // results
-
-        let results: [CompetitionResult] = [
-            .init(id: "1", start: .now.advanced(by: -7.days), end: .now, participants: []),
-            .init(id: "2", start: .now.advanced(by: -14.days), end: .now.advanced(by: -8.days), participants: []),
-            .init(id: "3", start: .now.advanced(by: -21.days), end: .now.advanced(by: -15.days), participants: []),
-            .init(id: "4", start: .now.advanced(by: -28.days), end: .now.advanced(by: -22.days), participants: []),
-            .init(id: "5", start: .now.advanced(by: -35.days), end: .now.advanced(by: -29.days), participants: []),
-            .init(id: "6", start: .now.advanced(by: -42.days), end: .now.advanced(by: -43.days), participants: [])
-        ]
+        
+        let results: [CompetitionResult] = (0...6).map { i in
+            let refDate = Date.now
+                .advanced(by: -(Double(i) * 7.0).days)
+                .advanced(by: -10.days) // offset
+            return CompetitionResult(id: "\(i)", start: refDate.addingTimeInterval(-6.days), end: refDate, participants: [])
+        }
         competitionsManager.resultsForReturnValue = .just(results)
 
         competitionsManager.standingsForResultIDClosure = { _, _ in
             let standings: [Competition.Standing] = [
-                .init(rank: Int.random(in: 1...10), userId: User.evan.id, points: 300),
+                .init(rank: 1, userId: User.evan.id, points: 300),
                 .init(rank: 2, userId: User.gabby.id, points: 200),
                 .init(rank: 3, userId: User.andrew.id, points: 100),
                 .init(rank: 4, userId: "4", points: 100),
@@ -100,7 +98,7 @@ struct CompetitionContainerView_Previews: PreviewProvider {
     }
 
     static var previews: some View {
-        CompetitionContainerView(competition: .mock)
+        CompetitionContainerView(competition: .mockOld)
             .setupMocks(setupMocks)
             .embeddedInNavigationView()
     }

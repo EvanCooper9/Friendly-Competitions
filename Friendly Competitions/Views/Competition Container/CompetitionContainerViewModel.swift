@@ -31,8 +31,14 @@ final class CompetitionContainerViewModel: ObservableObject {
     init(competition: Competition) {
         self.competition = competition
 
-        let currentCompetitionContainerDateRange = CompetitionContainerDateRange(start: competition.start, end: competition.end, selected: false, locked: false)
-        dateRanges = [currentCompetitionContainerDateRange]
+        let activeDateRange = CompetitionContainerDateRange(start: competition.start, end: competition.end, selected: false, locked: false)
+        if competition.isActive {
+            // showing current standings
+            dateRanges = [activeDateRange]
+        } else {
+            // showing results only
+            dateRanges = []
+        }
 
         let results = competitionsManager.results(for: competition.id).catchErrorJustReturn([])
 
@@ -43,14 +49,19 @@ final class CompetitionContainerViewModel: ObservableObject {
                 premiumManager.premium.map(\.isNil.not)
             )
             .map { results, selectedIndex, hasPremium in
-                let resultDateRanges = results.enumerated().map { index, result in
+                let resultsDateRanges = results.enumerated().map { index, result in
                     CompetitionContainerDateRange(start: result.start,
-                                         end: result.end,
-                                         selected: false,
-                                         locked: !hasPremium && index > 0)
+                                                  end: result.end,
+                                                  selected: false,
+                                                  locked: !hasPremium && index > 0)
                 }
 
-                let allDateRanges = [currentCompetitionContainerDateRange].appending(contentsOf: resultDateRanges)
+                let allDateRanges: [CompetitionContainerDateRange]
+                if competition.isActive {
+                    allDateRanges = [activeDateRange].appending(contentsOf: resultsDateRanges)
+                } else {
+                    allDateRanges = resultsDateRanges
+                }
 
                 return allDateRanges.enumerated().map { index, dateRange in
                     var dateRange = dateRange
@@ -58,15 +69,20 @@ final class CompetitionContainerViewModel: ObservableObject {
                     return dateRange
                 }
             }
-            .prepend([currentCompetitionContainerDateRange])
             .assign(to: &$dateRanges)
 
         let selectedResult = Publishers
             .CombineLatest(selectedDateRangeIndex, results)
             .map { selectedIndex, results -> CompetitionResult? in
-                guard selectedIndex > 0, selectedIndex < results.count else { return nil } // make sure current not selected
-                return results[selectedIndex - 1]
+                guard selectedIndex < results.count else { return nil }
+                if competition.isActive {
+                    guard selectedIndex > 0 else { return nil } // make sure current not selected
+                    return results[selectedIndex - 1] // active standings are prepended
+                } else {
+                    return results[selectedIndex]
+                }
             }
+            .unwrap()
 
         let previousResult = Publishers
             .CombineLatest(selectedDateRangeIndex, results)
@@ -82,16 +98,14 @@ final class CompetitionContainerViewModel: ObservableObject {
                 selectedResult,
                 previousResult
             )
-            .compactMap { dateRanges, selectedResult, previousResult -> Content? in
+            .compactMap { dateRanges, selectedResult, previousResult in
                 guard let dateRange = dateRanges.first(where: \.selected) else { return nil }
-                if dateRange.id == currentCompetitionContainerDateRange.id {
+                if dateRange.id == activeDateRange.id {
                     return .current
                 } else if dateRange.locked {
                     return .locked
-                } else if let selectedResult {
-                    return .result(current: selectedResult, previous: previousResult)
                 } else {
-                    return nil
+                    return .result(current: selectedResult, previous: previousResult)
                 }
             }
             .unwrap()

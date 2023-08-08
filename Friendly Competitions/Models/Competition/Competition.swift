@@ -21,8 +21,8 @@ extension Competition: Stored {
 }
 
 extension Competition {
-    var started: Bool { Date.now.compare(start) != .orderedAscending }
-    var ended: Bool { Date.now.compare(end) == .orderedDescending }
+    var started: Bool { start < .now }
+    var ended: Bool { end < .now }
     var isActive: Bool { started && !ended }
     var appOwned: Bool { owner == Bundle.main.id }
 }

@@ -28,6 +28,8 @@ struct CompetitionView: View {
                 ForEach(viewModel.details, id: \.value) { detail in
                     ImmutableListItemView(value: detail.value, valueType: detail.valueType)
                 }
+            } header: {
+                Text("Details")
             }
 
             actions

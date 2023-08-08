@@ -32,7 +32,7 @@ struct CompetitionEditView: View {
                 DatePicker(
                     L10n.Competition.Edit.ends,
                     selection: $viewModel.end,
-                    in: PartialRangeFrom(viewModel.end.addingTimeInterval(1.days)),
+                    in: PartialRangeFrom(viewModel.start.addingTimeInterval(1.days)),
                     displayedComponents: [.date]
                 )
 
