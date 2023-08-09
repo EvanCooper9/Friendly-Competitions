@@ -7,16 +7,18 @@ struct CompetitionContainerDateRange: Equatable, Identifiable {
     let start: Date
     let end: Date
     var selected: Bool
-    var locked: Bool
+    let active: Bool
+    let locked: Bool
     let title: String
 
     var id: String { title }
     var dateInterval: DateInterval { .init(start: start, end: end) }
 
-    init(start: Date, end: Date, selected: Bool, locked: Bool) {
+    init(start: Date, end: Date, selected: Bool = false, active: Bool = false, locked: Bool = false) {
         self.start = start
         self.end = end
         self.selected = selected
+        self.active = active
         self.locked = locked
         self.title = Self.dateFormatter.string(from: start, to: end)
     }

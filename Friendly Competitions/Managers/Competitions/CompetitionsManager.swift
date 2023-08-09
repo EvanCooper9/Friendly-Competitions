@@ -116,11 +116,16 @@ final class CompetitionsManager: CompetitionsManaging {
             .flatMapLatest { result -> AnyPublisher<[CompetitionResult], Error> in
                 let (cachedResults, serverCount) = result
                 let diff = serverCount - cachedResults.count
-                guard diff > 0 else { return .just(cachedResults) }
+                guard diff > 0 else {
+                    return .just(cachedResults)
+                }
                 return query
                     .limit(diff)
                     .getDocuments(ofType: CompetitionResult.self, source: .server)
+                    .map { $0.appending(contentsOf: cachedResults) }
+                    .eraseToAnyPublisher()
             }
+            .map { $0.sorted(by: \.end).reversed() }
             .eraseToAnyPublisher()
     }
 

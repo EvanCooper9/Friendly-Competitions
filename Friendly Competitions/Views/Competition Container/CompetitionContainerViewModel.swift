@@ -31,7 +31,7 @@ final class CompetitionContainerViewModel: ObservableObject {
     init(competition: Competition) {
         self.competition = competition
 
-        let activeDateRange = CompetitionContainerDateRange(start: competition.start, end: competition.end, selected: false, locked: false)
+        let activeDateRange = CompetitionContainerDateRange(start: competition.start, end: competition.end, active: true)
         if competition.isActive {
             // showing current standings
             dateRanges = [activeDateRange]
@@ -47,12 +47,12 @@ final class CompetitionContainerViewModel: ObservableObject {
                 results,
                 selectedDateRangeIndex,
                 premiumManager.premium.map(\.isNil.not)
+                    .mapToValue(true)
             )
             .map { results, selectedIndex, hasPremium in
                 let resultsDateRanges = results.enumerated().map { index, result in
                     CompetitionContainerDateRange(start: result.start,
                                                   end: result.end,
-                                                  selected: false,
                                                   locked: !hasPremium && index > 0)
                 }
 
@@ -72,24 +72,19 @@ final class CompetitionContainerViewModel: ObservableObject {
             .assign(to: &$dateRanges)
 
         let selectedResult = Publishers
-            .CombineLatest(selectedDateRangeIndex, results)
+            .CombineLatest(selectedDateRangeIndex.print("selected index"), results)
             .map { selectedIndex, results -> CompetitionResult? in
-                guard selectedIndex < results.count else { return nil }
-                if competition.isActive {
-                    guard selectedIndex > 0 else { return nil } // make sure current not selected
-                    return results[selectedIndex - 1] // active standings are prepended
-                } else {
-                    return results[selectedIndex]
-                }
+                let resultsIndex = competition.isActive ? selectedIndex - 1 : selectedIndex
+                guard resultsIndex >= 0, resultsIndex < results.count else { return nil }
+                return results[resultsIndex]
             }
-            .unwrap()
 
         let previousResult = Publishers
             .CombineLatest(selectedDateRangeIndex, results)
             .map { selectedIndex, results -> CompetitionResult? in
-                let previousResultIndex = selectedIndex + 1
-                guard previousResultIndex < results.count else { return nil }
-                return results[previousResultIndex]
+                let resultsIndex = (competition.isActive ? selectedIndex - 1 : selectedIndex) + 1
+                guard resultsIndex >= 0, resultsIndex < results.count else { return nil }
+                return results[resultsIndex]
             }
 
         Publishers
@@ -100,12 +95,14 @@ final class CompetitionContainerViewModel: ObservableObject {
             )
             .compactMap { dateRanges, selectedResult, previousResult in
                 guard let dateRange = dateRanges.first(where: \.selected) else { return nil }
-                if dateRange.id == activeDateRange.id {
+                if dateRange.id == activeDateRange.id, competition.isActive {
                     return .current
                 } else if dateRange.locked {
                     return .locked
-                } else {
+                } else if let selectedResult {
                     return .result(current: selectedResult, previous: previousResult)
+                } else {
+                    return nil
                 }
             }
             .unwrap()
