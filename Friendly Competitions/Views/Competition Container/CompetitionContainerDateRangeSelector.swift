@@ -23,6 +23,11 @@ struct CompetitionContainerDateRangeSelector: View {
                                     Image(systemName: .lockFill).font(.footnote)
                                 }
                                 Text(range.title)
+                                if range.active {
+                                    Circle()
+                                        .frame(width: 10, height: 10)
+                                        .foregroundColor(.accentColor)
+                                }
                             }
                             .padding(.vertical, .small)
                             .padding(.horizontal, .regular)
@@ -39,6 +44,7 @@ struct CompetitionContainerDateRangeSelector: View {
                                 view.shadow(color: .gray.opacity(0.25), radius: 10)
                             }
                         }
+                        .allowsHitTesting(!range.selected)
                         .id(range.title)
                     }
                 }

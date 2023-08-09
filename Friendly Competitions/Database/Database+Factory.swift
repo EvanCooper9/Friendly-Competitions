@@ -28,6 +28,8 @@ extension Container {
             }
 
             let settings = firestore.settings
+            settings.cacheSettings = PersistentCacheSettings()
+
             switch environment {
             case .prod:
                 break
