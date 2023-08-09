@@ -8,11 +8,8 @@ final class CompetitionResultsViewModel: ObservableObject {
 
     // MARK: - Public Properties
 
-    @Published private(set) var ranges = [CompetitionResultsDateRange]()
     @Published private(set) var dataPoints = [CompetitionResultsDataPoint]()
-    @Published private(set) var locked = false
     @Published private(set) var loading = false
-    @Published var showPaywall = false
 
     // MARK: - Private Properties
 
@@ -20,95 +17,26 @@ final class CompetitionResultsViewModel: ObservableObject {
 
     @Injected(\.activitySummaryManager) private var activitySummaryManager
     @Injected(\.competitionsManager) private var competitionsManager
-    @Injected(\.premiumManager) private var premiumManager
     @Injected(\.scheduler) private var scheduler
     @Injected(\.userManager) private var userManager
     @Injected(\.workoutManager) private var workoutManager
 
-    private let selectedIndex = CurrentValueSubject<Int, Never>(0)
-
     // MARK: - Lifecycle
 
-    init(competition: Competition) {
+    init(competition: Competition, result: CompetitionResult, previousResult: CompetitionResult?) {
         self.competition = competition
 
-        let results = competitionsManager
-            .results(for: competition.id)
-            .map { results in
-                results
-                    .sorted(by: \.end)
-                    .reversed()
-            }
-            .catchErrorJustReturn([])
-
         Publishers
-            .CombineLatest3(
-                results,
-                premiumManager.premium.map(\.isNil.not),
-                selectedIndex.removeDuplicates()
-            )
-            .map { results, hasPremium, selectedIndex in
-                results
-                    .enumerated()
-                    .map { offset, result in
-                        CompetitionResultsDateRange(
-                            start: result.start,
-                            end: result.end,
-                            selected: offset == selectedIndex,
-                            locked: offset == 0 ? false : !hasPremium
-                        )
-                    }
-            }
-            .receive(on: scheduler)
-            .assign(to: &$ranges)
-
-        $ranges
-            .map { $0.first(where: \.selected)?.locked ?? true }
-            .receive(on: scheduler)
-            .assign(to: &$locked)
-
-        let currentSelection = Publishers
             .CombineLatest(
-                results,
-                selectedIndex.removeDuplicates()
+                standingsDataPoints(currentResult: result, previousResult: previousResult),
+                scoringDataPoints(currentResult: result, previousResult: previousResult)
             )
-            .compactMap { results, selectedIndex -> (CompetitionResult, CompetitionResult?)? in
-                if let previousIndex = selectedIndex <= results.count - 2 ? selectedIndex + 1 : nil {
-                    return (results[selectedIndex], results[previousIndex])
-                }
-                return (results[selectedIndex], nil)
-            }
-            .receive(on: scheduler)
-            .handleEvents(withUnretained: self, receiveSubscription: { strongSelf, _ in strongSelf.loading = true })
-
-        Publishers
-            .CombineLatest(currentSelection, $locked)
-            .flatMapLatest(withUnretained: self, { strongSelf, input in
-                let (currentSelection, locked) = input
-                guard !locked else { return AnyPublisher<[CompetitionResultsDataPoint], Never>.just([]) }
-                return Publishers
-                    .CombineLatest(
-                        strongSelf.standingsDataPoints(currentResult: currentSelection.0, previousResult: currentSelection.1),
-                        strongSelf.scoringDataPoints(currentResult: currentSelection.0, previousResult: currentSelection.1)
-                    )
-                    .first()
-                    .map(+)
-                    .isLoading { strongSelf.loading = $0 }
-                    .eraseToAnyPublisher()
-            })
+            .first()
+            .map(+)
+            .isLoading(set: \.loading, on: self)
+            .eraseToAnyPublisher()
             .receive(on: scheduler)
             .assign(to: &$dataPoints)
-    }
-
-    // MARK: - Public Methods
-
-    func select(_ dateRange: CompetitionResultsDateRange) {
-        guard let index = ranges.firstIndex(of: dateRange) else { return }
-        selectedIndex.send(index)
-    }
-
-    func purchaseTapped() {
-        showPaywall.toggle()
     }
 
     // MARK: - Private Methods

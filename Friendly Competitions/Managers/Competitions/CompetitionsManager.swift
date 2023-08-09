@@ -168,8 +168,8 @@ final class CompetitionsManager: CompetitionsManaging {
             return .just(true)
         } else {
             return competitions
-                .compactMap { [weak self] competition in
-                    self?.results(for: competition.id)
+                .compactMap { competition in
+                    results(for: competition.id)
                         .map { $0.count > 1 }
                         .catchErrorJustReturn(false)
                 }

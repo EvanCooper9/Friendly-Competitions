@@ -18,7 +18,7 @@ final class StepCountManagerTests: FCTestCase {
         setupDatabaseForUpload()
 
         let manager = StepCountManager()
-        print(manager)
+        retainDuringTest(manager)
 
         let scoringModel = Competition.ScoringModel.stepCount
 
@@ -61,7 +61,7 @@ final class StepCountManagerTests: FCTestCase {
         database.batchReturnValue = batch
 
         let manager = StepCountManager()
-        print(manager)
+        retainDuringTest(manager)
 
         let scoringModel = Competition.ScoringModel.stepCount
 

@@ -48,7 +48,7 @@ struct PaywallView: View {
             }
         }
         .withLoadingOverlay(isLoading: viewModel.loading)
-        .fittedDetents()
+        .fittedDetents(defaultDetents: [.large])
         .animation(.default, value: detents)
     }
 }

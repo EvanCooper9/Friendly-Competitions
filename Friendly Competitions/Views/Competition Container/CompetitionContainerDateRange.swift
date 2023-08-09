@@ -1,6 +1,6 @@
 import SwiftUI
 
-struct CompetitionResultsDateRange: Equatable, Identifiable {
+struct CompetitionContainerDateRange: Equatable, Identifiable {
 
     // MARK: - Public Properties
 

@@ -73,7 +73,7 @@ final class HomeViewModel: ObservableObject {
                 case .competitionResults(let id):
                     return strongSelf.competitionsManager.search(byID: id)
                         .isLoading { strongSelf.loadingDeepLink = $0 }
-                        .map { [.competitionResults($0)] }
+                        .map { [.competition($0)] }
                         .ignoreFailure()
                         .eraseToAnyPublisher()
                 case .none:
@@ -106,10 +106,10 @@ final class HomeViewModel: ObservableObject {
                         return homeScreenCompetitionIDs.contains(competition.id) || deepLinkedCompeititonID == competition.id
                     case (.competition(let competition), nil):
                         return homeScreenCompetitionIDs.contains(competition.id)
-                    case (.competitionResults(let competition), .competitionResults(id: let deepLinkedCompeititonID)):
-                        return homeScreenCompetitionIDs.contains(competition.id) || deepLinkedCompeititonID == competition.id
-                    case (.competitionResults(let competition), nil):
-                        return homeScreenCompetitionIDs.contains(competition.id)
+//                    case (.competitionResults(let competition), .competitionResults(id: let deepLinkedCompeititonID)):
+//                        return homeScreenCompetitionIDs.contains(competition.id) || deepLinkedCompeititonID == competition.id
+//                    case (.competitionResults(let competition), nil):
+//                        return homeScreenCompetitionIDs.contains(competition.id)
                     case (.user(let user), .user(id: let deepLinkedUserID)):
                         return homeScreenFriendIDs.contains(user.id) || deepLinkedUserID == user.id
                     case (.user(let user), nil):

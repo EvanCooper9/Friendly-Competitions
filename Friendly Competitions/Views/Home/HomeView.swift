@@ -92,7 +92,9 @@ struct HomeView: View {
                 Text(L10n.Home.Section.Competitions.createPrompt)
             }
         }
-        .sheet(isPresented: $viewModel.showNewCompetition, content: NewCompetitionView.init)
+        .sheet(isPresented: $viewModel.showNewCompetition) {
+            CompetitionEditView(competition: nil)
+        }
     }
 
     private var friends: some View {

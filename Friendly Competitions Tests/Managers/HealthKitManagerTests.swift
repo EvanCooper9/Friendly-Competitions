@@ -16,11 +16,12 @@ final class HealthKitManagerTests: FCTestCase {
 
         healthStore.enableBackgroundDeliveryForReturnValue = .just(true)
         healthStore.shouldRequestClosure = { permission in
-            guard let hkSampleType = permission.first!.objectType as? HKSampleType else { return .just(true) }
+            guard permission.first!.objectType as? HKSampleType != nil else { return .just(true) }
             return .just(false)
         }
 
         let manager = HealthKitManager()
+        retainDuringTest(manager)
 
         let expectedCount = HealthKitPermissionType.allCases
             .compactMap { $0.objectType as? HKSampleType }

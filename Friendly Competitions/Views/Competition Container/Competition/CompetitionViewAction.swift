@@ -4,7 +4,6 @@ enum CompetitionViewAction {
     case acceptInvite
     case declineInvite
     case delete
-    case edit
     case invite
     case join
     case leave
@@ -20,8 +19,6 @@ extension CompetitionViewAction {
             return L10n.Competition.Action.DeclineInvite.buttonTitle
         case .delete:
             return L10n.Competition.Action.Delete.buttonTitle
-        case .edit:
-            return L10n.Competition.Action.Edit.buttonTitle
         case .invite:
             return L10n.Competition.Action.Invite.buttonTitle
         case .join:
@@ -50,8 +47,6 @@ extension CompetitionViewAction {
             return .personCropCircleBadgeXmark
         case .delete:
             return .trash
-        case .edit:
-            return .squareAndPencil
         case .invite:
             return .personCropCircleBadgePlus
         case .leave:
@@ -61,7 +56,7 @@ extension CompetitionViewAction {
 
     var destructive: Bool {
         switch self {
-        case .acceptInvite, .edit, .invite, .join:
+        case .acceptInvite, .invite, .join:
             return false
         case .declineInvite, .delete, .leave:
             return true

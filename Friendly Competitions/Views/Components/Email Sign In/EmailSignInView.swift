@@ -71,7 +71,7 @@ struct EmailSignInView: View {
         .padding()
         .withLoadingOverlay(isLoading: viewModel.loading)
         .errorAlert(error: $viewModel.error)
-        .fittedDetents()
+        .fittedDetents(defaultDetents: [.large])
     }
 }
 

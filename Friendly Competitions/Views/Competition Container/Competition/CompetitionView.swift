@@ -7,8 +7,6 @@ struct CompetitionView: View {
 
     @StateObject private var viewModel: CompetitionViewModel
 
-    @State private var canSaveEdits = true
-
     init(competition: Competition) {
         _viewModel = .init(wrappedValue: .init(competition: competition))
     }
@@ -26,25 +24,12 @@ struct CompetitionView: View {
 
             standings
 
-            if viewModel.showResults {
-                results
-            }
-
-            if viewModel.editing {
-                EditCompetitionSection(
-                    name: $viewModel.competition.name,
-                    scoringModel: $viewModel.competition.scoringModel,
-                    start: $viewModel.competition.start,
-                    end: $viewModel.competition.end,
-                    repeats: $viewModel.competition.repeats,
-                    isPublic: $viewModel.competition.isPublic
-                )
-            } else {
-                CustomListSection {
-                    ForEach(viewModel.details, id: \.value) { detail in
-                        ImmutableListItemView(value: detail.value, valueType: detail.valueType)
-                    }
+            CustomListSection {
+                ForEach(viewModel.details, id: \.value) { detail in
+                    ImmutableListItemView(value: detail.value, valueType: detail.valueType)
                 }
+            } header: {
+                Text("Details")
             }
 
             actions
@@ -53,14 +38,7 @@ struct CompetitionView: View {
         .navigationTitle(viewModel.competition.name)
         .toolbar {
             if viewModel.canEdit {
-                HStack {
-                    if viewModel.editing {
-                        Button(L10n.Generics.save, action: viewModel.saveTapped)
-                            .disabled(!canSaveEdits)
-                    }
-                    Button(viewModel.editButtonTitle, action: viewModel.editTapped)
-                        .font(viewModel.editing ? .body.bold() : .body)
-                }
+                Button(L10n.Competition.Action.Edit.buttonTitle, action: viewModel.editTapped)
             }
         }
         .registerScreenView(
@@ -72,6 +50,9 @@ struct CompetitionView: View {
         )
         .withLoadingOverlay(isLoading: viewModel.loading)
         .animation(.default, value: viewModel.banners)
+        .sheet(isPresented: $viewModel.editing) {
+            CompetitionEditView(competition: viewModel.competition)
+        }
     }
 
     private var standings: some View {
@@ -92,12 +73,6 @@ struct CompetitionView: View {
             if viewModel.standings.isEmpty && !viewModel.loadingStandings {
                 Text(L10n.Competition.Standings.empty)
             }
-        }
-    }
-
-    private var results: some View {
-        CustomListSection {
-            NavigationLink(L10n.Competition.Results.results, value: NavigationDestination.competitionResults(viewModel.competition))
         }
     }
 

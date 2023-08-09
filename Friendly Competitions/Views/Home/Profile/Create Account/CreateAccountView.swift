@@ -26,7 +26,7 @@ struct CreateAccountView: View {
             }
         }
         .padding()
-        .fittedDetents()
+        .fittedDetents(defaultDetents: [.large])
         .sheet(isPresented: $viewModel.showEmailSignIn) {
             EmailSignInView(startingInputType: .signUp, canSwitchInputType: false)
         }
