@@ -5,6 +5,12 @@ import { Standing } from "../../Models/Standing";
 import { StepCount } from "../../Models/StepCount";
 import { prepareForFirestore } from "../../Utilities/prepareForFirestore";
 
+/**
+ * Updates all competition standings for the step count that has changed
+ * @param {string} userID the ID of the user who owns the step count
+ * @param {DocumentSnapshot} before the document before the change
+ * @param {DocumentSnapshot} after the document after the change
+ */
 async function updateStepCountScores(userID: string, before: DocumentSnapshot, after: DocumentSnapshot): Promise<void> {
     const firestore = getFirestore();
 

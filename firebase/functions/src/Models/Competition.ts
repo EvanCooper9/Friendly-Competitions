@@ -219,10 +219,10 @@ class Competition {
      */
     async stepCounts(userID: string): Promise<StepCount[]> {
         return await getFirestore().collection(`users/${userID}/steps`)
-        .where("date", ">=", moment(this.start).format(dateFormat))
-        .get()
-        .then(query => query.docs.map(doc => new StepCount(doc)))
-        .then(activitySummaries => activitySummaries.filter(x => x.isIncludedInCompetition(this)));
+            .where("date", ">=", moment(this.start).format(dateFormat))
+            .get()
+            .then(query => query.docs.map(doc => new StepCount(doc)))
+            .then(activitySummaries => activitySummaries.filter(x => x.isIncludedInCompetition(this)));
     }
 
     /**

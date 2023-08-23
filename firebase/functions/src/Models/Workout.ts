@@ -64,7 +64,7 @@ class Workout {
             return 0;
         }
         case RawScoringModel.stepCount: {
-            return 0
+            return 0;
         }
         }
     }

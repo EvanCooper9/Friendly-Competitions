@@ -69,7 +69,7 @@ class ActivitySummary {
             return energy && exercise && stand ? 1 : 0;
         }
         case RawScoringModel.stepCount: {
-            return 0
+            return 0;
         }
         }
     }
