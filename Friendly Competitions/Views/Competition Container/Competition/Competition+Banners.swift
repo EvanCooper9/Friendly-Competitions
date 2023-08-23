@@ -7,6 +7,7 @@ extension Competition {
         let dateInterval = DateInterval(start: start, end: end)
 
         let healthKitBanner: AnyPublisher<Banner?, Never> = {
+            guard isActive else { return .just(nil) }
             switch scoringModel {
             case .activityRingCloseCount, .percentOfGoals, .rawNumbers:
                 return self.healthKitBanner(for: [HealthKitPermissionType.activitySummaryType],

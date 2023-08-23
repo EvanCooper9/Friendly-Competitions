@@ -9,7 +9,6 @@ import { FriendRequestAction, handleFriendRequest } from "./Handlers/friends/han
 import { joinCompetition } from "./Handlers/competitions/joinCompetition";
 import { leaveCompetition } from "./Handlers/competitions/leaveCompetition";
 import { completeCompetitionsForYesterday } from "./Handlers/jobs/completeCompetitions";
-import { sendNewCompetitionInvites } from "./Handlers/competitions/sendNewCompetitionInvites";
 import { updateUserCompetitionStandingsLEGACY, updateCompetitionStandingsLEGACY } from "./Handlers/competitions/updateCompetitionStandingsLEGACY";
 import { updateActivitySummaryScores } from "./Handlers/jobs/updateActivitySummaryScores";
 import { updateWorkoutScores } from "./Handlers/jobs/updateWorkoutScores";
@@ -17,6 +16,7 @@ import { updateCompetitionRanks } from "./Handlers/competitions/updateCompetitio
 import { handleCompetitionUpdate } from "./Handlers/jobs/handleCompetitionUpdate";
 import { sendBackgroundNotification } from "./Handlers/notifications/notifications";
 import { updateStepCountScores } from "./Handlers/jobs/updateStepCountScores";
+import { handleCompetitionCreate } from "./Handlers/jobs/handleCompetitionCreate";
 
 admin.initializeApp();
 
@@ -82,11 +82,18 @@ exports.leaveCompetition = functions.https.onCall(async (data, context) => {
     await leaveCompetition(competitionID, userID);
 });
 
-exports.sendNewCompetitionInvites = functions.firestore
+exports.handleCompetitionCreate = functions.firestore
     .document("competitions/{competitionID}")
-    .onCreate(async (_snapshot, context) => {
-        const competitionID: string = context.params.competitionID;
-        await sendNewCompetitionInvites(competitionID);
+    .onCreate(async (snapshot) => {
+        await handleCompetitionCreate(snapshot);
+    });
+
+exports.handleCompetitionUpdate = functions.firestore
+    .document("competitions/{competitionID}")
+    .onUpdate(async snapshot => {
+        const before = snapshot.before;
+        const after = snapshot.after;
+        await handleCompetitionUpdate(before, after);
     });
 
 // Friends
@@ -140,14 +147,6 @@ exports.updateWorkoutScores = functions.firestore
         const before = snapshot.before;
         const after = snapshot.after;
         await updateWorkoutScores(userID, before, after);
-    });
-
-exports.onCompetitionUpdate = functions.firestore
-    .document("competitions/{competitionID}")
-    .onUpdate(async snapshot => {
-        const before = snapshot.before;
-        const after = snapshot.after;
-        await handleCompetitionUpdate(before, after);
     });
 
 // Jobs

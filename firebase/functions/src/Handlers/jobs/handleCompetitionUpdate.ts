@@ -71,5 +71,6 @@ async function recalculateStandings(competition: Competition): Promise<void> {
 }
 
 export {
-    handleCompetitionUpdate
+    handleCompetitionUpdate,
+    recalculateStandings
 };

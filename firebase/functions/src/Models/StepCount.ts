@@ -37,22 +37,22 @@ class StepCount {
      */
     pointsForScoringModel(scoringModel: ScoringModel): number {
         switch (scoringModel.type) {
-            case RawScoringModel.percentOfGoals: {
-                return 0;
-            }
-            case RawScoringModel.rawNumbers: {
-                return 0;
-            }
-            case RawScoringModel.workout: {
-                return 0;
-            }
-            case RawScoringModel.activityRingCloseCount: {
-                return 0;
-            }
-            case RawScoringModel.stepCount: {
-                return this.count;
-            }
-            }
+        case RawScoringModel.percentOfGoals: {
+            return 0;
+        }
+        case RawScoringModel.rawNumbers: {
+            return 0;
+        }
+        case RawScoringModel.workout: {
+            return 0;
+        }
+        case RawScoringModel.activityRingCloseCount: {
+            return 0;
+        }
+        case RawScoringModel.stepCount: {
+            return this.count;
+        }
+        }
     }
 }
 
