@@ -103,6 +103,41 @@ struct CompetitionEditView: View {
         .navigationTitle(viewModel.title)
         .embeddedInNavigationView()
         .onChange(of: viewModel.dismiss) { _ in dismiss() }
+        .onChange(of: viewModel.scoringModel) { scoringModel in
+            underlyingScoringModel = .init(scoringModel: scoringModel)
+            switch scoringModel {
+            case let .workout(workoutType, workoutMetrics):
+                underlyingWorkoutType = workoutType
+                underlyingWorkoutMetrics = workoutMetrics
+            default:
+                underlyingWorkoutMetrics = []
+            }
+        }
+        .onChange(of: underlyingScoringModel) { _ in setViewModelScoringModel() }
+        .onChange(of: underlyingWorkoutType) { _ in setViewModelScoringModel() }
+        .onChange(of: underlyingWorkoutMetrics) { _ in setViewModelScoringModel() }
+    }
+
+    private func setViewModelScoringModel() {
+        let scoringModel: Competition.ScoringModel? = {
+            switch underlyingScoringModel {
+            case .activityRingCloseCount:
+                return .activityRingCloseCount
+            case .percentOfGoals:
+                return .percentOfGoals
+            case .rawNumbers:
+                return .rawNumbers
+            case .stepCount:
+                return .stepCount
+            case .workout:
+                guard let workoutType = underlyingWorkoutType else { return nil }
+                return .workout(workoutType, underlyingWorkoutMetrics)
+            case .none:
+                return nil
+            }
+        }()
+        guard let scoringModel else { return }
+        viewModel.scoringModel = scoringModel
     }
 }
 
@@ -146,6 +181,21 @@ enum UnderlyingScoringModel: CaseIterable, CustomStringConvertible, Hashable, Id
     case rawNumbers
     case stepCount
     case workout
+
+    init(scoringModel: Competition.ScoringModel) {
+        switch scoringModel {
+        case .activityRingCloseCount:
+            self = .activityRingCloseCount
+        case .percentOfGoals:
+            self = .percentOfGoals
+        case .rawNumbers:
+            self = .rawNumbers
+        case .stepCount:
+            self = .stepCount
+        case .workout:
+            self = .workout
+        }
+    }
 
     var id: String { description }
 

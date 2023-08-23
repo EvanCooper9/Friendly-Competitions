@@ -2508,7 +2508,7 @@
 			repositoryURL = "https://github.com/pointfreeco/combine-schedulers";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 0.9.1;
+				minimumVersion = 1.0.0;
 			};
 		};
 		ED879C1629A1CC8D0007DB91 /* XCRemoteSwiftPackageReference "Factory" */ = {

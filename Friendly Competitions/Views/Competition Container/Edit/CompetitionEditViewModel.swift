@@ -143,6 +143,10 @@ final class CompetitionEditViewModel: ObservableObject {
             }
             .sink(withUnretained: self) { $0.dismiss = true }
             .store(in: &cancellables)
+
+        $name
+            .map { $0.isEmpty }
+            .assign(to: &$submitDisabled)
     }
 
     // MARK: - Public Methods
