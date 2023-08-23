@@ -17,7 +17,7 @@ extension Competition {
             case .rawNumbers:
                 return L10n.Competition.ScoringModel.RawNumbers.displayName
             case .stepCount:
-                return L10n.Competition.ScoringModel.ActivityRingCloseCount.displayName
+                return L10n.Competition.ScoringModel.Steps.displayName
             case .workout(let workoutType, _):
                 return L10n.Competition.ScoringModel.Workout.displayNameWithType(workoutType.description)
             }
