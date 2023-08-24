@@ -72,7 +72,7 @@ final class CompetitionContainerViewModel: ObservableObject {
             .assign(to: &$dateRanges)
 
         let selectedResult = Publishers
-            .CombineLatest(selectedDateRangeIndex.print("selected index"), results)
+            .CombineLatest(selectedDateRangeIndex, results)
             .map { selectedIndex, results -> CompetitionResult? in
                 let resultsIndex = competition.isActive ? selectedIndex - 1 : selectedIndex
                 guard resultsIndex >= 0, resultsIndex < results.count else { return nil }

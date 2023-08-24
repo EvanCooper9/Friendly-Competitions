@@ -39,14 +39,13 @@ extension AlgoliaSearchClient.Index: SearchIndex {
                 case .failure(let error):
                     promise(.failure(error))
                 case .success(let response):
-                    do {
-                        let hits = response.hits.map(\.object)
-                        let data = try JSONEncoder().encode(hits)
-                        let searchResults = try JSONDecoder().decode([ResultType].self, from: data)
-                        promise(.success(searchResults))
-                    } catch {
-                        promise(.failure(error))
-                    }
+                    let searchResults = response.hits
+                        .map(\.object)
+                        .compactMap { object -> ResultType? in
+                            guard let data = try? JSONEncoder.custom.encode(object) else { return nil }
+                            return try? JSONDecoder.custom.decode(ResultType.self, from: data)
+                        }
+                    promise(.success(searchResults))
                 }
             }
         }

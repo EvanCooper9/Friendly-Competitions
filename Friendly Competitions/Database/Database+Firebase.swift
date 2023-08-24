@@ -7,6 +7,22 @@ import FirebaseFirestore
 import FirebaseFirestoreCombineSwift
 import FirebaseFirestoreSwift
 
+extension JSONDecoder {
+    static let custom: JSONDecoder = {
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .formatted(.dateDashed)
+        return decoder
+    }()
+}
+
+extension JSONEncoder {
+    static let custom: JSONEncoder = {
+        let encoder = JSONEncoder()
+        encoder.dateEncodingStrategy = .formatted(.dateDashed)
+        return encoder
+    }()
+}
+
 extension Firestore.Encoder {
     static let custom: Firestore.Encoder = {
         let encoder = Firestore.Encoder()
