@@ -238,15 +238,9 @@ final class CompetitionViewModel: ObservableObject {
     private func checkForPermissions() {
         Publishers
             .CombineLatest3(appState.didBecomeActive, $competition, didRequestPermissions)
-            .flatMapLatest(withUnretained: self) { strongSelf, result in
+            .flatMapLatest { result in
                 let (_, competition, _) = result
-                return competition.banners(
-                    activitySummaryManager: strongSelf.activitySummaryManager,
-                    healthKitManager: strongSelf.healthKitManager,
-                    notificationsManager: strongSelf.notificationManager,
-                    stepCountManager: strongSelf.stepCountManager,
-                    workoutManager: strongSelf.workoutManager
-                )
+                return competition.banners
             }
             .delay(for: .seconds(1), scheduler: scheduler)
             .assign(to: &$banners)

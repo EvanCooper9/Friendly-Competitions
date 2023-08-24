@@ -31,18 +31,18 @@ final class SearchManager: SearchManaging {
     }
 
     func searchForUsers(byName name: String) -> AnyPublisher<[User], Error> {
-        if environmentManager.environment.isDebug {
-            return database.collection("users")
-                .getDocuments(ofType: User.self)
-                .filterMany { $0.name.contains(name) }
-                .eraseToAnyPublisher()
-        } else {
+//        if environmentManager.environment.isDebug {
+//            return database.collection("users")
+//                .getDocuments(ofType: User.self)
+//                .filterMany { $0.name.contains(name) }
+//                .eraseToAnyPublisher()
+//        } else {
             return userIndex.search(query: name)
                 .filterMany { [weak self] user in
                     guard let self else { return false }
                     guard user.id != self.userManager.user.id else { return false }
                     return user.searchable ?? false
-                }
+//                }
         }
     }
 
