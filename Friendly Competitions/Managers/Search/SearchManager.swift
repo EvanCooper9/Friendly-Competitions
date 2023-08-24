@@ -42,7 +42,7 @@ final class SearchManager: SearchManaging {
                     guard let self else { return false }
                     guard user.id != self.userManager.user.id else { return false }
                     return user.searchable ?? false
-            }
+                }
         }
     }
 
