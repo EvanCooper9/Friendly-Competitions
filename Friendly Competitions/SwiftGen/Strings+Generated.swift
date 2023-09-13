@@ -535,14 +535,18 @@ internal enum L10n {
       /// Standings
       internal static let title = L10n.tr("Localizable", "Results.Standings.title", fallback: "Standings")
     }
+    internal enum StepCount {
+      internal enum BestDay {
+        /// Your best day
+        internal static let message = L10n.tr("Localizable", "Results.StepCount.BestDay.message", fallback: "Your best day")
+      }
+    }
     internal enum Workouts {
       /// Workouts
       internal static let title = L10n.tr("Localizable", "Results.Workouts.title", fallback: "Workouts")
       internal enum BestDay {
         /// Your best day
         internal static let message = L10n.tr("Localizable", "Results.Workouts.BestDay.message", fallback: "Your best day")
-        /// Nothing here
-        internal static let nothingHere = L10n.tr("Localizable", "Results.Workouts.BestDay.nothingHere", fallback: "Nothing here")
       }
     }
   }
