@@ -14,7 +14,8 @@ enum CompetitionResultsDataPoint: Identifiable {
     case points(current: Int, previous: Int?)
     case activitySummaryBestDay(ActivitySummary?)
     case activitySummaryCloseCount(current: Int, previous: Int?)
-    case workoutsBestDay(Workout?)
+    case workoutsBestDay(Workout)
+    case stepCountBestDay(StepCount)
 
     var id: String {
         switch self {
@@ -30,6 +31,8 @@ enum CompetitionResultsDataPoint: Identifiable {
             return "activity-summary-close-count"
         case .workoutsBestDay:
             return "workouts-best-day"
+        case .stepCountBestDay:
+            return "step-count-best-day"
         }
     }
 
@@ -45,6 +48,8 @@ enum CompetitionResultsDataPoint: Identifiable {
             return L10n.Results.ActivitySummaries.title
         case .workoutsBestDay:
             return L10n.Results.Workouts.title
+        case .stepCountBestDay:
+            return "Step Count"
         }
     }
 }

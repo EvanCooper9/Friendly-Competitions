@@ -18,6 +18,7 @@ final class CompetitionResultsViewModel: ObservableObject {
     @Injected(\.activitySummaryManager) private var activitySummaryManager
     @Injected(\.competitionsManager) private var competitionsManager
     @Injected(\.scheduler) private var scheduler
+    @Injected(\.stepCountManager) private var stepCountManager
     @Injected(\.userManager) private var userManager
     @Injected(\.workoutManager) private var workoutManager
 
@@ -92,6 +93,10 @@ final class CompetitionResultsViewModel: ObservableObject {
     private func scoringDataPoints(currentResult: CompetitionResult, previousResult: CompetitionResult?) -> AnyPublisher<[CompetitionResultsDataPoint], Never> {
         switch competition.scoringModel {
         case .activityRingCloseCount, .rawNumbers, .percentOfGoals:
+            let currentActivitySummaries = activitySummaryManager
+                .activitySummaries(in: currentResult.dateInterval)
+                .catchErrorJustReturn([])
+
             let previousActivitySummaries: AnyPublisher<[ActivitySummary]?, Never> = {
                 guard let previousResult else { return .just(nil) }
                 return activitySummaryManager
@@ -101,15 +106,8 @@ final class CompetitionResultsViewModel: ObservableObject {
                     .eraseToAnyPublisher()
             }()
 
-            let currentActivitySummaries = activitySummaryManager
-                .activitySummaries(in: currentResult.dateInterval)
-                .catchErrorJustReturn([])
-
             return Publishers
-                .CombineLatest(
-                    currentActivitySummaries,
-                    previousActivitySummaries
-                )
+                .CombineLatest(currentActivitySummaries, previousActivitySummaries)
                 .map { [weak self] currentActivitySummaries, previousActivitySummaries in
                     guard let strongSelf = self else { return [] }
                     let scoringModel = strongSelf.competition.scoringModel
@@ -126,21 +124,44 @@ final class CompetitionResultsViewModel: ObservableObject {
                 }
                 .eraseToAnyPublisher()
         case .stepCount:
-            return .just([])
+            let currentStepCounts = stepCountManager
+                .stepCounts(in: currentResult.dateInterval)
+                .catchErrorJustReturn([])
+
+            let previousStepCounts: AnyPublisher<[StepCount]?, Never> = {
+                guard let previousResult else { return .just(nil) }
+                return stepCountManager.stepCounts(in: previousResult.dateInterval)
+                    .map { $0 as [StepCount]? }
+                    .catchErrorJustReturn([])
+                    .eraseToAnyPublisher()
+            }()
+
+            return Publishers
+                .CombineLatest(currentStepCounts, previousStepCounts)
+                .map { currentStepCounts, _ in
+                    let best = currentStepCounts
+                        .sorted(by: \.count)
+                        .last
+                    guard let best else { return [] }
+                    return [.stepCountBestDay(best)]
+                }
+                .eraseToAnyPublisher()
         case let .workout(type, metrics):
-            let previousWorkouts: AnyPublisher<[Workout]?, Error> = {
+            let currentWorkouts = workoutManager
+                .workouts(of: type, with: metrics, in: currentResult.dateInterval)
+                .catchErrorJustReturn([])
+
+            let previousWorkouts: AnyPublisher<[Workout]?, Never> = {
                 guard let previousResult else { return .just(nil) }
                 return workoutManager
                     .workouts(of: type, with: metrics, in: previousResult.dateInterval)
                     .map { $0 as [Workout]? }
+                    .catchErrorJustReturn([])
                     .eraseToAnyPublisher()
             }()
+
             return Publishers
-                .CombineLatest(
-                    workoutManager.workouts(of: type, with: metrics, in: currentResult.dateInterval),
-                    previousWorkouts
-                )
-                .ignoreFailure()
+                .CombineLatest(currentWorkouts, previousWorkouts)
                 .map { currentWorkouts, _ in
                     let best = currentWorkouts
                         .sorted { lhs, rhs in
@@ -149,9 +170,9 @@ final class CompetitionResultsViewModel: ObservableObject {
                             return lhsPoints > rhsPoints
                         }
                         .first
-                    return [
-                        .workoutsBestDay(best)
-                    ]
+
+                    guard let best else { return [] }
+                    return [.workoutsBestDay(best)]
                 }
                 .eraseToAnyPublisher()
         }

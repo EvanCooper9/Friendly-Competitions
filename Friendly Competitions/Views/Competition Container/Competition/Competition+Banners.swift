@@ -23,18 +23,28 @@ extension Competition {
 
         let healthKitBanner: AnyPublisher<Banner?, Never> = {
             guard isActive else { return .just(nil) }
+
+            let permissionTypes = scoringModel.requiredPermissions
+                .compactMap { permission in
+                    switch permission {
+                    case .health(let healthKitPermission):
+                        return healthKitPermission
+                    case .notifications:
+                        return nil
+                    }
+                }
+
             switch scoringModel {
             case .activityRingCloseCount, .percentOfGoals, .rawNumbers:
-                return self.healthKitBanner(for: [HealthKitPermissionType.activitySummaryType],
+                return self.healthKitBanner(for: permissionTypes,
                                             dataPublisher: dependency.activitySummaryManager.activitySummaries(in: dateInterval),
                                             healthKitManager: dependency.healthKitManager)
             case .workout(let workoutType, let metrics):
-                let permissionTypes = metrics.compactMap { $0.permission(for: workoutType) }
                 return self.healthKitBanner(for: permissionTypes,
                                             dataPublisher: dependency.workoutManager.workouts(of: workoutType, with: metrics, in: dateInterval),
                                             healthKitManager: dependency.healthKitManager)
             case .stepCount:
-                return self.healthKitBanner(for: [.stepCount],
+                return self.healthKitBanner(for: permissionTypes,
                                             dataPublisher: dependency.stepCountManager.stepCounts(in: dateInterval),
                                             healthKitManager: dependency.healthKitManager)
             }

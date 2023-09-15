@@ -139,7 +139,7 @@
 "Results.ActivitySummaries.RingsClosed.message" = "Rings closed";
 "Results.Workouts.title" = "Workouts";
 "Results.Workouts.BestDay.message" = "Your best day";
-"Results.Workouts.BestDay.nothingHere" = "Nothing here";
+"Results.StepCount.BestDay.message" = "Your best day";
 
 // New Competition
 "NewCompetition.titile" = "New Competition";

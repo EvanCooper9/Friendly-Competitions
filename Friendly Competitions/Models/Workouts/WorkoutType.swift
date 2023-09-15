@@ -94,6 +94,6 @@ extension WorkoutType {
             case .steps:
                 return .health(.stepCount)
             }
-        }
+        }.appending(.health(.workoutType))
     }
 }

@@ -20,7 +20,7 @@ extension CompetitionResultsDataPoint {
 
     private var includeCardEdgePadding: Bool {
         switch self {
-        case .rank, .points, .activitySummaryBestDay, .activitySummaryCloseCount, .workoutsBestDay:
+        case .rank, .points, .activitySummaryBestDay, .activitySummaryCloseCount, .workoutsBestDay, .stepCountBestDay:
             return true
         case .standings:
             return false
@@ -98,26 +98,28 @@ extension CompetitionResultsDataPoint {
         case .workoutsBestDay(let workout):
             VStack(alignment: .leading) {
                 Text(L10n.Results.Workouts.BestDay.message)
-                if let workout {
-                    VStack {
-                        ForEach(Array(workout.points.keys)) { key in
-                            HStack {
-                                Text(key.description)
-                                Spacer()
-                                Text(workout.points[key]!)
-                                    .monospaced()
-                            }
-                            .padding(.small)
-                            .background(.accentColor)
-                            .foregroundColor(.white)
-                            .cornerRadius(5)
+                VStack {
+                    ForEach(Array(workout.points.keys)) { key in
+                        HStack {
+                            Text(key.description)
+                            Spacer()
+                            Text(workout.points[key]!)
+                                .monospaced()
                         }
-                        Spacer()
+                        .padding(.small)
+                        .background(.accentColor)
+                        .foregroundColor(.white)
+                        .cornerRadius(5)
                     }
-                } else {
-                    Text(L10n.Results.Workouts.BestDay.nothingHere)
-                        .foregroundColor(.secondaryLabel)
+                    Spacer()
                 }
+            }
+        case .stepCountBestDay(let stepCount):
+            VStack {
+                Text(L10n.Results.StepCount.BestDay.message)
+                Text(stepCount.count)
+                    .font(.largeTitle)
+                    .monospaced()
             }
         }
     }
