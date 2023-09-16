@@ -20,6 +20,7 @@ final class CompetitionContainerViewModel: ObservableObject {
     // MARK: - Private Properties
 
     @Injected(\.competitionsManager) private var competitionsManager
+    @Injected(\.featureFlagManager) private var featureFlagManager
     @Injected(\.premiumManager) private var premiumManager
 
     private let selectedDateRangeIndex = CurrentValueSubject<Int, Never>(0)
@@ -42,18 +43,27 @@ final class CompetitionContainerViewModel: ObservableObject {
 
         let results = competitionsManager.results(for: competition.id).catchErrorJustReturn([])
 
+        let blockedByPremium: AnyPublisher<Bool, Never> = {
+            if featureFlagManager.value(forBool: .premiumEnabled) {
+                return premiumManager.premium
+                    .map(\.isNil)
+                    .eraseToAnyPublisher()
+            } else {
+                return .just(false)
+            }
+        }()
+
         Publishers
             .CombineLatest3(
                 results,
                 selectedDateRangeIndex,
-                premiumManager.premium.map(\.isNil.not)
-                    .mapToValue(true)
+                blockedByPremium
             )
-            .map { results, selectedIndex, hasPremium in
+            .map { results, selectedIndex, blockedByPremium in
                 let resultsDateRanges = results.enumerated().map { index, result in
                     CompetitionContainerDateRange(start: result.start,
                                                   end: result.end,
-                                                  locked: !hasPremium && index > 0)
+                                                  locked: index > 0 && blockedByPremium)
                 }
 
                 let allDateRanges: [CompetitionContainerDateRange]

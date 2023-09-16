@@ -21,7 +21,9 @@ struct ProfileView: View {
             }
 
             if !viewModel.isAnonymousAccount {
-                premium
+                if viewModel.showPremium {
+                    premium
+                }
                 privacy
             }
 

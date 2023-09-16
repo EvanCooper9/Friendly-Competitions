@@ -6,6 +6,7 @@ extension URL {
     static let termsOfService = URL(string: "https://www.apple.com/legal/internet-services/itunes/dev/stdeula/")!
     static let privacyPolicy = URL(string: "https://www.termsfeed.com/live/83fffe02-9426-43f1-94ca-aedea5df3d24")!
     static let developer = URL(string: "https://evancooper.tech")!
+    static let buyMeCoffee = URL(string: "https://www.buymeacoffee.com/ntxzfb2w5ni")!
     static let gitHub = URL(string: "https://github.com/EvanCooper9/Friendly-Competitions")!
     static let health = URL(string: "x-apple-health://")!
     static let notificationSettings = URL(string: UIApplication.openNotificationSettingsURLString)!

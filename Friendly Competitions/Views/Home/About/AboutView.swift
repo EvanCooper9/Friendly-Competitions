@@ -47,6 +47,9 @@ struct AboutView: View {
                 Link(destination: .developer) {
                     Label(L10n.About.Developer.website, systemImage: .globeAmericasFill)
                 }
+                Link(destination: .buyMeCoffee) {
+                    Label(L10n.About.Developer.buyCoffee, systemImage: .cupAndSaucerFill)
+                }
             }
 
             Section {
@@ -56,7 +59,7 @@ struct AboutView: View {
                         .monospaced()
                 }
             } footer: {
-                Text(L10n.About.App .openSource)
+                Text(L10n.About.App.openSource)
             }
         }
         .registerScreenView(name: "About")

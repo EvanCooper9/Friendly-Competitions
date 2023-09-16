@@ -33,6 +33,7 @@ final class HomeViewModel: ObservableObject {
     @Injected(\.activitySummaryManager) private var activitySummaryManager
     @Injected(\.analyticsManager) private var analyticsManager
     @Injected(\.competitionsManager) private var competitionsManager
+    @Injected(\.featureFlagManager) private var featureFlagManager
     @Injected(\.friendsManager) private var friendsManager
     @Injected(\.premiumManager) private var premiumManager
     @Injected(\.scheduler) private var scheduler
@@ -138,17 +139,7 @@ final class HomeViewModel: ObservableObject {
             .receive(on: scheduler)
             .assign(to: &$friendRows)
 
-        Publishers
-            .CombineLatest3(
-                $dismissedPremiumBanner,
-                premiumManager.premium,
-                competitionsManager.hasPremiumResults
-            )
-            .map { dismissedPremiumBanner, premium, hasPremiumResults in
-                !dismissedPremiumBanner && premium == nil && hasPremiumResults
-            }
-            .receive(on: scheduler)
-            .assign(to: &$showPremiumBanner)
+        handlePremiumBanner()
 
         userManager.userPublisher
             .filter { $0.isAnonymous != true }
@@ -180,6 +171,23 @@ final class HomeViewModel: ObservableObject {
         }
 
         showAddFriends = true
+    }
+
+    // MARK: - Private Methods
+
+    private func handlePremiumBanner() {
+        guard featureFlagManager.value(forBool: .premiumEnabled) else { return }
+        Publishers
+            .CombineLatest3(
+                $dismissedPremiumBanner,
+                premiumManager.premium,
+                competitionsManager.hasPremiumResults
+            )
+            .map { dismissedPremiumBanner, premium, hasPremiumResults in
+                !dismissedPremiumBanner && premium == nil && hasPremiumResults
+            }
+            .receive(on: scheduler)
+            .assign(to: &$showPremiumBanner)
     }
 }
 

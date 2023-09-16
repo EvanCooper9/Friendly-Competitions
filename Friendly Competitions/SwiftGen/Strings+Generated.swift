@@ -40,6 +40,8 @@ internal enum L10n {
       internal static let version = L10n.tr("Localizable", "About.App.version", fallback: "Version")
     }
     internal enum Developer {
+      /// Buy me a cofee
+      internal static let buyCoffee = L10n.tr("Localizable", "About.Developer.buyCoffee", fallback: "Buy me a cofee")
       /// My Website
       internal static let website = L10n.tr("Localizable", "About.Developer.website", fallback: "My Website")
     }

@@ -35,6 +35,7 @@
 "About.App.openSource" = "Did you know this app is completely open source? Tap above to find out more.";
 "About.App.version" = "Version";
 "About.Developer.website" = "My Website";
+"About.Developer.buyCoffee" = "Buy me a cofee";
 
 // Developer
 "Developer.title" = "Developer";

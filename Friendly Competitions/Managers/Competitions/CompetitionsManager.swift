@@ -65,6 +65,7 @@ final class CompetitionsManager: CompetitionsManaging {
     @Injected(\.analyticsManager) private var analyticsManager
     @Injected(\.competitionCache) private var cache
     @Injected(\.database) private var database
+    @Injected(\.environmentManager) private var environmentManager
     @Injected(\.userManager) private var userManager
 
     private var cancellables = Cancellables()
@@ -162,7 +163,7 @@ final class CompetitionsManager: CompetitionsManaging {
 
         database.collection("competitions")
             .whereField("isPublic", isEqualTo: true)
-            .whereField("owner", isEqualTo: Bundle.main.id)
+            .whereField("owner", isEqualTo: environmentManager.environment.bundleIdentifier)
             .publisher(asArrayOf: Competition.self)
             .sink(withUnretained: self) { $0.appOwnedCompetitionsSubject.send($1) }
             .store(in: &cancellables)

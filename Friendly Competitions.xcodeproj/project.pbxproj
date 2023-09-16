@@ -264,7 +264,7 @@
 		EDC9763A2A3E376900DE7ABE /* VerifyEmailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC976382A3E376900DE7ABE /* VerifyEmailView.swift */; };
 		EDD894FA2962A0E2009636E6 /* Product.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD894F92962A0E2009636E6 /* Product.swift */; };
 		EDD894FD29633F92009636E6 /* EnvironmentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD894FC29633F92009636E6 /* EnvironmentManager.swift */; };
-		EDD8950029634043009636E6 /* FirestoreEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD894FF29634043009636E6 /* FirestoreEnvironment.swift */; };
+		EDD8950029634043009636E6 /* FCEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD894FF29634043009636E6 /* FCEnvironment.swift */; };
 		EDDB923D2965D2B0006AEE72 /* CompetitionResultsDataPoint+View.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDDB923C2965D2B0006AEE72 /* CompetitionResultsDataPoint+View.swift */; };
 		EDDF77D828BA82E000BB8B97 /* HealthKitPermissionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDDF77D728BA82E000BB8B97 /* HealthKitPermissionType.swift */; };
 		EDF34FC82A5F6A4D0069148C /* StepCountManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDF34FC72A5F6A4D0069148C /* StepCountManagerTests.swift */; };
@@ -520,7 +520,7 @@
 		EDC976382A3E376900DE7ABE /* VerifyEmailView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VerifyEmailView.swift; sourceTree = "<group>"; };
 		EDD894F92962A0E2009636E6 /* Product.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Product.swift; sourceTree = "<group>"; };
 		EDD894FC29633F92009636E6 /* EnvironmentManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentManager.swift; sourceTree = "<group>"; };
-		EDD894FF29634043009636E6 /* FirestoreEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreEnvironment.swift; sourceTree = "<group>"; };
+		EDD894FF29634043009636E6 /* FCEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FCEnvironment.swift; sourceTree = "<group>"; };
 		EDDB923C2965D2B0006AEE72 /* CompetitionResultsDataPoint+View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CompetitionResultsDataPoint+View.swift"; sourceTree = "<group>"; };
 		EDDF77D728BA82E000BB8B97 /* HealthKitPermissionType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitPermissionType.swift; sourceTree = "<group>"; };
 		EDF34FC72A5F6A4D0069148C /* StepCountManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepCountManagerTests.swift; sourceTree = "<group>"; };
@@ -1634,7 +1634,7 @@
 				ED1B85CC29C90D1D008DB1F6 /* EnvironmentCache.swift */,
 				EDD894FC29633F92009636E6 /* EnvironmentManager.swift */,
 				ED879C4029A411430007DB91 /* EnvironmentManager+Factory.swift */,
-				EDD894FF29634043009636E6 /* FirestoreEnvironment.swift */,
+				EDD894FF29634043009636E6 /* FCEnvironment.swift */,
 			);
 			path = Environment;
 			sourceTree = "<group>";
@@ -1958,7 +1958,7 @@
 				ED039769295F5458003D4D80 /* CompetitionResultsViewModel.swift in Sources */,
 				C13F922C27BFFF9900FC6880 /* StorageManager.swift in Sources */,
 				ED879C6429A417670007DB91 /* Utility+Factory.swift in Sources */,
-				EDD8950029634043009636E6 /* FirestoreEnvironment.swift in Sources */,
+				EDD8950029634043009636E6 /* FCEnvironment.swift in Sources */,
 				ED487830282747CE00AC1E2C /* InviteFriendsViewModel.swift in Sources */,
 				ED4878252826F43800AC1E2C /* CompetitionParticipantRow.swift in Sources */,
 				C123C9DB27A8A98800375F73 /* UserManager.swift in Sources */,

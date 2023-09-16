@@ -11,6 +11,7 @@ final class CompetitionsManagerTests: FCTestCase {
         super.setUp()
         userManager.user = .evan
         appState.didBecomeActive = .never()
+        environmentManager.environment = .debugLocal
     }
 
     func testThatItFetchesAndUpdatesCompetitions() {

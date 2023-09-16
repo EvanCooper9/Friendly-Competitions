@@ -6,6 +6,7 @@ import Factory
 final class ProfileViewModel: ObservableObject {
 
     @Published var user: User!
+    @Published private(set) var showPremium = false
     @Published private(set) var premium: Premium?
     @Published var confirmationRequired = false
     @Published var loading = false
@@ -17,6 +18,7 @@ final class ProfileViewModel: ObservableObject {
     // MARK: - Private Properties
 
     @Injected(\.authenticationManager) private var authenticationManager
+    @Injected(\.featureFlagManager) private var featureFlagManager
     @Injected(\.premiumManager) private var premiumManager
     @Injected(\.userManager) private var userManager
 
@@ -49,7 +51,10 @@ final class ProfileViewModel: ObservableObject {
             .map(User?.init)
             .assign(to: &$user)
 
-        premiumManager.premium.assign(to: &$premium)
+        if featureFlagManager.value(forBool: .premiumEnabled) {
+            showPremium = true
+            premiumManager.premium.assign(to: &$premium)
+        }
 
         deleteAccountSubject
             .flatMapLatest(withUnretained: self) { strongSelf in
