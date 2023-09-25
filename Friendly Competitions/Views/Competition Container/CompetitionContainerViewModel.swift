@@ -21,7 +21,7 @@ final class CompetitionContainerViewModel: ObservableObject {
 
     @Injected(\.competitionsManager) private var competitionsManager
     @Injected(\.featureFlagManager) private var featureFlagManager
-    @Injected(\.premiumManager) private var premiumManager
+    @LazyInjected(\.premiumManager) private var premiumManager
 
     private let selectedDateRangeIndex = CurrentValueSubject<Int, Never>(0)
 

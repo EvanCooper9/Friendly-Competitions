@@ -20,6 +20,10 @@ struct FriendlyCompetitions: App {
             }
             .hud(state: $appModel.hud)
             .onOpenURL(perform: appModel.handle)
+            .environment(\.openURL, OpenURLAction { url in
+                appModel.opened(url: url)
+                return .systemAction
+            })
         }
     }
 }

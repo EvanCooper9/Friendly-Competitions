@@ -19,7 +19,7 @@ final class ProfileViewModel: ObservableObject {
 
     @Injected(\.authenticationManager) private var authenticationManager
     @Injected(\.featureFlagManager) private var featureFlagManager
-    @Injected(\.premiumManager) private var premiumManager
+    @LazyInjected(\.premiumManager) private var premiumManager
     @Injected(\.userManager) private var userManager
 
     private let deleteAccountSubject = PassthroughSubject<Void, Never>()

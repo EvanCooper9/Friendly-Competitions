@@ -1,3 +1,5 @@
+import Foundation
+
 enum AnalyticsEvent: Codable {
 
     // competitions
@@ -39,4 +41,8 @@ enum AnalyticsEvent: Codable {
     case healthKitShouldRequestPermissions(permissionsString: String, shouldRequest: Bool)
     case healthKitRegisterBGDeliverySuccess(permission: HealthKitPermissionType)
     case healthKitRegisterBGDeliveryFailure(permission: HealthKitPermissionType, error: String?)
+
+    // misc
+    case deepLinked(url: URL)
+    case urlOpened(url: URL)
 }

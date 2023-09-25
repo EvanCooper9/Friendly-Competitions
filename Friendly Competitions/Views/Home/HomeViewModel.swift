@@ -35,7 +35,7 @@ final class HomeViewModel: ObservableObject {
     @Injected(\.competitionsManager) private var competitionsManager
     @Injected(\.featureFlagManager) private var featureFlagManager
     @Injected(\.friendsManager) private var friendsManager
-    @Injected(\.premiumManager) private var premiumManager
+    @LazyInjected(\.premiumManager) private var premiumManager
     @Injected(\.scheduler) private var scheduler
     @Injected(\.userManager) private var userManager
 
