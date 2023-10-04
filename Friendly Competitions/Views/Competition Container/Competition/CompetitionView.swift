@@ -5,6 +5,7 @@ import SwiftUIX
 
 struct CompetitionView: View {
 
+    @Environment(\.dismiss) private var dismiss
     @StateObject private var viewModel: CompetitionViewModel
 
     init(competition: Competition) {
@@ -53,6 +54,7 @@ struct CompetitionView: View {
         .sheet(isPresented: $viewModel.editing) {
             CompetitionEditView(competition: viewModel.competition)
         }
+        .onChange(of: viewModel.dismiss) { _ in dismiss() }
     }
 
     private var standings: some View {

@@ -27,6 +27,7 @@ final class CompetitionViewModel: ObservableObject {
     @Published private(set) var loading = false
     @Published private(set) var loadingStandings = false
     @Published private(set) var showShowMoreButton = false
+    @Published private(set) var dismiss = false
 
     var details: [(value: String, valueType: ImmutableListItemView.ValueType)] {
         [
@@ -119,11 +120,17 @@ final class CompetitionViewModel: ObservableObject {
                     return strongSelf.api
                         .call(.deleteCompetition(id: competition.id))
                         .isLoading { strongSelf.loading = $0 }
+                        .handleEvents(withUnretained: self, receiveOutput: { strongSelf in
+                            strongSelf.dismiss = true
+                        })
                         .eraseToAnyPublisher()
                 case .leave:
                     return strongSelf.api
                         .call(.leaveCompetition(id: competition.id))
                         .isLoading { strongSelf.loading = $0 }
+                        .handleEvents(withUnretained: self, receiveOutput: { strongSelf in
+                            strongSelf.dismiss = true
+                        })
                         .eraseToAnyPublisher()
                 default:
                     return .empty()
