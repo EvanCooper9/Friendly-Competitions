@@ -20,10 +20,10 @@ final class HomeViewModel: ObservableObject {
     @Published private(set) var friendRows = [FriendRow]()
     @Published private(set) var invitedCompetitions = [Competition]()
     @Published private(set) var title = Bundle.main.name
+    @Published var showAbout = false
     @Published private(set) var showDeveloper = false
     @Published private(set) var loadingDeepLink = false
     @Published private(set) var showPremiumBanner = false
-    @Published var showPaywall = false
     @Published var showNewCompetition = false
     @Published var showAddFriends = false
     @Published var showAnonymousAccountBlocker = false
@@ -83,7 +83,14 @@ final class HomeViewModel: ObservableObject {
                 }
             }
             .receive(on: scheduler)
-            .assign(to: &$deepLinkedNavigationDestination)
+            .sink(withUnretained: self) { strongSelf, deepLinkedNavigationDestination in
+                strongSelf.deepLinkedNavigationDestination = deepLinkedNavigationDestination
+                strongSelf.showAddFriends = false
+                strongSelf.showAnonymousAccountBlocker = false
+                strongSelf.showDeveloper = false
+                strongSelf.showNewCompetition = false
+            }
+            .store(in: &cancellables)
 
         competitionsManager.competitions
             .removeDuplicates()
@@ -143,6 +150,10 @@ final class HomeViewModel: ObservableObject {
         }
 
         showAddFriends = true
+    }
+
+    func aboutTapped() {
+        showAbout = true
     }
 
     // MARK: - Private Methods

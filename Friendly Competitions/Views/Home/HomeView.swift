@@ -5,11 +5,6 @@ struct HomeView: View {
 
     @StateObject private var viewModel = HomeViewModel()
 
-    @State private var presentAbout = false
-    @State private var presentPermissions = false
-    @State private var presentNewCompetition = false
-    @State private var presentSearchFriendsSheet = false
-
     var body: some View {
         NavigationStack(path: $viewModel.navigationDestinations) {
             List {
@@ -28,23 +23,25 @@ struct HomeView: View {
                 ToolbarItemGroup {
                     // Text view workaround for SwiftUI bug
                     // Keep toolbar items tappable after dismissing sheet
-                    let isShowingSheet = presentAbout || viewModel.navigationDestinations.contains(.profile)
+                    let isShowingSheet = viewModel.showAbout || viewModel.navigationDestinations.contains(.profile)
                     Text(isShowingSheet  ? " " : "")
 
                     if viewModel.showDeveloper {
                         DeveloperMenu()
                     }
-                    Button(systemImage: .questionmarkCircle) { presentAbout.toggle() }
+                    Button(systemImage: .questionmarkCircle, action: viewModel.aboutTapped)
 
                     NavigationLink(value: NavigationDestination.profile) {
                         Image(systemName: .personCropCircle)
                     }
                 }
             }
-            .sheet(isPresented: $presentAbout, content: AboutView.init)
-            .sheet(isPresented: $viewModel.showPaywall, content: PaywallView.init)
+            .sheet(isPresented: $viewModel.showAbout, content: AboutView.init)
             .sheet(isPresented: $viewModel.showAnonymousAccountBlocker, content: CreateAccountView.init)
-            .sheet(item: $viewModel.deepLinkedNavigationDestination) { $0.view }
+            .sheet(item: $viewModel.deepLinkedNavigationDestination) { destination in
+                destination.view
+                    .embeddedInNavigationView()
+            }
             .withLoadingOverlay(isLoading: viewModel.loadingDeepLink)
             .navigationDestination(for: NavigationDestination.self) { $0.view }
             .registerScreenView(name: "Home")
