@@ -14,8 +14,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/algolia/algoliasearch-client-swift",
       "state" : {
-        "revision" : "41c1d4fb748c77b2ee1fd18ead8baa3e9d81605e",
-        "version" : "8.18.1"
+        "revision" : "168e7dd50c3c05d1c4e9b54c7adf075a0f1fe490",
+        "version" : "8.18.2"
       }
     },
     {
@@ -50,8 +50,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/hmlongco/Factory",
       "state" : {
-        "revision" : "061b3afe0358a0da7ce568f8272c847910be3dd7",
-        "version" : "2.2.0"
+        "revision" : "8d20074d8a5ac79d6902faecbdbafaf0a0326f49",
+        "version" : "2.3.0"
       }
     },
     {
@@ -68,8 +68,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/firebase/firebase-ios-sdk",
       "state" : {
-        "revision" : "a580250a9ff49ec38da5430cef20f88ddc831db2",
-        "version" : "10.12.0"
+        "revision" : "837d4af6ead57cec1fc38007892500d3139c7556",
+        "version" : "10.16.0"
       }
     },
     {
@@ -77,8 +77,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/GoogleAppMeasurement.git",
       "state" : {
-        "revision" : "0a226a8c50494c4cb877fbde27ab6374520a3354",
-        "version" : "10.12.0"
+        "revision" : "56f681586ff006a7982b53dc94082eea31971acf",
+        "version" : "10.16.0"
       }
     },
     {
@@ -86,8 +86,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/GoogleDataTransport.git",
       "state" : {
-        "revision" : "98a00258d4518b7521253a70b7f70bb76d2120fe",
-        "version" : "9.2.4"
+        "revision" : "aae45a320fd0d11811820335b1eabc8753902a40",
+        "version" : "9.2.5"
       }
     },
     {
@@ -95,8 +95,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/GoogleUtilities.git",
       "state" : {
-        "revision" : "58d03d22beae762eaddbd30cb5a61af90d4b309f",
-        "version" : "7.11.3"
+        "revision" : "c38ce365d77b04a9a300c31061c5227589e5597b",
+        "version" : "7.11.5"
       }
     },
     {
@@ -104,8 +104,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/grpc-binary.git",
       "state" : {
-        "revision" : "f1b366129d1125be7db83247e003fc333104b569",
-        "version" : "1.50.2"
+        "revision" : "a673bc2937fbe886dd1f99c401b01b6d977a9c98",
+        "version" : "1.49.1"
       }
     },
     {
@@ -115,6 +115,15 @@
       "state" : {
         "revision" : "d415594121c9e8a4f9d79cecee0965cf35e74dbd",
         "version" : "3.1.1"
+      }
+    },
+    {
+      "identity" : "interop-ios-for-google-sdks",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/google/interop-ios-for-google-sdks.git",
+      "state" : {
+        "revision" : "2d12673670417654f08f5f90fdd62926dc3a2648",
+        "version" : "100.0.0"
       }
     },
     {
@@ -150,7 +159,7 @@
       "location" : "https://github.com/aheze/Popovers",
       "state" : {
         "branch" : "main",
-        "revision" : "54728a9ca199ffbffe444d5b04a9354f6a02da7c"
+        "revision" : "1a05e53c6c95b364e57de526a929c9142f72e0c9"
       }
     },
     {
@@ -158,8 +167,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/google/promises.git",
       "state" : {
-        "revision" : "ec957ccddbcc710ccc64c9dcbd4c7006fcf8b73a",
-        "version" : "2.2.0"
+        "revision" : "e70e889c0196c76d22759eb50d6a0270ca9f1d9e",
+        "version" : "2.3.1"
       }
     },
     {
@@ -167,8 +176,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/RevenueCat/purchases-ios",
       "state" : {
-        "revision" : "8d16e02c96efbcf58eaf7eef2e595942d935f572",
-        "version" : "4.25.0"
+        "revision" : "30c33b11271e1004f08d34f56a812d5ccbb00f15",
+        "version" : "4.27.0"
       }
     },
     {
@@ -194,8 +203,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-log.git",
       "state" : {
-        "revision" : "32e8d724467f8fe623624570367e3d50c5638e46",
-        "version" : "1.5.2"
+        "revision" : "532d8b529501fb73a2455b179e0bbb6d49b652ed",
+        "version" : "1.5.3"
       }
     },
     {
@@ -212,8 +221,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-protobuf.git",
       "state" : {
-        "revision" : "f25867a208f459d3c5a06935dceb9083b11cd539",
-        "version" : "1.22.0"
+        "revision" : "3c54ab05249f59f2c6641dd2920b8358ea9ed127",
+        "version" : "1.24.0"
       }
     },
     {
@@ -222,7 +231,7 @@
       "location" : "https://github.com/SwiftUIX/SwiftUIX",
       "state" : {
         "branch" : "master",
-        "revision" : "47b1cc0e4bbaa75ecc026adabf60110363696918"
+        "revision" : "cf729fcab44196ed7361293bcad493a0e928fb24"
       }
     },
     {

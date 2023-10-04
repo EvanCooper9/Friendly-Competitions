@@ -12,6 +12,7 @@ final class UserViewModel: ObservableObject {
     @Published var actions = [UserViewAction]()
     @Published var confirmationRequired = false
     @Published var loading = false
+    @Published private(set) var dismiss = false
 
     // MARK: - Private Properties
 
@@ -56,6 +57,9 @@ final class UserViewModel: ObservableObject {
                     return strongSelf.api
                         .call(.deleteFriend(id: user.id))
                         .isLoading { strongSelf.loading = $0 }
+                        .handleEvents(withUnretained: self, receiveOutput: { strongSelf in
+                            strongSelf.dismiss = true
+                        })
                         .ignoreFailure()
                 default:
                     return .empty()
@@ -76,6 +80,9 @@ final class UserViewModel: ObservableObject {
                     return strongSelf.api
                         .call(.respondToFriendRequest(from: user.id, accept: false))
                         .isLoading { strongSelf.loading = $0 }
+                        .handleEvents(withUnretained: self, receiveOutput: { strongSelf in
+                            strongSelf.dismiss = true
+                        })
                         .ignoreFailure()
                 case .request:
                     return strongSelf.api

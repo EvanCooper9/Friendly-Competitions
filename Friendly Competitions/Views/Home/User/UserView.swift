@@ -5,6 +5,7 @@ import SwiftUIX
 
 struct UserView: View {
 
+    @Environment(\.dismiss) private var dismiss
     @StateObject private var viewModel: UserViewModel
 
     init(user: User) {
@@ -45,6 +46,7 @@ struct UserView: View {
         }
         .withLoadingOverlay(isLoading: viewModel.loading)
         .registerScreenView(name: "User")
+        .onChange(of: viewModel.dismiss) { _ in dismiss() }
     }
 }
 
