@@ -44,6 +44,7 @@ struct HomeView: View {
             .sheet(isPresented: $presentAbout, content: AboutView.init)
             .sheet(isPresented: $viewModel.showPaywall, content: PaywallView.init)
             .sheet(isPresented: $viewModel.showAnonymousAccountBlocker, content: CreateAccountView.init)
+            .sheet(item: $viewModel.deepLinkedNavigationDestination) { $0.view }
             .withLoadingOverlay(isLoading: viewModel.loadingDeepLink)
             .navigationDestination(for: NavigationDestination.self) { $0.view }
             .registerScreenView(name: "Home")

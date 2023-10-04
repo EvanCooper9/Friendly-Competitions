@@ -6,6 +6,19 @@ enum NavigationDestination: Hashable {
     case user(User)
 }
 
+extension NavigationDestination: Identifiable {
+    var id: String {
+        switch self {
+        case .competition(let competition):
+            return competition.id
+        case .profile:
+            return "profile"
+        case .user(let user):
+            return user.id
+        }
+    }
+}
+
 extension NavigationDestination {
     @ViewBuilder
     var view: some View {

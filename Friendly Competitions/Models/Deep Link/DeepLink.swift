@@ -52,15 +52,6 @@ enum DeepLink: Equatable {
 
 extension DeepLink: Sharable {
     var itemsForSharing: [Any] {
-        let text: String
-        switch self {
-        case .user:
-            text = L10n.DeepLink.User.title
-        case .competition:
-            text = L10n.DeepLink.User.title
-        case .competitionResults:
-            return []
-        }
-        return [text, url.absoluteString]
+        [url]
     }
 }

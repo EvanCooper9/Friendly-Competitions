@@ -14,6 +14,7 @@ final class HomeViewModel: ObservableObject {
     }
 
     @Published var navigationDestinations = [NavigationDestination]()
+    @Published var deepLinkedNavigationDestination: NavigationDestination?
 
     @Published private(set) var competitions = [Competition]()
     @Published private(set) var friendRows = [FriendRow]()
@@ -57,32 +58,32 @@ final class HomeViewModel: ObservableObject {
         #endif
 
         appState.deepLink
-            .flatMapLatest(withUnretained: self) { strongSelf, deepLink -> AnyPublisher<[NavigationDestination], Never> in
+            .flatMapLatest(withUnretained: self) { strongSelf, deepLink -> AnyPublisher<NavigationDestination?, Never> in
                 switch deepLink {
                 case .user(let id):
                     return strongSelf.friendsManager.user(withId: id)
                         .isLoading { strongSelf.loadingDeepLink = $0 }
-                        .map { [.user($0)] }
+                        .map { .user($0) }
                         .ignoreFailure()
                         .eraseToAnyPublisher()
                 case .competition(let id):
                     return strongSelf.competitionsManager.search(byID: id)
                         .isLoading { strongSelf.loadingDeepLink = $0 }
-                        .map { [.competition($0)] }
+                        .map { .competition($0) }
                         .ignoreFailure()
                         .eraseToAnyPublisher()
                 case .competitionResults(let id):
                     return strongSelf.competitionsManager.search(byID: id)
                         .isLoading { strongSelf.loadingDeepLink = $0 }
-                        .map { [.competition($0)] }
+                        .map { .competition($0) }
                         .ignoreFailure()
                         .eraseToAnyPublisher()
                 case .none:
-                    return .just([])
+                    return .just(nil)
                 }
             }
             .receive(on: scheduler)
-            .assign(to: &$navigationDestinations)
+            .assign(to: &$deepLinkedNavigationDestination)
 
         competitionsManager.competitions
             .removeDuplicates()
@@ -93,35 +94,6 @@ final class HomeViewModel: ObservableObject {
             .removeDuplicates()
             .receive(on: scheduler)
             .assign(to: &$invitedCompetitions)
-
-        Publishers
-            .CombineLatest4($competitions, $invitedCompetitions, $friendRows, appState.deepLink)
-            .map { [weak self] competitions, invitedCompetitions, friendRows, deepLink -> [NavigationDestination] in
-                guard let self else { return [] }
-                let homeScreenCompetitionIDs = Set(competitions.map(\.id) + invitedCompetitions.map(\.id))
-                let homeScreenFriendIDs = Set(friendRows.map(\.user.id))
-                return self.navigationDestinations.filter { navigationDestination in
-                    // accont for deep link to ensure that if comp/friend lists updates, then the deep link isn't dismissed
-                    switch (navigationDestination, deepLink) {
-                    case (.competition(let competition), .competition(id: let deepLinkedCompeititonID)):
-                        return homeScreenCompetitionIDs.contains(competition.id) || deepLinkedCompeititonID == competition.id
-                    case (.competition(let competition), nil):
-                        return homeScreenCompetitionIDs.contains(competition.id)
-//                    case (.competitionResults(let competition), .competitionResults(id: let deepLinkedCompeititonID)):
-//                        return homeScreenCompetitionIDs.contains(competition.id) || deepLinkedCompeititonID == competition.id
-//                    case (.competitionResults(let competition), nil):
-//                        return homeScreenCompetitionIDs.contains(competition.id)
-                    case (.user(let user), .user(id: let deepLinkedUserID)):
-                        return homeScreenFriendIDs.contains(user.id) || deepLinkedUserID == user.id
-                    case (.user(let user), nil):
-                        return homeScreenFriendIDs.contains(user.id)
-                    default:
-                        return true
-                    }
-                }
-            }
-            .receive(on: scheduler)
-            .assign(to: &$navigationDestinations)
 
         Publishers
             .CombineLatest(friendsManager.friends, friendsManager.friendRequests)
