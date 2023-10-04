@@ -17,7 +17,7 @@ final class DatabaseSettingsManager: DatabaseSettingManaging {
     // MARK: - Public Properties
 
     var shouldResetCache: Bool {
-        let ttl = featureFlagManager.value(for: FeatureFlagDouble.databaseCacheTtl)
+        let ttl = featureFlagManager.value(forDouble: .databaseCacheTtl)
         return databaseSettingsStore.lastCacheReset.addingTimeInterval(ttl) <= .now
     }
 

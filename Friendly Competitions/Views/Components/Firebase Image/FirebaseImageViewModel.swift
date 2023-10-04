@@ -25,7 +25,6 @@ final class FirebaseImageViewModel: ObservableObject {
         self.path = path
 
         downloadImageSubject
-            .prepend(())
             .handleEvents(withUnretained: self, receiveOutput: { $0.failed = false })
             .flatMapLatest(withUnretained: self) { $0.storageManager.data(for: path) }
             .map { $0 as Data? }
@@ -35,6 +34,8 @@ final class FirebaseImageViewModel: ObservableObject {
                 return .just(nil)
             }
             .assign(to: &$imageData)
+
+        downloadImage()
     }
 
     // MARK: - Public Properties

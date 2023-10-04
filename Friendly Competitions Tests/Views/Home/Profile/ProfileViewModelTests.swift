@@ -10,6 +10,7 @@ final class ProfileViewModelTests: FCTestCase {
     override func setUp() {
         super.setUp()
 
+        featureFlagManager.valueForBoolReturnValue = false
         premiumManager.premium = .never()
         userManager.updateWithReturnValue = .never()
     }

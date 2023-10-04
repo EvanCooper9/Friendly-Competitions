@@ -17,3 +17,17 @@ enum FeatureFlagDouble: String, FeatureFlag {
         }
     }
 }
+
+enum FeatureFlagBool: String, FeatureFlag {
+    typealias Data = Bool
+
+    case premiumEnabled = "premium_enabled"
+
+    var stringValue: String { rawValue }
+    var defaultValue: Bool {
+        switch self {
+        case .premiumEnabled:
+            return false
+        }
+    }
+}

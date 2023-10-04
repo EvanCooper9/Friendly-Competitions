@@ -926,6 +926,56 @@ class EnvironmentManagingMock: EnvironmentManaging {
     }
 
 }
+class FeatureFlagManagingMock: FeatureFlagManaging {
+
+
+
+
+    //MARK: - value
+
+    var valueForBoolCallsCount = 0
+    var valueForBoolCalled: Bool {
+        return valueForBoolCallsCount > 0
+    }
+    var valueForBoolReceivedFeatureFlagBool: FeatureFlagBool?
+    var valueForBoolReceivedInvocations: [FeatureFlagBool] = []
+    var valueForBoolReturnValue: Bool!
+    var valueForBoolClosure: ((FeatureFlagBool) -> Bool)?
+
+    func value(forBool featureFlagBool: FeatureFlagBool) -> Bool {
+        valueForBoolCallsCount += 1
+        valueForBoolReceivedFeatureFlagBool = featureFlagBool
+        valueForBoolReceivedInvocations.append(featureFlagBool)
+        if let valueForBoolClosure = valueForBoolClosure {
+            return valueForBoolClosure(featureFlagBool)
+        } else {
+            return valueForBoolReturnValue
+        }
+    }
+
+    //MARK: - value
+
+    var valueForDoubleCallsCount = 0
+    var valueForDoubleCalled: Bool {
+        return valueForDoubleCallsCount > 0
+    }
+    var valueForDoubleReceivedFeatureFlagDouble: FeatureFlagDouble?
+    var valueForDoubleReceivedInvocations: [FeatureFlagDouble] = []
+    var valueForDoubleReturnValue: Double!
+    var valueForDoubleClosure: ((FeatureFlagDouble) -> Double)?
+
+    func value(forDouble featureFlagDouble: FeatureFlagDouble) -> Double {
+        valueForDoubleCallsCount += 1
+        valueForDoubleReceivedFeatureFlagDouble = featureFlagDouble
+        valueForDoubleReceivedInvocations.append(featureFlagDouble)
+        if let valueForDoubleClosure = valueForDoubleClosure {
+            return valueForDoubleClosure(featureFlagDouble)
+        } else {
+            return valueForDoubleReturnValue
+        }
+    }
+
+}
 class FriendsManagingMock: FriendsManaging {
 
 

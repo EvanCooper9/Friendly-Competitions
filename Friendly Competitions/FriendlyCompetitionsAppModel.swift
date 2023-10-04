@@ -12,6 +12,7 @@ final class FriendlyCompetitionsAppModel: ObservableObject {
 
     // MARK: - Private Properties
 
+    @Injected(\.analyticsManager) private var analyticsManager
     @Injected(\.appState) private var appState
     @Injected(\.authenticationManager) private var authenticationManager
 
@@ -26,7 +27,12 @@ final class FriendlyCompetitionsAppModel: ObservableObject {
     // MARK: - Public Methods
 
     func handle(url: URL) {
+        analyticsManager.log(event: .deepLinked(url: url))
         guard let deepLink = DeepLink(from: url) else { return }
         appState.push(deepLink: deepLink)
+    }
+
+    func opened(url: URL) {
+        analyticsManager.log(event: .urlOpened(url: url))
     }
 }

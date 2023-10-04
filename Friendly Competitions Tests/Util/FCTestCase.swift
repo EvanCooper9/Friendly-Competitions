@@ -21,6 +21,7 @@ class FCTestCase: XCTestCase {
     let database = DatabaseMock()
     let environmentCache = EnvironmentCacheMock()
     let environmentManager = EnvironmentManagingMock()
+    let featureFlagManager = FeatureFlagManagingMock()
     let friendsManager = FriendsManagingMock()
     let healthKitManager = HealthKitManagingMock()
     let healthStore = HealthStoringMock()
@@ -64,6 +65,7 @@ class FCTestCase: XCTestCase {
         Container.shared.database.register { self.database }
         Container.shared.environmentCache.register { self.environmentCache }
         Container.shared.environmentManager.register { self.environmentManager }
+        Container.shared.featureFlagManager.register { self.featureFlagManager }
         Container.shared.friendsManager.register { self.friendsManager }
         Container.shared.healthKitManager.register { self.healthKitManager }
         Container.shared.healthStore.register { self.healthStore }

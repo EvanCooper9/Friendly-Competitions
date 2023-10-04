@@ -32,6 +32,7 @@ final class PremiumManager: PremiumManaging {
 
     @Injected(\.analyticsManager) private var analyticsManager
     @Injected(\.competitionsManager) private var competitionsManager
+    @Injected(\.featureFlagManager) private var featureFlagManager
     @Injected(\.userManager) private var userManager
 
     private let premiumSubject = ReplaySubject<Premium?, Never>(bufferSize: 1)
@@ -50,6 +51,10 @@ final class PremiumManager: PremiumManaging {
             .eraseToAnyPublisher()
 
         products = productsSubject.eraseToAnyPublisher()
+
+        guard featureFlagManager.value(forBool: .premiumEnabled) == true else {
+            return
+        }
 
         login()
             .subscribe(on: DispatchQueue.global(qos: .background))

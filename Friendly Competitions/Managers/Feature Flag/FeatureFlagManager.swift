@@ -2,8 +2,10 @@ import Foundation
 import FirebaseRemoteConfig
 import FirebaseRemoteConfigSwift
 
+// sourcery: AutoMockable
 protocol FeatureFlagManaging {
-    func value<T: FeatureFlag>(for featureFlag: T) -> T.Data
+    func value(forBool featureFlagBool: FeatureFlagBool) -> Bool
+    func value(forDouble featureFlagDouble: FeatureFlagDouble) -> Double
 }
 
 final class FeatureFlagManager: FeatureFlagManaging {
@@ -23,17 +25,11 @@ final class FeatureFlagManager: FeatureFlagManaging {
         }
     }
 
-    func value<T: FeatureFlag>(for featureFlag: T) -> T.Data {
-        let configValue = remoteConfig.configValue(forKey: featureFlag.stringValue)
-        if T.Data.self == Double.self {
-            return configValue.numberValue.doubleValue as? T.Data ?? featureFlag.defaultValue
-        } else if T.Data.self == Bool.self {
-            return configValue.boolValue as? T.Data ?? featureFlag.defaultValue
-        } else if T.Data.self == Int.self {
-            return configValue.numberValue.intValue as? T.Data ?? featureFlag.defaultValue
-        } else if T.Data.self == String.self {
-            return configValue.stringValue as? T.Data ?? featureFlag.defaultValue
-        }
-        return featureFlag.defaultValue
+    func value(forBool featureFlag: FeatureFlagBool) -> Bool {
+        remoteConfig.configValue(forKey: featureFlag.stringValue).boolValue
+    }
+
+    func value(forDouble featureFlag: FeatureFlagDouble) -> Double {
+        remoteConfig.configValue(forKey: featureFlag.stringValue).numberValue.doubleValue
     }
 }
