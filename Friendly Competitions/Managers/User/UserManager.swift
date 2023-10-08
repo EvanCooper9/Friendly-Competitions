@@ -10,7 +10,6 @@ import UIKit
 protocol UserManaging {
     var user: User { get }
     var userPublisher: AnyPublisher<User, Never> { get }
-    func deleteAccount() -> AnyPublisher<Void, Error>
     func update(with user: User) -> AnyPublisher<Void, Error>
 }
 
@@ -23,7 +22,6 @@ final class UserManager: UserManaging {
 
     // MARK: - Private Properties
 
-    @Injected(\.api) private var api
     @Injected(\.appState) private var appState
     @Injected(\.analyticsManager) private var analyticsManager
     @Injected(\.authenticationManager) private var authenticationManager
@@ -45,13 +43,6 @@ final class UserManager: UserManaging {
             .mapToVoid()
             .sink(withUnretained: self) { $0.listenForUser() }
             .store(in: &cancellables)
-    }
-
-    func deleteAccount() -> AnyPublisher<Void, Error> {
-        api.call(.deleteAccount)
-            .flatMapLatest(withUnretained: self) { $0.authenticationManager.deleteAccount() }
-            .handleEvents(withUnretained: self, receiveOutput: { try? $0.authenticationManager.signOut() })
-            .eraseToAnyPublisher()
     }
 
     func update(with user: User) -> AnyPublisher<Void, Error> {

@@ -27,6 +27,7 @@ final class AuthenticationManager: AuthenticationManaging {
 
     // MARK: - Private Properties
 
+    @Injected(\.api) private var api
     @Injected(\.auth) private var auth
     @Injected(\.authenticationCache) private var authenticationCache
     @Injected(\.database) private var database
@@ -46,6 +47,8 @@ final class AuthenticationManager: AuthenticationManaging {
     init() {
         handle(user: authenticationCache.currentUser)
         listenForAuth()
+
+        try? signOut()
     }
 
     // MARK: - Public Methods
@@ -139,10 +142,12 @@ final class AuthenticationManager: AuthenticationManaging {
     }
 
     func deleteAccount() -> AnyPublisher<Void, Error> {
-        .fromAsync { [weak self] in
-            try await self?.auth.user?.delete()
-        }
-        .eraseToAnyPublisher()
+        api.call(.deleteAccount)
+            .flatMapAsync { [weak self] in
+                try? await self?.auth.user?.delete()
+            }
+            .handleEvents(withUnretained: self, receiveOutput: { try? $0.signOut() })
+            .eraseToAnyPublisher()
     }
 
     func signOut() throws {
@@ -204,7 +209,7 @@ final class AuthenticationManager: AuthenticationManaging {
     private func createUser(from authUser: AuthUser) -> AnyPublisher<User, Error> {
         let user = User(
             id: authUser.id,
-            name: .anonymousName,
+            name: authUser.displayName.emptyIfNil.ifEmpty(.anonymousName),
             email: authUser.email,
             isAnonymous: authUser.isAnonymous
         )

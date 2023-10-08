@@ -184,6 +184,7 @@
 		ED81438A29EF110200764730 /* HideNameLearnMoreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED3EAB7829E758DE0047C43E /* HideNameLearnMoreView.swift */; };
 		ED82AB0E2A3E1E1700334F51 /* EmailSignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED82AB0C2A3E1E1700334F51 /* EmailSignInView.swift */; };
 		ED82AB0F2A3E1E1700334F51 /* EmailSignInViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED82AB0D2A3E1E1700334F51 /* EmailSignInViewModel.swift */; };
+		ED848FD82AD223B500D6E848 /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = ED848FD72AD223B500D6E848 /* FirebaseAppCheck */; };
 		ED879BFB29A06AAB0007DB91 /* ActivitySummaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED879BFA29A06AAB0007DB91 /* ActivitySummaryTests.swift */; };
 		ED879C0129A06E850007DB91 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED879C0029A06E850007DB91 /* Database.swift */; };
 		ED879C0329A07A820007DB91 /* Database+Firebase.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED879C0229A07A820007DB91 /* Database+Firebase.swift */; };
@@ -546,6 +547,7 @@
 				ED07573329CA65FC00141AD4 /* FirebaseMessaging in Frameworks */,
 				EDA035CE2918619C0091E7A6 /* StoreKit.framework in Frameworks */,
 				ED07573529CA65FC00141AD4 /* FirebaseStorage in Frameworks */,
+				ED848FD82AD223B500D6E848 /* FirebaseAppCheck in Frameworks */,
 				ED71E2A328F70212001FED74 /* Files in Frameworks */,
 				C1C8B24726F3FB9C008D6B1B /* HealthKit.framework in Frameworks */,
 				ED07572929CA65FC00141AD4 /* FirebaseFirestore in Frameworks */,
@@ -1704,6 +1706,7 @@
 				ED3EAB7629E746B90047C43E /* FirebasePerformance */,
 				ED3983AC2A1F098800279929 /* FirebaseRemoteConfig */,
 				ED3983AE2A1F098800279929 /* FirebaseRemoteConfigSwift */,
+				ED848FD72AD223B500D6E848 /* FirebaseAppCheck */,
 			);
 			productName = CompyBoi;
 			productReference = C1691DC326D55FCF006FFA30 /* Friendly Competitions.app */;
@@ -2629,6 +2632,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = ED71E2A128F70212001FED74 /* XCRemoteSwiftPackageReference "Files" */;
 			productName = Files;
+		};
+		ED848FD72AD223B500D6E848 /* FirebaseAppCheck */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = ED07571D29CA65FC00141AD4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAppCheck;
 		};
 		ED879C1429A19A9B0007DB91 /* CombineSchedulers */ = {
 			isa = XCSwiftPackageProductDependency;

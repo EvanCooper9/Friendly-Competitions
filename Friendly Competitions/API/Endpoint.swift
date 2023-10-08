@@ -13,6 +13,7 @@ enum Endpoint {
     case deleteFriend(id: User.ID)
 
     // Account
+    case saveSWAToken(code: String)
     case deleteAccount
 
     // Developer
@@ -36,6 +37,8 @@ enum Endpoint {
             return "respondToFriendRequest"
         case .deleteFriend:
             return "deleteFriend"
+        case .saveSWAToken:
+            return "saveSWAToken"
         case .deleteAccount:
             return "deleteAccount"
         case .dev_sendCompetitionCompleteNotification:
@@ -51,6 +54,7 @@ enum Endpoint {
 
     private enum Key: String {
         case accept
+        case code
         case competitionID
         case userID
     }
@@ -73,6 +77,8 @@ enum Endpoint {
             return [.userID: from, .accept: accept]
         case .deleteFriend(let id):
             return [.userID: id]
+        case .saveSWAToken(let code):
+            return [.code: code]
         case .deleteAccount:
             return nil
         case .dev_sendCompetitionCompleteNotification:

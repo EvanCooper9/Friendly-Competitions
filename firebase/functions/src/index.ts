@@ -17,15 +17,40 @@ import { handleCompetitionUpdate } from "./Handlers/jobs/handleCompetitionUpdate
 import { sendBackgroundNotification } from "./Handlers/notifications/notifications";
 import { updateStepCountScores } from "./Handlers/jobs/updateStepCountScores";
 import { handleCompetitionCreate } from "./Handlers/jobs/handleCompetitionCreate";
+import { saveSWAToken } from "./Handlers/account/signInWithAppleToken";
 
 admin.initializeApp();
 
 // Account
 
-exports.deleteAccount = functions.https.onCall(async (_data, context) => {
-    const userID = context.auth?.uid;
-    if (userID == null) return;
-    await deleteAccount(userID);
+exports.deleteAccount = functions
+    .runWith({ secrets: ["TEAM_ID", "PRIVATE_KEY", "PRIVATE_KEY_DBG", "KEY_ID", "KEY_ID_DBG"]})
+    .https.onCall(async (_data, context) => {
+        const userID = context.auth?.uid;
+        const clientID = context.app?.appId;
+        if (userID == null || clientID == null) {
+            console.log("failed to invoke function");
+            console.log(`userID: ${userID}`);
+            console.log(`clientID: ${clientID}`);
+            return;
+        }
+        await deleteAccount(userID, clientID);
+});
+
+exports.saveSWAToken = functions
+    .runWith({ secrets: ["TEAM_ID", "PRIVATE_KEY", "PRIVATE_KEY_DBG", "KEY_ID", "KEY_ID_DBG"]})
+    .https.onCall(async (data, context) => {
+        const code = data.code;
+        const userID = context.auth?.uid;
+        const clientID = context.app?.appId;
+        if (userID == null || clientID == null) {
+            console.log("failed to invoke function");
+            console.log(`code: ${code}`);
+            console.log(`userID: ${userID}`);
+            console.log(`userID: ${clientID}`);
+            return;
+        }
+        await saveSWAToken(code, userID, clientID);
 });
 
 // Competitions 
