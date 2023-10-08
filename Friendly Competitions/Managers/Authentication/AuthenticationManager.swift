@@ -47,8 +47,6 @@ final class AuthenticationManager: AuthenticationManaging {
     init() {
         handle(user: authenticationCache.currentUser)
         listenForAuth()
-
-        try? signOut()
     }
 
     // MARK: - Public Methods
