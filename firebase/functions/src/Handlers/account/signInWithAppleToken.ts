@@ -29,7 +29,6 @@ async function saveSWAToken(code: string, userID: string, clientID: string): Pro
     const response = await post("https://appleid.apple.com/auth/token", data)
     const result = await response.json();
     let refreshToken: string = result.refresh_token;
-    console.log("refreshToken", refreshToken)
     await firestore.doc(`swaTokens/${userID}`).set({ swaRefreshToken: refreshToken });
 }
 
@@ -112,10 +111,6 @@ function makeJWT(clientID: string): string {
 
     if (teamID !== undefined && keyID !== undefined && privateKey !== undefined) {
         let privateKeyBuffer = Buffer.from(privateKey, "base64");
-
-        console.log("teamID", teamID);
-        console.log("keyID", keyID);
-        console.log("privateKey", privateKeyBuffer.toString());
 
         let token = jwt.sign(
             { 
