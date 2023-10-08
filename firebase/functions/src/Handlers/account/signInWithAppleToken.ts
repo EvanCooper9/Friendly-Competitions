@@ -72,9 +72,6 @@ function resolveClientID(googleClientID: string): string {
  * @return {Promise<Response>} a promise for the request
  */
 function post(url: string, data: Map): Promise<Response> {
-
-    console.log("data", data)
-
     const body = Object
         .keys(data)
         .map((key: string) => encodeURIComponent(key) + "=" + encodeURIComponent(data[key] ?? "undefined"))

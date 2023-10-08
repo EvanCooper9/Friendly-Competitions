@@ -185,6 +185,7 @@
 		ED82AB0E2A3E1E1700334F51 /* EmailSignInView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED82AB0C2A3E1E1700334F51 /* EmailSignInView.swift */; };
 		ED82AB0F2A3E1E1700334F51 /* EmailSignInViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED82AB0D2A3E1E1700334F51 /* EmailSignInViewModel.swift */; };
 		ED848FD82AD223B500D6E848 /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = ED848FD72AD223B500D6E848 /* FirebaseAppCheck */; };
+		ED848FDA2AD239B200D6E848 /* FCAppCheckProviderFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED848FD92AD239B200D6E848 /* FCAppCheckProviderFactory.swift */; };
 		ED879BFB29A06AAB0007DB91 /* ActivitySummaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED879BFA29A06AAB0007DB91 /* ActivitySummaryTests.swift */; };
 		ED879C0129A06E850007DB91 /* Database.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED879C0029A06E850007DB91 /* Database.swift */; };
 		ED879C0329A07A820007DB91 /* Database+Firebase.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED879C0229A07A820007DB91 /* Database+Firebase.swift */; };
@@ -445,6 +446,7 @@
 		ED802B57298CB8B200155B8B /* Strings+Generated.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Strings+Generated.swift"; sourceTree = "<group>"; };
 		ED82AB0C2A3E1E1700334F51 /* EmailSignInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailSignInView.swift; sourceTree = "<group>"; };
 		ED82AB0D2A3E1E1700334F51 /* EmailSignInViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailSignInViewModel.swift; sourceTree = "<group>"; };
+		ED848FD92AD239B200D6E848 /* FCAppCheckProviderFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FCAppCheckProviderFactory.swift; sourceTree = "<group>"; };
 		ED879BFA29A06AAB0007DB91 /* ActivitySummaryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitySummaryTests.swift; sourceTree = "<group>"; };
 		ED879C0029A06E850007DB91 /* Database.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Database.swift; sourceTree = "<group>"; };
 		ED879C0229A07A820007DB91 /* Database+Firebase.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Database+Firebase.swift"; sourceTree = "<group>"; };
@@ -1197,6 +1199,7 @@
 			isa = PBXGroup;
 			children = (
 				ED4F721C29C930C5007C5864 /* FirebaseAppService.swift */,
+				ED848FD92AD239B200D6E848 /* FCAppCheckProviderFactory.swift */,
 			);
 			path = Firebase;
 			sourceTree = "<group>";
@@ -2016,6 +2019,7 @@
 				ED438FFB27F7D18600D72F99 /* AnalyticsManager.swift in Sources */,
 				ED1B5CFF296DBD2400122D7E /* PaywallViewModel.swift in Sources */,
 				ED2B88F42A1F048D0043AD87 /* DatabaseSettingsManager.swift in Sources */,
+				ED848FDA2AD239B200D6E848 /* FCAppCheckProviderFactory.swift in Sources */,
 				C155229C26E793B300FE0DA7 /* User+Mock.swift in Sources */,
 				EDC976392A3E376900DE7ABE /* VerifyEmailViewModel.swift in Sources */,
 				C15522A026E793DA00FE0DA7 /* ActivitySummary+Mock.swift in Sources */,
