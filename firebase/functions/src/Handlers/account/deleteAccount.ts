@@ -6,6 +6,7 @@ import { revokeSWAToken } from "./signInWithAppleToken";
 /**
  * Deletes an account and all user data
  * @param {string} userID the user ID of the account to delete
+ * @param {string} clientID the google client id of the caller
  */
 async function deleteAccount(userID: string, clientID: string): Promise<void> {
     const firestore = getFirestore();

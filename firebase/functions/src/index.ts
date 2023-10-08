@@ -35,7 +35,7 @@ exports.deleteAccount = functions
             return;
         }
         await deleteAccount(userID, clientID);
-});
+    });
 
 exports.saveSWAToken = functions
     .runWith({ secrets: ["TEAM_ID", "PRIVATE_KEY", "PRIVATE_KEY_DBG", "KEY_ID", "KEY_ID_DBG"]})
@@ -51,7 +51,7 @@ exports.saveSWAToken = functions
             return;
         }
         await saveSWAToken(code, userID, clientID);
-});
+    });
 
 // Competitions 
 

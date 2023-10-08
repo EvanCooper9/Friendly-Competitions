@@ -18,17 +18,16 @@ async function saveSWAToken(code: string, userID: string, clientID: string): Pro
 
     const resolvedClientID = resolveClientID(clientID);
     
-    let data: Map = {
-        'code': code,
-        'client_id': resolvedClientID,
-        'client_secret': makeJWT(resolvedClientID),
-        'grant_type': 'authorization_code',
-        'redirect_uri': 'https://example.com'
+    const data: Map = {
+        "code": code,
+        "client_id": resolvedClientID,
+        "client_secret": makeJWT(resolvedClientID),
+        "grant_type": "authorization_code"
     };
 
-    const response = await post("https://appleid.apple.com/auth/token", data)
+    const response = await post("https://appleid.apple.com/auth/token", data);
     const result = await response.json();
-    let refreshToken: string = result.refresh_token;
+    const refreshToken: string = result.refresh_token;
     await firestore.doc(`swaTokens/${userID}`).set({ swaRefreshToken: refreshToken });
 }
 
@@ -45,24 +44,29 @@ async function revokeSWAToken(userID: string, clientID: string): Promise<void> {
 
     const resolvedClientID = resolveClientID(clientID);
 
-    let data = {
-        'token': refreshToken,
-        'client_id': resolvedClientID,
-        'client_secret': makeJWT(resolvedClientID),
-        'token_type_hint': 'refresh_token'
+    const data = {
+        "token": refreshToken,
+        "client_id": resolvedClientID,
+        "client_secret": makeJWT(resolvedClientID),
+        "token_type_hint": "refresh_token"
     };
 
     await post("https://appleid.apple.com/auth/revoke", data);
     await firestore.doc(`swaTokens/${userID}`).delete();
 }
 
+/**
+ * Resolves a google client ID to a bundle identifier
+ * @param {string} googleClientID the google client id
+ * @return {string} the bundle identifier
+ */
 function resolveClientID(googleClientID: string): string {
     const clientIdMap: Map = {
         "1:787056522440:ios:c0fd8dabecf3d15bc121fd": "com.evancooper.FriendlyCompetitions",
         "1:787056522440:ios:7f8c86b5fa545ff7c121fd": "com.evancooper.FriendlyCompetitions.debug"
-    }
+    };
 
-    return clientIdMap[googleClientID] ?? ""
+    return clientIdMap[googleClientID] ?? "";
 }
 
 /**
@@ -90,14 +94,15 @@ function post(url: string, data: Map): Promise<Response> {
 
 /**
  * Create a JWT for fetching/revoking SWA refresh tokens
+ * @param {string} clientID the client ID to generate the JWT for
  * @return {string} the JWT
  */
 function makeJWT(clientID: string): string {
     
     const teamID = process.env.TEAM_ID;
     
-    var privateKey;
-    var keyID;
+    let privateKey;
+    let keyID;
     if (clientID == "com.evancooper.FriendlyCompetitions") {
         privateKey = process.env.PRIVATE_KEY;
         keyID = process.env.KEY_ID;
@@ -107,28 +112,26 @@ function makeJWT(clientID: string): string {
     }
 
     if (teamID !== undefined && keyID !== undefined && privateKey !== undefined) {
-        let privateKeyBuffer = Buffer.from(privateKey, "base64");
+        const privateKeyBuffer = Buffer.from(privateKey, "base64");
 
-        let token = jwt.sign(
+        return jwt.sign(
             { 
                 iss: teamID,
                 iat: Math.floor(Date.now() / 1000),
                 exp: Math.floor(Date.now() / 1000) + 1200000,
-                aud: 'https://appleid.apple.com',
+                aud: "https://appleid.apple.com",
                 sub: clientID
             }, 
             privateKeyBuffer, 
             { 
-                algorithm: 'ES256',
+                algorithm: "ES256",
                 header: {
-                    alg: 'ES256',
+                    alg: "ES256",
                     kid: keyID,
                 } 
             }
         );
-        return token;
     } else {
-        console.log("Failed to create JWT");
         return "";
     }
 }
