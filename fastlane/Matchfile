@@ -1,2 +1,3 @@
 git_url("git@github.com:EvanCooper9/fastlane-match")
 storage_mode("git")
+username("evan.cooper@rogers.com")
