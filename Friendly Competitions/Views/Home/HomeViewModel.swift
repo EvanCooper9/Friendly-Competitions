@@ -87,7 +87,6 @@ final class HomeViewModel: ObservableObject {
                 strongSelf.deepLinkedNavigationDestination = deepLinkedNavigationDestination
                 strongSelf.showAddFriends = false
                 strongSelf.showAnonymousAccountBlocker = false
-                strongSelf.showDeveloper = false
                 strongSelf.showNewCompetition = false
             }
             .store(in: &cancellables)

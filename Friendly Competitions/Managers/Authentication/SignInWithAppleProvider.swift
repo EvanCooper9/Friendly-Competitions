@@ -71,6 +71,7 @@ private final class SignInWithAppleDelegate: NSObject, ASAuthorizationController
 
     // MARK: - Private Properties
 
+    @Injected(\.api) private var api
     @Injected(\.auth) private var auth
     @Injected(\.environmentManager) private var environmentManager
 
@@ -99,14 +100,7 @@ private final class SignInWithAppleDelegate: NSObject, ASAuthorizationController
         switch accountType {
         case .new:
             auth.signIn(with: credential)
-                .flatMapLatest(withUnretained: self) { strongSelf, authUser -> AnyPublisher<AuthUser, Error> in
-
-                    // For some reason, the firebase auth emulator doesn't handle the fullName passed to the
-                    // credential when signing in with Apple (above). This is handled correctly in prod.
-                    // Assuming this is just a lack of feature parity since the iOS SDK had this API added in 10.7.0.
-                    // https://firebase.google.com/support/release-notes/ios#10.7.0
-                    guard strongSelf.environmentManager.environment.isDebug else { return .just(authUser) }
-
+                .flatMapLatest { authUser -> AnyPublisher<AuthUser, Error> in
                     let displayName = [appleIDCredential.fullName?.givenName, appleIDCredential.fullName?.familyName]
                         .compacted()
                         .joined(separator: " ")
@@ -117,11 +111,17 @@ private final class SignInWithAppleDelegate: NSObject, ASAuthorizationController
                     guard !displayName.isEmpty, displayName != authUser.displayName else { return .just(authUser) }
                     return authUser.set(displayName: displayName)
                 }
+                .flatMapLatest(withUnretained: self) { strongSelf, user -> AnyPublisher<AuthUser, Error> in
+                    strongSelf
+                        .save(authorizationCode: appleIDCredential.authorizationCode)
+                        .mapToValue(user)
+                        .eraseToAnyPublisher()
+                }
                 .first()
                 .sink(withUnretained: self, receiveCompletion: { strongSelf, completion in
-                    strongSelf.linkedSubject.send(completion: completion)
+                    strongSelf.signedInSubject.send(completion: completion)
                 }, receiveValue: { strongSelf, user in
-                    strongSelf.linkedSubject.send(user)
+                    strongSelf.signedInSubject.send(user)
                 })
                 .store(in: &cancellables)
         case .link(let user):
@@ -137,6 +137,12 @@ private final class SignInWithAppleDelegate: NSObject, ASAuthorizationController
                     guard !displayName.isEmpty, displayName != user.displayName else { return .just(user) }
                     return user.set(displayName: displayName)
                 }
+                .flatMapLatest(withUnretained: self) { strongSelf, user -> AnyPublisher<AuthUser, Error> in
+                    strongSelf
+                        .save(authorizationCode: appleIDCredential.authorizationCode)
+                        .mapToValue(user)
+                        .eraseToAnyPublisher()
+                }
                 .sink(withUnretained: self, receiveCompletion: { strongSelf, completion in
                     strongSelf.linkedSubject.send(completion: completion)
                 }, receiveValue: { strongSelf, user in
@@ -148,5 +154,19 @@ private final class SignInWithAppleDelegate: NSObject, ASAuthorizationController
 
     func authorizationController(controller: ASAuthorizationController, didCompleteWithError error: Error) {
         signedInSubject.send(completion: .failure(error))
+    }
+
+    // MARK: - Private Methods
+
+    private func save(authorizationCode: Data?) -> AnyPublisher<Void, Error> {
+        guard let authorizationCode,
+              let code = String(data: authorizationCode, encoding: .utf8)
+        else { return .just(()) }
+
+        return api
+            .call(.saveSWAToken(code: code))
+            .catchErrorJustReturn(())
+            .setFailureType(to: Error.self)
+            .eraseToAnyPublisher()
     }
 }

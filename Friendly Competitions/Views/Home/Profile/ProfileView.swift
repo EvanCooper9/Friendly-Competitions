@@ -38,6 +38,7 @@ struct ProfileView: View {
             Button(L10n.Generics.cancel, role: .cancel) {}
         }
         .navigationTitle(L10n.Profile.title)
+        .withLoadingOverlay(isLoading: viewModel.loading)
         .registerScreenView(name: "Profile")
     }
 

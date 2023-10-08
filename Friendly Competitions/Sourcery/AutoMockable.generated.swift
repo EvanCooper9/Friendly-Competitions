@@ -1548,24 +1548,6 @@ class UserManagingMock: UserManaging {
     var underlyingUserPublisher: AnyPublisher<User, Never>!
 
 
-    //MARK: - deleteAccount
-
-    var deleteAccountCallsCount = 0
-    var deleteAccountCalled: Bool {
-        return deleteAccountCallsCount > 0
-    }
-    var deleteAccountReturnValue: AnyPublisher<Void, Error>!
-    var deleteAccountClosure: (() -> AnyPublisher<Void, Error>)?
-
-    func deleteAccount() -> AnyPublisher<Void, Error> {
-        deleteAccountCallsCount += 1
-        if let deleteAccountClosure = deleteAccountClosure {
-            return deleteAccountClosure()
-        } else {
-            return deleteAccountReturnValue
-        }
-    }
-
     //MARK: - update
 
     var updateWithCallsCount = 0

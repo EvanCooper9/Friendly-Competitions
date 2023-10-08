@@ -1,13 +1,17 @@
 import { Competition } from "../../Models/Competition";
 import { User } from "../../Models/User";
 import { getFirestore } from "../../Utilities/firestore";
+import { revokeSWAToken } from "./signInWithAppleToken";
 
 /**
  * Deletes an account and all user data
  * @param {string} userID the user ID of the account to delete
+ * @param {string} clientID the google client id of the caller
  */
-async function deleteAccount(userID: string): Promise<void> {
+async function deleteAccount(userID: string, clientID: string): Promise<void> {
     const firestore = getFirestore();
+
+    await revokeSWAToken(userID, clientID);
 
     const batch = firestore.batch();
 

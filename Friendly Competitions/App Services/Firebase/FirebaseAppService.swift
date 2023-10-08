@@ -2,6 +2,7 @@ import Combine
 import ECKit
 import Factory
 import Firebase
+import FirebaseAppCheck
 import FirebaseMessaging
 
 final class FirebaseAppService: NSObject, AppService {
@@ -12,6 +13,7 @@ final class FirebaseAppService: NSObject, AppService {
     @LazyInjected(\.database) private var database
 
     func didFinishLaunching() {
+        AppCheck.setAppCheckProviderFactory(FCAppCheckProviderFactory())
         FirebaseApp.configure()
         Messaging.messaging().delegate = self
     }

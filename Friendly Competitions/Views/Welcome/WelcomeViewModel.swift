@@ -28,7 +28,7 @@ final class WelcomeViewModel: ObservableObject {
 
     @Injected(\.authenticationManager) private var authenticationManager
 
-    private let signInSubject = PassthroughSubject<AuthenticationMethod, Error>()
+    private let signInSubject = PassthroughSubject<AuthenticationMethod, Never>()
 
     private var cancellables = Cancellables()
 
@@ -40,6 +40,7 @@ final class WelcomeViewModel: ObservableObject {
                 strongSelf.authenticationManager
                     .signIn(with: authenticationMethod)
                     .isLoading { strongSelf.loading = $0 }
+                    .ignoreFailure()
             }
             .sink()
             .store(in: &cancellables)
