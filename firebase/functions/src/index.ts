@@ -18,6 +18,7 @@ import { sendBackgroundNotification } from "./Handlers/notifications/notificatio
 import { updateStepCountScores } from "./Handlers/jobs/updateStepCountScores";
 import { handleCompetitionCreate } from "./Handlers/jobs/handleCompetitionCreate";
 import { saveSWAToken } from "./Handlers/account/signInWithAppleToken";
+import { accountSetup } from "./Handlers/account/accountSetup";
 
 admin.initializeApp();
 
@@ -51,6 +52,13 @@ exports.saveSWAToken = functions
             return;
         }
         await saveSWAToken(code, userID, clientID);
+    });
+
+exports.accountSetup = functions.firestore
+    .document("users/{userID}")
+    .onCreate(async (_snapshot, context) => { 
+        const userID = context.params.userID;
+        await accountSetup(userID);
     });
 
 // Competitions 
