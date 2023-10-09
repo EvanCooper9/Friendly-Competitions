@@ -109,10 +109,6 @@ final class CompetitionViewModel: ObservableObject {
             .ignoreFailure()
             .assign(to: &$competition)
 
-        Publishers.CombineLatest($standings, $currentStandingsMaximum)
-            .map { $0.count > $1 }
-            .assign(to: &$showShowMoreButton)
-
         confirmActionSubject
             .flatMapLatest(withUnretained: self) { strongSelf -> AnyPublisher<Void, Error> in
                 switch strongSelf.actionRequiringConfirmation {
@@ -198,12 +194,16 @@ final class CompetitionViewModel: ObservableObject {
                     .catchErrorJustReturn([])
             }
 
+        let allStandings = competitionsManager
+            .standingsPublisher(for: competition.id)
+            .catchErrorJustReturn([])
+
+        Publishers.CombineLatest(allStandings, $standings)
+            .map { $0.count > $1.count }
+            .assign(to: &$showShowMoreButton)
+
         Publishers
-            .CombineLatest(
-                competitionsManager.standingsPublisher(for: competition.id)
-                    .catchErrorJustReturn([]),
-                participants
-            )
+            .CombineLatest(allStandings, participants)
             .handleEvents(
                 withUnretained: self,
                 receiveSubscription: { strongSelf, _ in strongSelf.loadingStandings = true }
