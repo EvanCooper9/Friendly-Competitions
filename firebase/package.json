@@ -1,7 +1,5 @@
 {
   "dependencies": {
-    "fetch": "^1.1.0",
-    "node-fetch": "^3.3.2",
     "tsc": "^2.0.4",
     "typescript": "^5.1.3"
   }
