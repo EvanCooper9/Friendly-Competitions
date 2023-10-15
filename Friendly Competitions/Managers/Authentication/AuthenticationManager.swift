@@ -7,11 +7,13 @@ import Factory
 protocol AuthenticationManaging {
     var emailVerified: AnyPublisher<Bool, Never> { get }
     var loggedIn: AnyPublisher<Bool, Never> { get }
+    var shouldReauthenticate: AnyPublisher<Bool, Never> { get }
 
     func signIn(with authenticationMethod: AuthenticationMethod) -> AnyPublisher<Void, Error>
     func signUp(name: String, email: String, password: String, passwordConfirmation: String) -> AnyPublisher<Void, Error>
     func deleteAccount() -> AnyPublisher<Void, Error>
     func signOut() throws
+    func reauthenticate() -> AnyPublisher<Void, Error>
 
     func checkEmailVerification() -> AnyPublisher<Void, Error>
     func resendEmailVerification() -> AnyPublisher<Void, Error>
@@ -24,6 +26,7 @@ final class AuthenticationManager: AuthenticationManaging {
 
     var emailVerified: AnyPublisher<Bool, Never> { emailVerifiedSubject.eraseToAnyPublisher() }
     var loggedIn: AnyPublisher<Bool, Never> { loggedInSubject.eraseToAnyPublisher() }
+    var shouldReauthenticate: AnyPublisher<Bool, Never> { shouldReauthenticateSubject.eraseToAnyPublisher() }
 
     // MARK: - Private Properties
 
@@ -39,6 +42,7 @@ final class AuthenticationManager: AuthenticationManaging {
 
     private var userListener: AnyCancellable?
     private var createdUserSubject = ReplaySubject<User, Error>(bufferSize: 1)
+    private let shouldReauthenticateSubject = ReplaySubject<Bool, Never>(bufferSize: 1)
 
     private var cancellables = Cancellables()
 
@@ -152,6 +156,12 @@ final class AuthenticationManager: AuthenticationManaging {
         try auth.signOut()
     }
 
+    func reauthenticate() -> AnyPublisher<Void, Error> {
+        signInWithAppleProvider.signIn()
+            .mapToVoid()
+            .eraseToAnyPublisher()
+    }
+
     // MARK: - Private Methods
 
     /// Listen for sign in/out, and handle the associated user.
@@ -163,6 +173,9 @@ final class AuthenticationManager: AuthenticationManaging {
             .handleEvents(withUnretained: self, receiveOutput: { strongSelf, authUser in
                 if let authUser, !authUser.isAnonymous {
                     strongSelf.emailVerifiedSubject.send(authUser.isEmailVerified)
+                    if authUser.hasSWA {
+                        strongSelf.handleReauthentication(for: authUser)
+                    }
                 } else {
                     strongSelf.emailVerifiedSubject.send(true)
                 }
@@ -184,6 +197,15 @@ final class AuthenticationManager: AuthenticationManaging {
                 .eraseToAnyPublisher()
             }
             .sink(withUnretained: self) { $0.handle(user: $1) }
+            .store(in: &cancellables)
+    }
+
+    private func handleReauthentication(for user: AuthUser) {
+        database.document("swaTokens/\(user.id)")
+            .exists
+            .sink(withUnretained: self) { strongSelf, exists in
+                strongSelf.shouldReauthenticateSubject.send(!exists)
+            }
             .store(in: &cancellables)
     }
 

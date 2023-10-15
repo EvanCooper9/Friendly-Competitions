@@ -27,12 +27,14 @@ final class HomeViewModel: ObservableObject {
     @Published var showNewCompetition = false
     @Published var showAddFriends = false
     @Published var showAnonymousAccountBlocker = false
+    @Published var showReauthentication = false
 
     // MARK: - Private Properties
 
     @Injected(\.appState) private var appState
     @Injected(\.activitySummaryManager) private var activitySummaryManager
     @Injected(\.analyticsManager) private var analyticsManager
+    @Injected(\.authenticationManager) private var authenticationManager
     @Injected(\.competitionsManager) private var competitionsManager
     @Injected(\.featureFlagManager) private var featureFlagManager
     @Injected(\.friendsManager) private var friendsManager
@@ -42,6 +44,8 @@ final class HomeViewModel: ObservableObject {
 
     @UserDefault("competitionsFiltered", defaultValue: false) var competitionsFiltered
     @UserDefault("dismissedPremiumBanner", defaultValue: false) private var dismissedPremiumBanner
+
+    private let reauthenticateSubject = PassthroughSubject<Void, Never>()
 
     private var cancellables = Cancellables()
 
@@ -124,6 +128,17 @@ final class HomeViewModel: ObservableObject {
             .map { $0.name.ifEmpty(Bundle.main.name) }
             .receive(on: scheduler)
             .assign(to: &$title)
+
+        authenticationManager.shouldReauthenticate.assign(to: &$showReauthentication)
+        
+        reauthenticateSubject
+            .flatMapLatest(withUnretained: self) { strongSelf in
+                strongSelf.authenticationManager
+                    .reauthenticate()
+                    .ignoreFailure()
+            }
+            .sink()
+            .store(in: &cancellables)
     }
 
     // MARK: - Public Methods
@@ -153,6 +168,10 @@ final class HomeViewModel: ObservableObject {
 
     func aboutTapped() {
         showAbout = true
+    }
+
+    func reauthenticateTapped() {
+        reauthenticateSubject.send(())
     }
 
     // MARK: - Private Methods

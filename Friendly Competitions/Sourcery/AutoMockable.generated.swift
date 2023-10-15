@@ -326,6 +326,11 @@ class AuthUserMock: AuthUser {
         set(value) { underlyingIsAnonymous = value }
     }
     var underlyingIsAnonymous: Bool!
+    var hasSWA: Bool {
+        get { return underlyingHasSWA }
+        set(value) { underlyingHasSWA = value }
+    }
+    var underlyingHasSWA: Bool!
 
 
     //MARK: - link
@@ -445,6 +450,11 @@ class AuthenticationManagingMock: AuthenticationManaging {
         set(value) { underlyingLoggedIn = value }
     }
     var underlyingLoggedIn: AnyPublisher<Bool, Never>!
+    var shouldReauthenticate: AnyPublisher<Bool, Never> {
+        get { return underlyingShouldReauthenticate }
+        set(value) { underlyingShouldReauthenticate = value }
+    }
+    var underlyingShouldReauthenticate: AnyPublisher<Bool, Never>!
 
 
     //MARK: - signIn
@@ -524,6 +534,24 @@ class AuthenticationManagingMock: AuthenticationManaging {
         }
         signOutCallsCount += 1
         try signOutClosure?()
+    }
+
+    //MARK: - reauthenticate
+
+    var reauthenticateCallsCount = 0
+    var reauthenticateCalled: Bool {
+        return reauthenticateCallsCount > 0
+    }
+    var reauthenticateReturnValue: AnyPublisher<Void, Error>!
+    var reauthenticateClosure: (() -> AnyPublisher<Void, Error>)?
+
+    func reauthenticate() -> AnyPublisher<Void, Error> {
+        reauthenticateCallsCount += 1
+        if let reauthenticateClosure = reauthenticateClosure {
+            return reauthenticateClosure()
+        } else {
+            return reauthenticateReturnValue
+        }
     }
 
     //MARK: - checkEmailVerification

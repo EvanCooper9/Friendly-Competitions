@@ -42,6 +42,11 @@ struct HomeView: View {
                 destination.view
                     .embeddedInNavigationView()
             }
+            .alert("You need to reauthenticate", isPresented: $viewModel.showReauthentication, actions: {
+                Button("Ok", action: viewModel.reauthenticateTapped)
+            }, message: {
+                Text("Sometimes this happens, sorry for the inconvenience")
+            })
             .withLoadingOverlay(isLoading: viewModel.loadingDeepLink)
             .navigationDestination(for: NavigationDestination.self) { $0.view }
             .registerScreenView(name: "Home")
