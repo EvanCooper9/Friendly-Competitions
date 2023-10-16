@@ -23,6 +23,14 @@ jobs:
       with:
         ssh-private-key: ${{ secrets.SSH_KEY }}
 
+    - name: Extract version number
+      run: |
+        echo "VERSION_NUMBER=$(echo ${{ github.ref }} | grep -o "^([0-9]*)\.([0-9]*)\.([0-9]*)")" >> $GITHUB_ENV
+
+    - name: Verify version number
+      run: |
+        echo $VERSION_NUMBER
+
     - name: Setup Ruby
       uses: ruby/setup-ruby@v1
       with:
@@ -47,6 +55,7 @@ jobs:
         APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
         MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
         MATCH_GIT_PRIVATE_KEY: ${{ secrets.SSH_KEY }}
+        VERSION_NUMBER: ${{ env.VERSION_NUMBER }}
         FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: 120
 
     - uses: actions/upload-artifact@v3
