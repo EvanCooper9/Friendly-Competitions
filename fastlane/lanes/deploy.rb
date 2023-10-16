@@ -16,6 +16,10 @@ lane :deploy do
     testflight_build = latest_testflight_build_number
     testflight_version = Actions.lane_context[SharedValues::LATEST_TESTFLIGHT_VERSION]
     new_build = testflight_version == current_version ? testflight_build + 1 : 1
+
+    increment_version_number(
+        version_number: ENV["VERSION_NUMBER"]
+    )
     
     increment_build_number(
         build_number: new_build
@@ -35,6 +39,7 @@ lane :deploy do
     upload_to_app_store(
         force: true,
         submit_for_review: true,
+        reject_if_possible: true,
         precheck_include_in_app_purchases: false,
         submission_information: {
             add_id_info_uses_idfa: false
