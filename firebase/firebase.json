@@ -31,6 +31,6 @@
       "npm --prefix \"$RESOURCE_DIR\" run build"
     ],
     "source": "functions",
-    "runtime": "nodejs16"
+    "runtime": "nodejs18"
   }
 }

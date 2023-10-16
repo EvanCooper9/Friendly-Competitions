@@ -1,5 +1,4 @@
 import * as jwt from "jsonwebtoken";
-import("node-fetch");
 import { getFirestore } from "../../Utilities/firestore";
 
 interface Map {
