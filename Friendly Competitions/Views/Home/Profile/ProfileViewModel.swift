@@ -59,7 +59,12 @@ final class ProfileViewModel: ObservableObject {
         deleteAccountSubject
             .flatMapLatest(withUnretained: self) { strongSelf in
                 strongSelf.authenticationManager
-                    .deleteAccount()
+                    .shouldReauthenticate()
+                    .flatMapLatest { shouldReauthenticate -> AnyPublisher<Void, Error> in
+                        guard shouldReauthenticate else { return .just(()) }
+                        return strongSelf.authenticationManager.reauthenticate()
+                    }
+                    .flatMapLatest { strongSelf.authenticationManager.deleteAccount() }
                     .isLoading { strongSelf.loading = $0 }
                     .ignoreFailure()
             }

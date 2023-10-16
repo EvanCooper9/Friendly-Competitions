@@ -450,11 +450,6 @@ class AuthenticationManagingMock: AuthenticationManaging {
         set(value) { underlyingLoggedIn = value }
     }
     var underlyingLoggedIn: AnyPublisher<Bool, Never>!
-    var shouldReauthenticate: AnyPublisher<Bool, Never> {
-        get { return underlyingShouldReauthenticate }
-        set(value) { underlyingShouldReauthenticate = value }
-    }
-    var underlyingShouldReauthenticate: AnyPublisher<Bool, Never>!
 
 
     //MARK: - signIn
@@ -534,6 +529,24 @@ class AuthenticationManagingMock: AuthenticationManaging {
         }
         signOutCallsCount += 1
         try signOutClosure?()
+    }
+
+    //MARK: - shouldReauthenticate
+
+    var shouldReauthenticateCallsCount = 0
+    var shouldReauthenticateCalled: Bool {
+        return shouldReauthenticateCallsCount > 0
+    }
+    var shouldReauthenticateReturnValue: AnyPublisher<Bool, Error>!
+    var shouldReauthenticateClosure: (() -> AnyPublisher<Bool, Error>)?
+
+    func shouldReauthenticate() -> AnyPublisher<Bool, Error> {
+        shouldReauthenticateCallsCount += 1
+        if let shouldReauthenticateClosure = shouldReauthenticateClosure {
+            return shouldReauthenticateClosure()
+        } else {
+            return shouldReauthenticateReturnValue
+        }
     }
 
     //MARK: - reauthenticate
