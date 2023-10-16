@@ -11,15 +11,15 @@ lane :deploy do
     
     certificates
 
+    increment_version_number(
+        version_number: ENV["VERSION_NUMBER"]
+    )
+
     # Current Version (via xcodeproj)
     current_version = get_version_number
     testflight_build = latest_testflight_build_number
     testflight_version = Actions.lane_context[SharedValues::LATEST_TESTFLIGHT_VERSION]
     new_build = testflight_version == current_version ? testflight_build + 1 : 1
-
-    increment_version_number(
-        version_number: ENV["VERSION_NUMBER"]
-    )
     
     increment_build_number(
         build_number: new_build

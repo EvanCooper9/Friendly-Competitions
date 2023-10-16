@@ -1,8 +1,14 @@
 import * as jwt from "jsonwebtoken";
+import("node-fetch");
 import { getFirestore } from "../../Utilities/firestore";
 
 interface Map {
     [key: string]: string | undefined
+}
+
+interface AppleAuthTokenResponse {
+    // eslint-disable-next-line camelcase
+    refresh_token: string
 }
 
 /**
@@ -26,9 +32,8 @@ async function saveSWAToken(code: string, userID: string, clientID: string): Pro
     };
 
     const response = await post("https://appleid.apple.com/auth/token", data);
-    const result = await response.json();
-    const refreshToken: string = result.refresh_token;
-    await firestore.doc(`swaTokens/${userID}`).set({ swaRefreshToken: refreshToken });
+    const result = (await response.json()) as AppleAuthTokenResponse;
+    await firestore.doc(`swaTokens/${userID}`).set({ swaRefreshToken: result.refresh_token });
 }
 
 /**
