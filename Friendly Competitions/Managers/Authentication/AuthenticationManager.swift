@@ -12,6 +12,8 @@ protocol AuthenticationManaging {
     func signUp(name: String, email: String, password: String, passwordConfirmation: String) -> AnyPublisher<Void, Error>
     func deleteAccount() -> AnyPublisher<Void, Error>
     func signOut() throws
+    func shouldReauthenticate() -> AnyPublisher<Bool, Error>
+    func reauthenticate() -> AnyPublisher<Void, Error>
 
     func checkEmailVerification() -> AnyPublisher<Void, Error>
     func resendEmailVerification() -> AnyPublisher<Void, Error>
@@ -150,6 +152,20 @@ final class AuthenticationManager: AuthenticationManaging {
 
     func signOut() throws {
         try auth.signOut()
+    }
+
+    func shouldReauthenticate() -> AnyPublisher<Bool, Error> {
+        guard let user = auth.user, user.hasSWA else { return .just(false) }
+        return database.document("swaTokens/\(user.id)")
+            .exists
+            .map { !$0 }
+            .eraseToAnyPublisher()
+    }
+
+    func reauthenticate() -> AnyPublisher<Void, Error> {
+        signInWithAppleProvider.signIn()
+            .mapToVoid()
+            .eraseToAnyPublisher()
     }
 
     // MARK: - Private Methods

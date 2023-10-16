@@ -18,6 +18,7 @@ protocol AuthUser {
     var email: String? { get }
     var isEmailVerified: Bool { get }
     var isAnonymous: Bool { get }
+    var hasSWA: Bool { get }
 
     func link(with credential: AuthCredential) -> AnyPublisher<Void, Error>
     func sendEmailVerification() -> AnyPublisher<Void, Error>

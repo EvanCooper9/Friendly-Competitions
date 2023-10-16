@@ -60,6 +60,12 @@ extension FirebaseAuth.User: AuthUser {
 
     var id: String { uid }
 
+    var hasSWA: Bool {
+        providerData.contains { data in
+            data.providerID == "apple.com"
+        }
+    }
+
     func link(with credential: AuthCredential) -> AnyPublisher<Void, Error> {
         switch credential {
         case .anonymous:

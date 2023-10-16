@@ -326,6 +326,11 @@ class AuthUserMock: AuthUser {
         set(value) { underlyingIsAnonymous = value }
     }
     var underlyingIsAnonymous: Bool!
+    var hasSWA: Bool {
+        get { return underlyingHasSWA }
+        set(value) { underlyingHasSWA = value }
+    }
+    var underlyingHasSWA: Bool!
 
 
     //MARK: - link
@@ -524,6 +529,42 @@ class AuthenticationManagingMock: AuthenticationManaging {
         }
         signOutCallsCount += 1
         try signOutClosure?()
+    }
+
+    //MARK: - shouldReauthenticate
+
+    var shouldReauthenticateCallsCount = 0
+    var shouldReauthenticateCalled: Bool {
+        return shouldReauthenticateCallsCount > 0
+    }
+    var shouldReauthenticateReturnValue: AnyPublisher<Bool, Error>!
+    var shouldReauthenticateClosure: (() -> AnyPublisher<Bool, Error>)?
+
+    func shouldReauthenticate() -> AnyPublisher<Bool, Error> {
+        shouldReauthenticateCallsCount += 1
+        if let shouldReauthenticateClosure = shouldReauthenticateClosure {
+            return shouldReauthenticateClosure()
+        } else {
+            return shouldReauthenticateReturnValue
+        }
+    }
+
+    //MARK: - reauthenticate
+
+    var reauthenticateCallsCount = 0
+    var reauthenticateCalled: Bool {
+        return reauthenticateCallsCount > 0
+    }
+    var reauthenticateReturnValue: AnyPublisher<Void, Error>!
+    var reauthenticateClosure: (() -> AnyPublisher<Void, Error>)?
+
+    func reauthenticate() -> AnyPublisher<Void, Error> {
+        reauthenticateCallsCount += 1
+        if let reauthenticateClosure = reauthenticateClosure {
+            return reauthenticateClosure()
+        } else {
+            return reauthenticateReturnValue
+        }
     }
 
     //MARK: - checkEmailVerification
