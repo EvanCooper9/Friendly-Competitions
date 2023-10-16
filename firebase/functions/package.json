@@ -14,7 +14,7 @@
     "firebase-admin": "^11.0.2",
     "firebase-functions": "^4.2.0",
     "moment": "^2.29.1",
-    "node-fetch": "^3.3.2"
+    "node-fetch": "^2.0.0"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^3.9.1",
