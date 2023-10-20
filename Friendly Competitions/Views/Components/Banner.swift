@@ -84,6 +84,26 @@ enum Banner: Equatable, Identifiable {
         .cornerRadius(10)
         .shadow(color: .gray.opacity(0.25), radius: 10)
     }
+
+    func tapped() -> AnyPublisher<Void, Never> {
+        switch self {
+        case .healthKitPermissionsMissing(let permissions):
+            return healthKitManager.request(permissions)
+                .catchErrorJustReturn(())
+                .receive(on: scheduler)
+        case .healthKitDataMissing:
+            UIApplication.shared.open(.health)
+            return .just(())
+        case .notificationPermissionsMissing:
+            return notificationsManager.requestPermissions()
+                .mapToVoid()
+                .catchErrorJustReturn(())
+                .receive(on: scheduler)
+        case .notificationPermissionsDenied:
+            UIApplication.shared.open(.notificationSettings)
+            return .just(())
+        }
+    }
 }
 
 extension Banner.Configuration {

@@ -254,30 +254,11 @@ final class CompetitionViewModel: ObservableObject {
     }
 
     func tapped(banner: Banner) {
-        switch banner {
-        case .healthKitPermissionsMissing(let permissions):
-            healthKitManager.request(permissions)
-                .catchErrorJustReturn(())
-                .receive(on: scheduler)
-                .sink(withUnretained: self) { strongSelf in
-                    strongSelf.banners.remove(banner)
-                    strongSelf.didRequestPermissions.send()
-                }
-                .store(in: &cancellables)
-        case .healthKitDataMissing:
-            UIApplication.shared.open(.health)
-        case .notificationPermissionsMissing:
-            notificationManager.requestPermissions()
-                .mapToVoid()
-                .catchErrorJustReturn(())
-                .receive(on: scheduler)
-                .sink(withUnretained: self) { strongSelf in
-                    strongSelf.banners.remove(banner)
-                    strongSelf.didRequestPermissions.send()
-                }
-                .store(in: &cancellables)
-        case .notificationPermissionsDenied:
-            UIApplication.shared.open(.notificationSettings)
-        }
+        banner.tapped()
+            .sink(withUnretained: self) { strongSelf in
+                strongSelf.banners.remove(banner)
+                strongSelf.didRequestPermissions.send()
+            }
+            .store(in: &cancellables)
     }
 }
