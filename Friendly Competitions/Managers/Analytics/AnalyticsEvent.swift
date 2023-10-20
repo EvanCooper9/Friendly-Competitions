@@ -37,6 +37,10 @@ enum AnalyticsEvent: Codable {
     case backgroundJobStarted(jobType: String)
     case backgroundJobEnded(jobType: String)
 
+    // banners
+    case bannerViewed(bannerID: String, file: String)
+    case bannerTapped(bannerID: String, file: String)
+
     // HealthKit
     case healthKitShouldRequestPermissions(permissionsString: String, shouldRequest: Bool)
     case healthKitRegisterBGDeliverySuccess(permission: HealthKitPermissionType)

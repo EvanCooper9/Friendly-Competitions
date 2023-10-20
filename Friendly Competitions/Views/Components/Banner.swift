@@ -60,8 +60,9 @@ enum Banner: Equatable, Identifiable {
         }
     }
 
-    func view(_ tapped: @escaping () -> Void) -> some View {
-        HStack(spacing: 10) {
+    func view(_ tapped: @escaping () -> Void, file: String = #file) -> some View {
+        let fileName = (file as NSString).lastPathComponent
+        return HStack(spacing: 10) {
             if let icon = configuration.icon {
                 Image(systemName: icon)
                     .foregroundColor(configuration.foreground)
@@ -77,19 +78,27 @@ enum Banner: Equatable, Identifiable {
                 .minimumScaleFactor(0.5)
 
             if let action = configuration.action {
-                Button(action.cta, action: tapped)
-                    .font(.footnote)
-                    .bold()
-                    .foregroundColor(action.foreground)
-                    .padding(.small)
-                    .background(action.background)
-                    .cornerRadius(5)
+                Button(action.cta) {
+                    let analyticsManager = Container.shared.analyticsManager.resolve()
+                    analyticsManager.log(event: .bannerTapped(bannerID: id, file: fileName))
+                    tapped()
+                }
+                .font(.footnote)
+                .bold()
+                .foregroundColor(action.foreground)
+                .padding(.small)
+                .background(action.background)
+                .cornerRadius(5)
             }
         }
         .padding(12)
         .background(configuration.background)
         .cornerRadius(10)
         .shadow(color: .gray.opacity(0.25), radius: 10)
+        .onAppear {
+            let analyticsManager = Container.shared.analyticsManager.resolve()
+            analyticsManager.log(event: .bannerViewed(bannerID: id, file: fileName))
+        }
     }
 
     func tapped() -> AnyPublisher<Void, Never> {

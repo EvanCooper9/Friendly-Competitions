@@ -82,6 +82,6 @@ class FCTestCase: XCTestCase {
     }
 
     func retainDuringTest(_ object: Any) {
-
+        retainedObjects.append(object)
     }
 }

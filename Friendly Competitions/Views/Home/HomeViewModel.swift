@@ -171,11 +171,13 @@ final class HomeViewModel: ObservableObject {
     private func bindPermissionBanners() {
         Publishers
             .CombineLatest(didRequestPermissions, $competitions)
-            .flatMapLatest { _, competitions in
-                competitions
+            .flatMapLatest { _, competitions -> AnyPublisher<[Banner], Never> in
+                guard competitions.isNotEmpty else { return .just([]) }
+                return competitions
                     .map { $0.banners }
                     .combineLatest()
                     .map { $0.flattened() }
+                    .eraseToAnyPublisher()
             }
             .map { $0.uniqued(on: \.id) }
             .assign(to: &$banners)
