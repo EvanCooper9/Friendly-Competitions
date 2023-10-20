@@ -5,11 +5,6 @@ import Foundation
 
 enum DeepLink: Equatable {
 
-    private final class DeepLinkDependency {
-        @Injected(\.competitionsManager) private var competitionsManager
-        @Injected(\.friendsManager) private var friendsManager
-    }
-
     private enum Constants {
         static let baseURL = URL(string: "https://friendly-competitions.app")!
         static let user = "user"

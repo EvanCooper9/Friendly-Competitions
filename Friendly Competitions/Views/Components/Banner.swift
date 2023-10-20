@@ -5,6 +5,12 @@ import SwiftUIX
 
 enum Banner: Equatable, Identifiable {
 
+    private final class BannerDependency {
+        @Injected(\.healthKitManager) var healthKitManager
+        @Injected(\.notificationsManager) var notificationsManager
+        @Injected(\.scheduler) var scheduler
+    }
+
     struct Configuration {
 
         struct Action {
@@ -122,11 +128,16 @@ enum Banner: Equatable, Identifiable {
     }
 
     func tapped() -> AnyPublisher<Void, Never> {
+        let healthKitManager = Container.shared.healthKitManager.resolve()
+        let notificationsManager = Container.shared.notificationsManager.resolve()
+        let scheduler = Container.shared.scheduler.resolve()
+
         switch self {
         case .healthKitPermissionsMissing(let permissions):
             return healthKitManager.request(permissions)
                 .catchErrorJustReturn(())
                 .receive(on: scheduler)
+                .eraseToAnyPublisher()
         case .healthKitDataMissing:
             UIApplication.shared.open(.health)
             return .just(())
@@ -135,6 +146,7 @@ enum Banner: Equatable, Identifiable {
                 .mapToVoid()
                 .catchErrorJustReturn(())
                 .receive(on: scheduler)
+                .eraseToAnyPublisher()
         case .notificationPermissionsDenied:
             UIApplication.shared.open(.notificationSettings)
             return .just(())
