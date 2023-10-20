@@ -4,13 +4,7 @@ import SwiftUI
 import SwiftUIX
 
 enum Banner: Equatable, Identifiable {
-
-    private final class BannerDependency {
-        @Injected(\.healthKitManager) var healthKitManager
-        @Injected(\.notificationsManager) var notificationsManager
-        @Injected(\.scheduler) var scheduler
-    }
-
+    
     struct Configuration {
 
         struct Action {
