@@ -255,19 +255,8 @@ final class CompetitionViewModel: ObservableObject {
 
     func tapped(banner: Banner) {
         switch banner {
-        case .healthKitPermissionsMissing:
-            let requiredHealthPermissions = competition.scoringModel
-                .requiredPermissions
-                .compactMap { permission in
-                    switch permission {
-                    case .health(let healthKitPermissionType):
-                        return healthKitPermissionType
-                    case .notifications:
-                        return nil
-                    }
-                }
-
-            healthKitManager.request(requiredHealthPermissions)
+        case .healthKitPermissionsMissing(let permissions):
+            healthKitManager.request(permissions)
                 .catchErrorJustReturn(())
                 .receive(on: scheduler)
                 .sink(withUnretained: self) { strongSelf in

@@ -1,7 +1,14 @@
+import Combine
 import ECKit
+import Factory
 import Foundation
 
 enum DeepLink: Equatable {
+
+    private final class DeepLinkDependency {
+        @Injected(\.competitionsManager) private var competitionsManager
+        @Injected(\.friendsManager) private var friendsManager
+    }
 
     private enum Constants {
         static let baseURL = URL(string: "https://friendly-competitions.app")!
@@ -46,6 +53,28 @@ enum DeepLink: Equatable {
                 .appendingPathComponent(Constants.competition)
                 .appendingPathComponent(id)
                 .appendingPathComponent("results")
+        }
+    }
+
+    var navigationDestination: AnyPublisher<NavigationDestination?, Never> {
+        let dependency = DeepLinkDependency()
+
+        switch self {
+        case .user(let id):
+            return dependency.friendsManager.user(withId: id)
+                .map { .user($0) }
+                .catchErrorJustReturn(nil)
+                .eraseToAnyPublisher()
+        case .competition(let id):
+            return dependency.competitionsManager.search(byID: id)
+                .map { .competition($0) }
+                .catchErrorJustReturn(nil)
+                .eraseToAnyPublisher()
+        case .competitionResults(let id):
+            return dependency.competitionsManager.search(byID: id)
+                .map { .competition($0) }
+                .catchErrorJustReturn(nil)
+                .eraseToAnyPublisher()
         }
     }
 }

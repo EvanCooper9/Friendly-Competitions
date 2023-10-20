@@ -2,7 +2,7 @@ import Combine
 import SwiftUI
 import SwiftUIX
 
-enum Banner: String, CaseIterable, Identifiable {
+enum Banner: Equatable, Identifiable {
 
     struct Configuration {
 
@@ -20,14 +20,21 @@ enum Banner: String, CaseIterable, Identifiable {
     }
 
     // HealthKit Permissions & Data
-    case healthKitPermissionsMissing
-    case healthKitDataMissing
+    case healthKitPermissionsMissing(permissions: [HealthKitPermissionType])
+    case healthKitDataMissing(dataType: [HealthKitPermissionType])
 
     // Notification Permissions
     case notificationPermissionsMissing
     case notificationPermissionsDenied
 
-    var id: RawValue { rawValue }
+    var id: String {
+        switch self {
+        case .healthKitPermissionsMissing: return "healthKitPermissionsMissing"
+        case .healthKitDataMissing: return "healthKitDataMissing"
+        case .notificationPermissionsMissing: return "notificationPermissionsMissing"
+        case .notificationPermissionsDenied: return "notificationPermissionsDenied"
+        }
+    }
 
     var configuration: Configuration {
         switch self {
@@ -47,7 +54,7 @@ enum Banner: String, CaseIterable, Identifiable {
     }
 
     func view(_ tapped: @escaping () -> Void) -> some View {
-        HStack(spacing: 20) {
+        HStack(spacing: 10) {
             if let icon = configuration.icon {
                 Image(systemName: icon)
                     .foregroundColor(configuration.foreground)
@@ -55,6 +62,7 @@ enum Banner: String, CaseIterable, Identifiable {
             }
 
             Text(configuration.message)
+                .font(.footnote)
                 .lineLimit(2)
                 .bold()
                 .foregroundColor(configuration.foreground)
@@ -63,16 +71,18 @@ enum Banner: String, CaseIterable, Identifiable {
 
             if let action = configuration.action {
                 Button(action.cta, action: tapped)
+                    .font(.footnote)
                     .bold()
                     .foregroundColor(action.foreground)
                     .padding(.small)
                     .background(action.background)
-                    .cornerRadius(10)
+                    .cornerRadius(5)
             }
         }
-        .padding()
+        .padding(12)
         .background(configuration.background)
         .cornerRadius(10)
+        .shadow(color: .gray.opacity(0.25), radius: 10)
     }
 }
 
@@ -104,9 +114,17 @@ extension Banner.Configuration {
 
 #if DEBUG
 struct Banner_Previews: PreviewProvider {
+
+    private static let banners: [Banner] = [
+        .healthKitDataMissing(dataType: []),
+        .healthKitPermissionsMissing(permissions: []),
+        .notificationPermissionsMissing,
+        .notificationPermissionsDenied
+    ]
+
     static var previews: some View {
         VStack {
-            ForEach(Array(Banner.allCases.enumerated()), id: \.offset) { _, banner in
+            ForEach(banners) { banner in
                 banner.view {
                     // do nothing
                 }

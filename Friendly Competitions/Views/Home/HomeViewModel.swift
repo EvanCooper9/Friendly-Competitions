@@ -3,6 +3,7 @@ import CombineExt
 import ECKit
 import Factory
 import Foundation
+import UIKit
 
 final class HomeViewModel: ObservableObject {
 
@@ -15,7 +16,7 @@ final class HomeViewModel: ObservableObject {
 
     @Published var navigationDestinations = [NavigationDestination]()
     @Published var deepLinkedNavigationDestination: NavigationDestination?
-
+    @Published private(set) var banners = [Banner]()
     @Published private(set) var competitions = [Competition]()
     @Published private(set) var friendRows = [FriendRow]()
     @Published private(set) var invitedCompetitions = [Competition]()
@@ -36,6 +37,8 @@ final class HomeViewModel: ObservableObject {
     @Injected(\.competitionsManager) private var competitionsManager
     @Injected(\.featureFlagManager) private var featureFlagManager
     @Injected(\.friendsManager) private var friendsManager
+    @Injected(\.healthKitManager) private var healthKitManager
+    @Injected(\.notificationsManager) private var notificationsManager
     @LazyInjected(\.premiumManager) private var premiumManager
     @Injected(\.scheduler) private var scheduler
     @Injected(\.userManager) private var userManager
@@ -43,6 +46,7 @@ final class HomeViewModel: ObservableObject {
     @UserDefault("competitionsFiltered", defaultValue: false) var competitionsFiltered
     @UserDefault("dismissedPremiumBanner", defaultValue: false) private var dismissedPremiumBanner
 
+    private let didRequestPermissions = CurrentValueSubject<Void, Never>(())
     private var cancellables = Cancellables()
 
     // MARK: - Lifecycle
@@ -59,28 +63,10 @@ final class HomeViewModel: ObservableObject {
 
         appState.deepLink
             .flatMapLatest(withUnretained: self) { strongSelf, deepLink -> AnyPublisher<NavigationDestination?, Never> in
-                switch deepLink {
-                case .user(let id):
-                    return strongSelf.friendsManager.user(withId: id)
-                        .isLoading { strongSelf.loadingDeepLink = $0 }
-                        .map { .user($0) }
-                        .ignoreFailure()
-                        .eraseToAnyPublisher()
-                case .competition(let id):
-                    return strongSelf.competitionsManager.search(byID: id)
-                        .isLoading { strongSelf.loadingDeepLink = $0 }
-                        .map { .competition($0) }
-                        .ignoreFailure()
-                        .eraseToAnyPublisher()
-                case .competitionResults(let id):
-                    return strongSelf.competitionsManager.search(byID: id)
-                        .isLoading { strongSelf.loadingDeepLink = $0 }
-                        .map { .competition($0) }
-                        .ignoreFailure()
-                        .eraseToAnyPublisher()
-                case .none:
-                    return .just(nil)
-                }
+                guard let deepLink else { return .never() }
+                return deepLink.navigationDestination
+                    .isLoading { strongSelf.loadingDeepLink = $0 }
+                    .eraseToAnyPublisher()
             }
             .receive(on: scheduler)
             .sink(withUnretained: self) { strongSelf, deepLinkedNavigationDestination in
@@ -118,6 +104,7 @@ final class HomeViewModel: ObservableObject {
             .assign(to: &$friendRows)
 
         handlePremiumBanner()
+        bindPermissionBanners()
 
         userManager.userPublisher
             .filter { $0.isAnonymous != true }
@@ -155,6 +142,34 @@ final class HomeViewModel: ObservableObject {
         showAbout = true
     }
 
+    func tapped(banner: Banner) {
+        switch banner {
+        case .healthKitPermissionsMissing(let permissions):
+            healthKitManager.request(permissions)
+                .catchErrorJustReturn(())
+                .receive(on: scheduler)
+                .sink(withUnretained: self) { strongSelf in
+                    strongSelf.banners.remove(banner)
+                    strongSelf.didRequestPermissions.send()
+                }
+                .store(in: &cancellables)
+        case .healthKitDataMissing:
+            UIApplication.shared.open(.health)
+        case .notificationPermissionsMissing:
+            notificationsManager.requestPermissions()
+                .mapToVoid()
+                .catchErrorJustReturn(())
+                .receive(on: scheduler)
+                .sink(withUnretained: self) { strongSelf in
+                    strongSelf.banners.remove(banner)
+                    strongSelf.didRequestPermissions.send()
+                }
+                .store(in: &cancellables)
+        case .notificationPermissionsDenied:
+            UIApplication.shared.open(.notificationSettings)
+        }
+    }
+
     // MARK: - Private Methods
 
     private func handlePremiumBanner() {
@@ -170,6 +185,19 @@ final class HomeViewModel: ObservableObject {
             }
             .receive(on: scheduler)
             .assign(to: &$showPremiumBanner)
+    }
+
+    private func bindPermissionBanners() {
+        Publishers
+            .CombineLatest(didRequestPermissions, $competitions)
+            .flatMapLatest { _, competitions in
+                competitions
+                    .map { $0.banners }
+                    .combineLatest()
+                    .map { $0.flattened() }
+            }
+            .map { $0.uniqued(on: \.id) }
+            .assign(to: &$banners)
     }
 }
 

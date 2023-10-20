@@ -71,16 +71,42 @@ extension Competition {
     }
 
     private func healthKitBanner<Data>(for permissions: [HealthKitPermissionType], dataPublisher: AnyPublisher<[Data], Error>, healthKitManager: HealthKitManaging) -> AnyPublisher<Banner?, Never> {
-        return healthKitManager.shouldRequest(permissions)
-            .catchErrorJustReturn(false)
-            .flatMapLatest { shouldRequest -> AnyPublisher<Banner?, Never> in
-                guard !shouldRequest else {
-                    return .just(.healthKitPermissionsMissing)
+        permissions
+            .map { permission in
+                healthKitManager.shouldRequest([permission])
+                    .catchErrorJustReturn(false)
+                    .flatMapLatest { shouldRequest -> AnyPublisher<Banner?, Never> in
+                        guard !shouldRequest else {
+                            return .just(.healthKitPermissionsMissing(permissions: [permission]))
+                        }
+                        return dataPublisher
+                            .map { $0.isEmpty ? .healthKitDataMissing(dataType: [permission]) : nil }
+                            .catchErrorJustReturn(.healthKitDataMissing(dataType: [permission]))
+                            .eraseToAnyPublisher()
+                    }
+            }
+            .combineLatest()
+            .map { banners in
+                var missingPermissions = [HealthKitPermissionType]()
+                var missingData = [HealthKitPermissionType]()
+
+                banners.forEach { banner in
+                    switch banner {
+                    case .healthKitPermissionsMissing(let permissions):
+                        missingPermissions.append(contentsOf: permissions)
+                    case .healthKitDataMissing(let permissions):
+                        missingData.append(contentsOf: permissions)
+                    default:
+                        break
+                    }
                 }
-                return dataPublisher
-                    .map { $0.isEmpty ? .healthKitDataMissing : nil }
-                    .catchErrorJustReturn(.healthKitDataMissing)
-                    .eraseToAnyPublisher()
+
+                if missingPermissions.isNotEmpty {
+                    return Banner.healthKitPermissionsMissing(permissions: missingPermissions)
+                } else if missingData.isNotEmpty {
+                    return Banner.healthKitDataMissing(dataType: missingData)
+                }
+                return nil
             }
             .eraseToAnyPublisher()
     }

@@ -1,3 +1,4 @@
+import ECKit
 import SwiftUI
 import SwiftUIX
 
@@ -7,7 +8,15 @@ struct HomeView: View {
 
     var body: some View {
         NavigationStack(path: $viewModel.navigationDestinations) {
-            List {
+            CustomList {
+
+                ItemStack(models: viewModel.banners) { banner in
+                    banner.view {
+                        viewModel.tapped(banner: banner)
+                    }
+                }
+                .padding(.horizontal)
+
                 if viewModel.showPremiumBanner {
                     premiumBanner
                 }
@@ -44,12 +53,13 @@ struct HomeView: View {
             }
             .withLoadingOverlay(isLoading: viewModel.loadingDeepLink)
             .navigationDestination(for: NavigationDestination.self) { $0.view }
+            .animation(.default, value: viewModel.banners)
             .registerScreenView(name: "Home")
         }
     }
 
     private var premiumBanner: some View {
-        Section {
+        CustomListSection {
             PremiumBanner().overlay {
                 Button(systemImage: .xmark, action: viewModel.dismissPremiumBannerTapped)
                     .padding(14)
@@ -61,15 +71,15 @@ struct HomeView: View {
     }
 
     private var activitySummary: some View {
-        Section {
+        CustomListSection {
             ActivitySummaryInfoView(source: .local)
         } header: {
-            Text(L10n.Home.Section.Activity.title).font(.title3)
+            Text(L10n.Home.Section.Activity.title)
         }
     }
 
     private var competitions: some View {
-        Section {
+        CustomListSection {
             ForEach(viewModel.competitions + viewModel.invitedCompetitions) { competition in
                 NavigationLink(value: NavigationDestination.competition(competition)) {
                     CompetitionDetails(competition: competition, showParticipantCount: false, isFeatured: false)
@@ -78,16 +88,17 @@ struct HomeView: View {
         } header: {
             HStack {
                 Text(L10n.Home.Section.Competitions.title)
-                    .font(.title3)
+                    .foregroundStyle(.secondary)
                 Spacer()
                 Button(action: viewModel.newCompetitionTapped) {
                     Image(systemName: .plusCircle)
-                        .font(.title2)
+                        .font(.title3)
                 }
             }
         } footer: {
             if viewModel.competitions.isEmpty && viewModel.invitedCompetitions.isEmpty {
                 Text(L10n.Home.Section.Competitions.createPrompt)
+                    .foregroundStyle(.secondary)
             }
         }
         .sheet(isPresented: $viewModel.showNewCompetition) {
@@ -96,7 +107,7 @@ struct HomeView: View {
     }
 
     private var friends: some View {
-        Section {
+        CustomListSection {
             ForEach(viewModel.friendRows) { row in
                 NavigationLink(value: NavigationDestination.user(row.user)) {
                     HStack {
@@ -114,16 +125,17 @@ struct HomeView: View {
         } header: {
             HStack {
                 Text(L10n.Home.Section.Friends.title)
-                    .font(.title3)
+                    .foregroundStyle(.secondary)
                 Spacer()
                 Button(action: viewModel.addFriendsTapped) {
                     Image(systemName: .personCropCircleBadgePlus)
-                        .font(.title2)
+                        .font(.title3)
                 }
             }
         } footer: {
             if viewModel.friendRows.isEmpty {
                 Text(L10n.Home.Section.Friends.addPrompt)
+                    .foregroundStyle(.secondary)
             }
         }
         .sheet(isPresented: $viewModel.showAddFriends) { InviteFriendsView(action: .addFriend) }
