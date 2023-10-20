@@ -15,6 +15,7 @@ final class HomeViewModelTests: FCTestCase {
         activitySummaryManager.activitySummary = .never()
         activitySummaryManager.activitySummariesInReturnValue = .never()
         appState.deepLink = .never()
+        appState.didBecomeActive = .never()
         competitionsManager.competitions = .never()
         competitionsManager.invitedCompetitions = .never()
         competitionsManager.hasPremiumResults = .never()
