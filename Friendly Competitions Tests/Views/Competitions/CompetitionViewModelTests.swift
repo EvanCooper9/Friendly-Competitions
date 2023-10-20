@@ -83,11 +83,7 @@ final class CompetitionViewModelTests: FCTestCase {
 
     func testThatTappingBannerRequestsHealthKitPermissions() {
         let expectation = self.expectation(description: #function)
-        let expected = [
-            [], 
-            [Banner.healthKitPermissionsMissing(permissions: [.activitySummaryType])],
-            []
-        ]
+        let expected = [[], [Banner.healthKitPermissionsMissing(permissions: [.activitySummaryType])], []]
 
         activitySummaryManager.activitySummariesInReturnValue = .just([])
         appState.didBecomeActive = .just(true)
@@ -97,7 +93,6 @@ final class CompetitionViewModelTests: FCTestCase {
 
         let viewModel = CompetitionViewModel(competition: .mock)
         viewModel.$banners
-            .print()
             .removeDuplicates()
             .collect(expected.count)
             .expect(expected, expectation: expectation)
