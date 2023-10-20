@@ -93,6 +93,7 @@ final class CompetitionViewModelTests: FCTestCase {
 
         let viewModel = CompetitionViewModel(competition: .mock)
         viewModel.$banners
+            .print()
             .removeDuplicates()
             .collect(expected.count)
             .expect(expected, expectation: expectation)
