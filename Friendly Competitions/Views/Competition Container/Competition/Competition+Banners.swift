@@ -5,19 +5,16 @@ import Foundation
 
 extension Competition {
 
-    private final class BannerDependency {
-        @Injected(\.activitySummaryManager) var activitySummaryManager
-        @Injected(\.healthKitManager) var healthKitManager
-        @Injected(\.notificationsManager) var notificationsManager
-        @Injected(\.stepCountManager) var stepCountManager
-        @Injected(\.userManager) var userManager
-        @Injected(\.workoutManager) var workoutManager
-    }
-
     var banners: AnyPublisher<[Banner], Never> {
-        let dependency = BannerDependency()
 
-        guard participants.contains(dependency.userManager.user.id) else { return .just([]) }
+        let activitySummaryManager = Container.shared.activitySummaryManager.resolve()
+        let healthKitManager = Container.shared.healthKitManager.resolve()
+        let notificationsManager = Container.shared.notificationsManager.resolve()
+        let stepCountManager = Container.shared.stepCountManager.resolve()
+        let userManager = Container.shared.userManager.resolve()
+        let workoutManager = Container.shared.workoutManager.resolve()
+
+        guard participants.contains(userManager.user.id) else { return .just([]) }
 
         let dateInterval = DateInterval(start: start, end: end)
 
@@ -37,20 +34,20 @@ extension Competition {
             switch scoringModel {
             case .activityRingCloseCount, .percentOfGoals, .rawNumbers:
                 return self.healthKitBanner(for: permissionTypes,
-                                            dataPublisher: dependency.activitySummaryManager.activitySummaries(in: dateInterval),
-                                            healthKitManager: dependency.healthKitManager)
+                                            dataPublisher: activitySummaryManager.activitySummaries(in: dateInterval),
+                                            healthKitManager: healthKitManager)
             case .workout(let workoutType, let metrics):
                 return self.healthKitBanner(for: permissionTypes,
-                                            dataPublisher: dependency.workoutManager.workouts(of: workoutType, with: metrics, in: dateInterval),
-                                            healthKitManager: dependency.healthKitManager)
+                                            dataPublisher: workoutManager.workouts(of: workoutType, with: metrics, in: dateInterval),
+                                            healthKitManager: healthKitManager)
             case .stepCount:
                 return self.healthKitBanner(for: permissionTypes,
-                                            dataPublisher: dependency.stepCountManager.stepCounts(in: dateInterval),
-                                            healthKitManager: dependency.healthKitManager)
+                                            dataPublisher: stepCountManager.stepCounts(in: dateInterval),
+                                            healthKitManager: healthKitManager)
             }
         }()
 
-        let notificationsBanner = dependency.notificationsManager
+        let notificationsBanner = notificationsManager
             .permissionStatus()
             .map { permissionStatus -> Banner? in
                 switch permissionStatus {
