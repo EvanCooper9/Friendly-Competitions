@@ -1,4 +1,6 @@
+import Combine
 import ECKit
+import Factory
 import Foundation
 
 enum DeepLink: Equatable {
@@ -46,6 +48,30 @@ enum DeepLink: Equatable {
                 .appendingPathComponent(Constants.competition)
                 .appendingPathComponent(id)
                 .appendingPathComponent("results")
+        }
+    }
+
+    var navigationDestination: AnyPublisher<NavigationDestination?, Never> {
+
+        let friendsManager = Container.shared.friendsManager.resolve()
+        let competitionsManager = Container.shared.competitionsManager.resolve()
+
+        switch self {
+        case .user(let id):
+            return friendsManager.user(withId: id)
+                .map { .user($0) }
+                .catchErrorJustReturn(nil)
+                .eraseToAnyPublisher()
+        case .competition(let id):
+            return competitionsManager.search(byID: id)
+                .map { .competition($0) }
+                .catchErrorJustReturn(nil)
+                .eraseToAnyPublisher()
+        case .competitionResults(let id):
+            return competitionsManager.search(byID: id)
+                .map { .competition($0) }
+                .catchErrorJustReturn(nil)
+                .eraseToAnyPublisher()
         }
     }
 }

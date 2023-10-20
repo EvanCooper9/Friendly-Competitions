@@ -13,6 +13,7 @@ final class HomeViewModelTests: FCTestCase {
         super.setUp()
 
         activitySummaryManager.activitySummary = .never()
+        activitySummaryManager.activitySummariesInReturnValue = .never()
         appState.deepLink = .never()
         competitionsManager.competitions = .never()
         competitionsManager.invitedCompetitions = .never()
@@ -21,8 +22,35 @@ final class HomeViewModelTests: FCTestCase {
         friendsManager.friends = .never()
         friendsManager.friendRequests = .never()
         friendsManager.friendActivitySummaries = .never()
+        healthKitManager.shouldRequestReturnValue = .never()
+        notificationsManager.permissionStatusReturnValue = .never()
         premiumManager.premium = .never()
-        userManager.userPublisher = .just(.evan)
+        userManager.userPublisher = .never()
+        userManager.user = .evan
+    }
+
+    func testThatDeepLinkSetsNavigationDestination() {
+        let deepLinkSubject = PassthroughSubject<DeepLink?, Never>()
+        appState.deepLink = deepLinkSubject.eraseToAnyPublisher()
+
+        let competition = Competition.mock
+        competitionsManager.searchByIDReturnValue = .just(competition)
+        let user = User.evan
+        friendsManager.userWithIdReturnValue = .just(user)
+
+        let viewModel = HomeViewModel()
+
+        deepLinkSubject.send(.competition(id: competition.id))
+        scheduler.advance()
+        XCTAssertEqual(viewModel.deepLinkedNavigationDestination, .competition(competition))
+
+        deepLinkSubject.send(.competitionResults(id: competition.id))
+        scheduler.advance()
+        XCTAssertEqual(viewModel.deepLinkedNavigationDestination, .competition(competition))
+
+        deepLinkSubject.send(.user(id: user.id))
+        scheduler.advance()
+        XCTAssertEqual(viewModel.deepLinkedNavigationDestination, .user(user))
     }
 
     func testThatCompetitionsUpdates() {
