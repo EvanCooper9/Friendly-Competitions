@@ -1,6 +1,6 @@
 import Foundation
 
-enum AnalyticsEvent: Codable {
+enum AnalyticsEvent: Codable, Equatable {
 
     // competitions
     case acceptCompetition(id: String)

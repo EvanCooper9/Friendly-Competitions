@@ -9,7 +9,7 @@ import Foundation
 import HealthKit
 
 // sourcery: AutoMockable
-protocol ActivitySummaryManaging {
+protocol ActivitySummaryManaging: AnyObject {
     var activitySummary: AnyPublisher<ActivitySummary?, Never> { get }
     func activitySummaries(in dateInterval: DateInterval) -> AnyPublisher<[ActivitySummary], Error>
 }

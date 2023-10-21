@@ -5,7 +5,7 @@ import Foundation
 import HealthKit
 
 // sourcery: AutoMockable
-protocol StepCountManaging {
+protocol StepCountManaging: AnyObject {
     func stepCounts(in dateInterval: DateInterval) -> AnyPublisher<[StepCount], Error>
 }
 

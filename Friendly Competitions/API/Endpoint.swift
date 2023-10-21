@@ -26,7 +26,7 @@ enum Endpoint {
         case .leaveCompetition:
             return "leaveCompetition"
         case .respondToCompetitionInvite:
-            return "repondToCompetitionInvite"
+            return "respondToCompetitionInvite"
         case .inviteUserToCompetition:
             return "inviteUserToCompetition"
         case .deleteCompetition:

@@ -2,12 +2,7 @@ import Foundation
 
 @propertyWrapper
 struct PostDecoded<Strategy: PostDecodingStrategy, Value> where Strategy.Value == Value {
-
     var wrappedValue: Value
-
-    init(wrappedValue: Value) {
-        self.wrappedValue = wrappedValue
-    }
 }
 
 protocol PostDecodingStrategy {
