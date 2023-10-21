@@ -56,4 +56,20 @@ final class WelcomeViewModelTests: FCTestCase {
 
         waitForExpectations(timeout: 1)
     }
+
+    func testMoreOptionsTapped() {
+        let viewModel = WelcomeViewModel()
+        XCTAssertTrue(viewModel.showMoreSignInOptionsButton)
+        XCTAssertEqual(viewModel.signInOptions, [.apple])
+        viewModel.moreOptionsTapped()
+        XCTAssertFalse(viewModel.showMoreSignInOptionsButton)
+        XCTAssertEqual(viewModel.signInOptions, [.apple, .email, .anonymous])
+    }
+
+    func testSignInOptionsID() {
+        let options: [WelcomeViewModel.SignInOptions] = [.anonymous, .apple, .email]
+        options.forEach { option in
+            XCTAssertEqual(option.id, option.rawValue)
+        }
+    }
 }
