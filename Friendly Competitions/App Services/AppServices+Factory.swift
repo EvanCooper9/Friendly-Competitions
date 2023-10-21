@@ -8,6 +8,7 @@ extension Container {
                 RevenueCatAppService()
                 DeveloperAppService()
                 DataUploadingAppService()
+                NotificationsAppService()
                 BackgroundJobsAppService()
             }
         }

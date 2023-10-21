@@ -46,7 +46,7 @@ final class HomeViewModel: ObservableObject {
     @UserDefault("competitionsFiltered", defaultValue: false) var competitionsFiltered
     @UserDefault("dismissedPremiumBanner", defaultValue: false) private var dismissedPremiumBanner
 
-    private let didRequestPermissions = CurrentValueSubject<Void, Never>(())
+    private let didHandleBannerTap = CurrentValueSubject<Void, Never>(())
     private var cancellables = Cancellables()
 
     // MARK: - Lifecycle
@@ -90,7 +90,7 @@ final class HomeViewModel: ObservableObject {
         Publishers
             .CombineLatest(friendsManager.friends, friendsManager.friendRequests)
             .map { $0.with(false) + $1.with(true) }
-            .combineLatest(friendsManager.friendActivitySummaries)
+            .combineLatest(friendsManager.friendActivitySummaries.prepend([:]))
             .map { models, activitySummaries in
                 models.map { friend, isInvitation in
                     FriendRow(
@@ -100,6 +100,7 @@ final class HomeViewModel: ObservableObject {
                     )
                 }
             }
+            .removeDuplicates()
             .receive(on: scheduler)
             .assign(to: &$friendRows)
 
@@ -146,7 +147,7 @@ final class HomeViewModel: ObservableObject {
         banner.tapped()
             .sink(withUnretained: self) { strongSelf in
                 strongSelf.banners.remove(banner)
-                strongSelf.didRequestPermissions.send()
+                strongSelf.didHandleBannerTap.send()
             }
             .store(in: &cancellables)
     }
@@ -170,16 +171,42 @@ final class HomeViewModel: ObservableObject {
 
     private func bindPermissionBanners() {
         Publishers
-            .CombineLatest(didRequestPermissions, $competitions)
-            .flatMapLatest { _, competitions -> AnyPublisher<[Banner], Never> in
-                guard competitions.isNotEmpty else { return .just([]) }
-                return competitions
-                    .map { $0.banners }
-                    .combineLatest()
-                    .map { $0.flattened() }
+            .CombineLatest(didHandleBannerTap, appState.didBecomeActive)
+            .mapToVoid()
+            .flatMapLatest(withUnretained: self) { strongSelf in
+                let competitionBanners = strongSelf.$competitions
+                    .flatMapLatest { competitions -> AnyPublisher<[Banner], Never> in
+                        guard competitions.isNotEmpty else { return .just([]) }
+                        return competitions
+                            .map { $0.banners }
+                            .combineLatest()
+                            .map { $0.flattened() }
+                            .eraseToAnyPublisher()
+                    }
+
+                let notificationBanner = strongSelf.notificationsManager
+                    .permissionStatus()
+                    .map { permissionStatus -> Banner? in
+                        switch permissionStatus {
+                        case .authorized, .done:
+                            return nil
+                        case .denied:
+                            return .notificationPermissionsDenied
+                        case .notDetermined:
+                            return .notificationPermissionsMissing
+                        }
+                    }
+
+                return Publishers
+                    .CombineLatest(competitionBanners, notificationBanner)
+                    .map { competitionBanners, notificationBanner in
+                        guard let notificationBanner else { return competitionBanners }
+                        return competitionBanners.appending(notificationBanner)
+                    }
                     .eraseToAnyPublisher()
             }
             .map { $0.uniqued(on: \.id) }
+            .receive(on: scheduler)
             .assign(to: &$banners)
     }
 }
