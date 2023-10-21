@@ -9,17 +9,10 @@ extension Functions: API {
         httpsCallable(endpoint.name)
             .call(endpoint.data)
             .mapToVoid()
-            .handleEvents(receiveCompletion: { completion in
-                switch completion {
-                case .finished:
-                    break
-                case .failure(let error):
-                    error.reportToCrashlytics(userInfo: [
-                        "apiEndpoint": endpoint.name,
-                        "apiData": endpoint.data
-                    ])
-                }
-            })
+            .reportErrorToCrashlytics(userInfo: [
+                "apiEndpoint": endpoint.name,
+                "apiData": endpoint.data
+            ])
             .eraseToAnyPublisher()
     }
 }
