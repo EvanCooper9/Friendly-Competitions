@@ -42,7 +42,8 @@ class FCTestCase: XCTestCase {
 
     override func setUp() {
         super.setUp()
-        register()
+        Container.shared.reset()
+        setupMocks()
     }
 
     override func tearDown() {
@@ -50,7 +51,7 @@ class FCTestCase: XCTestCase {
         retainedObjects = []
     }
 
-    private func register() {
+    private func setupMocks() {
         Container.shared.activitySummaryCache.register { self.activitySummaryCache }
         Container.shared.activitySummaryManager.register { self.activitySummaryManager }
         Container.shared.analyticsManager.register { self.analyticsManager }

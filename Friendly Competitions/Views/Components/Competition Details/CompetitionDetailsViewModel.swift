@@ -11,12 +11,20 @@ final class CompetitionDetailsViewModel: ObservableObject {
 
     // MARK: - Private Properties
 
+    @Injected(\.competitionsManager) private var competitionsManager
     @Injected(\.userManager) private var userManager
 
     // MARK: - Lifecycle
 
     init(competition: Competition) {
         self.competition = competition
-        isInvitation = competition.pendingParticipants.contains(userManager.user.id)
+
+        competitionsManager.competitionPublisher(for: competition.id)
+            .catchErrorJustReturn(competition)
+            .map { [weak self] in
+                guard let self else { return false }
+                return $0.pendingParticipants.contains(self.userManager.user.id)
+            }
+            .assign(to: &$isInvitation)
     }
 }

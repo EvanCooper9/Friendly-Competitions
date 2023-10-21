@@ -121,6 +121,7 @@ struct HomeView: View {
                                 .foregroundColor(.secondaryLabel)
                         }
                     }
+                    .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
             }
