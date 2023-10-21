@@ -77,9 +77,9 @@ extension WorkoutType {
         switch self {
         case .cycling:
             return .distanceCycling
-        case .running:
+        case .swimming:
             return .distanceSwimming
-        case .swimming, .walking:
+        case .running, .walking:
             return .distanceWalkingRunning
         }
     }

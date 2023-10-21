@@ -78,6 +78,7 @@
 		ED07573729CA65FC00141AD4 /* FirebaseStorageCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = ED07573629CA65FC00141AD4 /* FirebaseStorageCombine-Community */; };
 		ED0C4BE029D31068003485CF /* FirestoreEncoderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED0C4BDF29D31068003485CF /* FirestoreEncoderTests.swift */; };
 		ED0C4BE729D496AC003485CF /* FirestoreDecoderTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED0C4BE629D496AC003485CF /* FirestoreDecoderTests.swift */; };
+		ED10E6912AE37754008CC557 /* NavigationDestinationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED10E6902AE37754008CC557 /* NavigationDestinationTests.swift */; };
 		ED130764295FFA5C00E0AC87 /* CompetitionResultsDataPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED130763295FFA5C00E0AC87 /* CompetitionResultsDataPoint.swift */; };
 		ED19724C283803850018FDFF /* WorkoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED19724B283803850018FDFF /* WorkoutTests.swift */; };
 		ED19724E283803F60018FDFF /* WorkoutTypeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED19724D283803F60018FDFF /* WorkoutTypeTests.swift */; };
@@ -351,6 +352,7 @@
 		ED039767295F5458003D4D80 /* CompetitionResultsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionResultsViewModel.swift; sourceTree = "<group>"; };
 		ED0C4BDF29D31068003485CF /* FirestoreEncoderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreEncoderTests.swift; sourceTree = "<group>"; };
 		ED0C4BE629D496AC003485CF /* FirestoreDecoderTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreDecoderTests.swift; sourceTree = "<group>"; };
+		ED10E6902AE37754008CC557 /* NavigationDestinationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationDestinationTests.swift; sourceTree = "<group>"; };
 		ED130763295FFA5C00E0AC87 /* CompetitionResultsDataPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionResultsDataPoint.swift; sourceTree = "<group>"; };
 		ED19724B283803850018FDFF /* WorkoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutTests.swift; sourceTree = "<group>"; };
 		ED19724D283803F60018FDFF /* WorkoutTypeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutTypeTests.swift; sourceTree = "<group>"; };
@@ -1087,6 +1089,7 @@
 			isa = PBXGroup;
 			children = (
 				ED58C99729ABB2C200393468 /* RootViewModelTests.swift */,
+				ED10E6902AE37754008CC557 /* NavigationDestinationTests.swift */,
 				EDBDFB4B29D0AEC9003E6278 /* Competitions */,
 				ED9FB8C42A40B8FC00B09310 /* Components */,
 				ED1CFA992864AF1400192E49 /* Home */,
@@ -1959,6 +1962,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ED10E6912AE37754008CC557 /* NavigationDestinationTests.swift in Sources */,
 				ED58C99629ABAEA500393468 /* User+Extensions.swift in Sources */,
 				EDFA2CD829D6796500768D0E /* EnvironmentManagerTests.swift in Sources */,
 				ED879BFB29A06AAB0007DB91 /* ActivitySummaryTests.swift in Sources */,

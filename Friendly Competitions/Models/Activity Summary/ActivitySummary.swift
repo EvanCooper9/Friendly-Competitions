@@ -22,9 +22,9 @@ struct ActivitySummary: Identifiable, Codable, Equatable, Hashable {
         switch scoringModel {
         case .activityRingCloseCount:
             let count = [
-                activeEnergyBurned > activeEnergyBurnedGoal,
-                appleExerciseTime > appleExerciseTimeGoal,
-                appleStandHours > appleStandHoursGoal
+                activeEnergyBurned >= activeEnergyBurnedGoal,
+                appleExerciseTime >= appleExerciseTimeGoal,
+                appleStandHours >= appleStandHoursGoal
             ]
             .filter { $0 }
             .count
