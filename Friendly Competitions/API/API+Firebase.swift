@@ -11,7 +11,7 @@ extension Functions: API {
             .mapToVoid()
             .reportErrorToCrashlytics(userInfo: [
                 "apiEndpoint": endpoint.name,
-                "apiData": endpoint.data
+                "apiData": endpoint.data ?? "empty"
             ])
             .eraseToAnyPublisher()
     }
