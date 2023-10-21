@@ -5,6 +5,7 @@ import UIKit
 
 // sourcery: AutoMockable
 protocol NotificationsManaging {
+    func setUp()
     func permissionStatus() -> AnyPublisher<PermissionStatus, Never>
     func requestPermissions() -> AnyPublisher<Bool, Error>
 }
@@ -17,6 +18,11 @@ final class NotificationsManager: NSObject, NotificationsManaging {
     @Injected(\.analyticsManager) private var analyticsManager
 
     // MARK: - Public Methods
+
+    func setUp() {
+        UNUserNotificationCenter.current().delegate = self
+        UIApplication.shared.registerForRemoteNotifications()
+    }
 
     func permissionStatus() -> AnyPublisher<PermissionStatus, Never> {
         Future { promise in
@@ -34,12 +40,6 @@ final class NotificationsManager: NSObject, NotificationsManaging {
                 completionHandler: { [weak self] authorized, error in
                     guard let self else { return }
                     self.analyticsManager.log(event: .notificationPermissions(authorized: authorized))
-                    if authorized {
-                        DispatchQueue.main.async {
-                            self.setupNotifications()
-                        }
-                    }
-
                     if let error {
                         promise(.failure(error))
                     } else {
@@ -49,13 +49,6 @@ final class NotificationsManager: NSObject, NotificationsManaging {
             )
         }
         .eraseToAnyPublisher()
-    }
-
-    // MARK: - Private Methods
-
-    private func setupNotifications() {
-        UNUserNotificationCenter.current().delegate = self
-        UIApplication.shared.registerForRemoteNotifications()
     }
 }
 

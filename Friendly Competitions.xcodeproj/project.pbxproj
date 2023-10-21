@@ -269,6 +269,7 @@
 		EDC9CEE52AE3693A002FCE9C /* DataUploadingAppServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC9CEE42AE3693A002FCE9C /* DataUploadingAppServiceTests.swift */; };
 		EDC9CEEE2AE36E1A002FCE9C /* BackgroundJobsAppServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC9CEED2AE36E1A002FCE9C /* BackgroundJobsAppServiceTests.swift */; };
 		EDC9CEF12AE37066002FCE9C /* AppStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC9CEF02AE37066002FCE9C /* AppStateTests.swift */; };
+		EDC9CEDE2AE323A3002FCE9C /* NotificationsAppService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC9CEDD2AE323A3002FCE9C /* NotificationsAppService.swift */; };
 		EDD894FA2962A0E2009636E6 /* Product.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD894F92962A0E2009636E6 /* Product.swift */; };
 		EDD894FD29633F92009636E6 /* EnvironmentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD894FC29633F92009636E6 /* EnvironmentManager.swift */; };
 		EDD8950029634043009636E6 /* FCEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD894FF29634043009636E6 /* FCEnvironment.swift */; };
@@ -531,6 +532,7 @@
 		EDC9CEE42AE3693A002FCE9C /* DataUploadingAppServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataUploadingAppServiceTests.swift; sourceTree = "<group>"; };
 		EDC9CEED2AE36E1A002FCE9C /* BackgroundJobsAppServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundJobsAppServiceTests.swift; sourceTree = "<group>"; };
 		EDC9CEF02AE37066002FCE9C /* AppStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStateTests.swift; sourceTree = "<group>"; };
+		EDC9CEDD2AE323A3002FCE9C /* NotificationsAppService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsAppService.swift; sourceTree = "<group>"; };
 		EDD894F92962A0E2009636E6 /* Product.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Product.swift; sourceTree = "<group>"; };
 		EDD894FC29633F92009636E6 /* EnvironmentManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentManager.swift; sourceTree = "<group>"; };
 		EDD894FF29634043009636E6 /* FCEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FCEnvironment.swift; sourceTree = "<group>"; };
@@ -1203,6 +1205,7 @@
 				ED1F8DEC29E3932F0009B986 /* Developer */,
 				ED268B542A11269D00A4A50B /* Data Uploading */,
 				ED4F721B29C93044007C5864 /* Firebase */,
+				EDC9CEDC2AE3238A002FCE9C /* Notifications */,
 				ED4F722029C93101007C5864 /* Revenue Cat */,
 				ED570D232A127E8000C0B28F /* Background Jobs */,
 			);
@@ -1675,6 +1678,14 @@
 				EDC9CEF02AE37066002FCE9C /* AppStateTests.swift */,
 			);
 			path = "App State";
+      sourceTree = "<group>";
+		};
+		EDC9CEDC2AE3238A002FCE9C /* Notifications */ = {
+			isa = PBXGroup;
+			children = (
+				EDC9CEDD2AE323A3002FCE9C /* NotificationsAppService.swift */,
+			);
+			path = Notifications;
 			sourceTree = "<group>";
 		};
 		EDD894F829628CE4009636E6 /* Premium */ = {
@@ -2083,6 +2094,7 @@
 				C155229C26E793B300FE0DA7 /* User+Mock.swift in Sources */,
 				EDC976392A3E376900DE7ABE /* VerifyEmailViewModel.swift in Sources */,
 				C15522A026E793DA00FE0DA7 /* ActivitySummary+Mock.swift in Sources */,
+				EDC9CEDE2AE323A3002FCE9C /* NotificationsAppService.swift in Sources */,
 				C10A267927E9528700FD1C2C /* ColorScheme+Extensions.swift in Sources */,
 				EDA4781F2A76863A000F8E1A /* ScoringModelLearnMoreView.swift in Sources */,
 				ED879C2929A40D180007DB91 /* ActivitySummaryCache.swift in Sources */,

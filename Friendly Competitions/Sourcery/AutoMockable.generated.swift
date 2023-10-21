@@ -1238,6 +1238,19 @@ class NotificationsManagingMock: NotificationsManaging {
 
 
 
+    //MARK: - setUp
+
+    var setUpCallsCount = 0
+    var setUpCalled: Bool {
+        return setUpCallsCount > 0
+    }
+    var setUpClosure: (() -> Void)?
+
+    func setUp() {
+        setUpCallsCount += 1
+        setUpClosure?()
+    }
+
     //MARK: - permissionStatus
 
     var permissionStatusCallsCount = 0

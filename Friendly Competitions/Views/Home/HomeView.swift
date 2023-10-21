@@ -84,6 +84,7 @@ struct HomeView: View {
                 NavigationLink(value: NavigationDestination.competition(competition)) {
                     CompetitionDetails(competition: competition, showParticipantCount: false, isFeatured: false)
                 }
+                .buttonStyle(.plain)
             }
         } header: {
             HStack {
@@ -121,6 +122,7 @@ struct HomeView: View {
                         }
                     }
                 }
+                .buttonStyle(.plain)
             }
         } header: {
             HStack {
