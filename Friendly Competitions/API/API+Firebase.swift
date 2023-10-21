@@ -1,5 +1,6 @@
 import Combine
 import CombineExt
+import Factory
 import FirebaseFunctions
 import FirebaseFunctionsCombineSwift
 
@@ -8,6 +9,10 @@ extension Functions: API {
         httpsCallable(endpoint.name)
             .call(endpoint.data)
             .mapToVoid()
+            .reportErrorToCrashlytics(userInfo: [
+                "apiEndpoint": endpoint.name,
+                "apiData": endpoint.data ?? "empty"
+            ])
             .eraseToAnyPublisher()
     }
 }

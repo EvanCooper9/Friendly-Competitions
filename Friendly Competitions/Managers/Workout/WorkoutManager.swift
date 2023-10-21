@@ -7,7 +7,7 @@ import HealthKit
 import UIKit
 
 // sourcery: AutoMockable
-protocol WorkoutManaging {
+protocol WorkoutManaging: AnyObject {
     func workouts(of type: WorkoutType, with metrics: [WorkoutMetric], in dateInterval: DateInterval) -> AnyPublisher<[Workout], Error>
 }
 

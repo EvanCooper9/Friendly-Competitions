@@ -322,7 +322,7 @@ fileprivate extension DatabaseSource {
 
 // MARK: - Helpers
 
-fileprivate extension Publisher where Failure == Error {
+extension Publisher where Failure == Error {
     func reportErrorToCrashlytics(userInfo: [String: Any] = [:], caller: String = #function) -> AnyPublisher<Output, Failure> {
         self.catch { error -> AnyPublisher<Output, Failure> in
             var userInfo = userInfo

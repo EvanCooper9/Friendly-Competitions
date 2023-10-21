@@ -4,7 +4,7 @@ import SwiftUI
 import SwiftUIX
 
 enum Banner: Equatable, Identifiable {
-    
+
     struct Configuration {
 
         struct Action {

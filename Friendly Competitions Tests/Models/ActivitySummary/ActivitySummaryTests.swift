@@ -44,7 +44,8 @@ final class ActivitySummaryTests: FCTestCase {
     
     func testThatPointsIsCorrect() {
         let expected: [Competition.ScoringModel: Double] = [
-            .percentOfGoals: 150,
+            .activityRingCloseCount: 1,
+            .percentOfGoals: 200,
             .rawNumbers: 15,
             .workout(.walking, [.distance]): 0
         ]
@@ -54,12 +55,23 @@ final class ActivitySummaryTests: FCTestCase {
                 activeEnergyBurned: 5,
                 appleExerciseTime: 5,
                 appleStandHours: 5,
-                activeEnergyBurnedGoal: 10,
+                activeEnergyBurnedGoal: 5,
                 appleExerciseTimeGoal: 10,
                 appleStandHoursGoal: 10,
                 date: .now
             )
             XCTAssertEqual(activitySummary.points(from: scoringModel), expectedScore)
         }
+    }
+
+    func testThatHealthKitActvitySummaryIsCorrect() {
+        let activitySumamry = ActivitySummary.mock
+        let hkActivitySummary = activitySumamry.hkActivitySummary
+        XCTAssertEqual(activitySumamry.activeEnergyBurned, hkActivitySummary.activeEnergyBurned.doubleValue(for: .largeCalorie()))
+        XCTAssertEqual(activitySumamry.appleExerciseTime, hkActivitySummary.appleExerciseTime.doubleValue(for: .minute()))
+        XCTAssertEqual(activitySumamry.appleStandHours, hkActivitySummary.appleStandHours.doubleValue(for: .count()))
+        XCTAssertEqual(activitySumamry.activeEnergyBurnedGoal, hkActivitySummary.activeEnergyBurnedGoal.doubleValue(for: .largeCalorie()))
+        XCTAssertEqual(activitySumamry.appleExerciseTimeGoal, hkActivitySummary.appleExerciseTimeGoal.doubleValue(for: .minute()))
+        XCTAssertEqual(activitySumamry.appleStandHoursGoal, hkActivitySummary.appleStandHoursGoal.doubleValue(for: .count()))
     }
 }

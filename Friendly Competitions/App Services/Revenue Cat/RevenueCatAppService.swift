@@ -10,6 +10,6 @@ final class RevenueCatAppService: AppService {
         apiKey = "appl_PfCzNKLwrBPhZHDqVcrFOfigEHq"
         #endif
         Purchases.logLevel = .warn
-        Purchases.configure(with: .init(withAPIKey: apiKey).with(usesStoreKit2IfAvailable: true))
+        Purchases.configure(withAPIKey: apiKey)
     }
 }
