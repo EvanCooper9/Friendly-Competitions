@@ -18,6 +18,7 @@ final class VerifyEmailViewModel: ObservableObject {
 
     @Injected(\.appState) private var appState
     @Injected(\.authenticationManager) private var authenticationManager
+    @Injected(\.scheduler) private var scheduler
     @Injected(\.userManager) private var userManager
 
     private let hudSubject = PassthroughSubject<HUD, Never>()
@@ -42,7 +43,7 @@ final class VerifyEmailViewModel: ObservableObject {
                     .resendEmailVerification()
                     .mapToResult()
             }
-            .receive(on: RunLoop.main)
+            .receive(on: scheduler)
             .sink(withUnretained: self) { strongSelf, result in
                 switch result {
                 case .failure(let error):
@@ -53,11 +54,9 @@ final class VerifyEmailViewModel: ObservableObject {
             }
             .store(in: &cancellables)
 
-        Timer
-            .publish(every: 5.seconds, on: .main, in: .default)
+        Publishers.Timer(every: 5, scheduler: scheduler)
             .autoconnect()
             .mapToValue(())
-            .eraseToAnyPublisher()
             .flatMapLatest(withUnretained: self) { strongSelf in
                 strongSelf.authenticationManager
                     .checkEmailVerification()

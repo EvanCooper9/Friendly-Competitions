@@ -206,7 +206,7 @@ final class HomeViewModel: ObservableObject {
                     .eraseToAnyPublisher()
             }
             .map { $0.uniqued(on: \.id) }
-            .receive(on: scheduler)
+            .delay(for: .seconds(1), scheduler: scheduler)
             .assign(to: &$banners)
     }
 }

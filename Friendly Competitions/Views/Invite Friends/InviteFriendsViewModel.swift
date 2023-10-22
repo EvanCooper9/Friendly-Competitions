@@ -26,6 +26,7 @@ final class InviteFriendsViewModel: ObservableObject {
     @Injected(\.api) private var api
     @Injected(\.competitionsManager) private var competitionsManager
     @Injected(\.friendsManager) private var friendsManager
+    @Injected(\.scheduler) private var scheduler
     @Injected(\.searchManager) private var searchManager
     @Injected(\.userManager) private var userManager
 
@@ -58,7 +59,7 @@ final class InviteFriendsViewModel: ObservableObject {
         }
 
         $searchText
-            .debounce(for: .seconds(0.5), scheduler: RunLoop.main)
+            .debounce(for: .seconds(0.5), scheduler: scheduler)
             .flatMapLatest(withUnretained: self) { strongSelf, searchText -> AnyPublisher<[User], Never> in
                 guard !searchText.isEmpty else { return .just([]) }
                 return strongSelf.searchManager
@@ -94,7 +95,7 @@ final class InviteFriendsViewModel: ObservableObject {
                     )
                 }
             }
-            .receive(on: RunLoop.main)
+            .receive(on: scheduler)
             .assign(to: &$rows)
 
         acceptSubject

@@ -84,6 +84,14 @@ exports.respondToCompetitionInvite = functions.https.onCall(async (data, context
     await respondToCompetitionInvite(competitionID, caller, accept);
 });
 
+exports.repondToCompetitionInvite = functions.https.onCall(async (data, context) => {
+    const caller = context.auth?.uid;
+    const competitionID: string = data.competitionID;
+    const accept = data.accept;
+    if (caller == null) return;
+    await respondToCompetitionInvite(competitionID, caller, accept);
+});
+
 exports.updateCompetitionStandingsRanks = functions.https.onCall(async data => {
     const competitionID = data.competitionID;
     if (competitionID == null) return;

@@ -20,12 +20,10 @@ struct HomeView: View {
                 if viewModel.showPremiumBanner {
                     premiumBanner
                 }
-                Group {
-                    activitySummary
-                    competitions
-                    friends
-                }
-                .textCase(nil)
+
+                activitySummary
+                competitions
+                friends
             }
             .navigationBarTitle(viewModel.title)
             .toolbar {
@@ -121,6 +119,7 @@ struct HomeView: View {
                                 .foregroundColor(.secondaryLabel)
                         }
                     }
+                    .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
             }
@@ -159,6 +158,8 @@ struct HomeView_Previews: PreviewProvider {
         friendsManager.friendActivitySummaries = .just([User.gabby.id: .mock])
 
         searchManager.searchForUsersWithIDsReturnValue = .just([.evan])
+
+        notificationsManager.permissionStatusReturnValue = .never()
     }
 
     static var previews: some View {
