@@ -1,4 +1,4 @@
-enum Endpoint {
+enum Endpoint: Equatable {
 
     // Compeittions
     case joinCompetition(id: Competition.ID)

@@ -1,0 +1,123 @@
+import Combine
+@testable import Friendly_Competitions
+import XCTest
+
+final class InviteFriendsViewModelTests: FCTestCase {
+
+    override func setUp() {
+        super.setUp()
+        competitionsManager.competitionPublisherForReturnValue = .never()
+        searchManager.searchForUsersByNameReturnValue = .never()
+        userManager.userPublisher = .never()
+    }
+
+    func testThatSearchIsMade() {
+        let expectedQuery = #function
+        let viewModel = InviteFriendsViewModel(action: .addFriend)
+        viewModel.searchText = expectedQuery
+        scheduler.advance(by: 1)
+        XCTAssertEqual(searchManager.searchForUsersByNameReceivedName, expectedQuery)
+    }
+
+    func testThatRowsAreCorrectForFriendInvite() {
+        let currentUser = User.evan
+        let searchResultUser = User.andrew
+        userManager.userPublisher = .just(currentUser)
+        searchManager.searchForUsersByNameReturnValue = .just([searchResultUser])
+
+        let viewModel = InviteFriendsViewModel(action: .addFriend)
+        viewModel.searchText = "evan"
+        scheduler.advance(by: 1)
+
+        guard let row = viewModel.rows.first else {
+            XCTFail("Empty rows, should not happen")
+            return
+        }
+        XCTAssertEqual(row.id, searchResultUser.id)
+        XCTAssertEqual(row.name, searchResultUser.name)
+        XCTAssertEqual(row.pillId, searchResultUser.hashId)
+        XCTAssertEqual(row.buttonTitle, "Invite")
+    }
+
+    func testThatRowsAreCorrectForCompetitionInvite() {
+        let searchResultUser = User.andrew
+        let competition = Competition(id: "id", name: "test", owner: "abc", participants: [], pendingParticipants: [], scoringModel: .percentOfGoals, start: .now, end: .now, repeats: true, isPublic: true, banner: nil)
+        competitionsManager.competitionPublisherForReturnValue = .just(competition)
+        searchManager.searchForUsersByNameReturnValue = .just([searchResultUser])
+
+        let viewModel = InviteFriendsViewModel(action: .competitionInvite(competition))
+        viewModel.searchText = "evan"
+        scheduler.advance(by: 1)
+
+        guard let row = viewModel.rows.first else {
+            XCTFail("Empty rows, should not happen")
+            return
+        }
+        XCTAssertEqual(row.id, searchResultUser.id)
+        XCTAssertEqual(row.name, searchResultUser.name)
+        XCTAssertEqual(row.pillId, searchResultUser.hashId)
+        XCTAssertEqual(row.buttonTitle, "Invite")
+    }
+
+    func testThatUserIsAddedAsFriend() {
+        let currentUser = User.evan
+        let searchResultUser = User.andrew
+        userManager.userPublisher = .just(currentUser)
+        searchManager.searchForUsersByNameReturnValue = .just([searchResultUser])
+        api.callReturnValue = .just(())
+
+        let viewModel = InviteFriendsViewModel(action: .addFriend)
+        viewModel.searchText = "evan"
+        scheduler.advance(by: 1)
+
+        guard let row = viewModel.rows.first else {
+            XCTFail("Empty rows, should not happen")
+            return
+        }
+
+        row.buttonAction()
+        XCTAssertEqual(api.callReceivedEndpoint, .sendFriendRequest(id: searchResultUser.id))
+    }
+
+    func testThatUserIsInvitedToCompetition() {
+        let searchResultUser = User.andrew
+        let competition = Competition(id: "id", name: "test", owner: "abc", participants: [], pendingParticipants: [], scoringModel: .percentOfGoals, start: .now, end: .now, repeats: true, isPublic: true, banner: nil)
+        competitionsManager.competitionPublisherForReturnValue = .just(competition)
+        searchManager.searchForUsersByNameReturnValue = .just([searchResultUser])
+        api.callReturnValue = .just(())
+
+        let viewModel = InviteFriendsViewModel(action: .competitionInvite(competition))
+        viewModel.searchText = "evan"
+        scheduler.advance(by: 1)
+
+        guard let row = viewModel.rows.first else {
+            XCTFail("Empty rows, should not happen")
+            return
+        }
+
+        row.buttonAction()
+        XCTAssertEqual(api.callReceivedEndpoint, .inviteUserToCompetition(competitionID: competition.id, userID: searchResultUser.id))
+    }
+
+    func testAcceptFriendRequest() {
+        var currentUser = User.evan
+        let searchResultUser = User.andrew
+        currentUser.incomingFriendRequests = [searchResultUser.id]
+
+        userManager.userPublisher = .just(currentUser)
+        searchManager.searchForUsersByNameReturnValue = .just([searchResultUser])
+        api.callReturnValue = .just(())
+
+        let viewModel = InviteFriendsViewModel(action: .addFriend)
+        viewModel.searchText = "andrew"
+        scheduler.advance(by: 1)
+
+        guard let row = viewModel.rows.first else {
+            XCTFail("Empty rows, should not happen")
+            return
+        }
+
+        row.buttonAction()
+        XCTAssertEqual(api.callReceivedEndpoint, .respondToFriendRequest(from: searchResultUser.id, accept: true))
+    }
+}

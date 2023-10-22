@@ -81,6 +81,13 @@
 		ED10E6912AE37754008CC557 /* NavigationDestinationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED10E6902AE37754008CC557 /* NavigationDestinationTests.swift */; };
 		ED10E6942AE37886008CC557 /* NotificationsAppServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED10E6932AE37886008CC557 /* NotificationsAppServiceTests.swift */; };
 		ED10E6962AE379DD008CC557 /* ArrayTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED10E6952AE379DD008CC557 /* ArrayTests.swift */; };
+		ED10E6992AE47C8A008CC557 /* VerifyEmailViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED10E6982AE47C8A008CC557 /* VerifyEmailViewModelTests.swift */; };
+		ED10E69C2AE48146008CC557 /* InviteFriendsViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED10E69B2AE48146008CC557 /* InviteFriendsViewModelTests.swift */; };
+		ED10E69F2AE49084008CC557 /* ExploreViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED10E69E2AE49084008CC557 /* ExploreViewModelTests.swift */; };
+		ED10E6A12AE56794008CC557 /* FirebaseImageViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED10E6A02AE56794008CC557 /* FirebaseImageViewModelTests.swift */; };
+		ED10E6A32AE568AB008CC557 /* CompetitionDetailsViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED10E6A22AE568AB008CC557 /* CompetitionDetailsViewModelTests.swift */; };
+		ED10E6A52AE56996008CC557 /* ActivitySummaryInfoViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED10E6A42AE56996008CC557 /* ActivitySummaryInfoViewModelTests.swift */; };
+		ED10E6A82AE58528008CC557 /* AboutViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED10E6A72AE58528008CC557 /* AboutViewModelTests.swift */; };
 		ED130764295FFA5C00E0AC87 /* CompetitionResultsDataPoint.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED130763295FFA5C00E0AC87 /* CompetitionResultsDataPoint.swift */; };
 		ED19724C283803850018FDFF /* WorkoutTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED19724B283803850018FDFF /* WorkoutTests.swift */; };
 		ED19724E283803F60018FDFF /* WorkoutTypeTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED19724D283803F60018FDFF /* WorkoutTypeTests.swift */; };
@@ -358,6 +365,13 @@
 		ED10E6902AE37754008CC557 /* NavigationDestinationTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationDestinationTests.swift; sourceTree = "<group>"; };
 		ED10E6932AE37886008CC557 /* NotificationsAppServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsAppServiceTests.swift; sourceTree = "<group>"; };
 		ED10E6952AE379DD008CC557 /* ArrayTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArrayTests.swift; sourceTree = "<group>"; };
+		ED10E6982AE47C8A008CC557 /* VerifyEmailViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VerifyEmailViewModelTests.swift; sourceTree = "<group>"; };
+		ED10E69B2AE48146008CC557 /* InviteFriendsViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InviteFriendsViewModelTests.swift; sourceTree = "<group>"; };
+		ED10E69E2AE49084008CC557 /* ExploreViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExploreViewModelTests.swift; sourceTree = "<group>"; };
+		ED10E6A02AE56794008CC557 /* FirebaseImageViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirebaseImageViewModelTests.swift; sourceTree = "<group>"; };
+		ED10E6A22AE568AB008CC557 /* CompetitionDetailsViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionDetailsViewModelTests.swift; sourceTree = "<group>"; };
+		ED10E6A42AE56996008CC557 /* ActivitySummaryInfoViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitySummaryInfoViewModelTests.swift; sourceTree = "<group>"; };
+		ED10E6A72AE58528008CC557 /* AboutViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutViewModelTests.swift; sourceTree = "<group>"; };
 		ED130763295FFA5C00E0AC87 /* CompetitionResultsDataPoint.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompetitionResultsDataPoint.swift; sourceTree = "<group>"; };
 		ED19724B283803850018FDFF /* WorkoutTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutTests.swift; sourceTree = "<group>"; };
 		ED19724D283803F60018FDFF /* WorkoutTypeTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutTypeTests.swift; sourceTree = "<group>"; };
@@ -971,6 +985,38 @@
 			path = Notifications;
 			sourceTree = "<group>";
 		};
+		ED10E6972AE47C74008CC557 /* Verify Email */ = {
+			isa = PBXGroup;
+			children = (
+				ED10E6982AE47C8A008CC557 /* VerifyEmailViewModelTests.swift */,
+			);
+			path = "Verify Email";
+			sourceTree = "<group>";
+		};
+		ED10E69A2AE4812D008CC557 /* Invite Friends */ = {
+			isa = PBXGroup;
+			children = (
+				ED10E69B2AE48146008CC557 /* InviteFriendsViewModelTests.swift */,
+			);
+			path = "Invite Friends";
+			sourceTree = "<group>";
+		};
+		ED10E69D2AE49075008CC557 /* Explore */ = {
+			isa = PBXGroup;
+			children = (
+				ED10E69E2AE49084008CC557 /* ExploreViewModelTests.swift */,
+			);
+			path = Explore;
+			sourceTree = "<group>";
+		};
+		ED10E6A62AE5851F008CC557 /* About */ = {
+			isa = PBXGroup;
+			children = (
+				ED10E6A72AE58528008CC557 /* AboutViewModelTests.swift */,
+			);
+			path = About;
+			sourceTree = "<group>";
+		};
 		ED19724A2838036A0018FDFF /* Workouts */ = {
 			isa = PBXGroup;
 			children = (
@@ -1063,6 +1109,7 @@
 			isa = PBXGroup;
 			children = (
 				ED1CFA9A2864AF1D00192E49 /* HomeViewModelTests.swift */,
+				ED10E6A62AE5851F008CC557 /* About */,
 				ED9FB8BE2A40A31A00B09310 /* Profile */,
 			);
 			path = Home;
@@ -1107,7 +1154,9 @@
 				ED10E6902AE37754008CC557 /* NavigationDestinationTests.swift */,
 				EDBDFB4B29D0AEC9003E6278 /* Competitions */,
 				ED9FB8C42A40B8FC00B09310 /* Components */,
+				ED10E69D2AE49075008CC557 /* Explore */,
 				ED1CFA992864AF1400192E49 /* Home */,
+				ED10E69A2AE4812D008CC557 /* Invite Friends */,
 				ED9FB8B62A3EC44600B09310 /* Welcome */,
 			);
 			path = Views;
@@ -1146,7 +1195,7 @@
 			children = (
 				ED32ED242A217CAF0098E9A2 /* WelcomeView.swift */,
 				ED32ED252A217CAF0098E9A2 /* WelcomeViewModel.swift */,
-				ED9FB8BD2A40A2C200B09310 /* VerifyEmailView */,
+				ED9FB8BD2A40A2C200B09310 /* Verify Email */,
 			);
 			path = Welcome;
 			sourceTree = "<group>";
@@ -1545,17 +1594,18 @@
 			isa = PBXGroup;
 			children = (
 				ED9FB8B72A3EC45C00B09310 /* WelcomeViewModelTests.swift */,
+				ED10E6972AE47C74008CC557 /* Verify Email */,
 			);
 			path = Welcome;
 			sourceTree = "<group>";
 		};
-		ED9FB8BD2A40A2C200B09310 /* VerifyEmailView */ = {
+		ED9FB8BD2A40A2C200B09310 /* Verify Email */ = {
 			isa = PBXGroup;
 			children = (
 				EDC976382A3E376900DE7ABE /* VerifyEmailView.swift */,
 				EDC976372A3E376900DE7ABE /* VerifyEmailViewModel.swift */,
 			);
-			path = VerifyEmailView;
+			path = "Verify Email";
 			sourceTree = "<group>";
 		};
 		ED9FB8BE2A40A31A00B09310 /* Profile */ = {
@@ -1578,7 +1628,10 @@
 		ED9FB8C42A40B8FC00B09310 /* Components */ = {
 			isa = PBXGroup;
 			children = (
+				ED10E6A22AE568AB008CC557 /* CompetitionDetailsViewModelTests.swift */,
+				ED10E6A42AE56996008CC557 /* ActivitySummaryInfoViewModelTests.swift */,
 				ED9FB8B92A3EC70500B09310 /* EmailSignInViewModelTests.swift */,
+				ED10E6A02AE56794008CC557 /* FirebaseImageViewModelTests.swift */,
 			);
 			path = Components;
 			sourceTree = "<group>";
@@ -1987,6 +2040,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				ED10E6992AE47C8A008CC557 /* VerifyEmailViewModelTests.swift in Sources */,
 				ED10E6962AE379DD008CC557 /* ArrayTests.swift in Sources */,
 				ED10E6912AE37754008CC557 /* NavigationDestinationTests.swift in Sources */,
 				ED58C99629ABAEA500393468 /* User+Extensions.swift in Sources */,
@@ -1997,6 +2051,7 @@
 				ED779D3A29F019DA00317950 /* AuthenticationManagerTests.swift in Sources */,
 				C1E35D4627B45F6C00833EB2 /* PermissionStatusTests.swift in Sources */,
 				ED10E6942AE37886008CC557 /* NotificationsAppServiceTests.swift in Sources */,
+				ED10E6A32AE568AB008CC557 /* CompetitionDetailsViewModelTests.swift in Sources */,
 				ED58C98729AA805A00393468 /* FriendsManagerTests.swift in Sources */,
 				ED47BA0C29F1D8DF007A1D12 /* WorkoutManagerTests.swift in Sources */,
 				ED95D5CF29F03FF400990FBF /* CompetitionParticipantRowConfigTests.swift in Sources */,
@@ -2005,7 +2060,9 @@
 				EDC9CEEE2AE36E1A002FCE9C /* BackgroundJobsAppServiceTests.swift in Sources */,
 				ED1CFA9D2864B92A00192E49 /* Publisher+Extensions.swift in Sources */,
 				EDC9CEE12AE348C2002FCE9C /* EndpointTests.swift in Sources */,
+				ED10E6A52AE56996008CC557 /* ActivitySummaryInfoViewModelTests.swift in Sources */,
 				EDC827832A4D2E7200B1A68E /* CompetitionViewModelTests.swift in Sources */,
+				ED10E6A12AE56794008CC557 /* FirebaseImageViewModelTests.swift in Sources */,
 				ED4F722629C9610E007C5864 /* FCTestCase.swift in Sources */,
 				EDC9CEF12AE37066002FCE9C /* AppStateTests.swift in Sources */,
 				C155CA7227AC126E005F49F4 /* UserTests.swift in Sources */,
@@ -2021,8 +2078,11 @@
 				EDF34FC82A5F6A4D0069148C /* StepCountManagerTests.swift in Sources */,
 				EDC9CEE52AE3693A002FCE9C /* DataUploadingAppServiceTests.swift in Sources */,
 				ED19724C283803850018FDFF /* WorkoutTests.swift in Sources */,
+				ED10E69C2AE48146008CC557 /* InviteFriendsViewModelTests.swift in Sources */,
+				ED10E69F2AE49084008CC557 /* ExploreViewModelTests.swift in Sources */,
 				ED0C4BE729D496AC003485CF /* FirestoreDecoderTests.swift in Sources */,
 				C1300FDC27C83E3B002E2C52 /* BundleTests.swift in Sources */,
+				ED10E6A82AE58528008CC557 /* AboutViewModelTests.swift in Sources */,
 				ED9F256229A4366C008C9967 /* ActivitySummaryManagerTests.swift in Sources */,
 				ED1CFA9B2864AF1D00192E49 /* HomeViewModelTests.swift in Sources */,
 				ED9FB8C62A40B94100B09310 /* ProfileViewModelTests.swift in Sources */,
