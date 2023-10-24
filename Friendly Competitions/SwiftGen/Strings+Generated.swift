@@ -339,6 +339,14 @@ internal enum L10n {
         internal static let createPrompt = L10n.tr("Localizable", "Home.Section.Competitions.createPrompt", fallback: "Start a competition against your friends!")
         /// Competitions
         internal static let title = L10n.tr("Localizable", "Home.Section.Competitions.title", fallback: "Competitions")
+        internal enum Empty {
+          /// Create
+          internal static let create = L10n.tr("Localizable", "Home.Section.Competitions.Empty.create", fallback: "Create")
+          /// Explore
+          internal static let explore = L10n.tr("Localizable", "Home.Section.Competitions.Empty.explore", fallback: "Explore")
+          /// You are not participating in any competitions. When you do, they'll show up here.
+          internal static let message = L10n.tr("Localizable", "Home.Section.Competitions.Empty.message", fallback: "You are not participating in any competitions. When you do, they'll show up here.")
+        }
       }
       internal enum Friends {
         /// Add friends to get started!
@@ -347,6 +355,12 @@ internal enum L10n {
         internal static let invited = L10n.tr("Localizable", "Home.Section.Friends.invited", fallback: "Invited")
         /// Friends
         internal static let title = L10n.tr("Localizable", "Home.Section.Friends.title", fallback: "Friends")
+        internal enum Empty {
+          /// Add friends
+          internal static let add = L10n.tr("Localizable", "Home.Section.Friends.Empty.add", fallback: "Add friends")
+          /// You are not participating in any competitions. When you do, they'll show up here.
+          internal static let message = L10n.tr("Localizable", "Home.Section.Friends.Empty.message", fallback: "You are not participating in any competitions. When you do, they'll show up here.")
+        }
       }
     }
   }
@@ -359,10 +373,20 @@ internal enum L10n {
     internal static let invite = L10n.tr("Localizable", "InviteFriends.invite", fallback: "Invite")
     /// Invited
     internal static let invited = L10n.tr("Localizable", "InviteFriends.invited", fallback: "Invited")
-    /// Send an invite link
-    internal static let sendAnInviteLink = L10n.tr("Localizable", "InviteFriends.sendAnInviteLink", fallback: "Send an invite link")
+    /// No Results
+    internal static let noResults = L10n.tr("Localizable", "InviteFriends.noResults", fallback: "No Results")
+    /// There were no results for "%s". Try a new search.
+    internal static func noResultsMessage(_ p1: UnsafePointer<CChar>) -> String {
+      return L10n.tr("Localizable", "InviteFriends.noResultsMessage", p1, fallback: "There were no results for \"%s\". Try a new search.")
+    }
     /// Invite friends
     internal static let title = L10n.tr("Localizable", "InviteFriends.title", fallback: "Invite friends")
+    internal enum ShareInviteLink {
+      /// Share invite link
+      internal static let buttonTitle = L10n.tr("Localizable", "InviteFriends.ShareInviteLink.buttonTitle", fallback: "Share invite link")
+      /// You can also share your personal invite link with someone.
+      internal static let message = L10n.tr("Localizable", "InviteFriends.ShareInviteLink.message", fallback: "You can also share your personal invite link with someone.")
+    }
   }
   internal enum ListItem {
     internal enum Email {

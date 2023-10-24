@@ -18,6 +18,7 @@ final class InviteFriendsViewModel: ObservableObject {
     // MARK: - Public Properties
 
     @Published var loading = false
+    @Published var showEmpty = false
     @Published var rows = [RowConfig]()
     @Published var searchText = ""
 
@@ -59,9 +60,16 @@ final class InviteFriendsViewModel: ObservableObject {
         }
 
         $searchText
+            .handleEvents(withUnretained: self, receiveOutput: { strongSelf, searchText in
+                strongSelf.loading = !searchText.isEmpty
+                strongSelf.showEmpty = false
+            })
             .debounce(for: .seconds(0.5), scheduler: scheduler)
             .flatMapLatest(withUnretained: self) { strongSelf, searchText -> AnyPublisher<[User], Never> in
-                guard !searchText.isEmpty else { return .just([]) }
+                guard !searchText.isEmpty else {
+                    strongSelf.loading = false
+                    return .just([])
+                }
                 return strongSelf.searchManager
                     .searchForUsers(byName: searchText)
                     .isLoading { strongSelf.loading = $0 }
@@ -143,6 +151,13 @@ final class InviteFriendsViewModel: ObservableObject {
                 deepLink?.share()
             }
             .store(in: &cancellables)
+
+        $rows
+            .withLatestFrom($searchText) { ($0, $1) }
+            .map { rows, searchText in
+                !searchText.isEmpty && rows.isEmpty
+            }
+            .assign(to: &$showEmpty)
     }
 
     // MARK: - Publie Methods

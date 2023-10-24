@@ -43,7 +43,6 @@ final class HomeViewModel: ObservableObject {
     @Injected(\.scheduler) private var scheduler
     @Injected(\.userManager) private var userManager
 
-    @UserDefault("competitionsFiltered", defaultValue: false) var competitionsFiltered
     @UserDefault("dismissedPremiumBanner", defaultValue: false) private var dismissedPremiumBanner
 
     private let didHandleBannerTap = CurrentValueSubject<Void, Never>(())
@@ -128,6 +127,10 @@ final class HomeViewModel: ObservableObject {
         }
 
         showNewCompetition = true
+    }
+
+    func exploreCompetitionsTapped() {
+        appState.set(rootTab: .explore)
     }
 
     func addFriendsTapped() {

@@ -11,39 +11,69 @@ struct InviteFriendsView: View {
     }
 
     var body: some View {
-        List {
-            Section {
-                ForEach(viewModel.rows) { row in
-                    HStack {
-                        Text(row.name)
-                        IDPill(id: row.pillId)
-                        Spacer()
-                        Button(row.buttonTitle, action: row.buttonAction)
-                            .disabled(row.buttonDisabled)
-                            .buttonStyle(.bordered)
+        ScrollView {
+            if viewModel.rows.isNotEmpty {
+                CustomListSection {
+                    ForEach(viewModel.rows) { row in
+                        HStack {
+                            Text(row.name)
+                            IDPill(id: row.pillId)
+                            Spacer()
+                            Button(row.buttonTitle, action: row.buttonAction)
+                                .disabled(row.buttonDisabled)
+                                .buttonStyle(.bordered)
+                        }
                     }
                 }
-            } footer: {
-                HStack {
-                    Text(L10n.InviteFriends.havingTrouble)
-                    Button(L10n.InviteFriends.sendAnInviteLink, action: viewModel.sendInviteLink)
+
+                shareInviteLink
+            } else {
+                VStack(spacing: 10) {
+                    if viewModel.showEmpty {
+                        Text(L10n.InviteFriends.noResults)
+                            .bold()
+                            .padding(.top)
+                        Text(L10n.InviteFriends.noResultsMessage(viewModel.searchText))
+                            .foregroundStyle(.secondary)
+                        Divider()
+                            .padding(.vertical)
+                    }
+
+                    shareInviteLink
                 }
-                .font(.body)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
             }
         }
-        .listStyle(.insetGrouped)
         .withLoadingOverlay(isLoading: viewModel.loading)
+        .maxWidth(.infinity)
+        .background(Color.listBackground.ignoresSafeArea())
         .searchable(text: $viewModel.searchText, placement: .navigationBarDrawer(displayMode: .always))
         .navigationTitle(L10n.InviteFriends.title)
         .embeddedInNavigationView()
+    }
+
+    private var shareInviteLink: some View {
+        VStack(spacing: 10) {
+            Text(L10n.InviteFriends.ShareInviteLink.message)
+                .foregroundStyle(.secondary)
+            Button(L10n.InviteFriends.ShareInviteLink.buttonTitle, action: viewModel.sendInviteLink)
+                .buttonStyle(.bordered)
+        }
+        .multilineTextAlignment(.center)
     }
 }
 
 #if DEBUG
 struct InviteFriends_Previews: PreviewProvider {
+
+    private static func setupMocks() {
+        searchManager.searchForUsersByNameReturnValue = .just([])
+    }
+
     static var previews: some View {
         InviteFriendsView(action: .addFriend)
-            .setupMocks()
+            .setupMocks(setupMocks)
     }
 }
 #endif

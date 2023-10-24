@@ -146,6 +146,11 @@ class AnalyticsManagingMock: AnalyticsManaging {
 class AppStateProvidingMock: AppStateProviding {
 
 
+    var rootTab: AnyPublisher<RootTab, Never> {
+        get { return underlyingRootTab }
+        set(value) { underlyingRootTab = value }
+    }
+    var underlyingRootTab: AnyPublisher<RootTab, Never>!
     var deepLink: AnyPublisher<DeepLink?, Never> {
         get { return underlyingDeepLink }
         set(value) { underlyingDeepLink = value }
@@ -195,6 +200,23 @@ class AppStateProvidingMock: AppStateProviding {
         pushDeepLinkReceivedDeepLink = deepLink
         pushDeepLinkReceivedInvocations.append(deepLink)
         pushDeepLinkClosure?(deepLink)
+    }
+
+    //MARK: - set
+
+    var setRootTabCallsCount = 0
+    var setRootTabCalled: Bool {
+        return setRootTabCallsCount > 0
+    }
+    var setRootTabReceivedRootTab: RootTab?
+    var setRootTabReceivedInvocations: [RootTab] = []
+    var setRootTabClosure: ((RootTab) -> Void)?
+
+    func set(rootTab: RootTab) {
+        setRootTabCallsCount += 1
+        setRootTabReceivedRootTab = rootTab
+        setRootTabReceivedInvocations.append(rootTab)
+        setRootTabClosure?(rootTab)
     }
 
 }
