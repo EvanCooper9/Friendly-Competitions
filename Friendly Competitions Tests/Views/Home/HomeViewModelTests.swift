@@ -140,4 +140,11 @@ final class HomeViewModelTests: FCTestCase {
         scheduler.advance()
         waitForExpectations(timeout: 1)
     }
+
+    func testThatExploreSetsRootTab() {
+        let viewModel = HomeViewModel()
+        viewModel.exploreCompetitionsTapped()
+        XCTAssertTrue(appState.setRootTabCalled)
+        XCTAssertEqual(appState.setRootTabReceivedInvocations, [.explore])
+    }
 }
