@@ -120,4 +120,45 @@ final class InviteFriendsViewModelTests: FCTestCase {
         row.buttonAction()
         XCTAssertEqual(api.callReceivedEndpoint, .respondToFriendRequest(from: searchResultUser.id, accept: true))
     }
+
+    func testThatLoadingIsCorrect() {
+        let expectation = expectation(description: #function)
+        userManager.userPublisher = .just(.evan)
+
+        let viewModel = InviteFriendsViewModel(action: .addFriend)
+        viewModel.$loading
+            .expect(false, true, true, false, expectation: expectation)
+            .store(in: &cancellables)
+
+        searchManager.searchForUsersByNameReturnValue = .just([.andrew])
+        viewModel.searchText = "abc"
+        scheduler.advance(by: 0.5) // debounce search text
+        scheduler.advance() // receive on main queue
+
+        waitForExpectations(timeout: 1)
+    }
+
+    func testThatShowEmptyIsCorrect() {
+        userManager.userPublisher = .just(.evan)
+
+        let viewModel = InviteFriendsViewModel(action: .addFriend)
+        XCTAssertFalse(viewModel.showEmpty)
+
+        searchManager.searchForUsersByNameReturnValue = .just([.andrew])
+        viewModel.searchText = "abc"
+        scheduler.advance(by: 0.5) // debounce search text
+        scheduler.advance() // receive on main queue
+        XCTAssertFalse(viewModel.showEmpty)
+
+        searchManager.searchForUsersByNameReturnValue = .just([])
+        viewModel.searchText = "abcd"
+        scheduler.advance(by: 0.5) // debounce search text
+        scheduler.advance() // receive on main queue
+        XCTAssertTrue(viewModel.showEmpty)
+
+        viewModel.searchText = ""
+        scheduler.advance(by: 0.5) // debounce search text
+        scheduler.advance() // receive on main queue
+        XCTAssertFalse(viewModel.showEmpty)
+    }
 }
