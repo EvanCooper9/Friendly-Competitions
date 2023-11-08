@@ -185,6 +185,7 @@
 		ED65D3BD280CF36C00B38486 /* WorkoutType.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED65D3BC280CF36C00B38486 /* WorkoutType.swift */; };
 		ED6A6C8B296DDBB700615111 /* PaywallOffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED6A6C8A296DDBB700615111 /* PaywallOffer.swift */; };
 		ED71E2A328F70212001FED74 /* Files in Frameworks */ = {isa = PBXBuildFile; productRef = ED71E2A228F70212001FED74 /* Files */; };
+		ED71F29D2AF82C870030B9DF /* Banner+View.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED71F29C2AF82C870030B9DF /* Banner+View.swift */; };
 		ED779D3A29F019DA00317950 /* AuthenticationManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED779D3929F019DA00317950 /* AuthenticationManagerTests.swift */; };
 		ED7881AB2850F6C400C7F6CB /* AuthenticationMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED7881AA2850F6C400C7F6CB /* AuthenticationMethod.swift */; };
 		ED7881AD2850F6DF00C7F6CB /* AuthenticationError.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED7881AC2850F6DF00C7F6CB /* AuthenticationError.swift */; };
@@ -463,6 +464,7 @@
 		ED58C99729ABB2C200393468 /* RootViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewModelTests.swift; sourceTree = "<group>"; };
 		ED65D3BC280CF36C00B38486 /* WorkoutType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutType.swift; sourceTree = "<group>"; };
 		ED6A6C8A296DDBB700615111 /* PaywallOffer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallOffer.swift; sourceTree = "<group>"; };
+		ED71F29C2AF82C870030B9DF /* Banner+View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Banner+View.swift"; sourceTree = "<group>"; };
 		ED779D3929F019DA00317950 /* AuthenticationManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationManagerTests.swift; sourceTree = "<group>"; };
 		ED7881AA2850F6C400C7F6CB /* AuthenticationMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationMethod.swift; sourceTree = "<group>"; };
 		ED7881AC2850F6DF00C7F6CB /* AuthenticationError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationError.swift; sourceTree = "<group>"; };
@@ -631,13 +633,13 @@
 			isa = PBXGroup;
 			children = (
 				C132336427BEB58B00196D81 /* AppIcon.swift */,
-				EDC891702A42A40800749917 /* Banner.swift */,
 				C1401F8A26D94D1C0080F74F /* ImmutableListItemView.swift */,
 				EDC976352A3E326D00DE7ABE /* TextFieldWithSecureToggle.swift */,
 				C123C9D327A88D3200375F73 /* UserInfoSection.swift */,
 				C123C9CC27A863F100375F73 /* UserHashIDPill.swift */,
 				ED32ED282A217E460098E9A2 /* SignInWithAppleButton.swift */,
 				EDC891682A41551E00749917 /* Activity Summary Info */,
+				ED71F29B2AF82C7C0030B9DF /* Banner */,
 				ED901B4B280247D900FE619E /* Competition Details */,
 				ED82AB102A3E1E1B00334F51 /* Email Sign In */,
 				ED901B692802524900FE619E /* Firebase Image */,
@@ -1330,6 +1332,15 @@
 				EDDF77D728BA82E000BB8B97 /* HealthKitPermissionType.swift */,
 			);
 			path = HealthKit;
+			sourceTree = "<group>";
+		};
+		ED71F29B2AF82C7C0030B9DF /* Banner */ = {
+			isa = PBXGroup;
+			children = (
+				EDC891702A42A40800749917 /* Banner.swift */,
+				ED71F29C2AF82C870030B9DF /* Banner+View.swift */,
+			);
+			path = Banner;
 			sourceTree = "<group>";
 		};
 		ED7881A52850380700C7F6CB /* Utility */ = {
@@ -2103,6 +2114,7 @@
 				ED879C3D29A411090007DB91 /* AuthenticationManager+Factory.swift in Sources */,
 				ED1B85C629C904CC008DB1F6 /* UserView.swift in Sources */,
 				ED879C5F29A414AB0007DB91 /* Storage+Factory.swift in Sources */,
+				ED71F29D2AF82C870030B9DF /* Banner+View.swift in Sources */,
 				ED32ED272A217CAF0098E9A2 /* WelcomeViewModel.swift in Sources */,
 				EDC8916A2A41552D00749917 /* ActivitySummaryInfoViewModel.swift in Sources */,
 				EDDB923D2965D2B0006AEE72 /* CompetitionResultsDataPoint+View.swift in Sources */,

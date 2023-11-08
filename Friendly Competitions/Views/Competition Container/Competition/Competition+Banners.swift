@@ -19,8 +19,6 @@ extension Competition {
         let dateInterval = DateInterval(start: start, end: end)
 
         let healthKitBanner: AnyPublisher<Banner?, Never> = {
-            guard isActive else { return .just(nil) }
-
             let permissionTypes = scoringModel.requiredPermissions
                 .compactMap { permission in
                     switch permission {
@@ -73,13 +71,16 @@ extension Competition {
                 healthKitManager.shouldRequest([permission])
                     .catchErrorJustReturn(false)
                     .flatMapLatest { shouldRequest -> AnyPublisher<Banner?, Never> in
-                        guard !shouldRequest else {
+                        if shouldRequest {
                             return .just(.healthKitPermissionsMissing(permissions: [permission]))
+                        } else if isActive {
+                            return dataPublisher
+                                .map { $0.isEmpty ? .healthKitDataMissing(dataType: [permission]) : nil }
+                                .catchErrorJustReturn(.healthKitDataMissing(dataType: [permission]))
+                                .eraseToAnyPublisher()
+                        } else {
+                            return .just(nil)
                         }
-                        return dataPublisher
-                            .map { $0.isEmpty ? .healthKitDataMissing(dataType: [permission]) : nil }
-                            .catchErrorJustReturn(.healthKitDataMissing(dataType: [permission]))
-                            .eraseToAnyPublisher()
                     }
             }
             .combineLatest()

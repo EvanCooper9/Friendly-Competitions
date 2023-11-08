@@ -40,6 +40,7 @@ enum AnalyticsEvent: Codable, Equatable {
     // banners
     case bannerViewed(bannerID: String, file: String)
     case bannerTapped(bannerID: String, file: String)
+    case bannerDismissed(bannerID: String, file: String)
 
     // HealthKit
     case healthKitShouldRequestPermissions(permissionsString: String, shouldRequest: Bool)

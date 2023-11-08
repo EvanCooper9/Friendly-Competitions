@@ -1,5 +1,6 @@
 import Combine
 import CombineExt
+import CombineSchedulers
 import ECKit
 import Factory
 import Foundation
@@ -31,19 +32,22 @@ final class HomeViewModel: ObservableObject {
 
     // MARK: - Private Properties
 
-    @Injected(\.appState) private var appState
-    @Injected(\.activitySummaryManager) private var activitySummaryManager
-    @Injected(\.analyticsManager) private var analyticsManager
-    @Injected(\.competitionsManager) private var competitionsManager
-    @Injected(\.featureFlagManager) private var featureFlagManager
-    @Injected(\.friendsManager) private var friendsManager
-    @Injected(\.healthKitManager) private var healthKitManager
-    @Injected(\.notificationsManager) private var notificationsManager
-    @LazyInjected(\.premiumManager) private var premiumManager
-    @Injected(\.scheduler) private var scheduler
-    @Injected(\.userManager) private var userManager
+    @Injected(\.appState) private var appState: AppStateProviding
+    @Injected(\.activitySummaryManager) private var activitySummaryManager: ActivitySummaryManaging
+    @Injected(\.analyticsManager) private var analyticsManager: AnalyticsManaging
+    @Injected(\.competitionsManager) private var competitionsManager: CompetitionsManaging
+    @Injected(\.featureFlagManager) private var featureFlagManager: FeatureFlagManaging
+    @Injected(\.friendsManager) private var friendsManager: FriendsManaging
+    @Injected(\.healthKitManager) private var healthKitManager: HealthKitManaging
+    @Injected(\.notificationsManager) private var notificationsManager: NotificationsManaging
+    @LazyInjected(\.premiumManager) private var premiumManager: PremiumManaging
+    @Injected(\.scheduler) private var scheduler: AnySchedulerOf<RunLoop>
+    @Injected(\.userManager) private var userManager: UserManaging
 
     @UserDefault("dismissedPremiumBanner", defaultValue: false) private var dismissedPremiumBanner
+
+    private var temporarilyDismissedBanners = [Banner.ID]()
+    @UserDefault("dismissedBanners", defaultValue: [Banner.ID]()) private var permanentlyDismissedBanners
 
     private let didHandleBannerTap = CurrentValueSubject<Void, Never>(())
     private var cancellables = Cancellables()
@@ -74,6 +78,11 @@ final class HomeViewModel: ObservableObject {
                 strongSelf.showAnonymousAccountBlocker = false
                 strongSelf.showNewCompetition = false
             }
+            .store(in: &cancellables)
+
+        $deepLinkedNavigationDestination
+            .mapToVoid()
+            .sink(withUnretained: self) { $0.didHandleBannerTap.send() }
             .store(in: &cancellables)
 
         competitionsManager.competitions
@@ -155,6 +164,16 @@ final class HomeViewModel: ObservableObject {
             .store(in: &cancellables)
     }
 
+    func dismissed(banner: Banner) {
+        banners.remove(banner)
+        if banner.canBePermanentlyDismissed {
+            permanentlyDismissedBanners.append(banner.id)
+        } else {
+            temporarilyDismissedBanners.append(banner.id)
+        }
+        didHandleBannerTap.send()
+    }
+
     // MARK: - Private Methods
 
     private func handlePremiumBanner() {
@@ -200,15 +219,25 @@ final class HomeViewModel: ObservableObject {
                         }
                     }
 
+                let resultsBanners = strongSelf.competitionsManager.newResultsBanners()
+
                 return Publishers
-                    .CombineLatest(competitionBanners, notificationBanner)
-                    .map { competitionBanners, notificationBanner in
-                        guard let notificationBanner else { return competitionBanners }
-                        return competitionBanners.appending(notificationBanner)
+                    .CombineLatest3(competitionBanners, notificationBanner, resultsBanners)
+                    .map { competitionBanners, notificationBanner, resultsBanners in
+                        var allBanners = competitionBanners + resultsBanners
+                        if let notificationBanner {
+                            allBanners.append(notificationBanner)
+                        }
+                        return allBanners
                     }
                     .eraseToAnyPublisher()
             }
             .map { $0.uniqued(on: \.id) }
+            .filterMany { [weak self] banner in
+                guard let strongSelf = self else { return true }
+                let dismissedBanners = strongSelf.temporarilyDismissedBanners + strongSelf.permanentlyDismissedBanners
+                return !dismissedBanners.contains(banner.id)
+            }
             .delay(for: .seconds(1), scheduler: scheduler)
             .assign(to: &$banners)
     }
@@ -217,5 +246,19 @@ final class HomeViewModel: ObservableObject {
 private extension Array {
     func with<T>(_ value: T) -> [(Element, T)] {
         map { ($0, value) }
+    }
+}
+
+private extension Banner {
+    var canBePermanentlyDismissed: Bool {
+        switch self {
+        case .notificationPermissionsDenied:
+            return true
+        case .healthKitPermissionsMissing,
+             .healthKitDataMissing,
+             .notificationPermissionsMissing,
+             .newCompetitionResults:
+            return false
+        }
     }
 }

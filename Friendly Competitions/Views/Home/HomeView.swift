@@ -12,6 +12,8 @@ struct HomeView: View {
                 ItemStack(models: viewModel.banners) { banner in
                     banner.view {
                         viewModel.tapped(banner: banner)
+                    } dismissed: {
+                        viewModel.dismissed(banner: banner)
                     }
                 }
                 .padding(.horizontal)
@@ -168,8 +170,8 @@ struct HomeView: View {
 
             Text(message)
                 .multilineTextAlignment(.center)
+                .fixedSize(horizontal: false, vertical: true)
                 .foregroundStyle(.secondary)
-                .maxWidth(.infinity)
 
             HStack {
                 ForEach(enumerating: buttons) { index, button in
@@ -198,6 +200,7 @@ struct HomeView_Previews: PreviewProvider {
 
 //        competitionsManager.competitions = .just([.mockOld, .mockPublic])
         competitionsManager.standingsPublisherForReturnValue = .just([.mock(for: .evan)])
+        competitionsManager.newResultsBannersReturnValue = .just([.newCompetitionResults(competition: .mock)])
 
 //        friendsManager.friends = .just([.gabby])
 //        friendsManager.friendRequests = .just([.andrew])

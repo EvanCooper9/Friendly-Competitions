@@ -13,7 +13,7 @@ enum Banner: Equatable, Identifiable {
             let background: Color
         }
 
-        let icon: SFSymbolName?
+        let icon: String?
         let message: String
         let action: Action?
         let foreground: Color
@@ -28,12 +28,17 @@ enum Banner: Equatable, Identifiable {
     case notificationPermissionsMissing
     case notificationPermissionsDenied
 
+    // New competition results
+    case newCompetitionResults(competition: Competition)
+
     var id: String {
         switch self {
         case .healthKitPermissionsMissing: return "healthKitPermissionsMissing"
         case .healthKitDataMissing: return "healthKitDataMissing"
         case .notificationPermissionsMissing: return "notificationPermissionsMissing"
         case .notificationPermissionsDenied: return "notificationPermissionsDenied"
+        case .newCompetitionResults(let competition):
+            return "newCompetitionResults-\(competition.id)"
         }
     }
 
@@ -51,47 +56,10 @@ enum Banner: Equatable, Identifiable {
         case .notificationPermissionsDenied:
             return .error(message: L10n.Banner.NotificationPermissionsDenied.message,
                           cta: L10n.Banner.NotificationPermissionsDenied.cta)
-        }
-    }
-
-    func view(_ tapped: @escaping () -> Void, file: String = #file) -> some View {
-        let fileName = (file as NSString).lastPathComponent
-        return HStack(spacing: 10) {
-            if let icon = configuration.icon {
-                Image(systemName: icon)
-                    .foregroundColor(configuration.foreground)
-                    .font(.title2)
-            }
-
-            Text(configuration.message)
-                .font(.footnote)
-                .lineLimit(2)
-                .bold()
-                .foregroundColor(configuration.foreground)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .minimumScaleFactor(0.5)
-
-            if let action = configuration.action {
-                Button(action.cta) {
-                    let analyticsManager = Container.shared.analyticsManager.resolve()
-                    analyticsManager.log(event: .bannerTapped(bannerID: id, file: fileName))
-                    tapped()
-                }
-                .font(.footnote)
-                .bold()
-                .foregroundColor(action.foreground)
-                .padding(.small)
-                .background(action.background)
-                .cornerRadius(5)
-            }
-        }
-        .padding(12)
-        .background(configuration.background)
-        .cornerRadius(10)
-        .shadow(color: .gray.opacity(0.25), radius: 10)
-        .onAppear {
-            let analyticsManager = Container.shared.analyticsManager.resolve()
-            analyticsManager.log(event: .bannerViewed(bannerID: id, file: fileName))
+        case .newCompetitionResults(let competition):
+            return .success(icon: "trophy.fill",
+                            message: "New results posted for \(competition.name)",
+                            cta: "View")
         }
     }
 
@@ -118,6 +86,10 @@ enum Banner: Equatable, Identifiable {
         case .notificationPermissionsDenied:
             UIApplication.shared.open(.notificationSettings)
             return .just(())
+        case .newCompetitionResults(let competition):
+            let appState = Container.shared.appState.resolve()
+            appState.push(deepLink: .competitionResults(id: competition.id))
+            return .just(())
         }
     }
 }
@@ -128,11 +100,23 @@ extension Banner.Configuration {
         if let cta {
             action = .init(cta: cta, foreground: .red, background: .white)
         }
-        return .init(icon: .exclamationmarkCircleFill,
+        return .init(icon: "exclamationmark.circle.fill",
                      message: message,
                      action: action,
                      foreground: .white,
                      background: .red)
+    }
+
+    static func success(icon: String = "checkmark.fircle.fill", message: String, cta: String? = nil) -> Banner.Configuration {
+        var action: Action?
+        if let cta {
+            action = .init(cta: cta, foreground: .green, background: .white)
+        }
+        return .init(icon: icon,
+                     message: message,
+                     action: action,
+                     foreground: .white,
+                     background: .green)
     }
 
     static func warning(message: String, cta: String? = nil) -> Banner.Configuration {
@@ -140,7 +124,7 @@ extension Banner.Configuration {
         if let cta {
             action = .init(cta: cta, foreground: .orange, background: .white)
         }
-        return .init(icon: .exclamationmarkTriangleFill,
+        return .init(icon: "exclamationmark.triangle.fill",
                      message: message,
                      action: action,
                      foreground: .white,
@@ -155,7 +139,8 @@ struct Banner_Previews: PreviewProvider {
         .healthKitDataMissing(dataType: []),
         .healthKitPermissionsMissing(permissions: []),
         .notificationPermissionsMissing,
-        .notificationPermissionsDenied
+        .notificationPermissionsDenied,
+        .newCompetitionResults(competition: .mock)
     ]
 
     static var previews: some View {

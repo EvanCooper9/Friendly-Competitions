@@ -19,6 +19,7 @@ protocol CompetitionsManaging {
     func search(byID competitionID: Competition.ID) -> AnyPublisher<Competition, Error>
     func results(for competitionID: Competition.ID) -> AnyPublisher<[CompetitionResult], Error>
     func standings(for competitionID: Competition.ID, resultID: CompetitionResult.ID) -> AnyPublisher<[Competition.Standing], Error>
+    func newResultsBanners() -> AnyPublisher<[Banner], Never>
 
     func competitionPublisher(for competitionID: Competition.ID) -> AnyPublisher<Competition, Error>
     func standingsPublisher(for competitionID: Competition.ID) -> AnyPublisher<[Competition.Standing], Error>
@@ -60,15 +61,17 @@ final class CompetitionsManager: CompetitionsManaging {
     private let appOwnedCompetitionsSubject = ReplaySubject<[Competition], Never>(bufferSize: 1)
     private let hasPremiumResultsSubject = ReplaySubject<Bool, Never>(bufferSize: 1)
 
-    @Injected(\.api) private var api
-    @Injected(\.appState) private var appState
-    @Injected(\.analyticsManager) private var analyticsManager
-    @Injected(\.competitionCache) private var cache
-    @Injected(\.database) private var database
-    @Injected(\.environmentManager) private var environmentManager
-    @Injected(\.userManager) private var userManager
+    @Injected(\.api) private var api: API
+    @Injected(\.appState) private var appState: AppStateProviding
+    @Injected(\.analyticsManager) private var analyticsManager: AnalyticsManaging
+    @Injected(\.competitionCache) private var cache: CompetitionCache
+    @Injected(\.database) private var database: Database
+    @Injected(\.environmentManager) private var environmentManager: EnvironmentManaging
+    @Injected(\.userManager) private var userManager: UserManaging
 
     private var cancellables = Cancellables()
+
+    @UserDefault("resultsCount") private var resultsCount: [Competition.ID: Int]?
 
     // MARK: - Lifecycle
 
@@ -143,6 +146,38 @@ final class CompetitionsManager: CompetitionsManaging {
     func standingsPublisher(for competitionID: Competition.ID) -> AnyPublisher<[Competition.Standing], Error> {
         database.collection("competitions/\(competitionID)/standings")
             .publisher(asArrayOf: Competition.Standing.self)
+            .eraseToAnyPublisher()
+    }
+
+    func newResultsBanners() -> AnyPublisher<[Banner], Never> {
+        competitions
+            .removeDuplicates { $0.map(\.id) == $1.map(\.id) }
+            .flatMapLatest(withUnretained: self) { strongSelf, competitions in
+                competitions.map { competition -> AnyPublisher<Banner?, Never> in
+                    let query: Collection = strongSelf.database
+                        .collection("competitions/\(competition.id)/results")
+                        .whereField("participants", arrayContains: strongSelf.userManager.user.id)
+                        .sorted(by: "end", direction: .descending)
+
+                    let cachedCount = query
+                        .getDocuments(ofType: CompetitionResult.self, source: .cache)
+                        .count()
+                        .catchErrorJustReturn(0)
+
+                    let serverCount = query.count()
+                        .catchErrorJustReturn(0)
+
+                    return Publishers
+                        .CombineLatest(cachedCount, serverCount)
+                        .map { cachedCount, serverCount in
+                            return cachedCount < serverCount ? Banner.newCompetitionResults(competition: competition) : nil
+                        }
+                        .eraseToAnyPublisher()
+                }
+                .combineLatest()
+                .eraseToAnyPublisher()
+            }
+            .map { Array($0.compacted()) }
             .eraseToAnyPublisher()
     }
 

@@ -790,6 +790,24 @@ class CompetitionsManagingMock: CompetitionsManaging {
         }
     }
 
+    //MARK: - newResultsBanners
+
+    var newResultsBannersCallsCount = 0
+    var newResultsBannersCalled: Bool {
+        return newResultsBannersCallsCount > 0
+    }
+    var newResultsBannersReturnValue: AnyPublisher<[Banner], Never>!
+    var newResultsBannersClosure: (() -> AnyPublisher<[Banner], Never>)?
+
+    func newResultsBanners() -> AnyPublisher<[Banner], Never> {
+        newResultsBannersCallsCount += 1
+        if let newResultsBannersClosure = newResultsBannersClosure {
+            return newResultsBannersClosure()
+        } else {
+            return newResultsBannersReturnValue
+        }
+    }
+
     //MARK: - competitionPublisher
 
     var competitionPublisherForCallsCount = 0
