@@ -28,12 +28,16 @@ enum Banner: Equatable, Identifiable {
     case notificationPermissionsMissing
     case notificationPermissionsDenied
 
+    // New competition results
+    case newCompetitionResults(competition: Competition, resultID: CompetitionResult.ID)
+
     var id: String {
         switch self {
         case .healthKitPermissionsMissing: return "healthKitPermissionsMissing"
         case .healthKitDataMissing: return "healthKitDataMissing"
         case .notificationPermissionsMissing: return "notificationPermissionsMissing"
         case .notificationPermissionsDenied: return "notificationPermissionsDenied"
+        case .newCompetitionResults: return "newCompetitionResults"
         }
     }
 
@@ -51,6 +55,9 @@ enum Banner: Equatable, Identifiable {
         case .notificationPermissionsDenied:
             return .error(message: L10n.Banner.NotificationPermissionsDenied.message,
                           cta: L10n.Banner.NotificationPermissionsDenied.cta)
+        case .newCompetitionResults(let competition, _):
+            return .success(message: "New results posted for \(competition.name)",
+                            cta: "View")
         }
     }
 
@@ -118,6 +125,10 @@ enum Banner: Equatable, Identifiable {
         case .notificationPermissionsDenied:
             UIApplication.shared.open(.notificationSettings)
             return .just(())
+        case .newCompetitionResults(let competition, _):
+            let appState = Container.shared.appState.resolve()
+            appState.push(deepLink: .competitionResults(id: competition.id))
+            return .just(())
         }
     }
 
@@ -161,6 +172,18 @@ extension Banner.Configuration {
                      background: .red)
     }
 
+    static func success(message: String, cta: String? = nil) -> Banner.Configuration {
+        var action: Action?
+        if let cta {
+            action = .init(cta: cta, foreground: .green, background: .white)
+        }
+        return .init(icon: .checkmarkCircleFill,
+                     message: message,
+                     action: action,
+                     foreground: .white,
+                     background: .green)
+    }
+
     static func warning(message: String, cta: String? = nil) -> Banner.Configuration {
         var action: Action?
         if let cta {
@@ -181,7 +204,8 @@ struct Banner_Previews: PreviewProvider {
         .healthKitDataMissing(dataType: []),
         .healthKitPermissionsMissing(permissions: []),
         .notificationPermissionsMissing,
-        .notificationPermissionsDenied
+        .notificationPermissionsDenied,
+        .newCompetitionResults(competition: .mock, resultID: "123")
     ]
 
     static var previews: some View {

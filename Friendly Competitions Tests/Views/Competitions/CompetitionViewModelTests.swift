@@ -16,7 +16,9 @@ final class CompetitionViewModelTests: FCTestCase {
         competitionsManager.competitionPublisherForReturnValue = .never()
         competitionsManager.resultsForReturnValue = .never()
         competitionsManager.standingsPublisherForReturnValue = .never()
+        competitionsManager.newResultsBannersReturnValue = .never()
         healthKitManager.shouldRequestReturnValue = .never()
+        notificationsManager.requestPermissionsReturnValue = .never()
         searchManager.searchForUsersWithIDsReturnValue = .never()
         userManager.user = .evan
         userManager.userPublisher = .just(.evan)

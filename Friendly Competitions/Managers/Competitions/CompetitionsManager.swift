@@ -20,6 +20,9 @@ protocol CompetitionsManaging {
     func results(for competitionID: Competition.ID) -> AnyPublisher<[CompetitionResult], Error>
     func standings(for competitionID: Competition.ID, resultID: CompetitionResult.ID) -> AnyPublisher<[Competition.Standing], Error>
 
+    func unseenResults() -> AnyPublisher<[(Competition, CompetitionResult.ID)], Never>
+    func viewedResults(competitionID: Competition.ID, resultID: CompetitionResult.ID)
+
     func competitionPublisher(for competitionID: Competition.ID) -> AnyPublisher<Competition, Error>
     func standingsPublisher(for competitionID: Competition.ID) -> AnyPublisher<[Competition.Standing], Error>
 }
@@ -69,6 +72,8 @@ final class CompetitionsManager: CompetitionsManaging {
     @Injected(\.userManager) private var userManager
 
     private var cancellables = Cancellables()
+
+    @UserDefault("seenResultsIDs") private var seenResultsIDs: [CompetitionResult.ID]?
 
     // MARK: - Lifecycle
 
@@ -144,6 +149,34 @@ final class CompetitionsManager: CompetitionsManaging {
         database.collection("competitions/\(competitionID)/standings")
             .publisher(asArrayOf: Competition.Standing.self)
             .eraseToAnyPublisher()
+    }
+
+    func unseenResults() -> AnyPublisher<[(Competition, CompetitionResult.ID)], Never> {
+        let competitions = competitions .removeDuplicates { $0.map(\.id) == $1.map(\.id) }
+        return Publishers
+            .CombineLatest(competitions, $seenResultsIDs)
+            .flatMapLatest(withUnretained: self) { strongSelf, result in
+                let (competitions, seenResultsIDs) = result
+                return competitions
+                    .map { competition in
+                        strongSelf.results(for: competition.id)
+                            .catchErrorJustReturn([])
+                            .mapMany { $0.id }
+                            .filterMany { resultID in
+                                guard let seenResultsIDs else { return true }
+                                return !seenResultsIDs.contains(resultID)
+                            }
+                            .mapMany { (competition, $0) }
+                            .eraseToAnyPublisher()
+                    }
+                    .combineLatest()
+                    .map { $0.flattened() }
+            }
+            .eraseToAnyPublisher()
+    }
+
+    func viewedResults(competitionID: Competition.ID, resultID: CompetitionResult.ID) {
+        seenResultsIDs = (seenResultsIDs ?? []).appending(resultID)
     }
 
     // MARK: - Private Methods

@@ -790,6 +790,41 @@ class CompetitionsManagingMock: CompetitionsManaging {
         }
     }
 
+    //MARK: - unseenResults
+
+    var unseenResultsCallsCount = 0
+    var unseenResultsCalled: Bool {
+        return unseenResultsCallsCount > 0
+    }
+    var unseenResultsReturnValue: AnyPublisher<[(Competition, CompetitionResult.ID)], Never>!
+    var unseenResultsClosure: (() -> AnyPublisher<[(Competition, CompetitionResult.ID)], Never>)?
+
+    func unseenResults() -> AnyPublisher<[(Competition, CompetitionResult.ID)], Never> {
+        unseenResultsCallsCount += 1
+        if let unseenResultsClosure = unseenResultsClosure {
+            return unseenResultsClosure()
+        } else {
+            return unseenResultsReturnValue
+        }
+    }
+
+    //MARK: - viewedResults
+
+    var viewedResultsCompetitionIDResultIDCallsCount = 0
+    var viewedResultsCompetitionIDResultIDCalled: Bool {
+        return viewedResultsCompetitionIDResultIDCallsCount > 0
+    }
+    var viewedResultsCompetitionIDResultIDReceivedArguments: (competitionID: Competition.ID, resultID: CompetitionResult.ID)?
+    var viewedResultsCompetitionIDResultIDReceivedInvocations: [(competitionID: Competition.ID, resultID: CompetitionResult.ID)] = []
+    var viewedResultsCompetitionIDResultIDClosure: ((Competition.ID, CompetitionResult.ID) -> Void)?
+
+    func viewedResults(competitionID: Competition.ID, resultID: CompetitionResult.ID) {
+        viewedResultsCompetitionIDResultIDCallsCount += 1
+        viewedResultsCompetitionIDResultIDReceivedArguments = (competitionID: competitionID, resultID: resultID)
+        viewedResultsCompetitionIDResultIDReceivedInvocations.append((competitionID: competitionID, resultID: resultID))
+        viewedResultsCompetitionIDResultIDClosure?(competitionID, resultID)
+    }
+
     //MARK: - competitionPublisher
 
     var competitionPublisherForCallsCount = 0

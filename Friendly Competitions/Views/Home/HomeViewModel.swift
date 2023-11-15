@@ -104,7 +104,7 @@ final class HomeViewModel: ObservableObject {
             .assign(to: &$friendRows)
 
         handlePremiumBanner()
-        bindPermissionBanners()
+        bindBanners()
 
         userManager.userPublisher
             .filter { $0.isAnonymous != true }
@@ -142,6 +142,10 @@ final class HomeViewModel: ObservableObject {
         showAddFriends = true
     }
 
+    func exploreCompetitionsTapped() {
+        
+    }
+
     func aboutTapped() {
         showAbout = true
     }
@@ -172,7 +176,7 @@ final class HomeViewModel: ObservableObject {
             .assign(to: &$showPremiumBanner)
     }
 
-    private func bindPermissionBanners() {
+    private func bindBanners() {
         Publishers
             .CombineLatest(didHandleBannerTap, appState.didBecomeActive)
             .mapToVoid()
@@ -200,11 +204,20 @@ final class HomeViewModel: ObservableObject {
                         }
                     }
 
+                let resultsBanners = strongSelf.competitionsManager
+                    .unseenResults()
+                    .mapMany { competition, resultID in
+                        Banner.newCompetitionResults(competition: competition, resultID: resultID)
+                    }
+
                 return Publishers
-                    .CombineLatest(competitionBanners, notificationBanner)
-                    .map { competitionBanners, notificationBanner in
-                        guard let notificationBanner else { return competitionBanners }
-                        return competitionBanners.appending(notificationBanner)
+                    .CombineLatest3(competitionBanners, notificationBanner, resultsBanners)
+                    .map { competitionBanners, notificationBanner, resultsBanners in
+                        var allBanners = competitionBanners + resultsBanners
+                        if let notificationBanner {
+                            allBanners.append(notificationBanner)
+                        }
+                        return allBanners
                     }
                     .eraseToAnyPublisher()
             }
