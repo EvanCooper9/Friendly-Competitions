@@ -1,6 +1,6 @@
 import Foundation
 
-struct CompetitionResult: Codable, Identifiable {
+struct CompetitionResult: Codable, Hashable, Identifiable {
     let id: String
     @PostDecoded<DateToStartOfDay, Date> var start: Date
     @PostDecoded<DateToEndOfDay, Date> var end: Date

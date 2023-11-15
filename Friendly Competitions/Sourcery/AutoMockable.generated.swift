@@ -678,6 +678,11 @@ class CompetitionsManagingMock: CompetitionsManaging {
         set(value) { underlyingHasPremiumResults = value }
     }
     var underlyingHasPremiumResults: AnyPublisher<Bool, Never>!
+    var unseenResults: AnyPublisher<[(Competition, CompetitionResult.ID)], Never> {
+        get { return underlyingUnseenResults }
+        set(value) { underlyingUnseenResults = value }
+    }
+    var underlyingUnseenResults: AnyPublisher<[(Competition, CompetitionResult.ID)], Never>!
 
 
     //MARK: - create
@@ -787,24 +792,6 @@ class CompetitionsManagingMock: CompetitionsManaging {
             return standingsForResultIDClosure(competitionID, resultID)
         } else {
             return standingsForResultIDReturnValue
-        }
-    }
-
-    //MARK: - unseenResults
-
-    var unseenResultsCallsCount = 0
-    var unseenResultsCalled: Bool {
-        return unseenResultsCallsCount > 0
-    }
-    var unseenResultsReturnValue: AnyPublisher<[(Competition, CompetitionResult.ID)], Never>!
-    var unseenResultsClosure: (() -> AnyPublisher<[(Competition, CompetitionResult.ID)], Never>)?
-
-    func unseenResults() -> AnyPublisher<[(Competition, CompetitionResult.ID)], Never> {
-        unseenResultsCallsCount += 1
-        if let unseenResultsClosure = unseenResultsClosure {
-            return unseenResultsClosure()
-        } else {
-            return unseenResultsReturnValue
         }
     }
 

@@ -5,8 +5,8 @@ struct CompetitionContainerView: View {
 
     @StateObject private var viewModel: CompetitionContainerViewModel
 
-    init(competition: Competition) {
-        _viewModel = .init(wrappedValue: .init(competition: competition))
+    init(competition: Competition, result: CompetitionResult?) {
+        _viewModel = .init(wrappedValue: .init(competition: competition, result: result))
     }
 
     var body: some View {
@@ -98,7 +98,7 @@ struct CompetitionContainerView_Previews: PreviewProvider {
     }
 
     static var previews: some View {
-        CompetitionContainerView(competition: .mock)
+        CompetitionContainerView(competition: .mock, result: nil)
             .setupMocks(setupMocks)
             .embeddedInNavigationView()
     }

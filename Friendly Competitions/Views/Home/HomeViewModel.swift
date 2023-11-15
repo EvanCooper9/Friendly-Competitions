@@ -142,10 +142,6 @@ final class HomeViewModel: ObservableObject {
         showAddFriends = true
     }
 
-    func exploreCompetitionsTapped() {
-        
-    }
-
     func aboutTapped() {
         showAbout = true
     }
@@ -205,7 +201,7 @@ final class HomeViewModel: ObservableObject {
                     }
 
                 let resultsBanners = strongSelf.competitionsManager
-                    .unseenResults()
+                    .unseenResults
                     .mapMany { competition, resultID in
                         Banner.newCompetitionResults(competition: competition, resultID: resultID)
                     }

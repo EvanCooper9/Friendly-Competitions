@@ -125,35 +125,9 @@ enum Banner: Equatable, Identifiable {
         case .notificationPermissionsDenied:
             UIApplication.shared.open(.notificationSettings)
             return .just(())
-        case .newCompetitionResults(let competition, _):
+        case .newCompetitionResults(let competition, let result):
             let appState = Container.shared.appState.resolve()
-            appState.push(deepLink: .competitionResults(id: competition.id))
-            return .just(())
-        }
-    }
-
-    func tapped() -> AnyPublisher<Void, Never> {
-        let healthKitManager = Container.shared.healthKitManager.resolve()
-        let notificationsManager = Container.shared.notificationsManager.resolve()
-        let scheduler = Container.shared.scheduler.resolve()
-
-        switch self {
-        case .healthKitPermissionsMissing(let permissions):
-            return healthKitManager.request(permissions)
-                .catchErrorJustReturn(())
-                .receive(on: scheduler)
-                .eraseToAnyPublisher()
-        case .healthKitDataMissing:
-            UIApplication.shared.open(.health)
-            return .just(())
-        case .notificationPermissionsMissing:
-            return notificationsManager.requestPermissions()
-                .mapToVoid()
-                .catchErrorJustReturn(())
-                .receive(on: scheduler)
-                .eraseToAnyPublisher()
-        case .notificationPermissionsDenied:
-            UIApplication.shared.open(.notificationSettings)
+            appState.push(deepLink: .competitionResults(id: competition.id, resultsID: result))
             return .just(())
         }
     }

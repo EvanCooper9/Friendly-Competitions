@@ -96,14 +96,14 @@ struct HomeView: View {
                 )
             } else {
                 ForEach(viewModel.competitions + viewModel.invitedCompetitions) { competition in
-                    NavigationLink(value: NavigationDestination.competition(competition)) {
+                    NavigationLink(value: NavigationDestination.competition(competition, nil)) {
                         CompetitionDetails(competition: competition, showParticipantCount: false, isFeatured: false)
                     }
                     .buttonStyle(.plain)
                 }
             }
         } header: {
-            HStack {
+            HStack(alignment: .bottom) {
                 Text(L10n.Home.Section.Competitions.title)
                     .foregroundStyle(.secondary)
                 Spacer()
@@ -141,7 +141,7 @@ struct HomeView: View {
                 }
             }
         } header: {
-            HStack {
+            HStack(alignment: .bottom) {
                 Text(L10n.Home.Section.Friends.title)
                     .foregroundStyle(.secondary)
                 Spacer()
@@ -198,6 +198,7 @@ struct HomeView_Previews: PreviewProvider {
 
 //        competitionsManager.competitions = .just([.mockOld, .mockPublic])
         competitionsManager.standingsPublisherForReturnValue = .just([.mock(for: .evan)])
+        competitionsManager.unseenResults = .just([])
 
 //        friendsManager.friends = .just([.gabby])
 //        friendsManager.friendRequests = .just([.andrew])

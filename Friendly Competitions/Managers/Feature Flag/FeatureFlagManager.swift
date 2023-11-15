@@ -1,6 +1,5 @@
 import Foundation
 import FirebaseRemoteConfig
-import FirebaseRemoteConfigSwift
 
 // sourcery: AutoMockable
 protocol FeatureFlagManaging {
@@ -18,8 +17,7 @@ final class FeatureFlagManager: FeatureFlagManaging {
                 error.reportToCrashlytics()
             } else if status == .success {
                 self.remoteConfig.activate { _, error in
-                    guard let error else { return }
-                    error.reportToCrashlytics()
+                    error?.reportToCrashlytics()
                 }
             }
         }

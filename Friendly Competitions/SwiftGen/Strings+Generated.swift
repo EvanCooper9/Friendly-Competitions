@@ -358,8 +358,8 @@ internal enum L10n {
         internal enum Empty {
           /// Add friends
           internal static let add = L10n.tr("Localizable", "Home.Section.Friends.Empty.add", fallback: "Add friends")
-          /// You are not participating in any competitions. When you do, they'll show up here.
-          internal static let message = L10n.tr("Localizable", "Home.Section.Friends.Empty.message", fallback: "You are not participating in any competitions. When you do, they'll show up here.")
+          /// You have not added any friends. When you do, they'll show up here.
+          internal static let message = L10n.tr("Localizable", "Home.Section.Friends.Empty.message", fallback: "You have not added any friends. When you do, they'll show up here.")
         }
       }
     }

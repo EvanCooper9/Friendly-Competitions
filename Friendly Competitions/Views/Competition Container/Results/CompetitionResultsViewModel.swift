@@ -1,5 +1,6 @@
 import Combine
 import CombineExt
+import CombineSchedulers
 import ECKit
 import Factory
 import Foundation
@@ -15,12 +16,17 @@ final class CompetitionResultsViewModel: ObservableObject {
 
     private let competition: Competition
 
-    @Injected(\.activitySummaryManager) private var activitySummaryManager
-    @Injected(\.competitionsManager) private var competitionsManager
-    @Injected(\.scheduler) private var scheduler
-    @Injected(\.stepCountManager) private var stepCountManager
-    @Injected(\.userManager) private var userManager
-    @Injected(\.workoutManager) private var workoutManager
+    @Injected(\.activitySummaryManager) private var activitySummaryManager: ActivitySummaryManaging
+    @Injected(\.competitionsManager) private var competitionsManager: CompetitionsManaging
+    @Injected(\.scheduler) private var scheduler: AnySchedulerOf<RunLoop>
+    @Injected(\.stepCountManager) private var stepCountManager: StepCountManaging
+    @Injected(\.userManager) private var userManager: UserManaging
+    @Injected(\.workoutManager) private var workoutManager: WorkoutManaging
+
+    private let appearSubject = PassthroughSubject<Void, Never>()
+    private let disappearSubject = PassthroughSubject<Void, Never>()
+
+    private var cancellables = Cancellables()
 
     // MARK: - Lifecycle
 
@@ -38,6 +44,24 @@ final class CompetitionResultsViewModel: ObservableObject {
             .eraseToAnyPublisher()
             .receive(on: scheduler)
             .assign(to: &$dataPoints)
+
+        Publishers
+            .Merge(appearSubject.mapToValue(true), disappearSubject.mapToValue(false))
+            .debounce(for: .seconds(2), scheduler: scheduler)
+            .filter { $0 }
+            .mapToVoid()
+            .sink(withUnretained: self, receiveValue: { strongSelf in
+                strongSelf.competitionsManager.viewedResults(competitionID: competition.id, resultID: result.id)
+            })
+            .store(in: &cancellables)
+    }
+
+    func appear() {
+        appearSubject.send(())
+    }
+
+    func disappear() {
+        disappearSubject.send(())
     }
 
     // MARK: - Private Methods
