@@ -125,9 +125,9 @@ enum Banner: Equatable, Identifiable {
         case .notificationPermissionsDenied:
             UIApplication.shared.open(.notificationSettings)
             return .just(())
-        case .newCompetitionResults(let competition, let result):
+        case .newCompetitionResults(let competition, let resultID):
             let appState = Container.shared.appState.resolve()
-            appState.push(deepLink: .competitionResults(id: competition.id, resultsID: result))
+            appState.push(deepLink: .competitionResult(id: competition.id, resultID: resultID))
             return .just(())
         }
     }

@@ -36,6 +36,16 @@ final class HomeViewModelTests: FCTestCase {
 
         let competition = Competition.mock
         competitionsManager.searchByIDReturnValue = .just(competition)
+        let competitionResult = CompetitionResult(id: "abc", start: .distantPast, end: .now, participants: [])
+
+        let competitionDocument = DocumentMock<Competition>()
+        competitionDocument.getClosure = { _, _ in .just(competition) }
+        let competitionResultDocument = DocumentMock<CompetitionResult>()
+        competitionResultDocument.getClosure = { _, _ in .just(competitionResult) }
+        database.documentClosure = { path -> Document in
+            path.contains("result") ? competitionResultDocument : competitionDocument
+        }
+
         let user = User.evan
         friendsManager.userWithIdReturnValue = .just(user)
 
@@ -43,11 +53,15 @@ final class HomeViewModelTests: FCTestCase {
 
         deepLinkSubject.send(.competition(id: competition.id))
         scheduler.advance()
-        XCTAssertEqual(viewModel.deepLinkedNavigationDestination, .competition(competition))
+        XCTAssertEqual(viewModel.deepLinkedNavigationDestination, .competition(competition, nil))
 
-        deepLinkSubject.send(.competitionResults(id: competition.id))
+        deepLinkSubject.send(.competitionResult(id: competition.id, resultID: nil))
         scheduler.advance()
-        XCTAssertEqual(viewModel.deepLinkedNavigationDestination, .competition(competition))
+        XCTAssertEqual(viewModel.deepLinkedNavigationDestination, .competition(competition, nil))
+
+        deepLinkSubject.send(.competitionResult(id: competition.id, resultID: "abc"))
+        scheduler.advance()
+        XCTAssertEqual(viewModel.deepLinkedNavigationDestination, .competition(competition, competitionResult))
 
         deepLinkSubject.send(.user(id: user.id))
         scheduler.advance()

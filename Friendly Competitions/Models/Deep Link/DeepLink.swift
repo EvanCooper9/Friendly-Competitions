@@ -13,7 +13,7 @@ enum DeepLink: Equatable {
 
     case user(id: User.ID)
     case competition(id: Competition.ID)
-    case competitionResults(id: Competition.ID, resultsID: CompetitionResult.ID?)
+    case competitionResult(id: Competition.ID, resultID: CompetitionResult.ID?)
 
     init?(from url: URL) {
         let path = url.path
@@ -22,13 +22,13 @@ enum DeepLink: Equatable {
             return
         } else if path.hasPrefix("/" + Constants.competition) {
             let competitionID = url.pathComponents[2]
-            if path.contains("results") {
+            if path.contains("result") {
                 let resultID: String? = {
                     let pathComponents = url.pathComponents
                     guard pathComponents.count == 3 else { return nil }
                     return pathComponents.last
                 }()
-                self = .competitionResults(id: competitionID, resultsID: resultID)
+                self = .competitionResult(id: competitionID, resultID: resultID)
                 return
             } else {
                 self = .competition(id: competitionID)
@@ -48,11 +48,17 @@ enum DeepLink: Equatable {
             return Constants.baseURL
                 .appendingPathComponent(Constants.competition)
                 .appendingPathComponent(id)
-        case .competitionResults(let competitionID, _):
-            return Constants.baseURL
+        case .competitionResult(let competitionID, let resultID):
+            let competitionURL = Constants.baseURL
                 .appendingPathComponent(Constants.competition)
                 .appendingPathComponent(competitionID)
-                .appendingPathComponent("results")
+
+            if let resultID {
+                return competitionURL
+                    .appendingPathComponent("result")
+                    .appendingPathComponent(resultID)
+            }
+            return competitionURL
         }
     }
 
@@ -73,15 +79,15 @@ enum DeepLink: Equatable {
                 .map { .competition($0, nil) }
                 .catchErrorJustReturn(nil)
                 .eraseToAnyPublisher()
-        case .competitionResults(let competitionID, let resultsID):
+        case .competitionResult(let competitionID, let resultID):
             let competition = database
                 .document("competitions/\(competitionID)")
                 .get(as: Competition.self)
 
             var result: AnyPublisher<CompetitionResult?, Error> = .just(nil)
-            if let resultsID {
+            if let resultID {
                 result = database
-                    .document("competitions/\(competitionID)/results/\(resultsID)")
+                    .document("competitions/\(competitionID)/result/\(resultID)")
                     .get(as: CompetitionResult.self)
                     .map { $0 as CompetitionResult? }
                     .eraseToAnyPublisher()
