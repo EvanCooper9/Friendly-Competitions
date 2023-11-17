@@ -60,26 +60,30 @@ final class CompetitionsManager: CompetitionsManaging {
             return .just([])
         }
 
-        let competitions = competitions .removeDuplicates { $0.map(\.id) == $1.map(\.id) }
+        let competitions = competitions.removeDuplicates { $0.map(\.id) == $1.map(\.id) }
+
         return Publishers
             .CombineLatest(competitions, $seenResultsIDs)
             .flatMapLatest(withUnretained: self) { strongSelf, result in
                 let (competitions, seenResultsIDs) = result
                 return competitions
                     .map { competition in
-                        strongSelf.results(for: competition.id)
-                            .catchErrorJustReturn([])
-                            .mapMany { $0.id }
-                            .filterMany { resultID in
-                                guard let seenResultsIDs else { return true }
-                                let id = [competition.id, resultID].joined(separator: "-")
-                                return !seenResultsIDs.contains(id)
+                        strongSelf.database.collection("competitions/\(competition.id)/results")
+                            .sorted(by: "end", direction: .descending)
+                            .limit(1)
+                            .getDocuments(ofType: CompetitionResult.self)
+                            .map { results -> (Competition, CompetitionResult.ID)? in
+                                guard let result = results.first, let seenResultsIDs else { return nil }
+                                let id = [competition.id, result.id].joined(separator: "-")
+                                guard !seenResultsIDs.contains(id) else { return nil }
+                                return (competition, result.id)
                             }
-                            .mapMany { (competition, $0) }
+                            .catchErrorJustReturn(nil)
                             .eraseToAnyPublisher()
                     }
                     .combineLatest()
-                    .map { $0.flattened() }
+                    .compactMapMany { $0 }
+                    .eraseToAnyPublisher()
             }
             .share(replay: 1)
             .eraseToAnyPublisher()

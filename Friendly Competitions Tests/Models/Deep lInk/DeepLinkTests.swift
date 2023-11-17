@@ -36,7 +36,7 @@ final class DeepLinkTests: FCTestCase {
         )
         XCTAssertEqual(
             DeepLink.competitionResult(id: "abc", resultID: "123").url,
-            URL(string: "https://friendly-competitions.app/competition/abc/result/123")!
+            URL(string: "https://friendly-competitions.app/competition/abc/results/123")!
         )
     }
 }

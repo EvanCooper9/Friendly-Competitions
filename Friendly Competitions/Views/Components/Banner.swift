@@ -37,7 +37,8 @@ enum Banner: Equatable, Identifiable {
         case .healthKitDataMissing: return "healthKitDataMissing"
         case .notificationPermissionsMissing: return "notificationPermissionsMissing"
         case .notificationPermissionsDenied: return "notificationPermissionsDenied"
-        case .newCompetitionResults: return "newCompetitionResults"
+        case .newCompetitionResults(let competition, let resultID):
+            return ["newCompetitionResults", competition.id, resultID].joined(separator: "_")
         }
     }
 

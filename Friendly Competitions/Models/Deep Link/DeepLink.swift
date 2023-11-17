@@ -22,7 +22,7 @@ enum DeepLink: Equatable {
             return
         } else if path.hasPrefix("/" + Constants.competition) {
             let competitionID = url.pathComponents[2]
-            if path.contains("result") {
+            if path.contains("results") {
                 let resultID: String? = {
                     let pathComponents = url.pathComponents
                     guard pathComponents.count == 3 else { return nil }
@@ -55,7 +55,7 @@ enum DeepLink: Equatable {
 
             if let resultID {
                 return competitionURL
-                    .appendingPathComponent("result")
+                    .appendingPathComponent("results")
                     .appendingPathComponent(resultID)
             }
             return competitionURL
@@ -83,11 +83,12 @@ enum DeepLink: Equatable {
             let competition = database
                 .document("competitions/\(competitionID)")
                 .get(as: Competition.self)
+                .print("competition")
 
             var result: AnyPublisher<CompetitionResult?, Error> = .just(nil)
             if let resultID {
                 result = database
-                    .document("competitions/\(competitionID)/result/\(resultID)")
+                    .document("competitions/\(competitionID)/results/\(resultID)")
                     .get(as: CompetitionResult.self)
                     .map { $0 as CompetitionResult? }
                     .eraseToAnyPublisher()
