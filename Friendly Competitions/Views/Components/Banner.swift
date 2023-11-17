@@ -3,8 +3,8 @@ import Factory
 import SwiftUI
 import SwiftUIX
 
-enum Banner: Equatable, Identifiable {
-    
+enum Banner: Comparable, Equatable, Identifiable {
+
     struct Configuration {
 
         struct Action {
@@ -130,6 +130,25 @@ enum Banner: Equatable, Identifiable {
             let appState = Container.shared.appState.resolve()
             appState.push(deepLink: .competitionResult(id: competition.id, resultID: resultID))
             return .just(())
+        }
+    }
+
+    static func < (lhs: Banner, rhs: Banner) -> Bool {
+        lhs.rank < rhs.rank
+    }
+
+    private var rank: Int {
+        switch self {
+        case .newCompetitionResults:
+            return 1
+        case .healthKitPermissionsMissing:
+            return 2
+        case .healthKitDataMissing:
+            return 3
+        case .notificationPermissionsDenied:
+            return 4
+        case .notificationPermissionsMissing:
+            return 5
         }
     }
 }

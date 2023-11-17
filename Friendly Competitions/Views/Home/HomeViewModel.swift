@@ -217,7 +217,11 @@ final class HomeViewModel: ObservableObject {
                     }
                     .eraseToAnyPublisher()
             }
-            .map { $0.uniqued(on: \.id) }
+            .map { banners in
+                banners
+                    .uniqued(on: \.id)
+                    .sorted()
+            }
             .delay(for: .seconds(1), scheduler: scheduler)
             .assign(to: &$banners)
     }
