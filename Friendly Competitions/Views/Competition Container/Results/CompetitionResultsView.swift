@@ -22,6 +22,8 @@ struct CompetitionResultsView: View {
                 .padding(.bottom)
             }
         }
+        .onAppear(perform: viewModel.appear)
+        .onDisappear(perform: viewModel.disappear)
         .registerScreenView(name: "Results")
     }
 }

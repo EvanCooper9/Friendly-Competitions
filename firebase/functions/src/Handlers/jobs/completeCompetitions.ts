@@ -61,11 +61,12 @@ async function completeCompetition(competition: Competition): Promise<void> {
         const standing = await firestore.doc(`competitions/${competition.id}/standings/${userID}`).get().then(doc => new Standing(doc));
         const rank = standing.rank;
         const ordinal = ["st", "nd", "rd"][((rank+90)%100-10)%10-1] || "th";
+        const yesterday = moment().utc().subtract(1, "day").format("YYYY-MM-DD");
         await notifications.sendNotificationsToUser(
             user,
             "Competition complete!",
             `You placed ${rank}${ordinal} in ${competition.name}. Tap to see your results.`,
-            `${Constants.NOTIFICATION_URL}/competition/${competition.id}/results`
+            `${Constants.NOTIFICATION_URL}/competition/${competition.id}/results/${yesterday}`
         );
         await notifications.sendBackgroundNotificationToUser(
             user,

@@ -6,6 +6,7 @@ import SwiftUIX
 struct AboutView: View {
 
     @StateObject private var viewModel = AboutViewModel()
+    @Environment(\.requestReview) private var requestReview
 
     var body: some View {
         List {
@@ -24,12 +25,7 @@ struct AboutView: View {
 
             Section {
                 Button(L10n.About.App.rate, systemImage: .heartFill) {
-                    let windowScene = UIApplication.shared.connectedScenes
-                        .filter { $0.activationState == .foregroundActive }
-                        .compactMap { $0 as? UIWindowScene }
-                        .first
-                    guard let windowScene = windowScene else { return }
-                    SKStoreReviewController.requestReview(in: windowScene)
+                    requestReview()
                 }
                 Link(destination: .privacyPolicy) {
                     Label(L10n.About.App.privacyPolicy, systemImage: .handRaisedFill)

@@ -13,7 +13,7 @@
 "Home.Section.Friends.title" = "Friends";
 "Home.Section.Friends.addPrompt" = "Add friends to get started!";
 "Home.Section.Friends.invited" = "Invited";
-"Home.Section.Friends.Empty.message" = "You are not participating in any competitions. When you do, they'll show up here.";
+"Home.Section.Friends.Empty.message" = "You have not added any friends. When you do, they'll show up here.";
 "Home.Section.Friends.Empty.add" = "Add friends";
 
 // Activity Summary Info

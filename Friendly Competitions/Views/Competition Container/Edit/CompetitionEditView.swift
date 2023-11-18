@@ -102,20 +102,23 @@ struct CompetitionEditView: View {
         }
         .navigationTitle(viewModel.title)
         .embeddedInNavigationView()
+        .onAppear { handleViewModelScoringModel(scoringModel: viewModel.scoringModel) }
         .onChange(of: viewModel.dismiss) { _ in dismiss() }
-        .onChange(of: viewModel.scoringModel) { scoringModel in
-            underlyingScoringModel = .init(scoringModel: scoringModel)
-            switch scoringModel {
-            case let .workout(workoutType, workoutMetrics):
-                underlyingWorkoutType = workoutType
-                underlyingWorkoutMetrics = workoutMetrics
-            default:
-                underlyingWorkoutMetrics = []
-            }
-        }
+        .onChange(of: viewModel.scoringModel) { handleViewModelScoringModel(scoringModel: $0) }
         .onChange(of: underlyingScoringModel) { _ in setViewModelScoringModel() }
         .onChange(of: underlyingWorkoutType) { _ in setViewModelScoringModel() }
         .onChange(of: underlyingWorkoutMetrics) { _ in setViewModelScoringModel() }
+    }
+
+    private func handleViewModelScoringModel(scoringModel: Competition.ScoringModel) {
+        underlyingScoringModel = .init(scoringModel: scoringModel)
+        switch scoringModel {
+        case let .workout(workoutType, workoutMetrics):
+            underlyingWorkoutType = workoutType
+            underlyingWorkoutMetrics = workoutMetrics
+        default:
+            underlyingWorkoutMetrics = []
+        }
     }
 
     private func setViewModelScoringModel() {

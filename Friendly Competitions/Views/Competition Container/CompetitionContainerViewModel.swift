@@ -29,7 +29,7 @@ final class CompetitionContainerViewModel: ObservableObject {
 
     // MARK: - Lifecycle
 
-    init(competition: Competition) {
+    init(competition: Competition, result: CompetitionResult?) {
         self.competition = competition
 
         let activeDateRange = CompetitionContainerDateRange(start: competition.start, end: competition.end, active: true)
@@ -41,7 +41,15 @@ final class CompetitionContainerViewModel: ObservableObject {
             dateRanges = []
         }
 
-        let results = competitionsManager.results(for: competition.id).catchErrorJustReturn([])
+        if let result {
+            let resultDateRange = CompetitionContainerDateRange(start: result.start, end: result.end)
+            dateRanges.append(resultDateRange)
+            selectedDateRangeIndex.send(dateRanges.count - 1)
+        }
+
+        let results = competitionsManager.results(for: competition.id)
+            .prepend(Array([result].compacted()))
+            .catchErrorJustReturn([])
 
         let blockedByPremium: AnyPublisher<Bool, Never> = {
             if featureFlagManager.value(forBool: .premiumEnabled) {

@@ -16,7 +16,7 @@ struct ExploreView: View {
                     Section {
                         ForEach(viewModel.appOwnedCompetitions) { competition in
                             ZStack {
-                                NavigationLink(value: NavigationDestination.competition(competition)) { EmptyView() }
+                                NavigationLink(value: NavigationDestination.competition(competition, nil)) { EmptyView() }
                                     .opacity(0)
                                 FeaturedCompetition(competition: competition)
                             }
@@ -35,14 +35,14 @@ struct ExploreView: View {
                         } else {
                             ForEach(viewModel.searchResults.filter(\.appOwned)) { competition in
                                 ZStack {
-                                    NavigationLink(value: NavigationDestination.competition(competition)) { EmptyView() }
+                                    NavigationLink(value: NavigationDestination.competition(competition, nil)) { EmptyView() }
                                         .opacity(0)
                                     FeaturedCompetition(competition: competition)
                                 }
                             }
                             ForEach(viewModel.searchResults.filter(\.appOwned.not)) { competition in
                                 ZStack {
-                                    NavigationLink(value: NavigationDestination.competition(competition)) { EmptyView() }
+                                    NavigationLink(value: NavigationDestination.competition(competition, nil)) { EmptyView() }
                                         .opacity(0)
                                     CompetitionDetails(competition: competition, showParticipantCount: true, isFeatured: false)
                                         .padding(.vertical, .small)

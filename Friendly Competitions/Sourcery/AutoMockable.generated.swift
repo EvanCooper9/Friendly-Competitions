@@ -678,6 +678,11 @@ class CompetitionsManagingMock: CompetitionsManaging {
         set(value) { underlyingHasPremiumResults = value }
     }
     var underlyingHasPremiumResults: AnyPublisher<Bool, Never>!
+    var unseenResults: AnyPublisher<[(Competition, CompetitionResult.ID)], Never> {
+        get { return underlyingUnseenResults }
+        set(value) { underlyingUnseenResults = value }
+    }
+    var underlyingUnseenResults: AnyPublisher<[(Competition, CompetitionResult.ID)], Never>!
 
 
     //MARK: - create
@@ -788,6 +793,23 @@ class CompetitionsManagingMock: CompetitionsManaging {
         } else {
             return standingsForResultIDReturnValue
         }
+    }
+
+    //MARK: - viewedResults
+
+    var viewedResultsCompetitionIDResultIDCallsCount = 0
+    var viewedResultsCompetitionIDResultIDCalled: Bool {
+        return viewedResultsCompetitionIDResultIDCallsCount > 0
+    }
+    var viewedResultsCompetitionIDResultIDReceivedArguments: (competitionID: Competition.ID, resultID: CompetitionResult.ID)?
+    var viewedResultsCompetitionIDResultIDReceivedInvocations: [(competitionID: Competition.ID, resultID: CompetitionResult.ID)] = []
+    var viewedResultsCompetitionIDResultIDClosure: ((Competition.ID, CompetitionResult.ID) -> Void)?
+
+    func viewedResults(competitionID: Competition.ID, resultID: CompetitionResult.ID) {
+        viewedResultsCompetitionIDResultIDCallsCount += 1
+        viewedResultsCompetitionIDResultIDReceivedArguments = (competitionID: competitionID, resultID: resultID)
+        viewedResultsCompetitionIDResultIDReceivedInvocations.append((competitionID: competitionID, resultID: resultID))
+        viewedResultsCompetitionIDResultIDClosure?(competitionID, resultID)
     }
 
     //MARK: - competitionPublisher

@@ -18,7 +18,7 @@ final class DeepLinkTests: FCTestCase {
     func testThatCompetitionResultsCanBeInitialized() {
         let url = URL(string: "https://friendly-competitions.app/competition/abc123/results")!
         let deepLink = DeepLink(from: url)
-        XCTAssertEqual(deepLink, .competitionResults(id: "abc123"))
+        XCTAssertEqual(deepLink, .competitionResult(id: "abc123", resultID: nil))
     }
     
     func testThatUrlIsCorrect() {
@@ -31,8 +31,12 @@ final class DeepLinkTests: FCTestCase {
             URL(string: "https://friendly-competitions.app/competition/\(#function)")!
         )
         XCTAssertEqual(
-            DeepLink.competitionResults(id: #function).url,
-            URL(string: "https://friendly-competitions.app/competition/\(#function)/results")!
+            DeepLink.competitionResult(id: #function, resultID: nil).url,
+            URL(string: "https://friendly-competitions.app/competition/\(#function)")!
+        )
+        XCTAssertEqual(
+            DeepLink.competitionResult(id: "abc", resultID: "123").url,
+            URL(string: "https://friendly-competitions.app/competition/abc/results/123")!
         )
     }
 }

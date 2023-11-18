@@ -13,13 +13,14 @@ protocol CompetitionsManaging {
     var invitedCompetitions: AnyPublisher<[Competition], Never> { get }
     var appOwnedCompetitions: AnyPublisher<[Competition], Never> { get }
     var hasPremiumResults: AnyPublisher<Bool, Never> { get }
+    var unseenResults: AnyPublisher<[(Competition, CompetitionResult.ID)], Never> { get }
 
     func create(_ competition: Competition) -> AnyPublisher<Void, Error>
     func update(_ competition: Competition) -> AnyPublisher<Void, Error>
     func search(byID competitionID: Competition.ID) -> AnyPublisher<Competition, Error>
     func results(for competitionID: Competition.ID) -> AnyPublisher<[CompetitionResult], Error>
     func standings(for competitionID: Competition.ID, resultID: CompetitionResult.ID) -> AnyPublisher<[Competition.Standing], Error>
-
+    func viewedResults(competitionID: Competition.ID, resultID: CompetitionResult.ID)
     func competitionPublisher(for competitionID: Competition.ID) -> AnyPublisher<Competition, Error>
     func standingsPublisher(for competitionID: Competition.ID) -> AnyPublisher<[Competition.Standing], Error>
 }
@@ -50,6 +51,41 @@ final class CompetitionsManager: CompetitionsManaging {
             }
             .removeDuplicates { $0.id == $1.id }
             .flatMapLatest(withUnretained: self) { $0.hasPremiumResults(for: $1.competitions, id: $1.id) }
+            .share(replay: 1)
+            .eraseToAnyPublisher()
+    }()
+
+    private(set) lazy var unseenResults: AnyPublisher<[(Competition, CompetitionResult.ID)], Never> = {
+        guard featureFlagManager.value(forBool: .newResultsBannerEnabled) else {
+            return .just([])
+        }
+
+        let competitions = competitions.removeDuplicates { $0.map(\.id) == $1.map(\.id) }
+
+        return Publishers
+            .CombineLatest(competitions, $seenResultsIDs)
+            .flatMapLatest(withUnretained: self) { strongSelf, result in
+                let (competitions, seenResultsIDs) = result
+                return competitions
+                    .map { competition in
+                        strongSelf.database.collection("competitions/\(competition.id)/results")
+                            .sorted(by: "end", direction: .descending)
+                            .limit(1)
+                            .getDocuments(ofType: CompetitionResult.self)
+                            .map { results -> (Competition, CompetitionResult.ID)? in
+                                guard let result = results.first, let seenResultsIDs else { return nil }
+                                let id = [competition.id, result.id].joined(separator: "-")
+                                guard !seenResultsIDs.contains(id) else { return nil }
+                                return (competition, result.id)
+                            }
+                            .catchErrorJustReturn(nil)
+                            .eraseToAnyPublisher()
+                    }
+                    .combineLatest()
+                    .compactMapMany { $0 }
+                    .eraseToAnyPublisher()
+            }
+            .share(replay: 1)
             .eraseToAnyPublisher()
     }()
 
@@ -60,15 +96,18 @@ final class CompetitionsManager: CompetitionsManaging {
     private let appOwnedCompetitionsSubject = ReplaySubject<[Competition], Never>(bufferSize: 1)
     private let hasPremiumResultsSubject = ReplaySubject<Bool, Never>(bufferSize: 1)
 
-    @Injected(\.api) private var api
-    @Injected(\.appState) private var appState
-    @Injected(\.analyticsManager) private var analyticsManager
-    @Injected(\.competitionCache) private var cache
-    @Injected(\.database) private var database
-    @Injected(\.environmentManager) private var environmentManager
-    @Injected(\.userManager) private var userManager
+    @Injected(\.api) private var api: API
+    @Injected(\.appState) private var appState: AppStateProviding
+    @Injected(\.analyticsManager) private var analyticsManager: AnalyticsManaging
+    @Injected(\.competitionCache) private var cache: CompetitionCache
+    @Injected(\.database) private var database: Database
+    @Injected(\.environmentManager) private var environmentManager: EnvironmentManaging
+    @Injected(\.featureFlagManager) private var featureFlagManager: FeatureFlagManaging
+    @Injected(\.userManager) private var userManager: UserManaging
 
     private var cancellables = Cancellables()
+
+    @UserDefault("seenResultsIDs") private var seenResultsIDs: [String]?
 
     // MARK: - Lifecycle
 
@@ -78,6 +117,8 @@ final class CompetitionsManager: CompetitionsManaging {
         appOwnedCompetitions = appOwnedCompetitionsSubject.eraseToAnyPublisher()
 
         listenForCompetitions()
+
+        seenResultsIDs = []
     }
 
     // MARK: - Public Methods
@@ -144,6 +185,11 @@ final class CompetitionsManager: CompetitionsManaging {
         database.collection("competitions/\(competitionID)/standings")
             .publisher(asArrayOf: Competition.Standing.self)
             .eraseToAnyPublisher()
+    }
+
+    func viewedResults(competitionID: Competition.ID, resultID: CompetitionResult.ID) {
+        let id = [competitionID, resultID].joined(separator: "-")
+        seenResultsIDs = (seenResultsIDs ?? []).appending(id)
     }
 
     // MARK: - Private Methods
