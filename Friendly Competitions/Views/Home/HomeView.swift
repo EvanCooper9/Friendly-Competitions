@@ -169,6 +169,7 @@ struct HomeView: View {
             Text(message)
                 .multilineTextAlignment(.center)
                 .foregroundStyle(.secondary)
+                .fixedSize(horizontal: false, vertical: true)
 
             HStack {
                 ForEach(enumerating: buttons) { index, button in
