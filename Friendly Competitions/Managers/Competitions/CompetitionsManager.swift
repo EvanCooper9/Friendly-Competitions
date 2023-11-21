@@ -73,9 +73,8 @@ final class CompetitionsManager: CompetitionsManaging {
                             .limit(1)
                             .getDocuments(ofType: CompetitionResult.self)
                             .map { results -> (Competition, CompetitionResult.ID)? in
-                                guard let result = results.first, let seenResultsIDs else { return nil }
-                                let id = [competition.id, result.id].joined(separator: "-")
-                                guard !seenResultsIDs.contains(id) else { return nil }
+                                guard let result = results.first,
+                                      !seenResultsIDs.contains(strongSelf.idForSeenResult(competitionID: competition.id, resultID: result.id)) else { return nil }
                                 return (competition, result.id)
                             }
                             .catchErrorJustReturn(nil)
@@ -105,9 +104,8 @@ final class CompetitionsManager: CompetitionsManaging {
     @Injected(\.featureFlagManager) private var featureFlagManager: FeatureFlagManaging
     @Injected(\.userManager) private var userManager: UserManaging
 
+    @UserDefault("seenResultsIDs", defaultValue: [String]()) private var seenResultsIDs
     private var cancellables = Cancellables()
-
-    @UserDefault("seenResultsIDs") private var seenResultsIDs: [String]?
 
     // MARK: - Lifecycle
 
@@ -117,8 +115,6 @@ final class CompetitionsManager: CompetitionsManaging {
         appOwnedCompetitions = appOwnedCompetitionsSubject.eraseToAnyPublisher()
 
         listenForCompetitions()
-
-        seenResultsIDs = []
     }
 
     // MARK: - Public Methods
@@ -188,8 +184,7 @@ final class CompetitionsManager: CompetitionsManaging {
     }
 
     func viewedResults(competitionID: Competition.ID, resultID: CompetitionResult.ID) {
-        let id = [competitionID, resultID].joined(separator: "-")
-        seenResultsIDs = (seenResultsIDs ?? []).appending(id)
+        seenResultsIDs.append(idForSeenResult(competitionID: competitionID, resultID: resultID))
     }
 
     // MARK: - Private Methods
@@ -233,6 +228,10 @@ final class CompetitionsManager: CompetitionsManaging {
                 })
                 .eraseToAnyPublisher()
         }
+    }
+
+    private func idForSeenResult(competitionID: Competition.ID, resultID: CompetitionResult.ID) -> String {
+        "\(competitionID)-\(resultID)"
     }
 }
 
