@@ -15,7 +15,8 @@ final class CreateAccountViewModel: ObservableObject {
 
     // MARK: - Private Properties
 
-    @Injected(\.authenticationManager) private var authenticationManager
+    @Injected(\.authenticationManager) private var authenticationManager: AuthenticationManaging
+    @Injected(\.userManager) private var userManager: UserManaging
 
     private let signInWithAppleSubject = PassthroughSubject<Void, Never>()
 
@@ -33,6 +34,12 @@ final class CreateAccountViewModel: ObservableObject {
                     .onError { strongSelf.error = $0 }
                     .ignoreFailure()
             }
+            .sink(withUnretained: self) { $0.dismiss.toggle() }
+            .store(in: &cancellables)
+
+        userManager.userPublisher
+            .filter { $0.isAnonymous == false }
+            .mapToVoid()
             .sink(withUnretained: self) { $0.dismiss.toggle() }
             .store(in: &cancellables)
     }

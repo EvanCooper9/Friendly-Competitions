@@ -83,7 +83,6 @@ enum DeepLink: Equatable {
             let competition = database
                 .document("competitions/\(competitionID)")
                 .get(as: Competition.self)
-                .print("competition")
 
             var result: AnyPublisher<CompetitionResult?, Error> = .just(nil)
             if let resultID {

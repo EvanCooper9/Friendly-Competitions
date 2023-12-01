@@ -79,7 +79,6 @@ final class HomeViewModelTests: FCTestCase {
 
         let viewModel = HomeViewModel()
         viewModel.$competitions
-            .print("competitions")
             .expect([], [], [comp1], [comp1, comp2], expectation: expectation)
             .store(in: &cancellables)
 

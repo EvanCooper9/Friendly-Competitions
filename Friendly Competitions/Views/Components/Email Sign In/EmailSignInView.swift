@@ -1,8 +1,41 @@
 import SwiftUI
+import SwiftUIX
 
 struct EmailSignInView: View {
 
     @StateObject private var viewModel: EmailSignInViewModel
+
+    @FocusState private var focused: Bool
+    @FocusState private var focusedSignInField: SignInField?
+    @FocusState private var focusedSignUpField: SignUpField?
+
+    private enum SignInField: Hashable {
+        case email
+        case password
+
+        var next: Self? {
+            switch self {
+            case .email: return .password
+            case .password: return nil
+            }
+        }
+    }
+
+    private enum SignUpField: Hashable {
+        case name
+        case email
+        case password
+        case passwordConfirmation
+
+        var next: Self? {
+            switch self {
+            case .name: return .email
+            case .email: return .password
+            case .password: return .passwordConfirmation
+            case .passwordConfirmation: return nil
+            }
+        }
+    }
 
     init(startingInputType: EmailSignInViewInputType = .signIn, canSwitchInputType: Bool = true) {
         _viewModel = .init(wrappedValue: .init(startingInputType: startingInputType, canSwitchInputType: canSwitchInputType))
@@ -20,7 +53,13 @@ struct EmailSignInView: View {
                         .textContentType(.emailAddress)
                         .keyboardType(.emailAddress)
                         .autocorrectionDisabled()
+                        .textInputAutocapitalization(.never)
+                        .focused($focusedSignInField, equals: .email)
+                        .submitLabel(.next)
+                        .onSubmit { focusedSignInField = .password }
                     TextFieldWithSecureToggle(L10n.EmailSignIn.password, text: $viewModel.password, textContentType: .password)
+                        .focused($focusedSignInField, equals: .password)
+                        .submitLabel(.continue)
                         .onSubmit(viewModel.continueTapped)
                 }
                 .emailSignInStyle()
@@ -31,12 +70,24 @@ struct EmailSignInView: View {
                 Group {
                     TextField(L10n.EmailSignIn.name, text: $viewModel.name)
                         .textContentType(.name)
+                        .focused($focusedSignUpField, equals: .name)
+                        .submitLabel(.next)
+                        .onSubmit { focusedSignUpField = .email }
                     TextField(L10n.EmailSignIn.email, text: $viewModel.email)
                         .textContentType(.emailAddress)
                         .keyboardType(.emailAddress)
                         .autocorrectionDisabled()
+                        .textInputAutocapitalization(.never)
+                        .focused($focusedSignUpField, equals: .email)
+                        .submitLabel(.next)
+                        .onSubmit { focusedSignUpField = .password }
                     TextFieldWithSecureToggle(L10n.EmailSignIn.password, text: $viewModel.password, textContentType: .newPassword)
+                        .focused($focusedSignUpField, equals: .password)
+                        .submitLabel(.next)
+                        .onSubmit { focusedSignUpField = .passwordConfirmation }
                     TextFieldWithSecureToggle(L10n.EmailSignIn.passwordConfirmation, text: $viewModel.passwordConfirmation, textContentType: .newPassword)
+                        .focused($focusedSignUpField, equals: .passwordConfirmation)
+                        .submitLabel(.continue)
                         .onSubmit(viewModel.continueTapped)
                 }
                 .emailSignInStyle()
@@ -68,10 +119,9 @@ struct EmailSignInView: View {
                 .maxWidth(.infinity)
             }
         }
-        .padding()
+        .padding(.horizontal)
         .withLoadingOverlay(isLoading: viewModel.loading)
         .errorAlert(error: $viewModel.error)
-        .fittedDetents(defaultDetents: [.large])
     }
 }
 

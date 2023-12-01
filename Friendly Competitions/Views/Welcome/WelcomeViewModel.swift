@@ -24,9 +24,11 @@ final class WelcomeViewModel: ObservableObject {
     @Published var showMoreSignInOptionsButton = true
     @Published var signInOptions: [SignInOptions] = [.apple]
 
+    @Published var navigationPath: [WelcomeNavigationDestination] = []
+
     // MARK: - Private Properties
 
-    @Injected(\.authenticationManager) private var authenticationManager
+    @Injected(\.authenticationManager) private var authenticationManager: AuthenticationManaging
 
     private let signInSubject = PassthroughSubject<AuthenticationMethod, Never>()
 
@@ -53,7 +55,8 @@ final class WelcomeViewModel: ObservableObject {
     }
 
     func signInWithEmailTapped() {
-        showEmailSignIn = true
+//        showEmailSignIn = true
+        navigationPath = [.emailSignIn]
     }
 
     func signInAnonymouslyTapped() {

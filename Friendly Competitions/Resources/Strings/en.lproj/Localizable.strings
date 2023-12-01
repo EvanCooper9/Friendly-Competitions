@@ -217,6 +217,7 @@
 "EmailSignIn.signUp" = "Sign up";
 "EmailSignIn.haveAnAccount" = "Have an account?";
 "EmailSignIn.signIn" = "Sign in";
+"EmailSignIn.missingEmail" = "Please enter your email";
 
 // Verify Email
 "VerifyEmail.signIn" = "Sign in";
