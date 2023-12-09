@@ -43,6 +43,10 @@ struct PatternedBackground: View {
     }
 }
 
-#Preview {
-    PatternedBackground()
+#if DEBUG
+struct PatternedBackground_Previews: PreviewProvider {
+    static var previews: some View {
+        PatternedBackground()
+    }
 }
+#endif
