@@ -7,6 +7,7 @@ enum FeatureFlagDouble: String, FeatureFlag {
     typealias Data = Double
 
     case databaseCacheTtl = "database_cache_ttl"
+    case healthKitBackgroundDeliveryTimeoutMS = "health_kit_background_delivery_timeout_ms"
 
     var stringValue: String { rawValue }
 }
