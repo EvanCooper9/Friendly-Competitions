@@ -46,7 +46,18 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
             .sink(withUnretained: self) { $0.cache.activitySummary = $1 }
             .store(in: &cancellables)
 
-        healthKitManager.registerBackgroundDeliveryTask(fetchAndUpload())
+        let permissionTypes: [HealthKitPermissionType] = [
+            .activeEnergy,
+            .appleExerciseTime,
+            .appleMoveTime,
+            .appleStandTime,
+            .appleStandHour,
+            .activitySummaryType
+        ]
+        permissionTypes.forEach { permission in
+            healthKitManager.registerBackgroundDeliveryTask(fetchAndUpload(), for: permission)
+        }
+
         fetchAndUpload()
             .sink()
             .store(in: &cancellables)

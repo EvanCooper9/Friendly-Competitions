@@ -4,7 +4,8 @@ import Factory
 final class DataUploadingAppService: AppService {
 
     // Needs to be lazy so that `FirebaseApp.configure()` is called first
-    @LazyInjected(\.authenticationManager) private var authenticationManager
+    @LazyInjected(\.authenticationManager) private var authenticationManager: AuthenticationManaging
+    @LazyInjected(\.healthKitManager) private var healthKitManager: HealthKitManaging
 
     private var activitySummaryManager: ActivitySummaryManaging?
     private var stepCountManager: StepCountManaging?
@@ -31,5 +32,7 @@ final class DataUploadingAppService: AppService {
                 }
             }
             .store(in: &cancellables)
+
+        healthKitManager.registerForBackgroundDelivery()
     }
 }

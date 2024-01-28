@@ -352,8 +352,13 @@ fileprivate extension Array where Element == QueryDocumentSnapshot {
 }
 
 extension Error {
-    func reportToCrashlytics(userInfo: [String: Any] = [:]) {
+    func reportToCrashlytics(userInfo: [String: Any] = [:], file: String = #file, line: Int = #line) {
         var nsError = self as NSError
+
+        var userInfo = nsError.userInfo.merging(userInfo) { _, newValue in newValue }
+        userInfo["file"] = file
+        userInfo["line"] = line
+
         nsError = NSError(
             domain: nsError.domain,
             code: nsError.code,

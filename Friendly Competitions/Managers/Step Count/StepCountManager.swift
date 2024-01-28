@@ -23,7 +23,7 @@ final class StepCountManager: StepCountManaging {
     // MARK: - Lifecycle
 
     init() {
-        healthKitManager.registerBackgroundDeliveryTask(fetchAndUpload())
+        healthKitManager.registerBackgroundDeliveryTask(fetchAndUpload(), for: .stepCount)
         fetchAndUpload()
             .sink()
             .store(in: &cancellables)

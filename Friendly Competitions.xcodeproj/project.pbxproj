@@ -279,6 +279,7 @@
 		EDC9CEE52AE3693A002FCE9C /* DataUploadingAppServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC9CEE42AE3693A002FCE9C /* DataUploadingAppServiceTests.swift */; };
 		EDC9CEEE2AE36E1A002FCE9C /* BackgroundJobsAppServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC9CEED2AE36E1A002FCE9C /* BackgroundJobsAppServiceTests.swift */; };
 		EDC9CEF12AE37066002FCE9C /* AppStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC9CEF02AE37066002FCE9C /* AppStateTests.swift */; };
+		EDD6B4C22B66B85C00786D3B /* HealthKitBackgroundDeliveryError.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD6B4C12B66B85C00786D3B /* HealthKitBackgroundDeliveryError.swift */; };
 		EDD894FA2962A0E2009636E6 /* Product.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD894F92962A0E2009636E6 /* Product.swift */; };
 		EDD894FD29633F92009636E6 /* EnvironmentManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD894FC29633F92009636E6 /* EnvironmentManager.swift */; };
 		EDD8950029634043009636E6 /* FCEnvironment.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD894FF29634043009636E6 /* FCEnvironment.swift */; };
@@ -551,6 +552,7 @@
 		EDC9CEE42AE3693A002FCE9C /* DataUploadingAppServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataUploadingAppServiceTests.swift; sourceTree = "<group>"; };
 		EDC9CEED2AE36E1A002FCE9C /* BackgroundJobsAppServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundJobsAppServiceTests.swift; sourceTree = "<group>"; };
 		EDC9CEF02AE37066002FCE9C /* AppStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStateTests.swift; sourceTree = "<group>"; };
+		EDD6B4C12B66B85C00786D3B /* HealthKitBackgroundDeliveryError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitBackgroundDeliveryError.swift; sourceTree = "<group>"; };
 		EDD894F92962A0E2009636E6 /* Product.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Product.swift; sourceTree = "<group>"; };
 		EDD894FC29633F92009636E6 /* EnvironmentManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EnvironmentManager.swift; sourceTree = "<group>"; };
 		EDD894FF29634043009636E6 /* FCEnvironment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FCEnvironment.swift; sourceTree = "<group>"; };
@@ -1326,6 +1328,7 @@
 				ED58C98A29AA8C0100393468 /* HealthStoring.swift */,
 				ED879C0629A13C250007DB91 /* HealthKitQuery.swift */,
 				C14634F526F2A84B0028F847 /* HealthKitManager.swift */,
+				EDD6B4C12B66B85C00786D3B /* HealthKitBackgroundDeliveryError.swift */,
 				ED879C4229A411550007DB91 /* HealthKitManager+Factory.swift */,
 				EDDF77D728BA82E000BB8B97 /* HealthKitPermissionType.swift */,
 			);
@@ -2161,6 +2164,7 @@
 				ED9FB8BC2A40929900B09310 /* EmailSignInViewInputType.swift in Sources */,
 				ED879C2C29A40D6E0007DB91 /* CompetitionCache.swift in Sources */,
 				C1691DD926D5603D006FFA30 /* ActivityRingView.swift in Sources */,
+				EDD6B4C22B66B85C00786D3B /* HealthKitBackgroundDeliveryError.swift in Sources */,
 				ED901B5128024D5F00FE619E /* Text+Extensions.swift in Sources */,
 				ED438FF727F7B3B600D72F99 /* View+ConfirmationDialog.swift in Sources */,
 				ED438FFB27F7D18600D72F99 /* AnalyticsManager.swift in Sources */,
@@ -2540,7 +2544,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "Friendly Competitions/FriendlyCompetitions.entitlements";
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = "Friendly\\ Competitions/Preview\\ Content";
@@ -2575,7 +2579,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.evancooper.FriendlyCompetitions;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "match AppStore com.evancooper.FriendlyCompetitions";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match AppStore com.evancooper.FriendlyCompetitions";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match Development com.evancooper.FriendlyCompetitions";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
