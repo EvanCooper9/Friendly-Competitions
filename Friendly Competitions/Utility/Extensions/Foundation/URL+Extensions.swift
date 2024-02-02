@@ -12,18 +12,18 @@ extension URL {
     static let notificationSettings = URL(string: UIApplication.openNotificationSettingsURLString)!
 
     static func featureRequest(with userID: User.ID) -> URL {
-        URL(string: "https://www.reddit.com/r/friendlycompetitions/submit")!
+        URL(string: "mailto:ideas@friendly-competitions.app")!
             .appending(queryItems: [
-                .init(name: "title", value: "Feature request"),
-                .init(name: "text", value: body(with: userID))
+                .init(name: "subject", value: "Feature request"),
+                .init(name: "body", value: body(with: userID))
             ])
     }
 
     static func bugReport(with userID: User.ID) -> URL {
-        URL(string: "https://www.reddit.com/r/friendlycompetitions/submit")!
+        URL(string: "mailto:help@friendly-competitions.app")!
             .appending(queryItems: [
-                .init(name: "title", value: "Bug report"),
-                .init(name: "text", value: body(with: userID))
+                .init(name: "subject", value: "Bug report"),
+                .init(name: "body", value: body(with: userID))
             ])
     }
 
