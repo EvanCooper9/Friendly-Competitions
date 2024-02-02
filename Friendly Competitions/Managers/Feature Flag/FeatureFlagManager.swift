@@ -24,7 +24,9 @@ final class FeatureFlagManager: FeatureFlagManaging {
     }
 
     func value(forBool featureFlag: FeatureFlagBool) -> Bool {
-        remoteConfig.configValue(forKey: featureFlag.stringValue).boolValue
+        let value = remoteConfig.configValue(forKey: featureFlag.stringValue).boolValue
+        print("feature flag manager", featureFlag, value)
+        return value
     }
 
     func value(forDouble featureFlag: FeatureFlagDouble) -> Double {

@@ -7,7 +7,7 @@ protocol HealthStoring {
     func execute(_ query: AnyHealthKitQuery)
     func enableBackgroundDelivery(for permissionType: HealthKitPermissionType) -> AnyPublisher<Bool, Error>
     func shouldRequest(_ permissions: [HealthKitPermissionType]) -> AnyPublisher<Bool, Error>
-    func request(_ permissions: [HealthKitPermissionType]) -> AnyPublisher<Void, Error>
+    func request(_ permissions: [HealthKitPermissionType]) -> AnyPublisher<Bool, Error>
 }
 
 // MARK: - HealthKit Implementations
@@ -26,6 +26,7 @@ extension HKHealthStore: HealthStoring {
             }
             disableBackgroundDelivery(for: objectType) { success, error in
                 if let error {
+                    error.reportToCrashlytics()
                     promise(.failure(error))
                 } else {
                     promise(.success(success))
@@ -45,8 +46,9 @@ extension HKHealthStore: HealthStoring {
                 promise(.failure(HealthStoreError.unknown))
                 return
             }
-            self.enableBackgroundDelivery(for: object, frequency: .hourly) { success, error in
+            enableBackgroundDelivery(for: object, frequency: .hourly) { success, error in
                 if let error {
+                    error.reportToCrashlytics()
                     promise(.failure(error))
                 } else {
                     promise(.success(success))
@@ -63,8 +65,9 @@ extension HKHealthStore: HealthStoring {
                 return
             }
             let objectTypes = permissions.map(\.objectType)
-            self.getRequestStatusForAuthorization(toShare: [], read: .init(objectTypes)) { status, error in
+            getRequestStatusForAuthorization(toShare: [], read: .init(objectTypes)) { status, error in
                 if let error {
+                    error.reportToCrashlytics()
                     promise(.failure(error))
                 } else {
                     switch status {
@@ -81,18 +84,19 @@ extension HKHealthStore: HealthStoring {
         .eraseToAnyPublisher()
     }
 
-    func request(_ permissions: [HealthKitPermissionType]) -> AnyPublisher<Void, Error> {
+    func request(_ permissions: [HealthKitPermissionType]) -> AnyPublisher<Bool, Error> {
         Future { [weak self] promise in
             guard let self else {
                 promise(.failure(HealthStoreError.unknown))
                 return
             }
             let objectTypes = permissions.map(\.objectType)
-            self.requestAuthorization(toShare: nil, read: .init(objectTypes)) { _, error in
+            requestAuthorization(toShare: nil, read: .init(objectTypes)) { success, error in
                 if let error {
+                    error.reportToCrashlytics()
                     promise(.failure(error))
                 } else {
-                    promise(.success(()))
+                    promise(.success(success))
                 }
             }
         }

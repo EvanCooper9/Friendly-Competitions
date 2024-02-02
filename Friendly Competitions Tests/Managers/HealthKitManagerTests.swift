@@ -59,7 +59,7 @@ final class HealthKitManagerTests: FCTestCase {
         
         let manager = HealthKitManager()
         expected.forEach { expectedPermission in
-            healthStore.requestReturnValue = .just(())
+            healthStore.requestReturnValue = .just(true)
             manager.request([expectedPermission])
                 .catch { error -> AnyPublisher<Void, Never> in
                     XCTFail(error.localizedDescription)
