@@ -1,6 +1,10 @@
-protocol FeatureFlag {
+protocol FeatureFlag: RawRepresentable {
     associatedtype Data
     var stringValue: String { get }
+}
+
+extension FeatureFlag where RawValue == String {
+    var stringValue: String { rawValue }
 }
 
 enum FeatureFlagDouble: String, FeatureFlag {
@@ -8,8 +12,6 @@ enum FeatureFlagDouble: String, FeatureFlag {
 
     case databaseCacheTtl = "database_cache_ttl"
     case healthKitBackgroundDeliveryTimeoutMS = "health_kit_background_delivery_timeout_ms"
-
-    var stringValue: String { rawValue }
 }
 
 enum FeatureFlagBool: String, FeatureFlag {
@@ -17,6 +19,5 @@ enum FeatureFlagBool: String, FeatureFlag {
 
     case premiumEnabled = "premium_enabled"
     case newResultsBannerEnabled = "new_results_banner_enabled"
-
-    var stringValue: String { rawValue }
+    case sharedBackgroundDeliveryPublishers = "shared_background_delivery_publishers"
 }

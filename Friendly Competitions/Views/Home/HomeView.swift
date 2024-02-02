@@ -37,7 +37,7 @@ struct HomeView: View {
                     friends
                 }
             }
-            .navigationBarTitle(viewModel.title)
+            .navigationBarTitle(L10n.Home.title)
             .toolbar {
                 ToolbarItemGroup {
                     // Text view workaround for SwiftUI bug

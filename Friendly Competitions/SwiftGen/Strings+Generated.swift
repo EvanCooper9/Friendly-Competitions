@@ -327,6 +327,8 @@ internal enum L10n {
     }
   }
   internal enum Home {
+    /// Home
+    internal static let title = L10n.tr("Localizable", "Home.title", fallback: "Home")
     internal enum Section {
       internal enum Activity {
         /// Have you worn your watch today? We can't find any activity summaries yet. If this is a mistake, please make sure that permissions are enabled in the Health app.

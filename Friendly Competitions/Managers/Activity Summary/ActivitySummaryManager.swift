@@ -27,14 +27,16 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
 
     // MARK: - Private Properties
 
-    @Injected(\.activitySummaryCache) private var cache
-    @Injected(\.competitionsManager) private var competitionsManager
-    @Injected(\.healthKitManager) private var healthKitManager
-    @Injected(\.database) private var database
-    @Injected(\.scheduler) private var scheduler
-    @Injected(\.userManager) private var userManager
+    @Injected(\.activitySummaryCache) private var cache: ActivitySummaryCache
+    @Injected(\.competitionsManager) private var competitionsManager: CompetitionsManaging
+    @Injected(\.database) private var database: Database
+    @Injected(\.featureFlagManager) private var featureFlagManager: FeatureFlagManaging
+    @Injected(\.healthKitManager) private var healthKitManager: HealthKitManaging
+    @Injected(\.scheduler) private var scheduler: AnySchedulerOf<RunLoop>
+    @Injected(\.userManager) private var userManager: UserManaging
 
     private var activitySummarySubject = ReplaySubject<ActivitySummary?, Never>(bufferSize: 1)
+    private var fetchAndUploadPublisher: AnyPublisher<Void, Never>?
     private var cancellables = Cancellables()
 
     // MARK: - Lifecycle
@@ -46,21 +48,11 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
             .sink(withUnretained: self) { $0.cache.activitySummary = $1 }
             .store(in: &cancellables)
 
-        let permissionTypes: [HealthKitPermissionType] = [
-            .activeEnergy,
-            .appleExerciseTime,
-            .appleMoveTime,
-            .appleStandTime,
-            .appleStandHour,
-            .activitySummaryType
-        ]
-        permissionTypes.forEach { permission in
-            healthKitManager.registerBackgroundDeliveryTask(fetchAndUpload(), for: permission)
-        }
-
         fetchAndUpload()
             .sink()
             .store(in: &cancellables)
+
+        registerForBackgroundDelivery()
     }
 
     // MARK: - Public Methods
@@ -81,6 +73,42 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
     }
 
     // MARK: - Private Methods
+
+    private func registerForBackgroundDelivery() {
+        let permissionTypes: [HealthKitPermissionType] = [
+            .activeEnergy,
+            .appleExerciseTime,
+            .appleMoveTime,
+            .appleStandTime,
+            .appleStandHour,
+            .activitySummaryType
+        ]
+
+        permissionTypes.forEach { permission in
+            if featureFlagManager.value(forBool: .sharedBackgroundDeliveryPublishers) {
+                healthKitManager.registerBackgroundDeliveryTask(for: permission) { [weak self] in
+                    guard let self else { return .just(()) }
+                    if let fetchAndUploadPublisher = self.fetchAndUploadPublisher {
+                        return fetchAndUploadPublisher
+                    } else {
+                        let publisher = fetchAndUpload()
+                            .first()
+                            .handleEvents(receiveCompletion: { _ in
+                                self.fetchAndUploadPublisher = nil
+                            }, receiveCancel: {
+                                self.fetchAndUploadPublisher = nil
+                            })
+                            .share()
+                            .eraseToAnyPublisher()
+                        self.fetchAndUploadPublisher = publisher
+                        return publisher
+                    }
+                }
+            } else {
+                healthKitManager.registerBackgroundDeliveryPublisher(for: permission, publisher: fetchAndUpload())
+            }
+        }
+    }
 
     private func fetchAndUpload() -> AnyPublisher<Void, Never> {
         competitionsManager.competitions

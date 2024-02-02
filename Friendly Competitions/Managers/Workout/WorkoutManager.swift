@@ -19,32 +19,24 @@ final class WorkoutManager: WorkoutManaging {
 
     // MARK: - Private Properties
 
-    @Injected(\.competitionsManager) private var competitionsManager
-    @Injected(\.database) private var database
-    @Injected(\.healthKitManager) private var healthKitManager
-    @Injected(\.stepCountManager) private var stepCountManager
-    @Injected(\.userManager) private var userManager
+    @Injected(\.competitionsManager) private var competitionsManager: CompetitionsManaging
+    @Injected(\.database) private var database: Database
+    @Injected(\.featureFlagManager) private var featureFlagManager: FeatureFlagManaging
+    @Injected(\.healthKitManager) private var healthKitManager: HealthKitManaging
+    @Injected(\.stepCountManager) private var stepCountManager: StepCountManaging
+    @Injected(\.userManager) private var userManager: UserManaging
 
+    private var fetchAndUploadPublisher: AnyPublisher<Void, Never>?
     private var cancellables = Cancellables()
 
     // MARK: - Lifecycle
 
     init() {
-        let permissionTypes: [HealthKitPermissionType] = [
-            .workoutType,
-            .distanceCycling,
-            .heartRate,
-            .distanceWalkingRunning,
-            .stepCount,
-            .distanceSwimming
-        ]
-        permissionTypes.forEach { permission in
-            healthKitManager.registerBackgroundDeliveryTask(fetchAndUpload(), for: permission)
-        }
-
         fetchAndUpload()
             .sink()
             .store(in: &cancellables)
+
+        registerForBackgroundDelivery()
     }
 
     // MARK: - Public Methods
@@ -67,6 +59,42 @@ final class WorkoutManager: WorkoutManaging {
     }
 
     // MARK: - Private Methods
+
+    private func registerForBackgroundDelivery() {
+        let permissionTypes: [HealthKitPermissionType] = [
+            .workoutType,
+            .distanceCycling,
+            .heartRate,
+            .distanceWalkingRunning,
+            .stepCount,
+            .distanceSwimming
+        ]
+
+        permissionTypes.forEach { permission in
+            if featureFlagManager.value(forBool: .sharedBackgroundDeliveryPublishers) {
+                healthKitManager.registerBackgroundDeliveryTask(for: permission) { [weak self] in
+                    guard let self else { return .just(()) }
+                    if let fetchAndUploadPublisher {
+                        return fetchAndUploadPublisher
+                    } else {
+                        let publisher = fetchAndUpload()
+                            .first()
+                            .handleEvents(receiveCompletion: { _ in
+                                self.fetchAndUploadPublisher = nil
+                            }, receiveCancel: {
+                                self.fetchAndUploadPublisher = nil
+                            })
+                            .share()
+                            .eraseToAnyPublisher()
+                        self.fetchAndUploadPublisher = publisher
+                        return publisher
+                    }
+                }
+            } else {
+                healthKitManager.registerBackgroundDeliveryPublisher(for: permission, publisher: fetchAndUpload())
+            }
+        }
+    }
 
     private func fetchAndUpload() -> AnyPublisher<Void, Never> {
 

@@ -79,7 +79,6 @@ final class HomeViewModelTests: FCTestCase {
 
         let viewModel = HomeViewModel()
         viewModel.$competitions
-            .print("competitions")
             .expect([], [], [comp1], [comp1, comp2], expectation: expectation)
             .store(in: &cancellables)
 
@@ -135,23 +134,6 @@ final class HomeViewModelTests: FCTestCase {
         friendRequests.send([.andrew])
         scheduler.advance()
 
-        waitForExpectations(timeout: 1)
-    }
-
-    func testThatTitleIsCorrect() {
-        let expectation = expectation(description: #function)
-
-        let subject = CurrentValueSubject<User, Never>(.evan)
-        userManager.userPublisher = subject.eraseToAnyPublisher()
-
-        let viewModel = HomeViewModel()
-        viewModel.$title
-            .expect(Bundle.main.name, User.evan.name, Bundle.main.name, expectation: expectation)
-            .store(in: &cancellables)
-
-        let noName = User(id: "abc", name: "", email: "test@test.com")
-        subject.send(noName)
-        scheduler.advance()
         waitForExpectations(timeout: 1)
     }
 
