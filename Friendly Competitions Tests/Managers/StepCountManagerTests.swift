@@ -8,6 +8,7 @@ final class StepCountManagerTests: FCTestCase {
     override func setUp() {
         super.setUp()
         userManager.user = .evan
+        featureFlagManager.valueForBoolClosure = { $0 == .sharedBackgroundDeliveryPublishers ? true : false }
     }
 
     func testThatItRefetchesWhenCompetitionsChange() {

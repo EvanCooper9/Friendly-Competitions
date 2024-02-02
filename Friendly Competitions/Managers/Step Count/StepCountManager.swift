@@ -13,17 +13,23 @@ final class StepCountManager: StepCountManaging {
 
     // MARK: - Private Properties
 
-    @Injected(\.competitionsManager) private var competitionsManager
-    @Injected(\.healthKitManager) private var healthKitManager
-    @Injected(\.database) private var database
-    @Injected(\.userManager) private var userManager
+    @Injected(\.competitionsManager) private var competitionsManager: CompetitionsManaging
+    @Injected(\.database) private var database: Database
+    @Injected(\.featureFlagManager) private var featureFlagManager: FeatureFlagManaging
+    @Injected(\.healthKitManager) private var healthKitManager: HealthKitManaging
+    @Injected(\.userManager) private var userManager: UserManaging
 
     private var cancellables = Cancellables()
 
     // MARK: - Lifecycle
 
     init() {
-        healthKitManager.registerBackgroundDeliveryTask(for: .stepCount, task: fetchAndUpload)
+        if featureFlagManager.value(forBool: .sharedBackgroundDeliveryPublishers) {
+            healthKitManager.registerBackgroundDeliveryTask(for: .stepCount, task: fetchAndUpload)
+        } else {
+            healthKitManager.registerBackgroundDeliveryPublisher(for: .stepCount, publisher: fetchAndUpload())
+        }
+        
         fetchAndUpload()
             .sink()
             .store(in: &cancellables)
