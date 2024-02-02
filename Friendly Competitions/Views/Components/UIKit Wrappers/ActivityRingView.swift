@@ -1,5 +1,6 @@
 import HealthKitUI
 import SwiftUI
+import SwiftUIX
 
 struct ActivityRingView: UIViewRepresentable {
 
@@ -18,6 +19,7 @@ struct ActivityRingView: UIViewRepresentable {
 struct ActivityRingView_Previews: PreviewProvider {
     static var previews: some View {
         ActivityRingView(activitySummary: .mock)
+            .squareFrame()
     }
 }
 #endif

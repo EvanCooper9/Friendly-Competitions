@@ -38,11 +38,11 @@ struct TextFieldWithSecureToggle: View {
                 TextField(title, text: text)
                     .textContentType(textContentType)
                     .focused($focused)
-                    .opacity(showPassword ? 1 : 0)
+                    .hidden(!showPassword)
                 SecureField(title, text: text)
                     .textContentType(textContentType)
                     .focused($focused)
-                    .opacity(showPassword ? 0 : 1)
+                    .hidden(showPassword)
             }
 
             Button(systemImage: showPassword ? .eyeSlash : .eye) {

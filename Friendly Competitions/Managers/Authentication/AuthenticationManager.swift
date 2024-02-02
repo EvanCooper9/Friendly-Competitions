@@ -1,7 +1,9 @@
 import Combine
 import CombineExt
+import CombineSchedulers
 import ECKit
 import Factory
+import Foundation
 
 // sourcery: AutoMockable
 protocol AuthenticationManaging {
@@ -29,12 +31,12 @@ final class AuthenticationManager: AuthenticationManaging {
 
     // MARK: - Private Properties
 
-    @Injected(\.api) private var api
-    @Injected(\.auth) private var auth
-    @Injected(\.authenticationCache) private var authenticationCache
-    @Injected(\.database) private var database
-    @Injected(\.scheduler) private var scheduler
-    @Injected(\.signInWithAppleProvider) private var signInWithAppleProvider
+    @Injected(\.api) private var api: API
+    @Injected(\.auth) private var auth: AuthProviding
+    @Injected(\.authenticationCache) private var authenticationCache: AuthenticationCache
+    @Injected(\.database) private var database: Database
+    @Injected(\.scheduler) private var scheduler: AnySchedulerOf<RunLoop>
+    @Injected(\.signInWithAppleProvider) private var signInWithAppleProvider: SignInWithAppleProviding
 
     private var emailVerifiedSubject = CurrentValueSubject<Bool, Never>(true)
     private var loggedInSubject = ReplaySubject<Bool, Never>(bufferSize: 1)
@@ -100,7 +102,8 @@ final class AuthenticationManager: AuthenticationManaging {
     func signUp(name: String, email: String, password: String, passwordConfirmation: String) -> AnyPublisher<Void, Error> {
         guard password == passwordConfirmation else { return .error(AuthenticationError.passwordMatch) }
         if let user = auth.user {
-            return user.link(with: .email(email: email, password: password))
+            return user
+                .link(with: .email(email: email, password: password))
                 .flatMapLatest { user.set(displayName: name) }
                 .flatMapLatest(withUnretained: self) { strongSelf, authUser in
                     strongSelf.database.document(authUser.databasePath)

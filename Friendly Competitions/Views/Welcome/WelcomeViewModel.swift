@@ -19,14 +19,15 @@ final class WelcomeViewModel: ObservableObject {
     let appNape = Bundle.main.displayName
     @Published private(set) var loading = false
     @Published var showAnonymousSignInConfirmation = false
-    @Published var showEmailSignIn = false
 
     @Published var showMoreSignInOptionsButton = true
     @Published var signInOptions: [SignInOptions] = [.apple]
 
+    @Published var navigationPath: [WelcomeNavigationDestination] = []
+
     // MARK: - Private Properties
 
-    @Injected(\.authenticationManager) private var authenticationManager
+    @Injected(\.authenticationManager) private var authenticationManager: AuthenticationManaging
 
     private let signInSubject = PassthroughSubject<AuthenticationMethod, Never>()
 
@@ -44,6 +45,8 @@ final class WelcomeViewModel: ObservableObject {
             }
             .sink()
             .store(in: &cancellables)
+
+        try? authenticationManager.signOut()
     }
 
     // MARK: - Public Methods
@@ -53,7 +56,7 @@ final class WelcomeViewModel: ObservableObject {
     }
 
     func signInWithEmailTapped() {
-        showEmailSignIn = true
+        navigationPath = [.emailSignIn]
     }
 
     func signInAnonymouslyTapped() {

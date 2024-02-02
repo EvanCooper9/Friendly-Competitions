@@ -287,6 +287,8 @@ internal enum L10n {
     internal static let forgot = L10n.tr("Localizable", "EmailSignIn.forgot", fallback: "Forgot?")
     /// Have an account?
     internal static let haveAnAccount = L10n.tr("Localizable", "EmailSignIn.haveAnAccount", fallback: "Have an account?")
+    /// Please enter your email
+    internal static let missingEmail = L10n.tr("Localizable", "EmailSignIn.missingEmail", fallback: "Please enter your email")
     /// Name
     internal static let name = L10n.tr("Localizable", "EmailSignIn.name", fallback: "Name")
     /// New to %@?

@@ -164,7 +164,7 @@ final class WorkoutManager: WorkoutManaging {
 
     private func workoutMetricDataByDate(ofType workoutType: WorkoutType, metrics: [WorkoutMetric], during dateInterval: DateInterval) -> AnyPublisher<[Date: [HKQuantityType: Double]], Error> {
         workouts(for: workoutType.hkWorkoutActivityType, in: dateInterval)
-            .flatMap(withUnretained: self) { strongSelf, workouts in
+            .flatMapLatest(withUnretained: self) { strongSelf, workouts in
                 workouts
                     .map { strongSelf.pointsByDateByMetric(for: $0, metrics: metrics) }
                     .combineLatest()

@@ -2,8 +2,21 @@ import Combine
 import CombineExt
 import ECKit
 import Factory
+import Foundation
 
 final class EmailSignInViewModel: ObservableObject {
+
+    enum EmailSignInError: LocalizedError {
+        case missingEmail
+
+        var errorDescription: String? { localizedDescription }
+
+        var localizedDescription: String {
+            switch self {
+            case .missingEmail: return L10n.EmailSignIn.missingEmail
+            }
+        }
+    }
 
     // MARK: - Public Properties
 
@@ -19,7 +32,7 @@ final class EmailSignInViewModel: ObservableObject {
 
     // MARK: - Private Properties
 
-    @Injected(\.authenticationManager) private var authenticationManager
+    @Injected(\.authenticationManager) private var authenticationManager: AuthenticationManaging
 
     private let continueSubject = PassthroughSubject<EmailSignInViewInputType, Never>()
     private let forgotSubject = PassthroughSubject<Void, Never>()
@@ -59,10 +72,17 @@ final class EmailSignInViewModel: ObservableObject {
             .store(in: &cancellables)
 
         forgotSubject
+            .flatMapLatest(withUnretained: self) { strongSelf -> AnyPublisher<Void, Never> in
+                guard !strongSelf.email.isEmpty else {
+                    strongSelf.error = EmailSignInError.missingEmail
+                    return .never()
+                }
+                return .just(())
+            }
             .flatMapLatest(withUnretained: self) { strongSelf in
-                strongSelf.authenticationManager
+                strongSelf.loading = true
+                return strongSelf.authenticationManager
                     .sendPasswordReset(to: strongSelf.email)
-                    .isLoading { strongSelf.loading = $0 }
                     .handleEvents(receiveCompletion: { completion in
                         switch completion {
                         case .failure(let error):
@@ -70,6 +90,7 @@ final class EmailSignInViewModel: ObservableObject {
                         case .finished:
                             break
                         }
+                        strongSelf.loading = false
                     })
                     .ignoreFailure()
             }

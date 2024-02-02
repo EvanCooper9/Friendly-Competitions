@@ -7,8 +7,11 @@ import XCTest
 
 final class CreateAccountViewModelTests: FCTestCase {
 
+    private let anonymousUser = User(id: "123", name: "Anonymous", isAnonymous: true)
+
     func testThatSignInWithAppleIsTriggered() {
         authenticationManager.signInWithReturnValue = .just(())
+        userManager.userPublisher = .just(anonymousUser)
 
         let viewModel = CreateAccountViewModel()
         viewModel.signInWithAppleTapped()
@@ -21,6 +24,7 @@ final class CreateAccountViewModelTests: FCTestCase {
         let expected = [false, true, false]
 
         authenticationManager.signInWithReturnValue = .just(())
+        userManager.userPublisher = .just(anonymousUser)
 
         let viewModel = CreateAccountViewModel()
         viewModel.$loading
@@ -38,6 +42,7 @@ final class CreateAccountViewModelTests: FCTestCase {
         let expected = [false, true]
 
         authenticationManager.signInWithReturnValue = .just(())
+        userManager.userPublisher = .just(anonymousUser)
 
         let viewModel = CreateAccountViewModel()
         viewModel.$dismiss
@@ -53,6 +58,7 @@ final class CreateAccountViewModelTests: FCTestCase {
     func testThatSignInWithAppleErrorIsEmitted() {
         let expectedError = MockError.mock(id: #function)
         authenticationManager.signInWithReturnValue = .error(expectedError)
+        userManager.userPublisher = .just(anonymousUser)
 
         let viewModel = CreateAccountViewModel()
         XCTAssertNil(viewModel.error)
@@ -65,6 +71,8 @@ final class CreateAccountViewModelTests: FCTestCase {
     func testThatShowEmailSignInIsTriggered() {
         let expectation = self.expectation(description: #function)
         let expected = [false, true]
+
+        userManager.userPublisher = .just(anonymousUser)
 
         let viewModel = CreateAccountViewModel()
         viewModel.$showEmailSignIn

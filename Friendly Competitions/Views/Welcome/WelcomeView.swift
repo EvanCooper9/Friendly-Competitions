@@ -6,51 +6,63 @@ struct WelcomeView: View {
     @StateObject private var viewModel = WelcomeViewModel()
 
     var body: some View {
-        VStack {
-            VStack(alignment: .leading, spacing: 15) {
-                AppIcon()
-                VStack(alignment: .leading) {
-                    Text(L10n.Welcome.welcomeTo)
-                        .font(.title)
-                        .bold()
-                    Text(Bundle.main.name)
-                        .foregroundLinearGradient(.init(colors: [
-                            Asset.Colors.Branded.red.swiftUIColor,
-                            Asset.Colors.Branded.green.swiftUIColor,
-                            Asset.Colors.Branded.blue.swiftUIColor
-                        ]))
-                        .font(.title)
-                        .bold()
+        NavigationStack(path: $viewModel.navigationPath) {
+            VStack {
+                VStack(alignment: .leading, spacing: 15) {
+                    AppIcon()
+                    VStack(alignment: .leading) {
+                        Text(L10n.Welcome.welcomeTo)
+                            .font(.title)
+                            .bold()
+                        Text(Bundle.main.name)
+                            .foregroundLinearGradient(.init(colors: [
+                                Asset.Colors.Branded.red.swiftUIColor,
+                                Asset.Colors.Branded.green.swiftUIColor,
+                                Asset.Colors.Branded.blue.swiftUIColor
+                            ]))
+                            .font(.title)
+                            .bold()
+                    }
+                    Text(L10n.Welcome.description)
+                        .font(.title3)
+                        .foregroundColor(.secondaryLabel)
                 }
-                Text(L10n.Welcome.description)
-                    .font(.title3)
-                    .foregroundColor(.secondaryLabel)
-            }
-            .maxHeight(.infinity)
+                .maxHeight(.infinity)
 
-            buttons
+                #if DEBUG
+                DeveloperMenu()
+                    .font(.title)
+                #endif
+
+                VStack {
+                    buttons
+                }
+                .padding(.top)
+                .padding(.horizontal)
+                .padding(.bottom, .extraLarge)
+                .background(.tertiarySystemBackground)
+                .cornerRadius(25, corners: [.topLeft, .topRight])
+                .shadow(color: .gray.opacity(0.25), radius: 10)
+            }
+            .ignoresSafeArea()
+            .animation(.default, value: viewModel.signInOptions)
+            .navigationDestination(for: WelcomeNavigationDestination.self) { destination in
+                VStack {
+                    destination.view
+                    Spacer()
+                }
+            }
         }
-        .padding(.horizontal)
         .confirmationDialog(L10n.Confirmation.areYouSure, isPresented: $viewModel.showAnonymousSignInConfirmation, titleVisibility: .visible) {
             Button(L10n.Generics.continue, action: viewModel.confirmAnonymousSignIn)
         } message: {
             Text(L10n.Welcome.anonymousDisclaimer)
         }
         .withLoadingOverlay(isLoading: viewModel.loading)
-        .sheet(isPresented: $viewModel.showEmailSignIn) {
-            EmailSignInView()
-        }
-        .animation(.default, value: viewModel.signInOptions)
     }
 
     @ViewBuilder
     private var buttons: some View {
-
-        #if DEBUG
-        DeveloperMenu()
-            .font(.title)
-            .padding()
-        #endif
 
         ForEach(enumerated: viewModel.signInOptions) { index, option in
             switch option {
