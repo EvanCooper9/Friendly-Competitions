@@ -33,7 +33,7 @@ final class WelcomeViewModelTests: FCTestCase {
     func testThatSignInWithEmailTappedShowsEmailSignIn() {
         let viewModel = WelcomeViewModel()
         viewModel.signInWithEmailTapped()
-        XCTAssertTrue(viewModel.showEmailSignIn)
+        XCTAssertEqual(viewModel.navigationPath, [.emailSignIn])
         XCTAssertFalse(authenticationManager.signInWithCalled)
     }
 

@@ -466,7 +466,6 @@
 		ED58C99729ABB2C200393468 /* RootViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewModelTests.swift; sourceTree = "<group>"; };
 		ED5C3DA02B18C5D700C7010C /* WelcomeNavigationDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeNavigationDestination.swift; sourceTree = "<group>"; };
 		ED5C3DA42B18F54300C7010C /* PatternedBackground.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PatternedBackground.swift; sourceTree = "<group>"; };
-		ED5C3DA62B18FB5D00C7010C /* ECKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = ECKit; path = ../ECKit; sourceTree = "<group>"; };
 		ED65D3BC280CF36C00B38486 /* WorkoutType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutType.swift; sourceTree = "<group>"; };
 		ED6A6C8A296DDBB700615111 /* PaywallOffer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallOffer.swift; sourceTree = "<group>"; };
 		ED779D3929F019DA00317950 /* AuthenticationManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationManagerTests.swift; sourceTree = "<group>"; };
@@ -769,7 +768,6 @@
 		C1691DBA26D55FCF006FFA30 = {
 			isa = PBXGroup;
 			children = (
-				ED5C3DA62B18FB5D00C7010C /* ECKit */,
 				C1691DC526D55FCF006FFA30 /* Friendly Competitions */,
 				C155CA5827AB989D005F49F4 /* Friendly Competitions Tests */,
 				C1691DC426D55FCF006FFA30 /* Products */,

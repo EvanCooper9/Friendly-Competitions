@@ -19,7 +19,6 @@ final class WelcomeViewModel: ObservableObject {
     let appNape = Bundle.main.displayName
     @Published private(set) var loading = false
     @Published var showAnonymousSignInConfirmation = false
-    @Published var showEmailSignIn = false
 
     @Published var showMoreSignInOptionsButton = true
     @Published var signInOptions: [SignInOptions] = [.apple]
@@ -46,6 +45,8 @@ final class WelcomeViewModel: ObservableObject {
             }
             .sink()
             .store(in: &cancellables)
+
+        try? authenticationManager.signOut()
     }
 
     // MARK: - Public Methods

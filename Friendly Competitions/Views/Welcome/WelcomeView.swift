@@ -27,10 +27,6 @@ struct WelcomeView: View {
                         .font(.title3)
                         .foregroundColor(.secondaryLabel)
                 }
-                .maxWidth(.infinity)
-                .padding(.vertical)
-                .card()
-                .padding(.horizontal)
                 .maxHeight(.infinity)
 
                 VStack {
@@ -45,20 +41,10 @@ struct WelcomeView: View {
             }
             .ignoresSafeArea()
             .animation(.default, value: viewModel.signInOptions)
-            .background {
-                PatternedBackground()
-            }
             .navigationDestination(for: WelcomeNavigationDestination.self) { destination in
                 VStack {
                     destination.view
-                        .padding(.vertical)
-                        .card(includeEdgePadding: false)
-                        .padding(.horizontal)
                     Spacer()
-                }
-                .background {
-                    PatternedBackground()
-                        .ignoresSafeArea(.keyboard)
                 }
             }
         }
@@ -68,9 +54,6 @@ struct WelcomeView: View {
             Text(L10n.Welcome.anonymousDisclaimer)
         }
         .withLoadingOverlay(isLoading: viewModel.loading)
-        .sheet(isPresented: $viewModel.showEmailSignIn) {
-            EmailSignInView()
-        }
     }
 
     @ViewBuilder
