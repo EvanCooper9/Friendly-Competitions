@@ -1128,19 +1128,32 @@ class HealthKitManagingMock: HealthKitManaging {
 
     //MARK: - registerBackgroundDeliveryTask
 
-    var registerBackgroundDeliveryTaskCallsCount = 0
-    var registerBackgroundDeliveryTaskCalled: Bool {
-        return registerBackgroundDeliveryTaskCallsCount > 0
+    var registerBackgroundDeliveryTaskForCallsCount = 0
+    var registerBackgroundDeliveryTaskForCalled: Bool {
+        return registerBackgroundDeliveryTaskForCallsCount > 0
     }
-    var registerBackgroundDeliveryTaskReceivedPublisher: AnyPublisher<Void, Never>?
-    var registerBackgroundDeliveryTaskReceivedInvocations: [AnyPublisher<Void, Never>] = []
-    var registerBackgroundDeliveryTaskClosure: ((AnyPublisher<Void, Never>) -> Void)?
+    var registerBackgroundDeliveryTaskForReceivedArguments: (publisher: AnyPublisher<Void, Never>, permission: HealthKitPermissionType)?
+    var registerBackgroundDeliveryTaskForReceivedInvocations: [(publisher: AnyPublisher<Void, Never>, permission: HealthKitPermissionType)] = []
+    var registerBackgroundDeliveryTaskForClosure: ((AnyPublisher<Void, Never>, HealthKitPermissionType) -> Void)?
 
-    func registerBackgroundDeliveryTask(_ publisher: AnyPublisher<Void, Never>) {
-        registerBackgroundDeliveryTaskCallsCount += 1
-        registerBackgroundDeliveryTaskReceivedPublisher = publisher
-        registerBackgroundDeliveryTaskReceivedInvocations.append(publisher)
-        registerBackgroundDeliveryTaskClosure?(publisher)
+    func registerBackgroundDeliveryTask(_ publisher: AnyPublisher<Void, Never>, for permission: HealthKitPermissionType) {
+        registerBackgroundDeliveryTaskForCallsCount += 1
+        registerBackgroundDeliveryTaskForReceivedArguments = (publisher: publisher, permission: permission)
+        registerBackgroundDeliveryTaskForReceivedInvocations.append((publisher: publisher, permission: permission))
+        registerBackgroundDeliveryTaskForClosure?(publisher, permission)
+    }
+
+    //MARK: - registerForBackgroundDelivery
+
+    var registerForBackgroundDeliveryCallsCount = 0
+    var registerForBackgroundDeliveryCalled: Bool {
+        return registerForBackgroundDeliveryCallsCount > 0
+    }
+    var registerForBackgroundDeliveryClosure: (() -> Void)?
+
+    func registerForBackgroundDelivery() {
+        registerForBackgroundDeliveryCallsCount += 1
+        registerForBackgroundDeliveryClosure?()
     }
 
     //MARK: - shouldRequest
@@ -1192,6 +1205,28 @@ class HealthStoringMock: HealthStoring {
 
 
 
+
+    //MARK: - disableBackgroundDelivery
+
+    var disableBackgroundDeliveryForCallsCount = 0
+    var disableBackgroundDeliveryForCalled: Bool {
+        return disableBackgroundDeliveryForCallsCount > 0
+    }
+    var disableBackgroundDeliveryForReceivedPermissionType: HealthKitPermissionType?
+    var disableBackgroundDeliveryForReceivedInvocations: [HealthKitPermissionType] = []
+    var disableBackgroundDeliveryForReturnValue: AnyPublisher<Bool, Error>!
+    var disableBackgroundDeliveryForClosure: ((HealthKitPermissionType) -> AnyPublisher<Bool, Error>)?
+
+    func disableBackgroundDelivery(for permissionType: HealthKitPermissionType) -> AnyPublisher<Bool, Error> {
+        disableBackgroundDeliveryForCallsCount += 1
+        disableBackgroundDeliveryForReceivedPermissionType = permissionType
+        disableBackgroundDeliveryForReceivedInvocations.append(permissionType)
+        if let disableBackgroundDeliveryForClosure = disableBackgroundDeliveryForClosure {
+            return disableBackgroundDeliveryForClosure(permissionType)
+        } else {
+            return disableBackgroundDeliveryForReturnValue
+        }
+    }
 
     //MARK: - execute
 

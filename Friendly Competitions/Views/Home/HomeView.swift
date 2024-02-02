@@ -145,7 +145,7 @@ struct HomeView: View {
                 Text(L10n.Home.Section.Friends.title)
                     .foregroundStyle(.secondary)
                 Spacer()
-                Button(systemImage: .personCropCircleBadgePlus, action: viewModel.newCompetitionTapped)
+                Button(systemImage: .personCropCircleBadgePlus, action: viewModel.addFriendsTapped)
                     .font(.title2)
             }
         }

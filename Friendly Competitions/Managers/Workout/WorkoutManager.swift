@@ -30,7 +30,18 @@ final class WorkoutManager: WorkoutManaging {
     // MARK: - Lifecycle
 
     init() {
-        healthKitManager.registerBackgroundDeliveryTask(fetchAndUpload())
+        let permissionTypes: [HealthKitPermissionType] = [
+            .workoutType,
+            .distanceCycling,
+            .heartRate,
+            .distanceWalkingRunning,
+            .stepCount,
+            .distanceSwimming
+        ]
+        permissionTypes.forEach { permission in
+            healthKitManager.registerBackgroundDeliveryTask(fetchAndUpload(), for: permission)
+        }
+
         fetchAndUpload()
             .sink()
             .store(in: &cancellables)

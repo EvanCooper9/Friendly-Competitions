@@ -45,6 +45,12 @@ enum AnalyticsEvent: Codable, Equatable {
     case healthKitShouldRequestPermissions(permissionsString: String, shouldRequest: Bool)
     case healthKitRegisterBGDeliverySuccess(permission: HealthKitPermissionType)
     case healthKitRegisterBGDeliveryFailure(permission: HealthKitPermissionType, error: String?)
+    case healthKitBGDeliveryError(permission: HealthKitPermissionType, error: String?)
+    case healthKitBGDeliveryReceived(permission: HealthKitPermissionType)
+    case healthKitBGDelieveryMissingPublisher(permission: HealthKitPermissionType)
+    case healthKitBGDeliveryProcessing(permission: HealthKitPermissionType)
+    case healthKitBGDeliveryTimeout(permission: HealthKitPermissionType)
+    case healthKitBGDeliverySuccess(permission: HealthKitPermissionType)
 
     // misc
     case deepLinked(url: URL)
