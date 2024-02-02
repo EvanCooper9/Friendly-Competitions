@@ -56,7 +56,6 @@ final class WelcomeViewModel: ObservableObject {
     }
 
     func signInWithEmailTapped() {
-//        showEmailSignIn = true
         navigationPath = [.emailSignIn]
     }
 

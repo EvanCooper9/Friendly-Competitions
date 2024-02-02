@@ -29,12 +29,17 @@ struct WelcomeView: View {
                 }
                 .maxHeight(.infinity)
 
+                #if DEBUG
+                DeveloperMenu()
+                    .font(.title)
+                #endif
+
                 VStack {
                     buttons
                 }
                 .padding(.top)
                 .padding(.horizontal)
-                .padding(.bottom, .large)
+                .padding(.bottom, .extraLarge)
                 .background(.tertiarySystemBackground)
                 .cornerRadius(25, corners: [.topLeft, .topRight])
                 .shadow(color: .gray.opacity(0.25), radius: 10)
@@ -58,11 +63,6 @@ struct WelcomeView: View {
 
     @ViewBuilder
     private var buttons: some View {
-
-        #if DEBUG
-        DeveloperMenu()
-            .font(.title)
-        #endif
 
         ForEach(enumerated: viewModel.signInOptions) { index, option in
             switch option {
