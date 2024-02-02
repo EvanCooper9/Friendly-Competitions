@@ -6,10 +6,12 @@ import ECKit
 import Factory
 import HealthKit
 
+typealias HealthKitBackgroundDeliveryTask = () -> AnyPublisher<Void, Never>
+
 // sourcery: AutoMockable
 protocol HealthKitManaging {
     func execute(_ query: AnyHealthKitQuery)
-    func registerBackgroundDeliveryTask(_ publisher: AnyPublisher<Void, Never>, for permission: HealthKitPermissionType)
+    func registerBackgroundDeliveryTask(for permission: HealthKitPermissionType, task: @escaping HealthKitBackgroundDeliveryTask)
     func registerForBackgroundDelivery()
 
     func shouldRequest(_ permissions: [HealthKitPermissionType]) -> AnyPublisher<Bool, Error>
@@ -26,7 +28,7 @@ final class HealthKitManager: HealthKitManaging {
     @Injected(\.healthStore) private var healthStore: HealthStoring
     @Injected(\.scheduler) private var scheduler: AnySchedulerOf<RunLoop>
 
-    private var backgroundDeliveryPublishers = [HealthKitPermissionType: [AnyPublisher<Void, Never>]]()
+    private var backgroundDeliveryTasks = [HealthKitPermissionType: [HealthKitBackgroundDeliveryTask]]()
     private var cancellables = Cancellables()
 
     // MARK: - Public Methods
@@ -35,10 +37,9 @@ final class HealthKitManager: HealthKitManaging {
         healthStore.execute(query)
     }
 
-    func registerBackgroundDeliveryTask(_ publisher: AnyPublisher<Void, Never>, for permission: HealthKitPermissionType) {
-        let publishers = backgroundDeliveryPublishers[permission] ?? []
-        backgroundDeliveryPublishers[permission] = publishers.appending(publisher)
-        registerPermissionsForBackgroundDelivery([permission])
+    func registerBackgroundDeliveryTask(for permission: HealthKitPermissionType, task: @escaping HealthKitBackgroundDeliveryTask) {
+        let tasks = backgroundDeliveryTasks[permission] ?? []
+        backgroundDeliveryTasks[permission] = tasks.appending(task)
     }
 
     func shouldRequest(_ permissions: [HealthKitPermissionType]) -> AnyPublisher<Bool, Error> {
@@ -53,7 +54,11 @@ final class HealthKitManager: HealthKitManaging {
 
     func request(_ permissions: [HealthKitPermissionType]) -> AnyPublisher<Void, Error> {
         healthStore.request(permissions)
-            .handleEvents(withUnretained: self, receiveOutput: { $0.registerPermissionsForBackgroundDelivery(permissions) })
+            .handleEvents(withUnretained: self, receiveOutput: { strongSelf, success in
+                guard success else { return }
+                strongSelf.registerPermissionsForBackgroundDelivery(permissions)
+            })
+            .mapToVoid()
             .eraseToAnyPublisher()
     }
 
@@ -92,7 +97,7 @@ final class HealthKitManager: HealthKitManaging {
                     analyticsManager.log(event: .healthKitBGDeliveryError(permission: permission, error: error.localizedDescription))
 
                     if error.isHealthKitAuthorizationError {
-                        backgroundDeliveryPublishers[permission]?.removeAll()
+                        backgroundDeliveryTasks[permission]?.removeAll()
                         healthStore.disableBackgroundDelivery(for: permission)
                             .sink()
                             .store(in: &cancellables)
@@ -100,7 +105,9 @@ final class HealthKitManager: HealthKitManaging {
 
                     error.reportToCrashlytics()
                 case .success(let backgroundDeliveryCompletion):
-                    guard let publishers = backgroundDeliveryPublishers[permission], publishers.isNotEmpty else {
+                    let publishers = backgroundDeliveryTasks[permission]?.map { $0() } ?? []
+
+                    guard publishers.isNotEmpty else {
                         analyticsManager.log(event: .healthKitBGDelieveryMissingPublisher(permission: permission))
                         backgroundDeliveryCompletion()
                         return
@@ -113,10 +120,13 @@ final class HealthKitManager: HealthKitManaging {
                         .mapToVoid()
                         .setFailureType(to: HealthKitBackgroundDeliveryError.self)
                         .timeout(.milliseconds(Int(timeout)), scheduler: scheduler) {
-                            HealthKitBackgroundDeliveryError.timeout
+                            return HealthKitBackgroundDeliveryError.timeout
                         }
                         .first()
                         .sink(receiveCompletion: { [analyticsManager] completion in
+                            defer {
+                                backgroundDeliveryCompletion()
+                            }
                             switch completion {
                             case .finished:
                                 analyticsManager.log(event: .healthKitBGDeliverySuccess(permission: permission))
@@ -126,9 +136,8 @@ final class HealthKitManager: HealthKitManaging {
                                     analyticsManager.log(event: .healthKitBGDeliveryTimeout(permission: permission))
                                 }
                             }
-                            backgroundDeliveryCompletion()
-                        }, receiveValue: {
-                            backgroundDeliveryCompletion()
+                        }, receiveValue: { _ in
+                            // no-op
                         })
                         .store(in: &cancellables)
                 }

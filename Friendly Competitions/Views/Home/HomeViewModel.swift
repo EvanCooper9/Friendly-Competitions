@@ -20,7 +20,6 @@ final class HomeViewModel: ObservableObject {
     @Published private(set) var competitions = [Competition]()
     @Published private(set) var friendRows = [FriendRow]()
     @Published private(set) var invitedCompetitions = [Competition]()
-    @Published private(set) var title = Bundle.main.name
     @Published var showAbout = false
     @Published private(set) var showDeveloper = false
     @Published private(set) var loadingDeepLink = false
@@ -105,12 +104,6 @@ final class HomeViewModel: ObservableObject {
 
         handlePremiumBanner()
         bindBanners()
-
-        userManager.userPublisher
-            .filter { $0.isAnonymous != true }
-            .map { $0.name.ifEmpty(Bundle.main.name) }
-            .receive(on: scheduler)
-            .assign(to: &$title)
     }
 
     // MARK: - Public Methods

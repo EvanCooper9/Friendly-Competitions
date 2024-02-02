@@ -43,6 +43,7 @@ enum AnalyticsEvent: Codable, Equatable {
 
     // HealthKit
     case healthKitShouldRequestPermissions(permissionsString: String, shouldRequest: Bool)
+    case healthKitPermissionsFailed(permission: HealthKitPermissionType, error: String?)
     case healthKitRegisterBGDeliverySuccess(permission: HealthKitPermissionType)
     case healthKitRegisterBGDeliveryFailure(permission: HealthKitPermissionType, error: String?)
     case healthKitBGDeliveryError(permission: HealthKitPermissionType, error: String?)

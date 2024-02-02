@@ -1128,19 +1128,19 @@ class HealthKitManagingMock: HealthKitManaging {
 
     //MARK: - registerBackgroundDeliveryTask
 
-    var registerBackgroundDeliveryTaskForCallsCount = 0
-    var registerBackgroundDeliveryTaskForCalled: Bool {
-        return registerBackgroundDeliveryTaskForCallsCount > 0
+    var registerBackgroundDeliveryTaskForTaskCallsCount = 0
+    var registerBackgroundDeliveryTaskForTaskCalled: Bool {
+        return registerBackgroundDeliveryTaskForTaskCallsCount > 0
     }
-    var registerBackgroundDeliveryTaskForReceivedArguments: (publisher: AnyPublisher<Void, Never>, permission: HealthKitPermissionType)?
-    var registerBackgroundDeliveryTaskForReceivedInvocations: [(publisher: AnyPublisher<Void, Never>, permission: HealthKitPermissionType)] = []
-    var registerBackgroundDeliveryTaskForClosure: ((AnyPublisher<Void, Never>, HealthKitPermissionType) -> Void)?
+    var registerBackgroundDeliveryTaskForTaskReceivedArguments: (permission: HealthKitPermissionType, task: HealthKitBackgroundDeliveryTask)?
+    var registerBackgroundDeliveryTaskForTaskReceivedInvocations: [(permission: HealthKitPermissionType, task: HealthKitBackgroundDeliveryTask)] = []
+    var registerBackgroundDeliveryTaskForTaskClosure: ((HealthKitPermissionType, @escaping HealthKitBackgroundDeliveryTask) -> Void)?
 
-    func registerBackgroundDeliveryTask(_ publisher: AnyPublisher<Void, Never>, for permission: HealthKitPermissionType) {
-        registerBackgroundDeliveryTaskForCallsCount += 1
-        registerBackgroundDeliveryTaskForReceivedArguments = (publisher: publisher, permission: permission)
-        registerBackgroundDeliveryTaskForReceivedInvocations.append((publisher: publisher, permission: permission))
-        registerBackgroundDeliveryTaskForClosure?(publisher, permission)
+    func registerBackgroundDeliveryTask(for permission: HealthKitPermissionType, task: @escaping HealthKitBackgroundDeliveryTask) {
+        registerBackgroundDeliveryTaskForTaskCallsCount += 1
+        registerBackgroundDeliveryTaskForTaskReceivedArguments = (permission: permission, task: task)
+        registerBackgroundDeliveryTaskForTaskReceivedInvocations.append((permission: permission, task: task))
+        registerBackgroundDeliveryTaskForTaskClosure?(permission, task)
     }
 
     //MARK: - registerForBackgroundDelivery
@@ -1297,10 +1297,10 @@ class HealthStoringMock: HealthStoring {
     }
     var requestReceivedPermissions: [HealthKitPermissionType]?
     var requestReceivedInvocations: [[HealthKitPermissionType]] = []
-    var requestReturnValue: AnyPublisher<Void, Error>!
-    var requestClosure: (([HealthKitPermissionType]) -> AnyPublisher<Void, Error>)?
+    var requestReturnValue: AnyPublisher<Bool, Error>!
+    var requestClosure: (([HealthKitPermissionType]) -> AnyPublisher<Bool, Error>)?
 
-    func request(_ permissions: [HealthKitPermissionType]) -> AnyPublisher<Void, Error> {
+    func request(_ permissions: [HealthKitPermissionType]) -> AnyPublisher<Bool, Error> {
         requestCallsCount += 1
         requestReceivedPermissions = permissions
         requestReceivedInvocations.append(permissions)
