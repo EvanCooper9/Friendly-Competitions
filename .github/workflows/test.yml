@@ -43,8 +43,8 @@ jobs:
 
     - name: Setup GoogleService-Info.plist
       run: |
-        mkdir -p "Friendly Competitions/Firebase/Debug"
-        echo $GOOGLE_SERVICE_INFO_DEBUG > "Friendly Competitions/Firebase/Debug/GoogleService-Info.plist"
+        mkdir -p "FriendlyCompetitions/Firebase/Debug"
+        echo $GOOGLE_SERVICE_INFO_DEBUG > "FriendlyCompetitions/Firebase/Debug/GoogleService-Info.plist"
       env:
         GOOGLE_SERVICE_INFO_DEBUG: ${{ secrets.GOOGLE_SERVICE_INFO_DEBUG }}
 
