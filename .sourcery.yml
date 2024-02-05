@@ -1,9 +1,9 @@
 sources:
-- Friendly Competitions
+- FriendlyCompetitions
 templates:
 - sourcery/templates
 output:
-  "Friendly Competitions/Sourcery"
+  FriendlyCompetitions/Sourcery
 args:
   autoMockableImports:
     - Combine

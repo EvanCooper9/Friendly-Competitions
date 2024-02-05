@@ -20,11 +20,11 @@ analyzer_rules: # Rules run by `swiftlint analyze`
   - explicit_self
 
 included: # paths to include during linting. `--path` is ignored if present.
-  - Friendly Competitions
+  - FriendlyCompetitions
 excluded: # paths to ignore during linting. Takes precedence over `included`.
-  - Friendly Competitions/Sourcery/
-  - Friendly Competitions/SwiftGen/
-  - Friendly Competitions/Utility/Extensions/Firebase/Combine/
+  - FriendlyCompetitions/Sourcery/
+  - FriendlyCompetitions/SwiftGen/
+  - FriendlyCompetitions/Utility/Extensions/Firebase/Combine/
   - Source/*/ExcludedFile.swift # Exclude files with a wildcard
 
 # If true, SwiftLint will not fail if no lintable files are found.

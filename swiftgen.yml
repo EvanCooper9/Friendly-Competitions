@@ -12,10 +12,10 @@
 ##   SwiftGen will parse all `.strings` files found in that folder.
 strings:
   inputs:
-    - "Friendly Competitions/Resources/Strings/en.lproj"
+    - "FriendlyCompetitions/Resources/Strings/en.lproj"
   outputs:
     - templateName: structured-swift5
-      output: "Friendly Competitions/SwiftGen/Strings+Generated.swift"
+      output: "FriendlyCompetitions/SwiftGen/Strings+Generated.swift"
 
 
 ## Generate constants for your Assets Catalogs, including constants for images, colors, ARKit resources, etc.
@@ -24,13 +24,13 @@ strings:
 ##   - To know which params are supported for a template, use `swiftgen template doc xcassets swift5` to open the template documentation on GitHub.
 xcassets:
   inputs:
-    - "Friendly Competitions/Resources/Assets/Images.xcassets"
-    - "Friendly Competitions/Resources/Assets/Colors.xcassets"
+    - "FriendlyCompetitions/Resources/Assets/Images.xcassets"
+    - "FriendlyCompetitions/Resources/Assets/Colors.xcassets"
   outputs:
     - templateName: swift5
       params:
         forceProvidesNamespaces: true
-      output: "Friendly Competitions/SwiftGen/XCAssets+Generated.swift"
+      output: "FriendlyCompetitions/SwiftGen/XCAssets+Generated.swift"
 
 
 ## Generate constants for your storyboards and XIBs.
