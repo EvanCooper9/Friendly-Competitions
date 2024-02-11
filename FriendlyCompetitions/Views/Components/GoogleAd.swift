@@ -249,7 +249,9 @@ class GoogleAdViewModel: NSObject, ObservableObject, GADNativeAdLoaderDelegate, 
     }
 }
 
-#Preview {
-    GoogleAd(unit: .native)
-        .padding()
+struct GoogleAd_Previews: PreviewProvider {
+    static var previews: some View {
+        GoogleAd(unit: .native)
+            .padding()
+    }
 }
