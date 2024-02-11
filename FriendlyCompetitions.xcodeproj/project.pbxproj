@@ -272,7 +272,7 @@
 		EDC8916A2A41552D00749917 /* ActivitySummaryInfoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC891692A41552D00749917 /* ActivitySummaryInfoViewModel.swift */; };
 		EDC891712A42A40800749917 /* Banner.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC891702A42A40800749917 /* Banner.swift */; };
 		EDC891782A437F0700749917 /* ActivitySummaryInfoSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC891772A437F0700749917 /* ActivitySummaryInfoSource.swift */; };
-		EDC909132B77D05B005FEFC5 /* Ad.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC909122B77D05B005FEFC5 /* Ad.swift */; };
+		EDC909132B77D05B005FEFC5 /* GoogleAd.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC909122B77D05B005FEFC5 /* GoogleAd.swift */; };
 		EDC909162B77F58D005FEFC5 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = EDC909152B77F58D005FEFC5 /* GoogleMobileAds */; };
 		EDC909192B77F5B4005FEFC5 /* GoogleAdsAppService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC909182B77F5B4005FEFC5 /* GoogleAdsAppService.swift */; };
 		EDC976362A3E326D00DE7ABE /* TextFieldWithSecureToggle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC976352A3E326D00DE7ABE /* TextFieldWithSecureToggle.swift */; };
@@ -549,7 +549,7 @@
 		EDC891692A41552D00749917 /* ActivitySummaryInfoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitySummaryInfoViewModel.swift; sourceTree = "<group>"; };
 		EDC891702A42A40800749917 /* Banner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Banner.swift; sourceTree = "<group>"; };
 		EDC891772A437F0700749917 /* ActivitySummaryInfoSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitySummaryInfoSource.swift; sourceTree = "<group>"; };
-		EDC909122B77D05B005FEFC5 /* Ad.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ad.swift; sourceTree = "<group>"; };
+		EDC909122B77D05B005FEFC5 /* GoogleAd.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleAd.swift; sourceTree = "<group>"; };
 		EDC909182B77F5B4005FEFC5 /* GoogleAdsAppService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleAdsAppService.swift; sourceTree = "<group>"; };
 		EDC976352A3E326D00DE7ABE /* TextFieldWithSecureToggle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldWithSecureToggle.swift; sourceTree = "<group>"; };
 		EDC976372A3E376900DE7ABE /* VerifyEmailViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VerifyEmailViewModel.swift; sourceTree = "<group>"; };
@@ -642,12 +642,12 @@
 			children = (
 				C132336427BEB58B00196D81 /* AppIcon.swift */,
 				EDC891702A42A40800749917 /* Banner.swift */,
+				EDC909122B77D05B005FEFC5 /* GoogleAd.swift */,
 				C1401F8A26D94D1C0080F74F /* ImmutableListItemView.swift */,
 				EDC976352A3E326D00DE7ABE /* TextFieldWithSecureToggle.swift */,
 				C123C9D327A88D3200375F73 /* UserInfoSection.swift */,
 				C123C9CC27A863F100375F73 /* UserHashIDPill.swift */,
 				ED32ED282A217E460098E9A2 /* SignInWithAppleButton.swift */,
-				EDC909112B77D04F005FEFC5 /* Ad */,
 				EDC891682A41551E00749917 /* ActivitySummaryInfo */,
 				ED901B4B280247D900FE619E /* CompetitionDetails */,
 				ED82AB102A3E1E1B00334F51 /* EmailSignIn */,
@@ -1719,14 +1719,6 @@
 			path = ActivitySummaryInfo;
 			sourceTree = "<group>";
 		};
-		EDC909112B77D04F005FEFC5 /* Ad */ = {
-			isa = PBXGroup;
-			children = (
-				EDC909122B77D05B005FEFC5 /* Ad.swift */,
-			);
-			path = Ad;
-			sourceTree = "<group>";
-		};
 		EDC909172B77F5A3005FEFC5 /* GoogleAds */ = {
 			isa = PBXGroup;
 			children = (
@@ -2228,7 +2220,7 @@
 				ED1B85A029C90490008DB1F6 /* RootView.swift in Sources */,
 				ED1B5CF7296D1CF600122D7E /* PaywallPrimerView.swift in Sources */,
 				C1E4C7C327B6EB400090239A /* AuthenticationManager.swift in Sources */,
-				EDC909132B77D05B005FEFC5 /* Ad.swift in Sources */,
+				EDC909132B77D05B005FEFC5 /* GoogleAd.swift in Sources */,
 				ED1B5CF3296C7A4F00122D7E /* Premium.swift in Sources */,
 				ED1B5D01296DBD3100122D7E /* PaywallStep.swift in Sources */,
 				ED570D272A12889700C0B28F /* FetchDocumentBackgroundJob.swift in Sources */,

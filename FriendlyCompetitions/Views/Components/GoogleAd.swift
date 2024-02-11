@@ -3,8 +3,21 @@ import GoogleMobileAds
 import SwiftUI
 import UIKit
 
-enum GoogleAdUnit: String {
-    case native = "ca-app-pub-9171629407679521/4967897824"
+enum GoogleAdUnit {
+    case native
+
+    var identifier: String {
+        switch self {
+        case .native:
+            #if DEBUG
+            // https://developers.google.com/admob/ios/test-ads#demo_ad_units
+            return "ca-app-pub-3940256099942544/3986624511" // native
+//            return "ca-app-pub-3940256099942544/2521693316" // native video
+            #else
+            return "ca-app-pub-9171629407679521/4967897824"
+            #endif
+        }
+    }
 
     var adTypes: [GADAdLoaderAdType] {
         switch self {
@@ -15,8 +28,6 @@ enum GoogleAdUnit: String {
 }
 
 struct GoogleAd: View {
-
-    let unit: GoogleAdUnit
 
     @State private var height: CGFloat = 0
     @State private var width: CGFloat = 0
@@ -130,7 +141,8 @@ final class GoogleAdUIView: UIView {
     }
 
     func update() {
-        mediaHeightConstraint = mediaView.widthAnchor.constraint(equalTo: mediaView.heightAnchor, multiplier: ad.mediaContent.aspectRatio)
+        let aspectRatio = ad.mediaContent.aspectRatio == 0 ? 0.5 : ad.mediaContent.aspectRatio
+        mediaHeightConstraint = mediaView.widthAnchor.constraint(equalTo: mediaView.heightAnchor, multiplier: aspectRatio)
     }
 
     private func configureViews() {
@@ -205,7 +217,7 @@ class GoogleAdViewModel: NSObject, ObservableObject, GADNativeAdLoaderDelegate, 
 
     init(unit: GoogleAdUnit) {
         adLoader = GADAdLoader(
-            adUnitID: unit.rawValue,
+            adUnitID: unit.identifier,
             rootViewController: nil,
             adTypes: unit.adTypes,
             options: nil

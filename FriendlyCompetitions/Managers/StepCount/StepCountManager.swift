@@ -29,7 +29,7 @@ final class StepCountManager: StepCountManaging {
         } else {
             healthKitManager.registerBackgroundDeliveryPublisher(for: .stepCount, publisher: fetchAndUpload())
         }
-        
+
         fetchAndUpload()
             .sink()
             .store(in: &cancellables)
