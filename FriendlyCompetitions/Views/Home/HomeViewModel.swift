@@ -27,6 +27,7 @@ final class HomeViewModel: ObservableObject {
     @Published var showNewCompetition = false
     @Published var showAddFriends = false
     @Published var showAnonymousAccountBlocker = false
+    @Published private(set) var showAds = false
 
     // MARK: - Private Properties
 
@@ -101,6 +102,8 @@ final class HomeViewModel: ObservableObject {
             .removeDuplicates()
             .receive(on: scheduler)
             .assign(to: &$friendRows)
+
+        showAds = featureFlagManager.value(forBool: .adsEnabled)
 
         handlePremiumBanner()
         bindBanners()

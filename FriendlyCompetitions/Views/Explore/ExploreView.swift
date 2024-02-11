@@ -55,6 +55,13 @@ struct ExploreView: View {
                     }
                     .removingMargin()
                 }
+
+                if viewModel.showAds {
+                    Section {
+                        GoogleAd(unit: .native)
+                    }
+                    .removingMargin()
+                }
             }
             .searchable(text: $viewModel.searchText, placement: .navigationBarDrawer(displayMode: .always))
             .navigationTitle(L10n.Explore.title)

@@ -36,6 +36,11 @@ struct HomeView: View {
                     competitions
                     friends
                 }
+
+                if viewModel.showAds {
+                    GoogleAd(unit: .native)
+                        .padding()
+                }
             }
             .navigationBarTitle(L10n.Home.title)
             .toolbar {

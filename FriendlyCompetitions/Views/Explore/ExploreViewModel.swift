@@ -1,6 +1,8 @@
 import Combine
 import CombineExt
+import CombineSchedulers
 import Factory
+import Foundation
 
 final class ExploreViewModel: ObservableObject {
 
@@ -11,11 +13,14 @@ final class ExploreViewModel: ObservableObject {
     @Published var searchResults = [Competition]()
     @Published var appOwnedCompetitions = [Competition]()
 
+    @Published private(set) var showAds = false
+
     // MARK: - Private Properties
 
-    @Injected(\.competitionsManager) private var competitionsManager
-    @Injected(\.scheduler) private var scheduler
-    @Injected(\.searchManager) private var searchManager
+    @Injected(\.competitionsManager) private var competitionsManager: CompetitionsManaging
+    @Injected(\.featureFlagManager) private var featureFlagManager: FeatureFlagManaging
+    @Injected(\.scheduler) private var scheduler: AnySchedulerOf<RunLoop>
+    @Injected(\.searchManager) private var searchManager: SearchManaging
 
     // MARK: - Lifecycle
 
@@ -32,5 +37,7 @@ final class ExploreViewModel: ObservableObject {
             }
             .receive(on: scheduler)
             .assign(to: &$searchResults)
+
+        showAds = featureFlagManager.value(forBool: .adsEnabled)
     }
 }
