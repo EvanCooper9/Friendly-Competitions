@@ -12,7 +12,7 @@ final class FeatureFlagManager: FeatureFlagManaging {
     private let remoteConfig = RemoteConfig.remoteConfig()
 
     init() {
-        remoteConfig.fetch(withExpirationDuration: 0) { status, error -> Void in
+        remoteConfig.fetch { status, error -> Void in
             if let error {
                 error.reportToCrashlytics()
             } else if status == .success {
