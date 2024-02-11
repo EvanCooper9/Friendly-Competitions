@@ -53,6 +53,13 @@ enum AnalyticsEvent: Codable, Equatable {
     case healthKitBGDeliveryTimeout(permission: HealthKitPermissionType)
     case healthKitBGDeliverySuccess(permission: HealthKitPermissionType)
 
+    // Ads
+    case adLoadStarted
+    case adLoadSuccess
+    case adLoadError(error: String?)
+    case adImpression
+    case adClick
+
     // misc
     case deepLinked(url: URL)
     case urlOpened(url: URL)

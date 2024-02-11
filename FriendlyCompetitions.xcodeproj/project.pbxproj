@@ -272,6 +272,9 @@
 		EDC8916A2A41552D00749917 /* ActivitySummaryInfoViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC891692A41552D00749917 /* ActivitySummaryInfoViewModel.swift */; };
 		EDC891712A42A40800749917 /* Banner.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC891702A42A40800749917 /* Banner.swift */; };
 		EDC891782A437F0700749917 /* ActivitySummaryInfoSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC891772A437F0700749917 /* ActivitySummaryInfoSource.swift */; };
+		EDC909132B77D05B005FEFC5 /* Ad.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC909122B77D05B005FEFC5 /* Ad.swift */; };
+		EDC909162B77F58D005FEFC5 /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = EDC909152B77F58D005FEFC5 /* GoogleMobileAds */; };
+		EDC909192B77F5B4005FEFC5 /* GoogleAdsAppService.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC909182B77F5B4005FEFC5 /* GoogleAdsAppService.swift */; };
 		EDC976362A3E326D00DE7ABE /* TextFieldWithSecureToggle.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC976352A3E326D00DE7ABE /* TextFieldWithSecureToggle.swift */; };
 		EDC976392A3E376900DE7ABE /* VerifyEmailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC976372A3E376900DE7ABE /* VerifyEmailViewModel.swift */; };
 		EDC9763A2A3E376900DE7ABE /* VerifyEmailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC976382A3E376900DE7ABE /* VerifyEmailView.swift */; };
@@ -546,6 +549,8 @@
 		EDC891692A41552D00749917 /* ActivitySummaryInfoViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitySummaryInfoViewModel.swift; sourceTree = "<group>"; };
 		EDC891702A42A40800749917 /* Banner.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Banner.swift; sourceTree = "<group>"; };
 		EDC891772A437F0700749917 /* ActivitySummaryInfoSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitySummaryInfoSource.swift; sourceTree = "<group>"; };
+		EDC909122B77D05B005FEFC5 /* Ad.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ad.swift; sourceTree = "<group>"; };
+		EDC909182B77F5B4005FEFC5 /* GoogleAdsAppService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleAdsAppService.swift; sourceTree = "<group>"; };
 		EDC976352A3E326D00DE7ABE /* TextFieldWithSecureToggle.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TextFieldWithSecureToggle.swift; sourceTree = "<group>"; };
 		EDC976372A3E376900DE7ABE /* VerifyEmailViewModel.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VerifyEmailViewModel.swift; sourceTree = "<group>"; };
 		EDC976382A3E376900DE7ABE /* VerifyEmailView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = VerifyEmailView.swift; sourceTree = "<group>"; };
@@ -589,6 +594,7 @@
 				ED07572929CA65FC00141AD4 /* FirebaseFirestore in Frameworks */,
 				ED3983AD2A1F098800279929 /* FirebaseRemoteConfig in Frameworks */,
 				ED07572129CA65FC00141AD4 /* FirebaseAnalyticsSwift in Frameworks */,
+				EDC909162B77F58D005FEFC5 /* GoogleMobileAds in Frameworks */,
 				ED3EAB7729E746B90047C43E /* FirebasePerformance in Frameworks */,
 				ED07571F29CA65FC00141AD4 /* FirebaseAnalytics in Frameworks */,
 				ED07573129CA65FC00141AD4 /* FirebaseFunctionsCombine-Community in Frameworks */,
@@ -641,6 +647,7 @@
 				C123C9D327A88D3200375F73 /* UserInfoSection.swift */,
 				C123C9CC27A863F100375F73 /* UserHashIDPill.swift */,
 				ED32ED282A217E460098E9A2 /* SignInWithAppleButton.swift */,
+				EDC909112B77D04F005FEFC5 /* Ad */,
 				EDC891682A41551E00749917 /* ActivitySummaryInfo */,
 				ED901B4B280247D900FE619E /* CompetitionDetails */,
 				ED82AB102A3E1E1B00334F51 /* EmailSignIn */,
@@ -1269,6 +1276,7 @@
 			children = (
 				ED4F721729C92FCB007C5864 /* AppService.swift */,
 				ED4F721929C93025007C5864 /* AppServices+Factory.swift */,
+				EDC909172B77F5A3005FEFC5 /* GoogleAds */,
 				ED1F8DEC29E3932F0009B986 /* Developer */,
 				ED268B542A11269D00A4A50B /* DataUploading */,
 				ED4F721B29C93044007C5864 /* Firebase */,
@@ -1711,6 +1719,22 @@
 			path = ActivitySummaryInfo;
 			sourceTree = "<group>";
 		};
+		EDC909112B77D04F005FEFC5 /* Ad */ = {
+			isa = PBXGroup;
+			children = (
+				EDC909122B77D05B005FEFC5 /* Ad.swift */,
+			);
+			path = Ad;
+			sourceTree = "<group>";
+		};
+		EDC909172B77F5A3005FEFC5 /* GoogleAds */ = {
+			isa = PBXGroup;
+			children = (
+				EDC909182B77F5B4005FEFC5 /* GoogleAdsAppService.swift */,
+			);
+			path = GoogleAds;
+			sourceTree = "<group>";
+		};
 		EDC9CEDC2AE3238A002FCE9C /* Notifications */ = {
 			isa = PBXGroup;
 			children = (
@@ -1849,6 +1873,7 @@
 				ED3983AC2A1F098800279929 /* FirebaseRemoteConfig */,
 				ED3983AE2A1F098800279929 /* FirebaseRemoteConfigSwift */,
 				ED848FD72AD223B500D6E848 /* FirebaseAppCheck */,
+				EDC909152B77F58D005FEFC5 /* GoogleMobileAds */,
 			);
 			productName = CompyBoi;
 			productReference = C1691DC326D55FCF006FFA30 /* Friendly Competitions.app */;
@@ -1890,6 +1915,7 @@
 				ED879C1629A1CC8D0007DB91 /* XCRemoteSwiftPackageReference "Factory" */,
 				ED879C2429A408470007DB91 /* XCRemoteSwiftPackageReference "swift-algorithms" */,
 				ED07571D29CA65FC00141AD4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				EDC909142B77F58D005FEFC5 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
 			);
 			productRefGroup = C1691DC426D55FCF006FFA30 /* Products */;
 			projectDirPath = "";
@@ -2202,6 +2228,7 @@
 				ED1B85A029C90490008DB1F6 /* RootView.swift in Sources */,
 				ED1B5CF7296D1CF600122D7E /* PaywallPrimerView.swift in Sources */,
 				C1E4C7C327B6EB400090239A /* AuthenticationManager.swift in Sources */,
+				EDC909132B77D05B005FEFC5 /* Ad.swift in Sources */,
 				ED1B5CF3296C7A4F00122D7E /* Premium.swift in Sources */,
 				ED1B5D01296DBD3100122D7E /* PaywallStep.swift in Sources */,
 				ED570D272A12889700C0B28F /* FetchDocumentBackgroundJob.swift in Sources */,
@@ -2265,6 +2292,7 @@
 				ED039768295F5458003D4D80 /* CompetitionResultsView.swift in Sources */,
 				ED4F721829C92FCB007C5864 /* AppService.swift in Sources */,
 				ED570D2E2A12D42100C0B28F /* BackgroundJobsAppService.swift in Sources */,
+				EDC909192B77F5B4005FEFC5 /* GoogleAdsAppService.swift in Sources */,
 				ED879C4E29A411CA0007DB91 /* FriendsManager+Factory.swift in Sources */,
 				ED32B87C29D69B84005C917B /* AuthProviding.swift in Sources */,
 				ED570D312A12D9F000C0B28F /* FetchCompetitionResultsBackgroundJob.swift in Sources */,
@@ -2692,6 +2720,14 @@
 				minimumVersion = 1.0.0;
 			};
 		};
+		EDC909142B77F58D005FEFC5 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googleads/swift-package-manager-google-mobile-ads.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.0.1;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -2819,6 +2855,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = ED74033A28FF7297005BD155 /* XCRemoteSwiftPackageReference "ECKit" */;
 			productName = ECKit;
+		};
+		EDC909152B77F58D005FEFC5 /* GoogleMobileAds */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EDC909142B77F58D005FEFC5 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
+			productName = GoogleMobileAds;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -17,6 +17,7 @@ enum FeatureFlagDouble: String, FeatureFlag {
 enum FeatureFlagBool: String, FeatureFlag {
     typealias Data = Bool
 
+    case adsEnabled = "ads_enabled"
     case premiumEnabled = "premium_enabled"
     case newResultsBannerEnabled = "new_results_banner_enabled"
     case sharedBackgroundDeliveryPublishers = "shared_background_delivery_publishers"
