@@ -58,7 +58,7 @@ struct ExploreView: View {
 
                 if viewModel.showAds {
                     Section {
-                        GoogleAd()
+                        GoogleAd(unit: .native)
                     }
                     .removingMargin()
                 }

@@ -3,12 +3,28 @@ import GoogleMobileAds
 import SwiftUI
 import UIKit
 
+enum GoogleAdUnit: String {
+    case native = "ca-app-pub-9171629407679521/4967897824"
+
+    var adTypes: [GADAdLoaderAdType] {
+        switch self {
+        case .native:
+            return [.native]
+        }
+    }
+}
+
 struct GoogleAd: View {
+
+    let unit: GoogleAdUnit
 
     @State private var height: CGFloat = 0
     @State private var width: CGFloat = 0
+    @StateObject private var viewModel: GoogleAdViewModel
 
-    @StateObject private var viewModel = GoogleAdViewModel()
+    init(unit: GoogleAdUnit) {
+        _viewModel = .init(wrappedValue: GoogleAdViewModel(unit: unit))
+    }
 
     var body: some View {
         if let ad = viewModel.ad {
@@ -183,23 +199,19 @@ extension NSLayoutConstraint {
 class GoogleAdViewModel: NSObject, ObservableObject, GADNativeAdLoaderDelegate, GADNativeAdDelegate {
 
     @Published var ad: GADNativeAd?
-    private var adLoader: GADAdLoader!
+    private let adLoader: GADAdLoader
 
     @Injected(\.analyticsManager) private var analyticsManager
 
-    override init() {
-        super.init()
+    init(unit: GoogleAdUnit) {
         adLoader = GADAdLoader(
-            adUnitID: "ca-app-pub-9171629407679521/4967897824",
+            adUnitID: unit.rawValue,
             rootViewController: nil,
-            adTypes: [.native],
+            adTypes: unit.adTypes,
             options: nil
         )
+        super.init()
         adLoader.delegate = self
-        refreshAd()
-    }
-
-    func refreshAd() {
         adLoader.load(GADRequest())
         analyticsManager.log(event: .adLoadStarted)
     }
@@ -226,6 +238,6 @@ class GoogleAdViewModel: NSObject, ObservableObject, GADNativeAdLoaderDelegate, 
 }
 
 #Preview {
-    GoogleAd()
+    GoogleAd(unit: .native)
         .padding()
 }

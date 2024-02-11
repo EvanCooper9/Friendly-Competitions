@@ -38,7 +38,7 @@ struct HomeView: View {
                 }
 
                 if viewModel.showAds {
-                    GoogleAd()
+                    GoogleAd(unit: .native)
                         .padding()
                 }
             }
