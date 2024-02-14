@@ -1,0 +1,24 @@
+{
+  "sourceLanguage" : "en",
+  "strings" : {
+    "%lld" : {
+
+    },
+    "Competition" : {
+
+    },
+    "Competition Standings" : {
+
+    },
+    "Select Competition" : {
+
+    },
+    "Selects the competition do display information for." : {
+
+    },
+    "View your standings in a competition at a glace" : {
+
+    }
+  },
+  "version" : "1.0"
+}
