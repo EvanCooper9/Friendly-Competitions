@@ -6,7 +6,7 @@ import Factory
 import HealthKit
 import XCTest
 
-@testable import Friendly_Competitions
+@testable import FriendlyCompetitions
 
 final class WorkoutManagerTests: FCTestCase {
 

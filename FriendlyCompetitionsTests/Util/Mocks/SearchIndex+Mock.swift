@@ -1,6 +1,6 @@
 import Combine
 
-@testable import Friendly_Competitions
+@testable import FriendlyCompetitions
 
 final class SearchIndexMock<Model: Decodable>: SearchIndex {
     var searchCallCount = 0

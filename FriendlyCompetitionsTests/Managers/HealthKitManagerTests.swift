@@ -3,7 +3,7 @@ import ECKit
 import HealthKit
 import XCTest
 
-@testable import Friendly_Competitions
+@testable import FriendlyCompetitions
 
 final class HealthKitManagerTests: FCTestCase {
 

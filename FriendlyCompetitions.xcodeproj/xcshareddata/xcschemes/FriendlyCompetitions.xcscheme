@@ -45,8 +45,8 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "C155CA5627AB989D005F49F4"
-               BuildableName = "Friendly Competitions Tests.xctest"
-               BlueprintName = "Friendly Competitions Tests"
+               BuildableName = "FriendlyCompetitionsTests.xctest"
+               BlueprintName = "FriendlyCompetitionsTests"
                ReferencedContainer = "container:FriendlyCompetitions.xcodeproj">
             </BuildableReference>
          </TestableReference>
@@ -67,8 +67,8 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "C1691DC226D55FCF006FFA30"
-            BuildableName = "Friendly Competitions.app"
-            BlueprintName = "Friendly Competitions"
+            BuildableName = "FriendlyCompetitions.app"
+            BlueprintName = "FriendlyCompetitions"
             ReferencedContainer = "container:FriendlyCompetitions.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>

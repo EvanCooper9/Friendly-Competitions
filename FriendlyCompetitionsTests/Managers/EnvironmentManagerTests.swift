@@ -2,7 +2,7 @@ import Combine
 import ECKit
 import XCTest
 
-@testable import Friendly_Competitions
+@testable import FriendlyCompetitions
 
 final class EnvironmentManagerTests: FCTestCase {
 

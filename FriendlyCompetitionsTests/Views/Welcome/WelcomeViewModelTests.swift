@@ -2,7 +2,7 @@ import ECKit
 import Factory
 import XCTest
 
-@testable import Friendly_Competitions
+@testable import FriendlyCompetitions
 
 final class WelcomeViewModelTests: FCTestCase {
 

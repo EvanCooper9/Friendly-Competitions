@@ -24,14 +24,16 @@ lane :deploy do
         build_number: "#{new_build}"
     )
 
-    build_app
+    build_app(
+        scheme: "FriendlyCompetitions"
+    )
 
     upload_to_testflight(
         notify_external_testers: false
     )
 
     upload_symbols_to_crashlytics(
-        gsp_path: "Friendly Competitions/Firebase/Release/GoogleService-Info.plist",
+        gsp_path: "FriendlyCompetitions/Firebase/Release/GoogleService-Info.plist",
         binary_path: "fastlane/scripts/upload-symbols"
     )
 

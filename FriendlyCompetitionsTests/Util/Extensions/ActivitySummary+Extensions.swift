@@ -1,6 +1,6 @@
 import Foundation
 
-@testable import Friendly_Competitions
+@testable import FriendlyCompetitions
 
 extension ActivitySummary {
     func with(date: Date) -> ActivitySummary {

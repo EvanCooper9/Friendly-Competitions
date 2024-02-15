@@ -1,6 +1,6 @@
 import Combine
 
-@testable import Friendly_Competitions
+@testable import FriendlyCompetitions
 
 final class CollectionMock<Model: Decodable>: Collection {
     var whereFieldInClosure: (() -> AnyPublisher<[Model], Error>)?
