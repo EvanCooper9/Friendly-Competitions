@@ -35,6 +35,7 @@ class FCTestCase: XCTestCase {
     let premiumManager = PremiumManagingMock()
     let userManager = UserManagingMock()
     let workoutManager = WorkoutManagingMock()
+    let widgetDataManager = WidgetDataManager()
 
     var cancellables = Cancellables()
 
@@ -80,6 +81,7 @@ class FCTestCase: XCTestCase {
         Container.shared.storageManager.register { self.storageManager }
         Container.shared.userManager.register { self.userManager }
         Container.shared.workoutManager.register { self.workoutManager }
+        Container.shared.widgetDataManager.register { self.widgetDataManager }
     }
 
     func retainDuringTest(_ object: Any) {
