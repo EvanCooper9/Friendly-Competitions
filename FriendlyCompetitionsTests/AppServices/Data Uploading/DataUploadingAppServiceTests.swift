@@ -1,6 +1,6 @@
 import Combine
 import Factory
-@testable import Friendly_Competitions
+@testable import FriendlyCompetitions
 import XCTest
 
 final class DataUploadingAppServiceTests: FCTestCase {

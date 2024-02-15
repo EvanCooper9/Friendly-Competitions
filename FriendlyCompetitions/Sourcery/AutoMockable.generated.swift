@@ -1721,6 +1721,12 @@ class UserManagingMock: UserManaging {
     }
 
 }
+class WidgetDataManagingMock: WidgetDataManaging {
+
+
+
+
+}
 class WorkoutManagingMock: WorkoutManaging {
 
 

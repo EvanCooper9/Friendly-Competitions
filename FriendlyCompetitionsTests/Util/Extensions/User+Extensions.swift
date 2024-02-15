@@ -1,4 +1,4 @@
-@testable import Friendly_Competitions
+@testable import FriendlyCompetitions
 
 extension User {
     func with(friends: [User.ID]) -> User {

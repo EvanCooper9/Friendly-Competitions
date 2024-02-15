@@ -4,7 +4,7 @@ import ECKit
 import Foundation
 import XCTest
 
-@testable import Friendly_Competitions
+@testable import FriendlyCompetitions
 
 final class CompetitionViewModelTests: FCTestCase {
 

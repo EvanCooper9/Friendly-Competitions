@@ -5,7 +5,6 @@ import Factory
 import FirebaseCrashlytics
 import FirebaseFirestore
 import FirebaseFirestoreCombineSwift
-import FirebaseFirestoreSwift
 
 extension JSONDecoder {
     static let custom: JSONDecoder = {

@@ -1,4 +1,4 @@
-@testable import Friendly_Competitions
+@testable import FriendlyCompetitions
 import XCTest
 
 final class BackgroundJobsAppServiceTests: FCTestCase {

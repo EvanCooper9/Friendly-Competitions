@@ -2,7 +2,7 @@ import CombineSchedulers
 import ECKit
 import XCTest
 
-@testable import Friendly_Competitions
+@testable import FriendlyCompetitions
 
 final class AuthenticationManagerTests: FCTestCase {
 
