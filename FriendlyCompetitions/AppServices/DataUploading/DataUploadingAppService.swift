@@ -26,9 +26,7 @@ final class DataUploadingAppService: AppService {
                     strongSelf.activitySummaryManager = Container.shared.activitySummaryManager.resolve()
                     strongSelf.stepCountManager = Container.shared.stepCountManager.resolve()
                     strongSelf.workoutManager = Container.shared.workoutManager.resolve()
-                    if #available(iOS 17, *) {
-                        strongSelf.widgetDataManager = Container.shared.widgetDataManager.resolve()
-                    }
+                    strongSelf.widgetDataManager = Container.shared.widgetDataManager.resolve()
                 } else {
                     strongSelf.activitySummaryManager = nil
                     strongSelf.stepCountManager = nil
