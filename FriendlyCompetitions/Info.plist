@@ -3,7 +3,7 @@
 <plist version="1.0">
 <dict>
 	<key>GADNativeAdValidatorEnabled</key>
-	<false/>
+	<true/>
 	<key>GADApplicationIdentifier</key>
 	<string>ca-app-pub-9171629407679521~4136912327</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>

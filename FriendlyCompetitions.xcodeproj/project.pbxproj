@@ -263,6 +263,8 @@
 		EDAF6C47285277FF002BC0DD /* Nonce.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDAF6C46285277FF002BC0DD /* Nonce.swift */; };
 		EDBF030829F755810010CF90 /* FriendlyCompetitionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBF030729F755810010CF90 /* FriendlyCompetitionsTests.swift */; };
 		EDBFB4062A5B8C88005D15BF /* Competition+Banners.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBFB4052A5B8C88005D15BF /* Competition+Banners.swift */; };
+		EDC1A36D2B7ED1BE001948D9 /* GoogleAdUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC1A36C2B7ED1BE001948D9 /* GoogleAdUnit.swift */; };
+		EDC1A36F2B7ED1E9001948D9 /* GoogleAdViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC1A36E2B7ED1E9001948D9 /* GoogleAdViewModel.swift */; };
 		EDC5FC3F27FA7C1B00F2882D /* View+HUD.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC5FC3E27FA7C1B00F2882D /* View+HUD.swift */; };
 		EDC7849828034CCD001FE005 /* WorkoutManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC7849728034CCD001FE005 /* WorkoutManager.swift */; };
 		EDC7849B280358E9001FE005 /* Workout.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC7849A280358E9001FE005 /* Workout.swift */; };
@@ -540,6 +542,8 @@
 		EDAF6C46285277FF002BC0DD /* Nonce.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Nonce.swift; sourceTree = "<group>"; };
 		EDBF030729F755810010CF90 /* FriendlyCompetitionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendlyCompetitionsTests.swift; sourceTree = "<group>"; };
 		EDBFB4052A5B8C88005D15BF /* Competition+Banners.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Competition+Banners.swift"; sourceTree = "<group>"; };
+		EDC1A36C2B7ED1BE001948D9 /* GoogleAdUnit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleAdUnit.swift; sourceTree = "<group>"; };
+		EDC1A36E2B7ED1E9001948D9 /* GoogleAdViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleAdViewModel.swift; sourceTree = "<group>"; };
 		EDC5FC3E27FA7C1B00F2882D /* View+HUD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+HUD.swift"; sourceTree = "<group>"; };
 		EDC7849728034CCD001FE005 /* WorkoutManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkoutManager.swift; sourceTree = "<group>"; };
 		EDC7849A280358E9001FE005 /* Workout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Workout.swift; sourceTree = "<group>"; };
@@ -642,7 +646,6 @@
 			children = (
 				C132336427BEB58B00196D81 /* AppIcon.swift */,
 				EDC891702A42A40800749917 /* Banner.swift */,
-				EDC909122B77D05B005FEFC5 /* GoogleAd.swift */,
 				C1401F8A26D94D1C0080F74F /* ImmutableListItemView.swift */,
 				EDC976352A3E326D00DE7ABE /* TextFieldWithSecureToggle.swift */,
 				C123C9D327A88D3200375F73 /* UserInfoSection.swift */,
@@ -652,6 +655,7 @@
 				ED901B4B280247D900FE619E /* CompetitionDetails */,
 				ED82AB102A3E1E1B00334F51 /* EmailSignIn */,
 				ED901B692802524900FE619E /* FirebaseImage */,
+				EDC1A36B2B7ED1AE001948D9 /* GoogleAd */,
 				C1884E4926D58AC800C21014 /* UIKitWrappers */,
 			);
 			path = Components;
@@ -1699,6 +1703,16 @@
 			path = Competitions;
 			sourceTree = "<group>";
 		};
+		EDC1A36B2B7ED1AE001948D9 /* GoogleAd */ = {
+			isa = PBXGroup;
+			children = (
+				EDC909122B77D05B005FEFC5 /* GoogleAd.swift */,
+				EDC1A36C2B7ED1BE001948D9 /* GoogleAdUnit.swift */,
+				EDC1A36E2B7ED1E9001948D9 /* GoogleAdViewModel.swift */,
+			);
+			path = GoogleAd;
+			sourceTree = "<group>";
+		};
 		EDC78499280358CE001FE005 /* Workouts */ = {
 			isa = PBXGroup;
 			children = (
@@ -2178,6 +2192,7 @@
 				ED879C5629A412350007DB91 /* StorageManager+Factory.swift in Sources */,
 				ED47BA0A29F1C6C4007A1D12 /* Endpoint.swift in Sources */,
 				ED1B85C729C904CC008DB1F6 /* AboutView.swift in Sources */,
+				EDC1A36D2B7ED1BE001948D9 /* GoogleAdUnit.swift in Sources */,
 				ED32B87A29D694CF005C917B /* AuthenticationCache.swift in Sources */,
 				EDA478282A815943000F8E1A /* CompetitionContainerView.swift in Sources */,
 				ED32ED292A217E460098E9A2 /* SignInWithAppleButton.swift in Sources */,
@@ -2266,6 +2281,7 @@
 				ED879C5029A411E20007DB91 /* NotificationsManager+Factory.swift in Sources */,
 				C1E1A9D127A6D9D700E8E360 /* FriendsManager.swift in Sources */,
 				ED47BA1129F2D1A7007A1D12 /* Workout+Mock.swift in Sources */,
+				EDC1A36F2B7ED1E9001948D9 /* GoogleAdViewModel.swift in Sources */,
 				ED9F255B29A4353C008C9967 /* DateToEndOfDay.swift in Sources */,
 				ED879C0329A07A820007DB91 /* Database+Firebase.swift in Sources */,
 				ED3EF4B22A3E57F6004D2706 /* StepCountManager+Factory.swift in Sources */,

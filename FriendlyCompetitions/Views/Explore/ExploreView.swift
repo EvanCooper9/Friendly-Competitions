@@ -1,3 +1,4 @@
+import ECKit
 import Factory
 import SwiftUI
 
@@ -11,20 +12,18 @@ struct ExploreView: View {
 
     var body: some View {
         NavigationStack(path: $viewModel.navigationDestinations) {
-            List {
-                if viewModel.searchText.isEmpty {
-                    Section {
+            ScrollView {
+                VStack(spacing: 20) {
+                    if viewModel.searchText.isEmpty {
                         ForEach(viewModel.appOwnedCompetitions) { competition in
                             ZStack {
                                 NavigationLink(value: NavigationDestination.competition(competition, nil)) { EmptyView() }
                                     .opacity(0)
                                 FeaturedCompetition(competition: competition)
                             }
+                            .padding(.horizontal)
                         }
-                    }
-                    .removingMargin()
-                } else {
-                    Section {
+                    } else {
                         if viewModel.searchResults.isEmpty {
                             Text(L10n.Explore.Search.nothingHere)
                                 .padding()
@@ -39,6 +38,7 @@ struct ExploreView: View {
                                         .opacity(0)
                                     FeaturedCompetition(competition: competition)
                                 }
+                                .padding(.horizontal)
                             }
                             ForEach(viewModel.searchResults.filter(\.appOwned.not)) { competition in
                                 ZStack {
@@ -50,17 +50,16 @@ struct ExploreView: View {
                                         .background(.systemFill)
                                         .cornerRadius(10)
                                 }
+                                .padding(.horizontal)
                             }
                         }
                     }
-                    .removingMargin()
-                }
 
-                if viewModel.showAds {
-                    Section {
+                    if viewModel.showAds {
                         GoogleAd(unit: .native)
+                            .padding(.horizontal)
+                            .padding(.bottom)
                     }
-                    .removingMargin()
                 }
             }
             .searchable(text: $viewModel.searchText, placement: .navigationBarDrawer(displayMode: .always))
