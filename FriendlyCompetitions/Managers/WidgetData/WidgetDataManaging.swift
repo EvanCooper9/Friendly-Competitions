@@ -3,6 +3,7 @@ import ECKit
 import Factory
 import WidgetKit
 
+// sourcery: AutoMockable
 protocol WidgetDataManaging {}
 
 final class WidgetDataManager: WidgetDataManaging {

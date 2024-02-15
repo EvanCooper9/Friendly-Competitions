@@ -35,7 +35,7 @@ class FCTestCase: XCTestCase {
     let premiumManager = PremiumManagingMock()
     let userManager = UserManagingMock()
     let workoutManager = WorkoutManagingMock()
-    let widgetDataManager = WidgetDataManager()
+    let widgetDataManager = WidgetDataManagingMock()
 
     var cancellables = Cancellables()
 

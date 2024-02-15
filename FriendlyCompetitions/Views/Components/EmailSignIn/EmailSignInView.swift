@@ -107,7 +107,7 @@ struct EmailSignInView: View {
                 HStack {
                     switch viewModel.inputType {
                     case .signIn:
-                        Text(L10n.EmailSignIn.new(Bundle.main.name))
+                        Text(L10n.EmailSignIn.new(App.name))
                             .foregroundColor(.secondaryLabel)
                         Button(L10n.EmailSignIn.signUp, action: viewModel.changeInputTypeTapped)
                     case .signUp:
