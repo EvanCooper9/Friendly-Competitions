@@ -1,7 +1,7 @@
 import FirebaseFirestore
 import XCTest
 
-@testable import Friendly_Competitions
+@testable import FriendlyCompetitions
 
 final class FirestoreEncoderTests: FCTestCase {
 

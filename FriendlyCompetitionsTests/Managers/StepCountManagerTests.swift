@@ -1,7 +1,7 @@
 import Combine
 import XCTest
 
-@testable import Friendly_Competitions
+@testable import FriendlyCompetitions
 
 final class StepCountManagerTests: FCTestCase {
 

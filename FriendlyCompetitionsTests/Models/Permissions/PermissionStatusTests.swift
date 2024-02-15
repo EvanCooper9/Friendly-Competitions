@@ -1,7 +1,7 @@
 import SwiftUI
 import XCTest
 
-@testable import Friendly_Competitions
+@testable import FriendlyCompetitions
 
 class PermissionStatusTests: FCTestCase {
     func testThatButtonTitleIsCorrect() {

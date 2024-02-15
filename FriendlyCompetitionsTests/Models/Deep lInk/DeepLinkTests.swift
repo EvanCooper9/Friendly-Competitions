@@ -1,6 +1,6 @@
 import XCTest
 
-@testable import Friendly_Competitions
+@testable import FriendlyCompetitions
 
 final class DeepLinkTests: FCTestCase {
     func testThatFriendReferralCanBeInitialized() {
