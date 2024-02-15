@@ -14,7 +14,7 @@ struct WelcomeView: View {
                         Text(L10n.Welcome.welcomeTo)
                             .font(.title)
                             .bold()
-                        Text(App.name)
+                        Text(AppInfo.name)
                             .foregroundLinearGradient(.init(colors: [
                                 Asset.Colors.Branded.red.swiftUIColor,
                                 Asset.Colors.Branded.green.swiftUIColor,

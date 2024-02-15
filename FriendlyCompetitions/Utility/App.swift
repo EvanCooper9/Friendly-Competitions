@@ -1,3 +1,3 @@
-enum App {
+enum AppInfo {
     static var name = "Friendly Competitions"
 }
