@@ -2557,7 +2557,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Friendly Competitions.app/Friendly Competitions";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Friendly Competitions.app/FriendlyCompetitions";
 			};
 			name = Debug;
 		};
@@ -2579,7 +2579,7 @@
 				SWIFT_EMIT_LOC_STRINGS = NO;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = 1;
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Friendly Competitions.app/Friendly Competitions";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Friendly Competitions.app/FriendlyCompetitions";
 			};
 			name = Release;
 		};
