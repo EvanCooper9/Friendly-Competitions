@@ -12,15 +12,20 @@ lane :deploy do
     certificates
 
     increment_version_number_in_xcodeproj(
+        scheme: "FriendlyCompetitions",
         version_number: ENV["VERSION_NUMBER"]
     )
 
-    current_version = get_version_number
+    current_version = get_version_number(
+        target: "FriendlyCompetitions"
+    )
+
     testflight_build = latest_testflight_build_number
     testflight_version = Actions.lane_context[SharedValues::LATEST_TESTFLIGHT_VERSION]
     new_build = testflight_version == current_version ? testflight_build + 1 : 1
     
     increment_build_number_in_xcodeproj(
+        scheme: "FriendlyCompetitions",
         build_number: "#{new_build}"
     )
 
@@ -29,7 +34,7 @@ lane :deploy do
     )
 
     upload_to_testflight(
-        notify_external_testers: false
+        notify_external_testers: true
     )
 
     upload_symbols_to_crashlytics(
