@@ -30,7 +30,14 @@ lane :deploy do
     )
 
     build_app(
-        scheme: "FriendlyCompetitions"
+        scheme: "FriendlyCompetitions",
+        export_options: {
+            provisioningProfiles: {
+                "com.evancooper.FriendlyCompetitions" => "match AppStore com.evancooper.FriendlyCompetitions"
+            }
+        }   
+  }
+
     )
 
     upload_to_testflight(

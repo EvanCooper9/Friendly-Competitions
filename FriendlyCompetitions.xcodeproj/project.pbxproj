@@ -2078,9 +2078,9 @@
 				ED31825829899E640091EE8C /* XCRemoteSwiftPackageReference "algoliasearch-client-swift" */,
 				ED879C1329A19A9B0007DB91 /* XCRemoteSwiftPackageReference "combine-schedulers" */,
 				ED879C1629A1CC8D0007DB91 /* XCRemoteSwiftPackageReference "Factory" */,
-				ED879C2429A408470007DB91 /* XCRemoteSwiftPackageReference "swift-algorithms.git" */,
+				ED879C2429A408470007DB91 /* XCRemoteSwiftPackageReference "swift-algorithms" */,
 				ED07571D29CA65FC00141AD4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
-				EDC909142B77F58D005FEFC5 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads.git" */,
+				EDC909142B77F58D005FEFC5 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
 			);
 			productRefGroup = C1691DC426D55FCF006FFA30 /* Products */;
 			projectDirPath = "";
@@ -2995,7 +2995,7 @@
 				minimumVersion = 2.0.0;
 			};
 		};
-		ED879C2429A408470007DB91 /* XCRemoteSwiftPackageReference "swift-algorithms.git" */ = {
+		ED879C2429A408470007DB91 /* XCRemoteSwiftPackageReference "swift-algorithms" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/apple/swift-algorithms.git";
 			requirement = {
@@ -3003,7 +3003,7 @@
 				minimumVersion = 1.0.0;
 			};
 		};
-		EDC909142B77F58D005FEFC5 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads.git" */ = {
+		EDC909142B77F58D005FEFC5 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/googleads/swift-package-manager-google-mobile-ads.git";
 			requirement = {
@@ -3144,7 +3144,7 @@
 		};
 		ED879C2529A408470007DB91 /* Algorithms */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = ED879C2429A408470007DB91 /* XCRemoteSwiftPackageReference "swift-algorithms.git" */;
+			package = ED879C2429A408470007DB91 /* XCRemoteSwiftPackageReference "swift-algorithms" */;
 			productName = Algorithms;
 		};
 		ED8C324B2911BFD300339988 /* ECKit */ = {
@@ -3154,7 +3154,7 @@
 		};
 		EDC909152B77F58D005FEFC5 /* GoogleMobileAds */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = EDC909142B77F58D005FEFC5 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads.git" */;
+			package = EDC909142B77F58D005FEFC5 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
 			productName = GoogleMobileAds;
 		};
 /* End XCSwiftPackageProductDependency section */
