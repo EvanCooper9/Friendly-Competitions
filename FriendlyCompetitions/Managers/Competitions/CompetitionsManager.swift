@@ -97,7 +97,6 @@ final class CompetitionsManager: CompetitionsManaging {
     private let hasPremiumResultsSubject = ReplaySubject<Bool, Never>(bufferSize: 1)
 
     @Injected(\.api) private var api: API
-    @Injected(\.appState) private var appState: AppStateProviding
     @Injected(\.analyticsManager) private var analyticsManager: AnalyticsManaging
     @Injected(\.competitionCache) private var cache: CompetitionCache
     @Injected(\.database) private var database: Database

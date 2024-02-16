@@ -58,7 +58,18 @@ struct CompetitionStandingsProvider: AppIntentTimelineProvider {
     @Injected(\.widgetStore) private var widgetStore: WidgetStore
 
     func placeholder(in context: Context) -> CompetitionTimelineEntry {
-        .init(competition: .placeholder)
+        let competition = WidgetCompetition(
+            id: "placeholder",
+            name: "Placeholder",
+            start: .now,
+            end: .distantFuture,
+            standings: [
+                WidgetStanding(rank: 1, points: 2_345, highlight: false),
+                WidgetStanding(rank: 2, points: 1_234, highlight: false),
+                WidgetStanding(rank: 3, points: 987, highlight: false),
+            ]
+        )
+        return .init(competition: competition)
     }
 
     func snapshot(for configuration: CompetitionStandingsIntent, in context: Context) async -> CompetitionTimelineEntry {
@@ -70,17 +81,15 @@ struct CompetitionStandingsProvider: AppIntentTimelineProvider {
 
     func timeline(for configuration: CompetitionStandingsIntent, in context: Context) async -> Timeline<CompetitionTimelineEntry> {
         let entry = await snapshot(for: configuration, in: context)
-        return Timeline(entries: [entry], policy: .after(entry.date))
+        return Timeline(entries: [entry], policy: .after(entry.date.addingTimeInterval(15.minutes)))
     }
 }
 
 struct CompetitionTimelineEntry: TimelineEntry {
-    let date = Date()
+    var date: Date { competition.createdOn }
     let competition: WidgetCompetition
 
     var lastUpdated: String {
-        let date = min(date, competition.createdOn)
-        let dateFormat: Date.FormatStyle.DateStyle = date.isToday ? .omitted : .numeric
-        return date.formatted(date: dateFormat, time: .shortened)
+        date.formatted(date: date.isToday ? .omitted : .abbreviated, time:  .shortened)
     }
 }

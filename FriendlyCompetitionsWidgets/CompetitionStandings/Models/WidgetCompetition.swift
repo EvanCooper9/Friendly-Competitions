@@ -35,15 +35,3 @@ extension WidgetCompetition {
         }
     }
 }
-
-public extension WidgetCompetition {
-    static let placeholder: WidgetCompetition = {
-        .init(
-            id: UUID().uuidString,
-            name: "Placeholder",
-            start: .now.addingTimeInterval(-1.days),
-            end: .now.addingTimeInterval(1.days),
-            standings: .mock
-        )
-    }()
-}

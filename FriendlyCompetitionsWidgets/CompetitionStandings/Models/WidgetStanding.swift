@@ -27,13 +27,3 @@ public struct WidgetStanding: Codable {
     let pointsHistory: [Int] = stride(from: 0, to: 100, by: 10).map { $0 + Int.random(in: 0...9) }
     let rankHistory: [Int] = (0...10).map { _ in Int.random(in: 0..<10) }
 }
-
-public extension Array where Element == WidgetStanding {
-    static var mock: [WidgetStanding] {
-        [
-            .init(rank: 1, points: 150, highlight: true),
-            .init(rank: 2, points: 100, highlight: false),
-            .init(rank: 3, points: 50, highlight: false)
-        ]
-    }
-}
