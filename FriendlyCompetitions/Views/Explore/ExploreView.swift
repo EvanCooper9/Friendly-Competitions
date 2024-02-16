@@ -1,3 +1,4 @@
+import ECKit
 import Factory
 import SwiftUI
 
@@ -11,20 +12,17 @@ struct ExploreView: View {
 
     var body: some View {
         NavigationStack(path: $viewModel.navigationDestinations) {
-            List {
-                if viewModel.searchText.isEmpty {
-                    Section {
+            ScrollView {
+                VStack(spacing: 20) {
+                    if viewModel.searchText.isEmpty {
                         ForEach(viewModel.appOwnedCompetitions) { competition in
-                            ZStack {
-                                NavigationLink(value: NavigationDestination.competition(competition, nil)) { EmptyView() }
-                                    .opacity(0)
+                            NavigationLink(value: NavigationDestination.competition(competition, nil)) {
                                 FeaturedCompetition(competition: competition)
+                                    .padding(.horizontal)
                             }
+                            .buttonStyle(.plain)
                         }
-                    }
-                    .removingMargin()
-                } else {
-                    Section {
+                    } else {
                         if viewModel.searchResults.isEmpty {
                             Text(L10n.Explore.Search.nothingHere)
                                 .padding()
@@ -34,33 +32,31 @@ struct ExploreView: View {
                                 .frame(maxWidth: .infinity, alignment: .center)
                         } else {
                             ForEach(viewModel.searchResults.filter(\.appOwned)) { competition in
-                                ZStack {
-                                    NavigationLink(value: NavigationDestination.competition(competition, nil)) { EmptyView() }
-                                        .opacity(0)
+                                NavigationLink(value: NavigationDestination.competition(competition, nil)) {
                                     FeaturedCompetition(competition: competition)
+                                        .padding(.horizontal)
                                 }
+                                .buttonStyle(.plain)
                             }
                             ForEach(viewModel.searchResults.filter(\.appOwned.not)) { competition in
-                                ZStack {
-                                    NavigationLink(value: NavigationDestination.competition(competition, nil)) { EmptyView() }
-                                        .opacity(0)
+                                NavigationLink(value: NavigationDestination.competition(competition, nil)) {
                                     CompetitionDetails(competition: competition, showParticipantCount: true, isFeatured: false)
                                         .padding(.vertical, .small)
                                         .padding(.horizontal)
                                         .background(.systemFill)
                                         .cornerRadius(10)
+                                        .padding(.horizontal)
                                 }
+                                .buttonStyle(.plain)
                             }
                         }
                     }
-                    .removingMargin()
-                }
 
-                if viewModel.showAds {
-                    Section {
+                    if viewModel.showAds {
                         GoogleAd(unit: .native)
+                            .padding(.horizontal)
+                            .padding(.bottom)
                     }
-                    .removingMargin()
                 }
             }
             .searchable(text: $viewModel.searchText, placement: .navigationBarDrawer(displayMode: .always))
