@@ -16,12 +16,11 @@ struct ExploreView: View {
                 VStack(spacing: 20) {
                     if viewModel.searchText.isEmpty {
                         ForEach(viewModel.appOwnedCompetitions) { competition in
-                            ZStack {
-                                NavigationLink(value: NavigationDestination.competition(competition, nil)) { EmptyView() }
-                                    .opacity(0)
+                            NavigationLink(value: NavigationDestination.competition(competition, nil)) {
                                 FeaturedCompetition(competition: competition)
+                                    .padding(.horizontal)
                             }
-                            .padding(.horizontal)
+                            .buttonStyle(.plain)
                         }
                     } else {
                         if viewModel.searchResults.isEmpty {
@@ -33,24 +32,22 @@ struct ExploreView: View {
                                 .frame(maxWidth: .infinity, alignment: .center)
                         } else {
                             ForEach(viewModel.searchResults.filter(\.appOwned)) { competition in
-                                ZStack {
-                                    NavigationLink(value: NavigationDestination.competition(competition, nil)) { EmptyView() }
-                                        .opacity(0)
+                                NavigationLink(value: NavigationDestination.competition(competition, nil)) {
                                     FeaturedCompetition(competition: competition)
+                                        .padding(.horizontal)
                                 }
-                                .padding(.horizontal)
+                                .buttonStyle(.plain)
                             }
                             ForEach(viewModel.searchResults.filter(\.appOwned.not)) { competition in
-                                ZStack {
-                                    NavigationLink(value: NavigationDestination.competition(competition, nil)) { EmptyView() }
-                                        .opacity(0)
+                                NavigationLink(value: NavigationDestination.competition(competition, nil)) {
                                     CompetitionDetails(competition: competition, showParticipantCount: true, isFeatured: false)
                                         .padding(.vertical, .small)
                                         .padding(.horizontal)
                                         .background(.systemFill)
                                         .cornerRadius(10)
+                                        .padding(.horizontal)
                                 }
-                                .padding(.horizontal)
+                                .buttonStyle(.plain)
                             }
                         }
                     }
