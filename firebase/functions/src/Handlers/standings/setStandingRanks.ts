@@ -9,6 +9,8 @@ import { Competition } from "../../Models/Competition";
  * @param {Standing[]} standings The standings to update
  */
 async function setStandingRanks(competition: Competition, standings: Standing[]): Promise<void> {
+    if (standings.length == 0) return;
+    
     const firestore = getFirestore();
     const batch = firestore.batch();
 
@@ -16,8 +18,10 @@ async function setStandingRanks(competition: Competition, standings: Standing[])
         .sort((a, b) => a.points - b.points)
         .reverse();
 
-    let currentRank = 1;
+    let currentRank = standings[0].rank;
+
     sortedStandings.forEach((standing, index, standings) => {
+        console.log(`updating standing ${standing.userId} with rank ${standing.rank}`);
         const updatedStanding = standing;
 
         const isSameAsPrevious = index - 1 >= 0 && standings[index - 1].points == updatedStanding.points;
@@ -31,13 +35,13 @@ async function setStandingRanks(competition: Competition, standings: Standing[])
 
         updatedStanding.rank = currentRank;
 
-        // Don't update firestore with the same data.
-        // if (updatedStanding.points == standing.points && 
-        //     updatedStanding.rank == standing.rank && 
-        //     updatedStanding.isTie == standing.isTie) return;
-
-        const ref = firestore.doc(competition.standingsPathForUser(standing.userId));
-        batch.set(ref, prepareForFirestore(updatedStanding)); 
+        if (updatedStanding.points != standing.points || updatedStanding.rank != standing.rank || updatedStanding.isTie != standing.isTie) {
+            // Don't update firestore with the same data.
+            const ref = firestore.doc(competition.standingsPathForUser(standing.userId));
+            batch.set(ref, prepareForFirestore(updatedStanding)); 
+        } else {
+            console.log(`saving write for competition ${competition.id}, standing: ${standing.userId}`);
+        }
     });
 
     await batch.commit();

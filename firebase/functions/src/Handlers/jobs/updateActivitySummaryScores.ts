@@ -12,17 +12,20 @@ import { prepareForFirestore } from "../../Utilities/prepareForFirestore";
  * @param {DocumentSnapshot} after the document after the change
  */
 async function updateActivitySummaryScores(userID: string, before: DocumentSnapshot, after: DocumentSnapshot): Promise<void> {
+    console.log(`updating activity summary scores for user ${userID}`);
+    
     const firestore = getFirestore();
-
     const competitions = await firestore.collection("competitions")
         .where("participants", "array-contains", userID)
-        .where("scoringModel.type", "in", [0, 1])
+        .where("scoringModel.type", "in", [0, 1, 3])
         .get()
         .then(query => query.docs.map(doc => new Competition(doc)));
 
     await Promise.allSettled(competitions.map(async competition => {
-        const date = new Date(after.id);
-        if (date < competition.start || date > competition.end) return;
+        if (!competition.isActive()) return;
+
+        let previousScore = 0;
+        let newScore = 0;
 
         await firestore.runTransaction(async transaction => {
             const standingRef = firestore.doc(`competitions/${competition.id}/standings/${userID}`);
@@ -45,15 +48,23 @@ async function updateActivitySummaryScores(userID: string, before: DocumentSnaps
                     pointsBreakdown[before.id] = 0;
                 }
             }
-            
+
+            previousScore = standing.points;
             standing.pointsBreakdown = pointsBreakdown;
             standing.points = 0;
             Object.keys(pointsBreakdown).forEach(key => standing.points += pointsBreakdown[key]);
+            newScore = standing.points;
             transaction.set(standingRef, prepareForFirestore(standing));
         });
         
-        await competition.updateStandingRanks();
+        const pointRangeLow = Math.min(previousScore, newScore);
+        const pointRangeHigh = Math.max(previousScore, newScore);
+        await competition.updateStandingRanksBetweenScores(pointRangeLow, pointRangeHigh);
     }));
+
+    if (competitions.length == 0) {
+        console.log("Not participating in any competitions");
+    }
 }
 
 export {

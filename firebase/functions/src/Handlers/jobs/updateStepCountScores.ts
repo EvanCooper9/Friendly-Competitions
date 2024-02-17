@@ -21,8 +21,7 @@ async function updateStepCountScores(userID: string, before: DocumentSnapshot, a
         .then(query => query.docs.map(doc => new Competition(doc)));
 
     await Promise.allSettled(competitions.map(async competition => {
-        const date = new Date(after.id);
-        if (date < competition.start || date > competition.end) return;
+        if (!competition.isActive()) return;
 
         await firestore.runTransaction(async transaction => {
             const standingRef = firestore.doc(`competitions/${competition.id}/standings/${userID}`);
@@ -51,6 +50,8 @@ async function updateStepCountScores(userID: string, before: DocumentSnapshot, a
             Object.keys(pointsBreakdown).forEach(key => standing.points += pointsBreakdown[key]);
             transaction.set(standingRef, prepareForFirestore(standing));
         });
+
+        await competition.updateStandingRanks();
     }));
 }
 

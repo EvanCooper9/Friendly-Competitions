@@ -40,7 +40,7 @@ async function updateWorkoutScores(userID: string, before: DocumentSnapshot, aft
                 if (after.exists) { // created or updated
                     const workout = new Workout(after);
                     pointsBreakdown[workout.id] = workout.pointsForScoringModel(competition.scoringModel);
-                } else {
+                } else { // deleted
                     pointsBreakdown[before.id] = 0;
                 }
             }

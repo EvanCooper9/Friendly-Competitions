@@ -90,6 +90,25 @@ class Competition {
     }
 
     /**
+     * Updates the ranks for standings that are between a given point range
+     * @param {number} lowScore the low of the point rage
+     * @param {number} highScore the high of the point range
+     */
+    async updateStandingRanksBetweenScores(lowScore: number, highScore: number): Promise<void> {
+        const firestore = getFirestore();
+
+        const standings = await firestore.collection(this.standingsPath)
+            .where("points", ">=", lowScore)
+            .where("points", "<=", highScore)
+            .get()
+            .then(query => query.docs.map(doc => new Standing(doc)));
+
+        console.log(`updating standings (${standings.length}) between scores ${lowScore} - ${highScore}`);
+
+        await setStandingRanks(this, standings);
+    }
+
+    /**
      * Update a competition's start & end date if it is repeating
      * @return {Promise<void>} A promise that completes when the update is finished
      */
