@@ -35,12 +35,10 @@ async function setStandingRanks(competition: Competition, standings: Standing[])
 
         updatedStanding.rank = currentRank;
 
-        if (updatedStanding.points != standing.points || updatedStanding.rank != standing.rank || updatedStanding.isTie != standing.isTie) {
+        if (updatedStanding != standing) {
             // Don't update firestore with the same data.
             const ref = firestore.doc(competition.standingsPathForUser(standing.userId));
             batch.set(ref, prepareForFirestore(updatedStanding)); 
-        } else {
-            console.log(`saving write for competition ${competition.id}, standing: ${standing.userId}`);
         }
     });
 
