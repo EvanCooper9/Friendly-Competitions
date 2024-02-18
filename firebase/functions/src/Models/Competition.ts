@@ -103,8 +103,13 @@ class Competition {
             .get()
             .then(query => query.docs.map(doc => new Standing(doc)));
 
-        console.log(`updating standings (${standings.length}) between scores ${lowScore} - ${highScore}`);
+        const ranks = standings.map(x => x.rank);
+        const minRank = Math.min(...ranks);
+        const maxRank = Math.max(...ranks);
 
+        if (standings.length <= 1) return; // no need to update
+        
+        console.log(`updating standings (${standings.length}) for competition ${this.id} between scores ${lowScore} - ${highScore}, between ranks ${minRank} - ${maxRank}`);
         await setStandingRanks(this, standings);
     }
 

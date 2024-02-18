@@ -56,7 +56,7 @@ private enum Dependencies {
         competitionsManager.competitions = .just([])
         competitionsManager.competitionPublisherForClosure = { _ in .never() }
         competitionsManager.invitedCompetitions = .just([])
-        competitionsManager.standingsPublisherForReturnValue = .just([])
+        competitionsManager.standingsPublisherForLimitReturnValue = .just([])
         competitionsManager.standingsForResultIDReturnValue = .just([])
         competitionsManager.appOwnedCompetitions = .just([.mockPublic])
         competitionsManager.resultsForReturnValue = .just([])

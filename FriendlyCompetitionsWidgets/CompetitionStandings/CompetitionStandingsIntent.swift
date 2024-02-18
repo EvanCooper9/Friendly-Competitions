@@ -6,6 +6,7 @@ import SwiftUI
 import SwiftUIX
 import WidgetKit
 
+@available(iOS, introduced: 17)
 struct CompetitionStandingsIntent: WidgetConfigurationIntent {
     static var title: LocalizedStringResource = "Select Competition"
     static var description = IntentDescription("Selects the competition do display information for.")
@@ -48,6 +49,7 @@ struct CompetitionParameterQuery: EntityQuery {
     }
 }
 
+@available(iOS, introduced: 17)
 struct CompetitionStandingsProvider: AppIntentTimelineProvider {
 
     typealias Entry = CompetitionTimelineEntry

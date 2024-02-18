@@ -32,7 +32,7 @@ class Standing {
      */
     static new(points: number, userId: string): Standing {
         const date = new Date().toISOString().split("T")[0]; // YYYY-MM-DD
-        return { points: points, rank: 0, userId: userId, date: date }; 
+        return { points: points, rank: 1, userId: userId, date: date }; 
     }
 }
 

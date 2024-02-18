@@ -22,7 +22,8 @@ protocol CompetitionsManaging {
     func standings(for competitionID: Competition.ID, resultID: CompetitionResult.ID) -> AnyPublisher<[Competition.Standing], Error>
     func viewedResults(competitionID: Competition.ID, resultID: CompetitionResult.ID)
     func competitionPublisher(for competitionID: Competition.ID) -> AnyPublisher<Competition, Error>
-    func standingsPublisher(for competitionID: Competition.ID) -> AnyPublisher<[Competition.Standing], Error>
+    func standingsPublisher(for competitionID: Competition.ID, limit: Int) -> AnyPublisher<[Competition.Standing], Error>
+    func standing(for competitionID: Competition.ID, userID: User.ID) -> AnyPublisher<Competition.Standing, Error>
 }
 
 final class CompetitionsManager: CompetitionsManaging {
@@ -177,10 +178,17 @@ final class CompetitionsManager: CompetitionsManaging {
             .publisher(as: Competition.self)
     }
 
-    func standingsPublisher(for competitionID: Competition.ID) -> AnyPublisher<[Competition.Standing], Error> {
+    func standingsPublisher(for competitionID: Competition.ID, limit: Int) -> AnyPublisher<[Competition.Standing], Error> {
         database.collection("competitions/\(competitionID)/standings")
+            .sorted(by: "points", direction: .descending)
+            .limit(limit)
             .publisher(asArrayOf: Competition.Standing.self)
             .eraseToAnyPublisher()
+    }
+
+    func standing(for competitionID: Competition.ID, userID: User.ID) -> AnyPublisher<Competition.Standing, Error> {
+        database.document("competitions/\(competitionID)/standings/\(userID)")
+            .publisher(as: Competition.Standing.self)
     }
 
     func viewedResults(competitionID: Competition.ID, resultID: CompetitionResult.ID) {

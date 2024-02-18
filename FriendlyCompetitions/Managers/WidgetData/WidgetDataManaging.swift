@@ -16,11 +16,33 @@ final class WidgetDataManager: WidgetDataManaging {
     private var cancellables = Cancellables()
 
     init() {
-        subscribeToWidgetData()
+        guard #available(iOS 17, *) else { return }
+        WidgetCenter.shared.getCurrentConfigurations { [weak self] result in
+            guard let self else { return }
+            switch result {
+            case .success(let widgetInfos):
+                let competitionIDs = widgetInfos.compactMap { widgetInfo -> Competition.ID? in
+                    guard let intent = widgetInfo.widgetConfigurationIntent(of: CompetitionStandingsIntent.self) else { return nil }
+                    return intent.competition.id
+                }
+                subscribeToCompetitionStandingsWidgetData(for: competitionIDs)
+            case .failure(let error):
+                error.reportToCrashlytics()
+            }
+        }
     }
 
-    private func subscribeToWidgetData() {
-        competitionsManager.competitions
+    private func subscribeToCompetitionStandingsWidgetData(for competitionIDs: [Competition.ID]) {
+        competitionIDs
+            .map { competitionID -> AnyPublisher<Competition?, Never> in
+                competitionsManager.competitionPublisher(for: competitionID)
+                    .map { $0 as Competition? }
+                    .prepend(nil)
+                    .catchErrorJustReturn(nil)
+                    .eraseToAnyPublisher()
+            }
+            .combineLatest()
+            .compactMapMany { $0 }
             .flatMapLatest(withUnretained: self) { strongSelf, competitions in
                 competitions.map { competition in
                     strongSelf
@@ -48,22 +70,12 @@ final class WidgetDataManager: WidgetDataManaging {
     }
 
     private func standings(for competitionID: Competition.ID) -> AnyPublisher<[WidgetStanding], Never> {
-        competitionsManager
-            .standingsPublisher(for: competitionID)
-            .catchErrorJustReturn([])
-            .map { [weak self] standings -> [Competition.Standing] in
-                guard let self else { return [] }
-                let standings = standings.sorted(by: \.rank)
-                let userID = userManager.user.id
-
-                guard let standingIndex = standings.firstIndex(where: { $0.id == userID }), standingIndex > 0 else {
-                    return Array(standings.prefix(3))
-                }
-                if standingIndex == standings.count - 1 {
-                    return Array(standings.suffix(3))
-                } else {
-                    return Array(standings[(standingIndex - 1)...(standingIndex + 1)])
-                }
+        competitionsManager.standing(for: competitionID, userID: userManager.user.id)
+            .ignoreFailure()
+            .flatMapLatest(withUnretained: self) { strongSelf, standing in
+                let limit = max(standing.rank + 1, 3)
+                return strongSelf.competitionsManager.standingsPublisher(for: competitionID, limit: limit)
+                    .ignoreFailure()
             }
             .map { [weak self] standings in
                 standings.map { standing in
