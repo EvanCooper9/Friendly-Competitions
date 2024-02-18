@@ -1,9 +1,9 @@
 import { DocumentSnapshot } from "firebase-admin/firestore";
 import { getFirestore } from "../../Utilities/firestore";
 import { Competition } from "../../Models/Competition";
-import { Standing } from "../../Models/Standing";
 import { StepCount } from "../../Models/StepCount";
-import { prepareForFirestore } from "../../Utilities/prepareForFirestore";
+import { updateScores } from "./updateScores";
+import { StringKeyDictionary } from "../../Models/Helpers/EnumDictionary";
 
 /**
  * Updates all competition standings for the step count that has changed
@@ -12,46 +12,37 @@ import { prepareForFirestore } from "../../Utilities/prepareForFirestore";
  * @param {DocumentSnapshot} after the document after the change
  */
 async function updateStepCountScores(userID: string, before: DocumentSnapshot, after: DocumentSnapshot): Promise<void> {
-    const firestore = getFirestore();
+    console.log(`updating step count scores for user ${userID}`);
 
+    const firestore = getFirestore();
     const competitions = await firestore.collection("competitions")
         .where("participants", "array-contains", userID)
         .where("scoringModel.type", "==", 4)
         .get()
         .then(query => query.docs.map(doc => new Competition(doc)));
 
-    await Promise.allSettled(competitions.map(async competition => {
-        const date = new Date(after.id);
-        if (date < competition.start || date > competition.end) return;
-
-        await firestore.runTransaction(async transaction => {
-            const standingRef = firestore.doc(`competitions/${competition.id}/standings/${userID}`);
-            const standingDoc = await transaction.get(standingRef);
-            let standing = Standing.new(0, userID);
-            if (standingDoc.exists) standing = new Standing(standingDoc);
-    
-            const pointsBreakdown = standing.pointsBreakdown ?? {};
-            if (Object.keys(pointsBreakdown).length == 0) {
-                const stepCounts = await competition.stepCounts(userID);
-                stepCounts.forEach(stepCount => {
-                    const points = stepCount.pointsForScoringModel(competition.scoringModel);
-                    pointsBreakdown[stepCount.id] = points;
-                });
-            } else {
-                if (after.exists) { // created or updated
-                    const stepCount = new StepCount(after);
-                    pointsBreakdown[stepCount.id] = stepCount.pointsForScoringModel(competition.scoringModel);
-                } else { // deleted
-                    pointsBreakdown[before.id] = 0;
-                }
+    await updateScores(
+        userID,
+        competitions,
+        async (competition) => {
+            const pointsBreakdown: StringKeyDictionary<string, number> = {};
+            const stepCounts = await competition.stepCounts(userID);
+            stepCounts.forEach(stepCount => {
+                const points = stepCount.pointsForScoringModel(competition.scoringModel);
+                pointsBreakdown[stepCount.id] = points;
+            });
+            return pointsBreakdown;
+        },
+        (competition) => {
+            if (after.exists) { // created or updated
+                const stepCount = new StepCount(after);
+                const points = stepCount.pointsForScoringModel(competition.scoringModel);
+                return { id: after.id, points: points };
+            } else { // deleted
+                return { id: before.id, points: 0 };
             }
-            
-            standing.pointsBreakdown = pointsBreakdown;
-            standing.points = 0;
-            Object.keys(pointsBreakdown).forEach(key => standing.points += pointsBreakdown[key]);
-            transaction.set(standingRef, prepareForFirestore(standing));
-        });
-    }));
+        }
+    );
 }
 
 export {
