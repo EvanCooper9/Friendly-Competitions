@@ -70,7 +70,7 @@ final class CompetitionViewModel: ObservableObject {
         self.competition = competition
 
         checkForPermissions()
-        bindParticipants()
+        bindStandings()
 
         userManager.userPublisher
             .map { $0.id == competition.owner }
@@ -183,56 +183,60 @@ final class CompetitionViewModel: ObservableObject {
         currentStandingsMaximum += 10
     }
 
+    func tapped(banner: Banner) {
+        banner.tapped()
+            .sink(withUnretained: self) { strongSelf in
+                strongSelf.banners.remove(banner)
+                strongSelf.didRequestPermissions.send()
+            }
+            .store(in: &cancellables)
+    }
+
     // MARK: - Private Methods
 
-    private func bindParticipants() {
-        let participants = fetchParticipantsSubject
-            .prepend(competition.participants)
-            .flatMapLatest(withUnretained: self) { strongSelf, participants in
-                strongSelf.searchManager
-                    .searchForUsers(withIDs: participants)
-                    .catchErrorJustReturn([])
-            }
-
-        let allStandings = competitionsManager
-            .standingsPublisher(for: competition.id)
-            .catchErrorJustReturn([])
-
-        Publishers.CombineLatest(allStandings, $standings)
-            .map { $0.count > $1.count }
-            .assign(to: &$showShowMoreButton)
-
-        Publishers
-            .CombineLatest(allStandings, participants)
+    private func bindStandings() {
+        $currentStandingsMaximum
             .handleEvents(
                 withUnretained: self,
                 receiveSubscription: { strongSelf, _ in strongSelf.loadingStandings = true }
             )
-            .combineLatest($currentStandingsMaximum)
-            .map { [weak self] standingsAndParticipants, limit in
+            .flatMapLatest(withUnretained: self) { strongSelf, limit -> AnyPublisher<[Competition.Standing], Never> in
+                strongSelf.competitionsManager.standingsPublisher(for: strongSelf.competition.id, limit: limit)
+                    .catchErrorJustReturn([])
+                    .flatMapLatest { standings -> AnyPublisher<[Competition.Standing], Never> in
+                        let userID = strongSelf.userManager.user.id
+                        if standings.contains(where: { $0.id == userID }) {
+                            return .just(standings)
+                        } else {
+                            return strongSelf.competitionsManager.standing(for: strongSelf.competition.id, userID: userID)
+                                .map { $0 as Competition.Standing? }
+                                .catchErrorJustReturn(nil)
+                                .map { standing in
+                                    guard let standing else { return standings }
+                                    return standings.appending(standing)
+                                }
+                                .eraseToAnyPublisher()
+                        }
+                    }
+                    .eraseToAnyPublisher()
+            }
+            .flatMapLatest(withUnretained: self) { strongSelf, standings in
+                strongSelf.searchManager.searchForUsers(withIDs: standings.map(\.id))
+                    .map { (standings, $0 ) }
+                    .catchErrorJustReturn(([], []))
+            }
+            .map { [weak self] (standings: [Competition.Standing], users: [User]) in
                 guard let self else { return [] }
-                let (standings, participants) = standingsAndParticipants
-                let currentUser = self.userManager.user
-                var rows = standings
+                let currentUser = userManager.user
+                return standings
                     .sorted(by: \.rank)
-                    .dropLast(max(0, standings.count - limit))
                     .map { standing in
                         CompetitionParticipantRow.Config(
-                            user: participants.first { $0.id == standing.userId },
+                            user: users.first { $0.id == standing.userId },
                             currentUser: currentUser,
                             standing: standing
                         )
                     }
-
-                if !rows.contains(where: { $0.id == currentUser.id }), let standing = standings.first(where: { $0.userId == currentUser.id }) {
-                    rows.append(CompetitionParticipantRow.Config(
-                        user: currentUser,
-                        currentUser: currentUser,
-                        standing: standing
-                    ))
-                }
-
-                return rows
             }
             .receive(on: scheduler)
             .handleEvents(
@@ -240,6 +244,10 @@ final class CompetitionViewModel: ObservableObject {
                 receiveOutput: { strongSelf, _ in strongSelf.loadingStandings = false }
             )
             .assign(to: &$standings)
+
+        $standings
+            .map { [weak self] standings in standings.count < (self?.competition.participants.count ?? 0) }
+            .assign(to: &$showShowMoreButton)
     }
 
     private func checkForPermissions() {
@@ -251,14 +259,5 @@ final class CompetitionViewModel: ObservableObject {
             }
             .delay(for: .seconds(1), scheduler: scheduler)
             .assign(to: &$banners)
-    }
-
-    func tapped(banner: Banner) {
-        banner.tapped()
-            .sink(withUnretained: self) { strongSelf in
-                strongSelf.banners.remove(banner)
-                strongSelf.didRequestPermissions.send()
-            }
-            .store(in: &cancellables)
     }
 }

@@ -120,7 +120,7 @@ struct CompetitionView_Previews: PreviewProvider {
         let participants = [evan, gabby]
         competitionsManager.competitions = .just([competition])
         competitionsManager.competitionPublisherForReturnValue = .just(competition)
-        competitionsManager.standingsPublisherForReturnValue = .just(standings)
+        competitionsManager.standingsPublisherForLimitReturnValue = .just(standings)
 
         healthKitManager.shouldRequestReturnValue = .just(true)
         notificationsManager.permissionStatusReturnValue = .just(.notDetermined)

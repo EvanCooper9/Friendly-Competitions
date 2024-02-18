@@ -25,7 +25,7 @@ struct RootView_Previews: PreviewProvider {
 
         competitionsManager.appOwnedCompetitions = .just([.mockPublic, .mockPublic])
         competitionsManager.competitions = .just([.mock, .mockInvited, .mockOld])
-        competitionsManager.standingsPublisherForReturnValue = .just([.mock(for: .evan)])
+        competitionsManager.standingsPublisherForLimitReturnValue = .just([.mock(for: .evan)])
 
         let friend = User.gabby
         friendsManager.friends = .just([friend])

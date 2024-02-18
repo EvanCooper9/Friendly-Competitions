@@ -202,7 +202,7 @@ struct HomeView_Previews: PreviewProvider {
         healthKitManager.shouldRequestReturnValue = .just(false)
 
 //        competitionsManager.competitions = .just([.mockOld, .mockPublic])
-        competitionsManager.standingsPublisherForReturnValue = .just([.mock(for: .evan)])
+        competitionsManager.standingsPublisherForLimitReturnValue = .just([.mock(for: .evan)])
         competitionsManager.unseenResults = .just([])
 
 //        friendsManager.friends = .just([.gabby])

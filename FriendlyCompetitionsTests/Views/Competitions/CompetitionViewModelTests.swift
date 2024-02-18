@@ -15,7 +15,7 @@ final class CompetitionViewModelTests: FCTestCase {
         appState.didBecomeActive = .never()
         competitionsManager.competitionPublisherForReturnValue = .never()
         competitionsManager.resultsForReturnValue = .never()
-        competitionsManager.standingsPublisherForReturnValue = .never()
+        competitionsManager.standingsPublisherForLimitReturnValue = .never()
         competitionsManager.unseenResults = .never()
         healthKitManager.shouldRequestReturnValue = .never()
         notificationsManager.requestPermissionsReturnValue = .never()

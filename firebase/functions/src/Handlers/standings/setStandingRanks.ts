@@ -4,7 +4,7 @@ import { getFirestore } from "../../Utilities/firestore";
 import { Competition } from "../../Models/Competition";
 
 /**
- * Update the ranks of standings for a given competition
+ * Update the ranks of standings for a given competition. Assumes points have already been set.
  * @param {Competition} competition The competition for the standings
  * @param {Standing[]} standings The standings to update
  */
@@ -14,32 +14,23 @@ async function setStandingRanks(competition: Competition, standings: Standing[])
     const firestore = getFirestore();
     const batch = firestore.batch();
 
-    const sortedStandings = standings
-        .sort((a, b) => a.points - b.points)
-        .reverse();
+    standings.sort((a, b) => b.points - a.points);
+    let currentRank = Math.min(...standings.map(x => x.rank));
+    standings.forEach((standing, index, standings) => {
 
-    let currentRank = standings[0].rank;
-
-    sortedStandings.forEach((standing, index, standings) => {
-        console.log(`updating standing ${standing.userId} with rank ${standing.rank}`);
-        const updatedStanding = standing;
-
-        const isSameAsPrevious = index - 1 >= 0 && standings[index - 1].points == updatedStanding.points;
-        const isSameAsNext = index + 1 < standings.length && standings[index + 1].points == updatedStanding.points;
+        const isSameAsPrevious = index - 1 >= 0 && standings[index - 1].points == standing.points;
+        const isSameAsNext = index + 1 < standings.length && standings[index + 1].points == standing.points;
         
+        const updatedStanding = standing;
         updatedStanding.isTie = isSameAsPrevious || isSameAsNext;
-
-        if (!isSameAsPrevious) {
-            currentRank = index + 1;
-        }
-
         updatedStanding.rank = currentRank;
 
-        if (updatedStanding != standing) {
-            // Don't update firestore with the same data.
-            const ref = firestore.doc(competition.standingsPathForUser(standing.userId));
-            batch.set(ref, prepareForFirestore(updatedStanding)); 
+        if (!isSameAsPrevious) {
+            currentRank += 1;
         }
+
+        const ref = firestore.doc(competition.standingsPathForUser(standing.userId));
+        batch.set(ref, prepareForFirestore(updatedStanding));
     });
 
     await batch.commit();
