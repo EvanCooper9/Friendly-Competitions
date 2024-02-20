@@ -2,6 +2,7 @@ import Combine
 import CombineExt
 import ECKit
 import Factory
+import FCKit
 import Firebase
 import FirebaseFirestore
 import Foundation
@@ -141,7 +142,7 @@ final class CompetitionsManager: CompetitionsManaging {
 
     func results(for competitionID: Competition.ID) -> AnyPublisher<[CompetitionResult], Error> {
         let query = database.collection("competitions/\(competitionID)/results")
-            .whereField("participants", arrayContains: userManager.user.id)
+            .filter(.arrayContains(value: userManager.user.id), on: "participants")
             .sorted(by: "end", direction: .descending)
 
         let cachedResults = query.getDocuments(ofType: CompetitionResult.self, source: .cache)
@@ -198,20 +199,20 @@ final class CompetitionsManager: CompetitionsManaging {
 
     private func listenForCompetitions() {
         database.collection("competitions")
-            .whereField("participants", arrayContains: userManager.user.id)
+            .filter(.arrayContains(value: userManager.user.id), on: "participants")
             .publisher(asArrayOf: Competition.self)
             .sink(withUnretained: self) { $0.competitionsSubject.send($1) }
             .store(in: &cancellables)
 
         database.collection("competitions")
-            .whereField("pendingParticipants", arrayContains: userManager.user.id)
+            .filter(.arrayContains(value: userManager.user.id), on: "pendingParticipants")
             .publisher(asArrayOf: Competition.self)
             .sink(withUnretained: self) { $0.invitedCompetitionsSubject.send($1) }
             .store(in: &cancellables)
 
         database.collection("competitions")
-            .whereField("isPublic", isEqualTo: true)
-            .whereField("owner", isEqualTo: environmentManager.environment.bundleIdentifier)
+            .filter(.isEqualTo(value: true), on: "isPublic")
+            .filter(.isEqualTo(value: environmentManager.environment.bundleIdentifier), on: "owner")
             .publisher(asArrayOf: Competition.self)
             .sink(withUnretained: self) { $0.appOwnedCompetitionsSubject.send($1) }
             .store(in: &cancellables)

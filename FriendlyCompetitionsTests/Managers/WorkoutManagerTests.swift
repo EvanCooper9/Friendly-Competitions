@@ -3,6 +3,7 @@ import CombineExt
 import CombineSchedulers
 import ECKit
 import Factory
+import FCKitMocks
 import HealthKit
 import XCTest
 

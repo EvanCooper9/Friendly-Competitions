@@ -1,12 +1,14 @@
 import AppIntents
-import FCKit
+import Combine
+import ECKit
 import Factory
+import FCKit
+import FirebaseAuth
 import Foundation
 import SwiftUI
 import SwiftUIX
 import WidgetKit
 
-@available(iOS, introduced: 17)
 struct CompetitionStandingsIntent: WidgetConfigurationIntent {
     static var title: LocalizedStringResource = "Select Competition"
     static var description = IntentDescription("Selects the competition do display information for.")
@@ -28,20 +30,18 @@ struct CompetitionParameter: AppEntity, Identifiable {
 
 struct CompetitionParameterQuery: EntityQuery {
 
-    @Injected(\.widgetStore) private var widgetStore: WidgetStore
+    @Injected(\.widgetDataManager) private var widgetDataManager: WidgetDataManaging
 
     func entities(for identifiers: [CompetitionParameter.ID]) async throws -> [CompetitionParameter] {
-        widgetStore.competitions
+        let results = await widgetDataManager.competitions(userID: Auth.auth().currentUser?.uid)
+        return results
             .filter { identifiers.contains($0.id) }
-            .map { competition in
-                CompetitionParameter(id: competition.id, name: competition.name)
-            }
+            .map(CompetitionParameter.init)
     }
 
     func suggestedEntities() async throws -> [CompetitionParameter] {
-        widgetStore.competitions.map { competition in
-            CompetitionParameter(id: competition.id, name: competition.name)
-        }
+        let results = await widgetDataManager.competitions(userID: Auth.auth().currentUser?.uid)
+        return results.map(CompetitionParameter.init)
     }
 
     func defaultResult() async -> CompetitionParameter? {
@@ -49,39 +49,38 @@ struct CompetitionParameterQuery: EntityQuery {
     }
 }
 
-@available(iOS, introduced: 17)
-struct CompetitionStandingsProvider: AppIntentTimelineProvider {
+final class CompetitionStandingsProvider: AppIntentTimelineProvider {
 
     typealias Entry = CompetitionTimelineEntry
     typealias Intent = CompetitionStandingsIntent
 
+    @Injected(\.database) private var database: Database
+    @Injected(\.featureFlagManager) private var featureFlagManager: FeatureFlagManaging
+    @Injected(\.widgetDataManager) private var widgetDataManager: WidgetDataManaging
     @Injected(\.widgetStore) private var widgetStore: WidgetStore
 
+    private var cancellables = Cancellables()
+
     func placeholder(in context: Context) -> CompetitionTimelineEntry {
-        let competition = WidgetCompetition(
-            id: "placeholder",
-            name: "Placeholder",
-            start: .now,
-            end: .distantFuture,
-            standings: [
-                WidgetStanding(rank: 1, points: 2_345, highlight: false),
-                WidgetStanding(rank: 2, points: 1_234, highlight: false),
-                WidgetStanding(rank: 3, points: 987, highlight: false),
-            ]
-        )
-        return .init(competition: competition)
+        CompetitionTimelineEntry(competition: .placeholder)
     }
 
     func snapshot(for configuration: CompetitionStandingsIntent, in context: Context) async -> CompetitionTimelineEntry {
-        let competition = widgetStore.competitions.first { competition in
-            competition.id == configuration.competition.id
+        await withCheckedContinuation { [weak self] continuation in
+            guard let self else { return }
+            widgetDataManager.data(for: configuration.competition.id, userID: Auth.auth().currentUser?.uid)
+                .sink(receiveValue: { competition in
+                    let entry = CompetitionTimelineEntry(competition: competition)
+                    continuation.resume(returning: entry)
+                })
+                .store(in: &cancellables)
         }
-        return CompetitionTimelineEntry(competition: competition ?? .placeholder)
     }
 
     func timeline(for configuration: CompetitionStandingsIntent, in context: Context) async -> Timeline<CompetitionTimelineEntry> {
         let entry = await snapshot(for: configuration, in: context)
-        return Timeline(entries: [entry], policy: .after(entry.date.addingTimeInterval(15.minutes)))
+        let updateInterval = featureFlagManager.value(forDouble: .widgetUpdateIntervalS).seconds
+        return Timeline(entries: [entry], policy: .after(entry.date.addingTimeInterval(updateInterval)))
     }
 }
 
@@ -90,6 +89,6 @@ struct CompetitionTimelineEntry: TimelineEntry {
     let competition: WidgetCompetition
 
     var lastUpdated: String {
-        date.formatted(date: date.isToday ? .omitted : .abbreviated, time:  .shortened)
+        date.formatted(date: date.isToday ? .omitted : .abbreviated, time: .complete)
     }
 }

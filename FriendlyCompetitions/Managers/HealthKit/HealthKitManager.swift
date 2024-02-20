@@ -4,6 +4,7 @@ import CombineExt
 import CombineSchedulers
 import ECKit
 import Factory
+import FCKit
 import HealthKit
 
 typealias HealthKitBackgroundDeliveryTask = () -> AnyPublisher<Void, Never>
@@ -98,10 +99,10 @@ final class HealthKitManager: HealthKitManaging {
             guard let hkSampleType = permission.objectType as? HKSampleType else { continue }
             let query = ObserverQuery(sampleType: hkSampleType) { [weak self] result in
                 guard let self else { return }
-                analyticsManager.log(event: .healthKitBGDeliveryReceived(permission: permission))
+                analyticsManager.log(event: .healthKitBGDeliveryReceived(permission: permission.rawValue))
                 switch result {
                 case .failure(let error):
-                    analyticsManager.log(event: .healthKitBGDeliveryError(permission: permission, error: error.localizedDescription))
+                    analyticsManager.log(event: .healthKitBGDeliveryError(permission: permission.rawValue, error: error.localizedDescription))
 
                     if error.isHealthKitAuthorizationError {
                         backgroundDeliveryTasks[permission]?.removeAll()
@@ -122,11 +123,11 @@ final class HealthKitManager: HealthKitManaging {
                     }
 
                     guard publishers.isNotEmpty else {
-                        analyticsManager.log(event: .healthKitBGDelieveryMissingPublisher(permission: permission))
+                        analyticsManager.log(event: .healthKitBGDelieveryMissingPublisher(permission: permission.rawValue))
                         backgroundDeliveryCompletion()
                         return
                     }
-                    analyticsManager.log(event: .healthKitBGDeliveryProcessing(permission: permission))
+                    analyticsManager.log(event: .healthKitBGDeliveryProcessing(permission: permission.rawValue))
 
                     let timeout = featureFlagManager.value(forDouble: .healthKitBackgroundDeliveryTimeoutMS)
                     publishers
@@ -143,11 +144,11 @@ final class HealthKitManager: HealthKitManaging {
                             }
                             switch completion {
                             case .finished:
-                                analyticsManager.log(event: .healthKitBGDeliverySuccess(permission: permission))
+                                analyticsManager.log(event: .healthKitBGDeliverySuccess(permission: permission.rawValue))
                             case .failure(let error):
                                 switch error {
                                 case .timeout:
-                                    analyticsManager.log(event: .healthKitBGDeliveryTimeout(permission: permission))
+                                    analyticsManager.log(event: .healthKitBGDeliveryTimeout(permission: permission.rawValue))
                                 }
                             }
                         }, receiveValue: { _ in
@@ -163,13 +164,13 @@ final class HealthKitManager: HealthKitManaging {
                     case .finished:
                         break
                     case .failure(let error):
-                        strongSelf.analyticsManager.log(event: .healthKitRegisterBGDeliveryFailure(permission: permission, error: error.localizedDescription))
+                        strongSelf.analyticsManager.log(event: .healthKitRegisterBGDeliveryFailure(permission: permission.rawValue, error: error.localizedDescription))
                     }
                 }, receiveValue: { strongSelf, success in
                     if success {
-                        strongSelf.analyticsManager.log(event: .healthKitRegisterBGDeliverySuccess(permission: permission))
+                        strongSelf.analyticsManager.log(event: .healthKitRegisterBGDeliverySuccess(permission: permission.rawValue))
                     } else {
-                        strongSelf.analyticsManager.log(event: .healthKitRegisterBGDeliveryFailure(permission: permission, error: nil))
+                        strongSelf.analyticsManager.log(event: .healthKitRegisterBGDeliveryFailure(permission: permission.rawValue, error: nil))
                     }
                 })
                 .store(in: &cancellables)

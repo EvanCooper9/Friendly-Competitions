@@ -99,9 +99,14 @@ final class FriendsManager: FriendsManaging {
     }
 
     private func activitySummaries(for userIDs: [User.ID]) -> some Publisher<[ActivitySummary], Never> {
-        database.collectionGroup("activitySummaries")
-            .whereField("date", isEqualTo: DateFormatter.dateDashed.string(from: .now))
-            .whereField("userID", asArrayOf: ActivitySummary.self, in: userIDs)
-            .catchErrorJustReturn([])
+        userIDs
+            .map { userID in
+                database.document("users/\(userID)/activitySummaries/\(DateFormatter.dateDashed.string(from: .now))")
+                    .get(as: ActivitySummary.self)
+                    .asOptional()
+                    .catchErrorJustReturn(nil)
+            }
+            .combineLatest()
+            .compactMapMany { $0 }
     }
 }

@@ -1,0 +1,10 @@
+sources:
+- Sources/FCKit
+templates:
+- sourcery/templates
+output:
+  Sources/FCKitMocks
+args:
+  autoMockableImports:
+    - Combine
+    - FCKit

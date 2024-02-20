@@ -1,4 +1,5 @@
 import Combine
+import FCKitMocks
 import XCTest
 
 @testable import FriendlyCompetitions

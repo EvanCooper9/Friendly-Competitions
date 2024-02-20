@@ -1,6 +1,8 @@
 import CombineSchedulers
 import ECKit
 import Factory
+import FCKit
+import FCKitMocks
 import XCTest
 
 @testable import FriendlyCompetitions

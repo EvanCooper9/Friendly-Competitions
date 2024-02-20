@@ -1,7 +1,0 @@
-import Factory
-
-extension Container {
-    var analyticsManager: Factory<AnalyticsManaging> {
-        self { AnalyticsManager() }.scope(.shared)
-    }
-}

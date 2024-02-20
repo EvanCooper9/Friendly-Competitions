@@ -1,3 +1,4 @@
+import FCKit
 import HealthKit
 
 protocol HealthKitQuery {

@@ -1,4 +1,6 @@
 import FCKit
+import Firebase
+import FirebaseAuth
 import SwiftUI
 import SwiftUIX
 import WidgetKit
@@ -6,12 +8,16 @@ import WidgetKit
 struct CompetitionStandingsWidget: Widget {
     let kind = WidgetIdentifier.competitionStandings.rawValue
 
+    init() {
+        FirebaseApp.configure()
+        try? Auth.auth().useUserAccessGroup(AppGroup.id)
+    }
+
     var body: some WidgetConfiguration {
         AppIntentConfiguration(kind: kind, intent: CompetitionStandingsIntent.self, provider: CompetitionStandingsProvider()) { entry in
             CompetitionStandingsWidgetView(entry: entry)
                 .containerBackground(.fill.tertiary, for: .widget)
         }
-        .supportedFamilies([.systemSmall, .systemMedium])
         .configurationDisplayName("Competition Standings")
         .description("View your standings in a competition at a glace")
     }
@@ -141,30 +147,4 @@ private extension WidgetFamily {
     CompetitionStandingsWidget()
 } timeline: {
     CompetitionTimelineEntry(competition: .placeholder)
-}
-
-extension WidgetCompetition {
-    static let placeholder: WidgetCompetition = {
-        .init(
-            id: UUID().uuidString,
-            name: "Monthly",
-            start: .now.addingTimeInterval(-1.days),
-            end: .now.addingTimeInterval(1.days),
-            standings: .mock
-        )
-    }()
-}
-
-extension Array where Element == WidgetStanding {
-    static var mock: [WidgetStanding] {
-        [
-            .init(rank: 1, points: 150_000, highlight: true),
-            .init(rank: 2, points: 100_000, highlight: false),
-            .init(rank: 3, points: 50_000, highlight: false)
-        ]
-    }
-
-    var highlighted: WidgetStanding? {
-        first(where: { $0.highlight })
-    }
 }

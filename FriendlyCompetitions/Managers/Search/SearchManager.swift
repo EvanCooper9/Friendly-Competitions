@@ -2,6 +2,7 @@ import Combine
 import CombineExt
 import ECKit
 import Factory
+import FCKit
 import Foundation
 
 // sourcery: AutoMockable
@@ -47,20 +48,29 @@ final class SearchManager: SearchManaging {
     }
 
     func searchForUsers(withIDs userIDs: [User.ID]) -> AnyPublisher<[User], Error> {
-        let cachedResults = database
-            .collection("users")
-            .whereField("id", asArrayOf: User.self, in: userIDs, source: .cache)
-
-        return cachedResults
-            .flatMapLatest(withUnretained: self) { strongSelf, cachedResults -> AnyPublisher<[User], Error> in
+        users(withIDs: userIDs, from: .cache)
+            .flatMapLatest(withUnretained: self) { strongSelf, cachedResults -> AnyPublisher<[User], Never> in
                 let remaining = userIDs.subtracting(cachedResults.map(\.id))
                 guard remaining.isNotEmpty else { return .just(cachedResults) }
-                return strongSelf.database
-                    .collection("users")
-                    .whereField("id", asArrayOf: User.self, in: userIDs, source: .server)
+                return strongSelf.users(withIDs: remaining, from: .server)
                     .map { $0 + cachedResults }
                     .eraseToAnyPublisher()
             }
+            .setFailureType(to: Error.self)
             .eraseToAnyPublisher()
+    }
+
+    // MARK: - Private
+
+    private func users(withIDs userIDs: [User.ID], from source: DatabaseSource) -> some Publisher<[User], Never> {
+        userIDs
+            .map { userID in
+                database.document("users/\(userID)")
+                    .get(as: User.self, source: source)
+                    .asOptional()
+                    .catchErrorJustReturn(nil)
+            }
+            .combineLatest()
+            .compactMapMany { $0 }
     }
 }
