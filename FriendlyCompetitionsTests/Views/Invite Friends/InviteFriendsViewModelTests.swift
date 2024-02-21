@@ -7,6 +7,7 @@ final class InviteFriendsViewModelTests: FCTestCase {
     override func setUp() {
         super.setUp()
         competitionsManager.competitionPublisherForReturnValue = .never()
+        friendsManager.friends = .just([])
         searchManager.searchForUsersByNameReturnValue = .never()
         userManager.userPublisher = .never()
     }
@@ -57,6 +58,77 @@ final class InviteFriendsViewModelTests: FCTestCase {
         XCTAssertEqual(row.name, searchResultUser.name)
         XCTAssertEqual(row.pillId, searchResultUser.hashId)
         XCTAssertEqual(row.buttonTitle, "Invite")
+        XCTAssertFalse(row.buttonDisabled)
+    }
+
+    func testThatFriendsAreInitiallyShownForCompetitionInvie() {
+        let currentUser = User.evan
+        userManager.userPublisher = .just(currentUser)
+        
+        let friend = User.andrew
+        friendsManager.friends = .just([friend])
+
+        let competition = Competition(id: "id", name: "test", owner: "abc", participants: [], pendingParticipants: [], scoringModel: .percentOfGoals, start: .now, end: .now, repeats: true, isPublic: true, banner: nil)
+        competitionsManager.competitionPublisherForReturnValue = .just(competition)
+        
+        let viewModel = InviteFriendsViewModel(action: .competitionInvite(competition))
+        scheduler.advance(by: 1)
+
+        guard let row = viewModel.rows.first else {
+            XCTFail("Empty rows, should not happen")
+            return
+        }
+        XCTAssertEqual(viewModel.rows.count, 1)
+        XCTAssertEqual(row.id, friend.id)
+        XCTAssertEqual(row.name, friend.name)
+    }
+
+    func testThatInvitedFriendsAreInitiallyShownForCompetitionInvie() {
+        let currentUser = User.evan
+        userManager.userPublisher = .just(currentUser)
+
+        let friend = User.andrew
+        friendsManager.friends = .just([friend])
+
+        let competition = Competition(id: "id", name: "test", owner: "abc", participants: [], pendingParticipants: [friend.id], scoringModel: .percentOfGoals, start: .now, end: .now, repeats: true, isPublic: true, banner: nil)
+        competitionsManager.competitionPublisherForReturnValue = .just(competition)
+
+        let viewModel = InviteFriendsViewModel(action: .competitionInvite(competition))
+        scheduler.advance(by: 1)
+
+        guard let row = viewModel.rows.first else {
+            XCTFail("Empty rows, should not happen")
+            return
+        }
+        XCTAssertEqual(viewModel.rows.count, 1)
+        XCTAssertEqual(row.id, friend.id)
+        XCTAssertEqual(row.name, friend.name)
+        XCTAssertEqual(row.buttonTitle, "Invited")
+        XCTAssertTrue(row.buttonDisabled)
+    }
+
+    func testThatParticipatingFriendsAreInitiallyShownForCompetitionInvie() {
+        let currentUser = User.evan
+        userManager.userPublisher = .just(currentUser)
+
+        let friend = User.andrew
+        friendsManager.friends = .just([friend])
+
+        let competition = Competition(id: "id", name: "test", owner: "abc", participants: [friend.id], pendingParticipants: [], scoringModel: .percentOfGoals, start: .now, end: .now, repeats: true, isPublic: true, banner: nil)
+        competitionsManager.competitionPublisherForReturnValue = .just(competition)
+
+        let viewModel = InviteFriendsViewModel(action: .competitionInvite(competition))
+        scheduler.advance(by: 1)
+
+        guard let row = viewModel.rows.first else {
+            XCTFail("Empty rows, should not happen")
+            return
+        }
+        XCTAssertEqual(viewModel.rows.count, 1)
+        XCTAssertEqual(row.id, friend.id)
+        XCTAssertEqual(row.name, friend.name)
+        XCTAssertEqual(row.buttonTitle, "Invited")
+        XCTAssertTrue(row.buttonDisabled)
     }
 
     func testThatUserIsAddedAsFriend() {
