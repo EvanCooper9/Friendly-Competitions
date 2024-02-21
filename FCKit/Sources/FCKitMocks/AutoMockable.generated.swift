@@ -285,3 +285,54 @@ public class FeatureFlagManagingMock: FeatureFlagManaging {
     }
 
 }
+public class WidgetDataManagingMock: WidgetDataManaging {
+
+    public init() {}
+
+
+
+    //MARK: - competitions
+
+    public var competitionsUserIDCallsCount = 0
+    public var competitionsUserIDCalled: Bool {
+        return competitionsUserIDCallsCount > 0
+    }
+    public var competitionsUserIDReceivedUserID: String?
+    public var competitionsUserIDReceivedInvocations: [String?] = []
+    public var competitionsUserIDReturnValue: [(id: String, name: String)]!
+    public var competitionsUserIDClosure: ((String?) async -> [(id: String, name: String)])?
+
+    public func competitions(userID: String?) async -> [(id: String, name: String)] {
+        competitionsUserIDCallsCount += 1
+        competitionsUserIDReceivedUserID = userID
+        competitionsUserIDReceivedInvocations.append(userID)
+        if let competitionsUserIDClosure = competitionsUserIDClosure {
+            return await competitionsUserIDClosure(userID)
+        } else {
+            return competitionsUserIDReturnValue
+        }
+    }
+
+    //MARK: - data
+
+    public var dataForUserIDCallsCount = 0
+    public var dataForUserIDCalled: Bool {
+        return dataForUserIDCallsCount > 0
+    }
+    public var dataForUserIDReceivedArguments: (competitionID: String, userID: String?)?
+    public var dataForUserIDReceivedInvocations: [(competitionID: String, userID: String?)] = []
+    public var dataForUserIDReturnValue: AnyPublisher<WidgetCompetition, Never>!
+    public var dataForUserIDClosure: ((String, String?) -> AnyPublisher<WidgetCompetition, Never>)?
+
+    public func data(for competitionID: String, userID: String?) -> AnyPublisher<WidgetCompetition, Never> {
+        dataForUserIDCallsCount += 1
+        dataForUserIDReceivedArguments = (competitionID: competitionID, userID: userID)
+        dataForUserIDReceivedInvocations.append((competitionID: competitionID, userID: userID))
+        if let dataForUserIDClosure = dataForUserIDClosure {
+            return dataForUserIDClosure(competitionID, userID)
+        } else {
+            return dataForUserIDReturnValue
+        }
+    }
+
+}
