@@ -388,8 +388,8 @@ internal enum L10n {
     internal enum ShareInviteLink {
       /// Share invite link
       internal static let buttonTitle = L10n.tr("Localizable", "InviteFriends.ShareInviteLink.buttonTitle", fallback: "Share invite link")
-      /// You can also share your personal invite link with someone.
-      internal static let message = L10n.tr("Localizable", "InviteFriends.ShareInviteLink.message", fallback: "You can also share your personal invite link with someone.")
+      /// You can also share a direct invite link with someone.
+      internal static let message = L10n.tr("Localizable", "InviteFriends.ShareInviteLink.message", fallback: "You can also share a direct invite link with someone.")
     }
   }
   internal enum ListItem {
