@@ -25,7 +25,7 @@ async function setStandingRanks(competition: Competition, standings: Standing[])
         updatedStanding.isTie = isSameAsPrevious || isSameAsNext;
         updatedStanding.rank = currentRank;
 
-        if (!isSameAsPrevious) {
+        if (!isSameAsPrevious && !isSameAsNext) {
             currentRank += 1;
         }
 

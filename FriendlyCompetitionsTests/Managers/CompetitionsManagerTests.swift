@@ -1,6 +1,7 @@
 import Combine
 import ECKit
 import Factory
+import FCKitMocks
 import XCTest
 
 @testable import FriendlyCompetitions
@@ -32,8 +33,7 @@ final class CompetitionsManagerTests: FCTestCase {
         collection.publisherClosure = {
             return competitionSourcesSubjects[collection.publisherCallCount - 1].eraseToAnyPublisher()
         }
-        collection.whereFieldArrayContainsClosure = { collection }
-        collection.whereFieldIsEqualToClosure = { collection }
+        collection.filterOnClosure = { _, _ in collection }
         collection.getDocumentsClosure = { _, _ in .never() }
 
         database.collectionReturnValue = collection
@@ -155,12 +155,11 @@ final class CompetitionsManagerTests: FCTestCase {
         competitionsCollection.publisherClosure = {
             return competitionSourcesSubjects[competitionsCollection.publisherCallCount - 1].eraseToAnyPublisher()
         }
-        competitionsCollection.whereFieldArrayContainsClosure = { competitionsCollection }
-        competitionsCollection.whereFieldIsEqualToClosure = { competitionsCollection }
+        competitionsCollection.filterOnClosure = { _, _ in competitionsCollection }
         competitionsCollection.getDocumentsClosure = { _, _ in .never() }
 
         let resultsCollection = CollectionMock<CompetitionResult>()
-        resultsCollection.whereFieldArrayContainsClosure = { resultsCollection }
+        resultsCollection.filterOnClosure = { _, _ in resultsCollection }
         resultsCollection.getDocumentsClosure = { _, _ in .never() }
 
         database.collectionClosure = { path in

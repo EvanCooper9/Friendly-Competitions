@@ -1,6 +1,7 @@
 import Combine
 import ECKit
 import Factory
+import FCKitMocks
 import XCTest
 
 @testable import FriendlyCompetitions
@@ -19,10 +20,18 @@ final class FriendsManagerTests: FCTestCase {
         
         let friendsPublisher = PassthroughSubject<[User], Error>()
         let friendsCollection = CollectionMock<User>()
-        friendsCollection.whereFieldInClosure = { friendsPublisher.eraseToAnyPublisher() }
+//        friendsCollection.filterOn
+//        friendsCollection.whereFieldInClosure = { friendsPublisher.eraseToAnyPublisher() }
         database.collectionClosure = { collection in
             XCTAssertEqual(collection, "users")
             return friendsCollection
+        }
+
+        let activitySummaryDocument = DocumentMock<ActivitySummary>()
+        activitySummaryDocument.getClosure = { _, _ in .just(.mock) }
+        database.documentClosure = { path in
+            XCTAssertTrue(path.contains("activitySummaries"))
+            return activitySummaryDocument
         }
 
         searchManager.searchForUsersWithIDsClosure = { ids in
@@ -56,10 +65,17 @@ final class FriendsManagerTests: FCTestCase {
         
         let friendRequestsPublisher = PassthroughSubject<[User], Error>()
         let friendRequestsCollection = CollectionMock<User>()
-        friendRequestsCollection.whereFieldInClosure = { friendRequestsPublisher.eraseToAnyPublisher() }
+//        friendRequestsCollection.whereFieldInClosure = { friendRequestsPublisher.eraseToAnyPublisher() }
         database.collectionClosure = { collection in
             XCTAssertEqual(collection, "users")
             return friendRequestsCollection
+        }
+
+        let activitySummaryDocument = DocumentMock<ActivitySummary>()
+        activitySummaryDocument.getClosure = { _, _ in .just(.mock) }
+        database.documentClosure = { path in
+            XCTAssertTrue(path.contains("activitySummaries"))
+            return activitySummaryDocument
         }
 
         searchManager.searchForUsersWithIDsClosure = { ids in
@@ -100,12 +116,12 @@ final class FriendsManagerTests: FCTestCase {
     
     private func setupEmptyDatabase() {
         let usersCollection = CollectionMock<User>()
-        usersCollection.whereFieldInClosure = { .just([]) }
+//        usersCollection.whereFieldInClosure = { .just([]) }
         database.collectionReturnValue = usersCollection
         
         let activitySummariesCollection = CollectionMock<ActivitySummary>()
-        activitySummariesCollection.whereFieldIsEqualToClosure = { activitySummariesCollection }
-        activitySummariesCollection.whereFieldInClosure = { .just([]) }
+//        activitySummariesCollection.whereFieldIsEqualToClosure = { activitySummariesCollection }
+//        activitySummariesCollection.whereFieldInClosure = { .just([]) }
         database.collectionGroupReturnValue = activitySummariesCollection
     }
 }

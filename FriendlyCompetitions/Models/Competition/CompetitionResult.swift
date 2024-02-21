@@ -1,3 +1,4 @@
+import FCKit
 import Foundation
 
 struct CompetitionResult: Codable, Hashable, Identifiable {

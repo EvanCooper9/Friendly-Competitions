@@ -15,7 +15,7 @@ struct AppIcon: View {
 }
 
 #if DEBUG
-struct AppIcron_Previews: PreviewProvider {
+struct AppIcon_Previews: PreviewProvider {
     static var previews: some View {
         AppIcon()
     }
