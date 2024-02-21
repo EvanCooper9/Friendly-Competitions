@@ -160,7 +160,7 @@
 // Invite Friends
 "InviteFriends.title" = "Invite friends";
 "InviteFriends.havingTrouble" = "Having trouble?";
-"InviteFriends.ShareInviteLink.message" = "You can also share your personal invite link with someone.";
+"InviteFriends.ShareInviteLink.message" = "You can also share a direct invite link with someone.";
 "InviteFriends.ShareInviteLink.buttonTitle" = "Share invite link";
 "InviteFriends.accept" = "Accept";
 "InviteFriends.invited" = "Invited";

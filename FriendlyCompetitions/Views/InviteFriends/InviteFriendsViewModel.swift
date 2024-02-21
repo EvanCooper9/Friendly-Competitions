@@ -76,9 +76,10 @@ final class InviteFriendsViewModel: ObservableObject {
                     .catchErrorJustReturn([])
                     .eraseToAnyPublisher()
             }
-            .combineLatest(alreadyInvited, incomingRequests)
-            .map { [weak self] users, alreadyInvited, incomingRequests -> [RowConfig] in
-                users.map { friend in
+            .prepend([])
+            .combineLatest(alreadyInvited.print("already"), incomingRequests.print("incoming"), friendsManager.friends.print("friends"))
+            .map { [weak self] users, alreadyInvited, incomingRequests, friends -> [RowConfig] in
+                (users + friends).map { friend in
                     let hasIncomingInvite = incomingRequests.contains(friend.id)
                     return RowConfig(
                         id: friend.id,
