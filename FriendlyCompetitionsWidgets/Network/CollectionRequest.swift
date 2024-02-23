@@ -28,17 +28,18 @@ struct CollectionRequest<R: Decodable>: AuthenticatedRequest {
 
             struct FieldFilter: Encodable {
                 let field: FieldReference
-                let value: Value
+                let value: Value?
                 let op: Operator
 
                 struct FieldReference: Encodable {
                     let fieldPath: String
                 }
 
-                enum Value: Encodable {
+                indirect enum Value: Encodable {
                     case string(String)
                     case int(Int)
                     case bool(Bool)
+                    case array([Value])
 
                     func encode(to encoder: Encoder) throws {
                         var container = encoder.singleValueContainer()
@@ -49,6 +50,8 @@ struct CollectionRequest<R: Decodable>: AuthenticatedRequest {
                             try container.encode(["integerValue": int])
                         case .bool(let bool):
                             try container.encode(["booleanValue": bool])
+                        case .array(let values):
+                            try container.encode(["arrayValue": values])
                         }
                     }
                 }
@@ -102,16 +105,18 @@ struct CollectionRequest<R: Decodable>: AuthenticatedRequest {
             }
         }
 
-        var value: StructuredQuery.Filter.FieldFilter.Value {
-            func convert(value: Any) -> StructuredQuery.Filter.FieldFilter.Value {
+        var value: StructuredQuery.Filter.FieldFilter.Value? {
+            func convert(value: Any) -> StructuredQuery.Filter.FieldFilter.Value? {
                 if let string = value as? String {
                     return .string(string)
                 } else if let int = value as? Int {
                     return .int(int)
                 } else if let bool = value as? Bool {
                     return .bool(bool)
+                } else if let array = value as? [Any] {
+                    return .array(array.compactMap { convert(value: $0) })
                 }
-                return .string("")
+                return nil
             }
             switch self {
             case .arrayContains(let value, _):
@@ -119,7 +124,7 @@ struct CollectionRequest<R: Decodable>: AuthenticatedRequest {
             case .isEqualTo(let value, _):
                 return convert(value: value)
             case .notIn(let values, _):
-                return convert(value: value)
+                return convert(value: values)
             case .greaterThan(let value, _):
                 return convert(value: value)
             case .greaterThanOrEqualTo(let value, _):
@@ -149,7 +154,7 @@ struct CollectionRequest<R: Decodable>: AuthenticatedRequest {
     }
 
     func response(from data: Data, with decoder: JSONDecoder) throws -> [R] {
-        try decoder.decode([FirestoreDocumentObject].self, from: data)
+        try decoder.decode([FirestoreDocumentContainer].self, from: data)
             .map(\.document)
             .compactMap { document -> R? in
                 let pairs = document.fields.compactMap { key, value -> (String, Any)? in

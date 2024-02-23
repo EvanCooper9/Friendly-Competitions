@@ -15,11 +15,6 @@ extension Error {
             userInfo: nsError.userInfo.merging(userInfo) { _, newValue in newValue }
         )
 
-        print(self)
-        print(localizedDescription)
-        print(userInfo)
-        print(nsError)
-
         Crashlytics.crashlytics().record(error: nsError)
     }
 }

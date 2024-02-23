@@ -278,6 +278,8 @@
 		EDCC4AD72B8912B400F96ED3 /* DocumentRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDCC4AD62B8912B400F96ED3 /* DocumentRequest.swift */; };
 		EDCC4AD92B8912D100F96ED3 /* CollectionRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDCC4AD82B8912D100F96ED3 /* CollectionRequest.swift */; };
 		EDCC4ADB2B89159600F96ED3 /* AuthenticationAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDCC4ADA2B89159600F96ED3 /* AuthenticationAction.swift */; };
+		EDCC4ADF2B8920A000F96ED3 /* WidgetStanding.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDCC4ADD2B89208800F96ED3 /* WidgetStanding.swift */; };
+		EDCC4AE02B8920A200F96ED3 /* WidgetCompetition.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDCC4ADE2B89208800F96ED3 /* WidgetCompetition.swift */; };
 		EDD6B4C22B66B85C00786D3B /* HealthKitBackgroundDeliveryError.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD6B4C12B66B85C00786D3B /* HealthKitBackgroundDeliveryError.swift */; };
 		EDD894FA2962A0E2009636E6 /* Product.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD894F92962A0E2009636E6 /* Product.swift */; };
 		EDDB923D2965D2B0006AEE72 /* CompetitionResultsDataPoint+View.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDDB923C2965D2B0006AEE72 /* CompetitionResultsDataPoint+View.swift */; };
@@ -573,6 +575,8 @@
 		EDCC4AD62B8912B400F96ED3 /* DocumentRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentRequest.swift; sourceTree = "<group>"; };
 		EDCC4AD82B8912D100F96ED3 /* CollectionRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionRequest.swift; sourceTree = "<group>"; };
 		EDCC4ADA2B89159600F96ED3 /* AuthenticationAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationAction.swift; sourceTree = "<group>"; };
+		EDCC4ADD2B89208800F96ED3 /* WidgetStanding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetStanding.swift; sourceTree = "<group>"; };
+		EDCC4ADE2B89208800F96ED3 /* WidgetCompetition.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetCompetition.swift; sourceTree = "<group>"; };
 		EDD6B4C12B66B85C00786D3B /* HealthKitBackgroundDeliveryError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitBackgroundDeliveryError.swift; sourceTree = "<group>"; };
 		EDD894F92962A0E2009636E6 /* Product.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Product.swift; sourceTree = "<group>"; };
 		EDDB923C2965D2B0006AEE72 /* CompetitionResultsDataPoint+View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CompetitionResultsDataPoint+View.swift"; sourceTree = "<group>"; };
@@ -1095,6 +1099,7 @@
 			children = (
 				ED1A95B72B788D11006D2B71 /* CompetitionStandingsWidget.swift */,
 				ED1A95E32B7916BD006D2B71 /* CompetitionStandingsIntent.swift */,
+				EDCC4ADC2B89208800F96ED3 /* Models */,
 			);
 			path = CompetitionStandings;
 			sourceTree = "<group>";
@@ -1792,6 +1797,15 @@
 			path = Network;
 			sourceTree = "<group>";
 		};
+		EDCC4ADC2B89208800F96ED3 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				EDCC4ADD2B89208800F96ED3 /* WidgetStanding.swift */,
+				EDCC4ADE2B89208800F96ED3 /* WidgetCompetition.swift */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
 		EDD894F829628CE4009636E6 /* Premium */ = {
 			isa = PBXGroup;
 			children = (
@@ -2355,6 +2369,8 @@
 				EDCC4AD72B8912B400F96ED3 /* DocumentRequest.swift in Sources */,
 				EDE060BE2B88CFA6008E519D /* Network.swift in Sources */,
 				EDCC4AD52B89128900F96ED3 /* FirestoreDocument.swift in Sources */,
+				EDCC4ADF2B8920A000F96ED3 /* WidgetStanding.swift in Sources */,
+				EDCC4AE02B8920A200F96ED3 /* WidgetCompetition.swift in Sources */,
 				ED0E4FDE2B83E993003BE7CB /* CompetitionStandingsIntent.swift in Sources */,
 				ED1A95B82B788D11006D2B71 /* CompetitionStandingsWidget.swift in Sources */,
 				EDCC4ADB2B89159600F96ED3 /* AuthenticationAction.swift in Sources */,
@@ -2617,7 +2633,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = FriendlyCompetitions/FriendlyCompetitions.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = FriendlyCompetitions/PreviewContent;
@@ -2652,7 +2668,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.evancooper.FriendlyCompetitions;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "match AppStore com.evancooper.FriendlyCompetitions";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match Development com.evancooper.FriendlyCompetitions";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match AppStore com.evancooper.FriendlyCompetitions";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
@@ -2711,7 +2727,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CODE_SIGN_ENTITLEMENTS = FriendlyCompetitionsWidgets/FriendlyCompetitionsWidgetsExtension.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
@@ -2733,7 +2749,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.evancooper.FriendlyCompetitions.FriendlyCompetitionsWidgets;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match Development com.evancooper.FriendlyCompetitions.FriendlyCompetitionsWidgets";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match AppStore com.evancooper.FriendlyCompetitions.FriendlyCompetitionsWidgets";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;

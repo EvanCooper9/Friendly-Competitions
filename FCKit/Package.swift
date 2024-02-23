@@ -14,11 +14,9 @@ let package = Package(
         .package(url: "https://github.com/EvanCooper9/ECKit", branch: "main"),
         .package(url: "https://github.com/hmlongco/Factory", from: "2.0.0"),
         .package(url: "https://github.com/firebase/firebase-ios-sdk", from: "10.0.0"),
-        .package(url: "https://github.com/apple/swift-algorithms", from: "1.0.0")
     ],
     targets: [
         .target(name: "FCKit", dependencies: [
-            .product(name: "Algorithms", package: "swift-algorithms"),
             "CombineExt",
             "ECKit",
             "Factory",

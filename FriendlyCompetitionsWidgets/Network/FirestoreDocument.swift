@@ -1,6 +1,6 @@
 import Foundation
 
-struct FirestoreDocumentObject: Decodable {
+struct FirestoreDocumentContainer: Decodable {
     let document: FirestoreDocument
 }
 

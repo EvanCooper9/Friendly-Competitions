@@ -11,7 +11,6 @@ final class DataUploadingAppService: AppService {
     private var activitySummaryManager: ActivitySummaryManaging?
     private var stepCountManager: StepCountManaging?
     private var workoutManager: WorkoutManaging?
-    private var widgetDataManager: WidgetDataManaging?
 
     private var cancellables = Cancellables()
 
@@ -27,12 +26,10 @@ final class DataUploadingAppService: AppService {
                     strongSelf.activitySummaryManager = Container.shared.activitySummaryManager.resolve()
                     strongSelf.stepCountManager = Container.shared.stepCountManager.resolve()
                     strongSelf.workoutManager = Container.shared.workoutManager.resolve()
-                    strongSelf.widgetDataManager = Container.shared.widgetDataManager.resolve()
                 } else {
                     strongSelf.activitySummaryManager = nil
                     strongSelf.stepCountManager = nil
                     strongSelf.workoutManager = nil
-                    strongSelf.widgetDataManager = nil
                 }
             }
             .store(in: &cancellables)
