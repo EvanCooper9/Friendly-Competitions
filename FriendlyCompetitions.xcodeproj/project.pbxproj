@@ -2015,7 +2015,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ \"${ENABLE_PREVIEWS}\" = \"YES\" ]; then\n  echo \"Previews enabled, quitting to prevent 'preview paused'.\"\n  exit 0\nfi\n\nif [ $(arch) = \"arm64\" ]; then\n    /opt/homebrew/bin/swiftgen\nelse\n    swiftgen\nfi\n";
+			shellScript = "# swiftgen is failing to install... disabling for now\n#if [ \"${ENABLE_PREVIEWS}\" = \"YES\" ]; then\n#  echo \"Previews enabled, quitting to prevent 'preview paused'.\"\n#  exit 0\n#fi\n#\n#if [ $(arch) = \"arm64\" ]; then\n#    /opt/homebrew/bin/swiftgen\n#else\n#    swiftgen\n#fi\n";
 		};
 		C1DB3B5C27AA0CF40074BED1 /* Copy GoogleService-Info.plist (App) */ = {
 			isa = PBXShellScriptBuildPhase;
