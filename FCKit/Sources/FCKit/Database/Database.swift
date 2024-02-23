@@ -54,15 +54,15 @@ public protocol Document {
 
     func set<T: Encodable>(value: T) -> AnyPublisher<Void, Error>
     func update(fields data: [String: Any]) -> AnyPublisher<Void, Error>
-    func get<T: Decodable>(as type: T.Type, source: DatabaseSource) -> AnyPublisher<T, Error>
+    func get<T: Decodable>(as type: T.Type, source: DatabaseSource, reportErrors: Bool) -> AnyPublisher<T, Error>
     func publisher<T: Decodable>(as type: T.Type) -> AnyPublisher<T, Error>
 
     func cacheFromServer() -> AnyPublisher<Void, Error>
 }
 
 public extension Document {
-    func get<T: Decodable>(as type: T.Type, source: DatabaseSource = .default) -> AnyPublisher<T, Error> {
-        get(as: T.self, source: source)
+    func get<T: Decodable>(as type: T.Type, source: DatabaseSource = .default, reportErrors: Bool = true) -> AnyPublisher<T, Error> {
+        get(as: T.self, source: source, reportErrors: reportErrors)
     }
 }
 

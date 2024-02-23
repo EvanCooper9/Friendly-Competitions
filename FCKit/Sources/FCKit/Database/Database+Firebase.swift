@@ -1,4 +1,3 @@
-import Algorithms
 import Combine
 import CombineExt
 import Factory
@@ -201,7 +200,7 @@ extension DocumentReference: Document {
         ])
     }
 
-    public func get<T: Decodable>(as type: T.Type, source: DatabaseSource) -> AnyPublisher<T, Error> {
+    public func get<T: Decodable>(as type: T.Type, source: DatabaseSource, reportErrors: Bool) -> AnyPublisher<T, Error> {
         let document = self
         return Future { [weak self] promise in
             guard let self else { return }
@@ -224,15 +223,15 @@ extension DocumentReference: Document {
             }
         }
         .catch { [document] error -> AnyPublisher<T, Error> in
+            if reportErrors {
+                error.reportToCrashlytics(userInfo: ["path": document.path, "type": String(describing: T.self)])
+            }
             guard source == .cacheFirst else {
                 return .error(error)
             }
             return document.get(as: T.self, source: .server)
         }
-        .reportErrorToCrashlytics(userInfo: [
-            "path": path,
-            "type": String(describing: T.self)
-        ])
+        .eraseToAnyPublisher()
     }
 
     public func publisher<T: Decodable>(as type: T.Type) -> AnyPublisher<T, Error> {

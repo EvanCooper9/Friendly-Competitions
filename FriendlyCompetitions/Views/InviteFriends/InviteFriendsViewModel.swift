@@ -41,6 +41,7 @@ final class InviteFriendsViewModel: ObservableObject {
     init(action: InviteFriendsAction) {
         let alreadyInvited: AnyPublisher<[User.ID], Never>
         let incomingRequests: AnyPublisher<[User.ID], Never>
+        let friends: AnyPublisher<[User], Never>
 
         switch action {
         case .addFriend:
@@ -50,6 +51,7 @@ final class InviteFriendsViewModel: ObservableObject {
             incomingRequests = userManager.userPublisher
                 .map(\.incomingFriendRequests)
                 .eraseToAnyPublisher()
+            friends = .just([])
         case .competitionInvite(let competition):
             alreadyInvited = competitionsManager.competitionPublisher(for: competition.id)
                 .map { $0.participants + $0.pendingParticipants }
@@ -57,6 +59,7 @@ final class InviteFriendsViewModel: ObservableObject {
                 .share(replay: 1)
                 .eraseToAnyPublisher()
             incomingRequests = .just([])
+            friends = friendsManager.friends
         }
 
         $searchText
@@ -77,7 +80,7 @@ final class InviteFriendsViewModel: ObservableObject {
                     .eraseToAnyPublisher()
             }
             .prepend([])
-            .combineLatest(alreadyInvited, incomingRequests, friendsManager.friends)
+            .combineLatest(alreadyInvited, incomingRequests, friends)
             .map { [weak self] users, alreadyInvited, incomingRequests, friends -> [RowConfig] in
                 (users + friends).map { friend in
                     let hasIncomingInvite = incomingRequests.contains(friend.id)

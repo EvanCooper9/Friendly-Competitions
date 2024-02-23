@@ -2,20 +2,20 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
-	<key>GADNativeAdValidatorEnabled</key>
-	<false/>
-	<key>GADApplicationIdentifier</key>
-	<string>ca-app-pub-9171629407679521~4136912327</string>
 	<key>FirebaseAppDelegateProxyEnabled</key>
 	<false/>
 	<key>FirebaseAutomaticScreenReportingEnabled</key>
 	<false/>
+	<key>GADApplicationIdentifier</key>
+	<string>ca-app-pub-9171629407679521~4136912327</string>
+	<key>GADNativeAdValidatorEnabled</key>
+	<false/>
+	<key>INIntentsSupported</key>
+	<array>
+		<string>FriendlyCompetitionsWidgetBundle</string>
+	</array>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
-	<key>UIBackgroundModes</key>
-	<array>
-		<string>remote-notification</string>
-	</array>
 	<key>SKAdNetworkItems</key>
 	<array>
 		<dict>
@@ -214,6 +214,10 @@
 			<key>SKAdNetworkIdentifier</key>
 			<string>3qcr597p9d.skadnetwork</string>
 		</dict>
+	</array>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>remote-notification</string>
 	</array>
 </dict>
 </plist>

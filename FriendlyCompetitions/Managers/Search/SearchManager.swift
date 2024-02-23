@@ -56,6 +56,7 @@ final class SearchManager: SearchManaging {
                     .map { $0 + cachedResults }
                     .eraseToAnyPublisher()
             }
+            .map { users in users.sorted(by: \.name) }
             .setFailureType(to: Error.self)
             .eraseToAnyPublisher()
     }

@@ -14,16 +14,22 @@ extension Error {
             code: nsError.code,
             userInfo: nsError.userInfo.merging(userInfo) { _, newValue in newValue }
         )
+
+        print(self)
+        print(localizedDescription)
+        print(userInfo)
+        print(nsError)
+
         Crashlytics.crashlytics().record(error: nsError)
     }
 }
 
 extension Publisher where Failure == Error {
-    public func reportErrorToCrashlytics(userInfo: [String: Any] = [:], caller: String = #function) -> AnyPublisher<Output, Failure> {
+    public func reportErrorToCrashlytics(userInfo: [String: Any] = [:], caller: String = #function, file: String = #file, line: Int = #line) -> AnyPublisher<Output, Failure> {
         self.catch { error -> AnyPublisher<Output, Failure> in
             var userInfo = userInfo
             userInfo["caller"] = caller
-            error.reportToCrashlytics(userInfo: userInfo)
+            error.reportToCrashlytics(userInfo: userInfo, file: file, line: line)
             return .error(error)
         }
         .eraseToAnyPublisher()

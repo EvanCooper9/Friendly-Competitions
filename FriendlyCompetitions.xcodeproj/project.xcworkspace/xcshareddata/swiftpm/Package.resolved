@@ -55,6 +55,15 @@
       }
     },
     {
+      "identity" : "ecnetworking",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/EvanCooper9/ECNetworking",
+      "state" : {
+        "branch" : "main",
+        "revision" : "fd127247aec1816973bdb86ec4383b065b13be0a"
+      }
+    },
+    {
       "identity" : "factory",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/hmlongco/Factory",

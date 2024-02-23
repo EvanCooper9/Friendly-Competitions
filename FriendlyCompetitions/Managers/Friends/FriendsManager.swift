@@ -2,6 +2,7 @@ import Combine
 import CombineExt
 import ECKit
 import Factory
+import FCKit
 import FirebaseFirestore
 import SwiftUI
 
@@ -24,11 +25,11 @@ final class FriendsManager: FriendsManaging {
 
     // MARK: - Private Properties
 
-    @Injected(\.api) private var api
-    @Injected(\.appState) private var appState
-    @Injected(\.database) private var database
-    @Injected(\.searchManager) private var searchManager
-    @Injected(\.userManager) private var userManager
+    @Injected(\.api) private var api: API
+    @Injected(\.appState) private var appState: AppStateProviding
+    @Injected(\.database) private var database: Database
+    @Injected(\.searchManager) private var searchManager: SearchManaging
+    @Injected(\.userManager) private var userManager: UserManaging
 
     let friendsSubject = ReplaySubject<[User], Never>(bufferSize: 1)
     let friendActivitySummariesSubject = ReplaySubject<[User.ID : ActivitySummary], Never>(bufferSize: 1)
@@ -68,6 +69,7 @@ final class FriendsManager: FriendsManaging {
                     .searchForUsers(withIDs: userIDs)
                     .catchErrorJustReturn([])
             }
+            .prepend([])
             .sink(withUnretained: self) { $0.friendsSubject.send($1) }
             .store(in: &cancellables)
 
@@ -79,6 +81,7 @@ final class FriendsManager: FriendsManaging {
                     .searchForUsers(withIDs: userIDs)
                     .catchErrorJustReturn([])
             }
+            .prepend([])
             .sink(withUnretained: self) { $0.friendRequestsSubject.send($1) }
             .store(in: &cancellables)
 
@@ -102,7 +105,7 @@ final class FriendsManager: FriendsManaging {
         userIDs
             .map { userID in
                 database.document("users/\(userID)/activitySummaries/\(DateFormatter.dateDashed.string(from: .now))")
-                    .get(as: ActivitySummary.self)
+                    .get(as: ActivitySummary.self, reportErrors: false)
                     .asOptional()
                     .catchErrorJustReturn(nil)
             }

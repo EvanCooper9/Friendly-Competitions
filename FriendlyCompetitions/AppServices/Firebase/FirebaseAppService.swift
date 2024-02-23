@@ -1,16 +1,19 @@
 import Combine
 import ECKit
 import Factory
+import FCKit
 import Firebase
 import FirebaseAppCheck
 import FirebaseMessaging
 
 final class FirebaseAppService: NSObject, AppService {
 
-    @LazyInjected(\.auth) private var auth
-
     // Needs to be lazy so that `FirebaseApp.configure()` is called first
-    @LazyInjected(\.database) private var database
+    @LazyInjected(\.authenticationManager) private var authenticationManager: AuthenticationManaging
+    @LazyInjected(\.database) private var database: Database
+    @LazyInjected(\.userManager) private var userManager: UserManaging
+
+    private var cancellables = Cancellables()
 
     func didFinishLaunching() {
         AppCheck.setAppCheckProviderFactory(FCAppCheckProviderFactory())
@@ -30,18 +33,23 @@ final class FirebaseAppService: NSObject, AppService {
 
 extension FirebaseAppService: MessagingDelegate {
     func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
-        guard let fcmToken, let userId = auth.user?.id else { return }
-
-        Task {
-            let tokens = try await database.document("users/\(userId)")
-                .get(as: User.self, source: .cacheFirst)
-                .async()
-                .notificationTokens ?? []
-
-            guard !tokens.contains(fcmToken) else { return }
-            try await database.document("users/\(userId)")
-                .update(fields: ["notificationTokens": tokens.appending(fcmToken)])
-                .async()
-        }
+        guard let fcmToken else { return }
+        authenticationManager.loggedIn
+            .filter { $0 }
+            .mapToVoid()
+            .compactMap { [weak self] _ -> User? in
+                guard let user = self?.userManager.user,
+                      user.notificationTokens?.contains(fcmToken) != true else { return nil }
+                return user
+            }
+            .flatMapLatest(withUnretained: self) { strongSelf, user in
+                let tokens = user.notificationTokens ?? []
+                return strongSelf.database
+                    .document("users/\(user.id)")
+                    .update(fields: ["notificationTokens": tokens.appending(fcmToken)])
+            }
+            .first()
+            .sink()
+            .store(in: &cancellables)
     }
 }

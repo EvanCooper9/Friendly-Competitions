@@ -101,7 +101,6 @@
 		ED1A95B82B788D11006D2B71 /* CompetitionStandingsWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1A95B72B788D11006D2B71 /* CompetitionStandingsWidget.swift */; };
 		ED1A95BC2B788D12006D2B71 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ED1A95BB2B788D12006D2B71 /* Assets.xcassets */; };
 		ED1A95C02B788D12006D2B71 /* FriendlyCompetitionsWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = ED1A95AD2B788D11006D2B71 /* FriendlyCompetitionsWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		ED1A95E22B78999E006D2B71 /* ECKit in Frameworks */ = {isa = PBXBuildFile; productRef = ED1A95E12B78999E006D2B71 /* ECKit */; };
 		ED1B5CE42969358100122D7E /* PremiumBanner.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1B5CE32969358100122D7E /* PremiumBanner.swift */; };
 		ED1B5CE7296935C300122D7E /* PremiumBannerViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1B5CE6296935C300122D7E /* PremiumBannerViewModel.swift */; };
 		ED1B5CEA296A574800122D7E /* URL+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1B5CE9296A574800122D7E /* URL+Extensions.swift */; };
@@ -275,11 +274,17 @@
 		EDC9CEE52AE3693A002FCE9C /* DataUploadingAppServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC9CEE42AE3693A002FCE9C /* DataUploadingAppServiceTests.swift */; };
 		EDC9CEEE2AE36E1A002FCE9C /* BackgroundJobsAppServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC9CEED2AE36E1A002FCE9C /* BackgroundJobsAppServiceTests.swift */; };
 		EDC9CEF12AE37066002FCE9C /* AppStateTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC9CEF02AE37066002FCE9C /* AppStateTests.swift */; };
+		EDCC4AD52B89128900F96ED3 /* FirestoreDocument.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDCC4AD42B89128900F96ED3 /* FirestoreDocument.swift */; };
+		EDCC4AD72B8912B400F96ED3 /* DocumentRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDCC4AD62B8912B400F96ED3 /* DocumentRequest.swift */; };
+		EDCC4AD92B8912D100F96ED3 /* CollectionRequest.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDCC4AD82B8912D100F96ED3 /* CollectionRequest.swift */; };
+		EDCC4ADB2B89159600F96ED3 /* AuthenticationAction.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDCC4ADA2B89159600F96ED3 /* AuthenticationAction.swift */; };
 		EDD6B4C22B66B85C00786D3B /* HealthKitBackgroundDeliveryError.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD6B4C12B66B85C00786D3B /* HealthKitBackgroundDeliveryError.swift */; };
 		EDD894FA2962A0E2009636E6 /* Product.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDD894F92962A0E2009636E6 /* Product.swift */; };
 		EDDB923D2965D2B0006AEE72 /* CompetitionResultsDataPoint+View.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDDB923C2965D2B0006AEE72 /* CompetitionResultsDataPoint+View.swift */; };
 		EDDF6A632B7F16CC00F7E628 /* AppIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = C132336427BEB58B00196D81 /* AppIcon.swift */; };
 		EDDF77D828BA82E000BB8B97 /* HealthKitPermissionType.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDDF77D728BA82E000BB8B97 /* HealthKitPermissionType.swift */; };
+		EDE060BC2B88CF9B008E519D /* ECNetworking in Frameworks */ = {isa = PBXBuildFile; productRef = EDE060BB2B88CF9B008E519D /* ECNetworking */; };
+		EDE060BE2B88CFA6008E519D /* Network.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDE060BD2B88CFA6008E519D /* Network.swift */; };
 		EDF34FC82A5F6A4D0069148C /* StepCountManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDF34FC72A5F6A4D0069148C /* StepCountManagerTests.swift */; };
 		EDFA10922A30089800FB9D5B /* DateInterval+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDFA10912A30089800FB9D5B /* DateInterval+Extensions.swift */; };
 		EDFB09B32B7C73BA0091451F /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = EDFB09B22B7C73BA0091451F /* Localizable.xcstrings */; };
@@ -564,10 +569,15 @@
 		EDC9CEE42AE3693A002FCE9C /* DataUploadingAppServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataUploadingAppServiceTests.swift; sourceTree = "<group>"; };
 		EDC9CEED2AE36E1A002FCE9C /* BackgroundJobsAppServiceTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundJobsAppServiceTests.swift; sourceTree = "<group>"; };
 		EDC9CEF02AE37066002FCE9C /* AppStateTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStateTests.swift; sourceTree = "<group>"; };
+		EDCC4AD42B89128900F96ED3 /* FirestoreDocument.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestoreDocument.swift; sourceTree = "<group>"; };
+		EDCC4AD62B8912B400F96ED3 /* DocumentRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentRequest.swift; sourceTree = "<group>"; };
+		EDCC4AD82B8912D100F96ED3 /* CollectionRequest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CollectionRequest.swift; sourceTree = "<group>"; };
+		EDCC4ADA2B89159600F96ED3 /* AuthenticationAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationAction.swift; sourceTree = "<group>"; };
 		EDD6B4C12B66B85C00786D3B /* HealthKitBackgroundDeliveryError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitBackgroundDeliveryError.swift; sourceTree = "<group>"; };
 		EDD894F92962A0E2009636E6 /* Product.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Product.swift; sourceTree = "<group>"; };
 		EDDB923C2965D2B0006AEE72 /* CompetitionResultsDataPoint+View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CompetitionResultsDataPoint+View.swift"; sourceTree = "<group>"; };
 		EDDF77D728BA82E000BB8B97 /* HealthKitPermissionType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitPermissionType.swift; sourceTree = "<group>"; };
+		EDE060BD2B88CFA6008E519D /* Network.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Network.swift; sourceTree = "<group>"; };
 		EDF34FC72A5F6A4D0069148C /* StepCountManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepCountManagerTests.swift; sourceTree = "<group>"; };
 		EDFA10912A30089800FB9D5B /* DateInterval+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DateInterval+Extensions.swift"; sourceTree = "<group>"; };
 		EDFB09B22B7C73BA0091451F /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
@@ -623,9 +633,9 @@
 			files = (
 				ED1A95B12B788D11006D2B71 /* SwiftUI.framework in Frameworks */,
 				ED0E500A2B83F44E003BE7CB /* FirebaseAuth in Frameworks */,
-				ED1A95E22B78999E006D2B71 /* ECKit in Frameworks */,
 				ED25A6622B83CC09004D9AB5 /* FCKit in Frameworks */,
 				ED1A95AF2B788D11006D2B71 /* WidgetKit.framework in Frameworks */,
+				EDE060BC2B88CF9B008E519D /* ECNetworking in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -899,7 +909,6 @@
 				ED3EF4AE2A3E567E004D2706 /* StepCount */,
 				ED879C4929A411A40007DB91 /* Storage */,
 				ED879C4829A4119F0007DB91 /* User */,
-				ED2FD5CE2B79A8D5001161F4 /* WidgetData */,
 				ED879C2F29A40DD70007DB91 /* Workout */,
 			);
 			path = Managers;
@@ -1074,6 +1083,7 @@
 				ED1A95BD2B788D12006D2B71 /* Info.plist */,
 				ED1A95E02B789636006D2B71 /* FriendlyCompetitionsWidgetsExtension.entitlements */,
 				ED1A95B32B788D11006D2B71 /* FriendlyCompetitionsWidgetsBundle.swift */,
+				EDCC4AD32B89127E00F96ED3 /* Network */,
 				ED1A95E52B7916C2006D2B71 /* CompetitionStandings */,
 				ED2FD5B72B7973E5001161F4 /* Resources */,
 			);
@@ -1233,13 +1243,6 @@
 				EDFB09B22B7C73BA0091451F /* Localizable.xcstrings */,
 			);
 			path = Resources;
-			sourceTree = "<group>";
-		};
-		ED2FD5CE2B79A8D5001161F4 /* WidgetData */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = WidgetData;
 			sourceTree = "<group>";
 		};
 		ED32B88B29D9F640005C917B /* AuthProviding */ = {
@@ -1777,6 +1780,18 @@
 			path = AppState;
 			sourceTree = "<group>";
 		};
+		EDCC4AD32B89127E00F96ED3 /* Network */ = {
+			isa = PBXGroup;
+			children = (
+				EDE060BD2B88CFA6008E519D /* Network.swift */,
+				EDCC4AD62B8912B400F96ED3 /* DocumentRequest.swift */,
+				EDCC4ADA2B89159600F96ED3 /* AuthenticationAction.swift */,
+				EDCC4AD82B8912D100F96ED3 /* CollectionRequest.swift */,
+				EDCC4AD42B89128900F96ED3 /* FirestoreDocument.swift */,
+			);
+			path = Network;
+			sourceTree = "<group>";
+		};
 		EDD894F829628CE4009636E6 /* Premium */ = {
 			isa = PBXGroup;
 			children = (
@@ -1877,9 +1892,9 @@
 			);
 			name = FriendlyCompetitionsWidgets;
 			packageProductDependencies = (
-				ED1A95E12B78999E006D2B71 /* ECKit */,
 				ED25A6612B83CC09004D9AB5 /* FCKit */,
 				ED0E50092B83F44E003BE7CB /* FirebaseAuth */,
+				EDE060BB2B88CF9B008E519D /* ECNetworking */,
 			);
 			productName = FriendlyCompetitionsWidgetsExtension;
 			productReference = ED1A95AD2B788D11006D2B71 /* FriendlyCompetitionsWidgets.appex */;
@@ -1925,6 +1940,7 @@
 				ED879C2429A408470007DB91 /* XCRemoteSwiftPackageReference "swift-algorithms" */,
 				ED07571D29CA65FC00141AD4 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				EDC909142B77F58D005FEFC5 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
+				EDE060BA2B88CF9B008E519D /* XCRemoteSwiftPackageReference "ECNetworking" */,
 			);
 			productRefGroup = C1691DC426D55FCF006FFA30 /* Products */;
 			projectDirPath = "";
@@ -2336,10 +2352,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EDCC4AD72B8912B400F96ED3 /* DocumentRequest.swift in Sources */,
+				EDE060BE2B88CFA6008E519D /* Network.swift in Sources */,
+				EDCC4AD52B89128900F96ED3 /* FirestoreDocument.swift in Sources */,
 				ED0E4FDE2B83E993003BE7CB /* CompetitionStandingsIntent.swift in Sources */,
 				ED1A95B82B788D11006D2B71 /* CompetitionStandingsWidget.swift in Sources */,
+				EDCC4ADB2B89159600F96ED3 /* AuthenticationAction.swift in Sources */,
 				ED1A95B42B788D11006D2B71 /* FriendlyCompetitionsWidgetsBundle.swift in Sources */,
 				EDDF6A632B7F16CC00F7E628 /* AppIcon.swift in Sources */,
+				EDCC4AD92B8912D100F96ED3 /* CollectionRequest.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -2596,7 +2617,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = FriendlyCompetitions/FriendlyCompetitions.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_ASSET_PATHS = FriendlyCompetitions/PreviewContent;
@@ -2606,7 +2627,7 @@
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = FriendlyCompetitions/Info.plist;
-				INFOPLIST_KEY_CFBundleDisplayName = Competitions;
+				INFOPLIST_KEY_CFBundleDisplayName = "FC (DBG)";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_NSHealthClinicalHealthRecordsShareUsageDescription = "We need access to HealthKit so you can compete against your friends!";
 				INFOPLIST_KEY_NSHealthShareUsageDescription = "We need access to HealthKit so you can compete against your friends!";
@@ -2631,7 +2652,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.evancooper.FriendlyCompetitions;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "match AppStore com.evancooper.FriendlyCompetitions";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match AppStore com.evancooper.FriendlyCompetitions";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match Development com.evancooper.FriendlyCompetitions";
 				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
 				SUPPORTS_MACCATALYST = NO;
 				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
@@ -2690,7 +2711,7 @@
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
 				CODE_SIGN_ENTITLEMENTS = FriendlyCompetitionsWidgets/FriendlyCompetitionsWidgetsExtension.entitlements;
 				CODE_SIGN_IDENTITY = "iPhone Distribution";
-				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Distribution";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				CODE_SIGN_STYLE = Manual;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = "";
@@ -2712,7 +2733,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = com.evancooper.FriendlyCompetitions.FriendlyCompetitionsWidgets;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
-				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match AppStore com.evancooper.FriendlyCompetitions.FriendlyCompetitionsWidgets";
+				"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]" = "match Development com.evancooper.FriendlyCompetitions.FriendlyCompetitionsWidgets";
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -2834,6 +2855,14 @@
 				minimumVersion = 11.0.1;
 			};
 		};
+		EDE060BA2B88CF9B008E519D /* XCRemoteSwiftPackageReference "ECNetworking" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/EvanCooper9/ECNetworking";
+			requirement = {
+				branch = main;
+				kind = branch;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -2900,11 +2929,6 @@
 		ED0E500D2B84198E003BE7CB /* FCKitMocks */ = {
 			isa = XCSwiftPackageProductDependency;
 			productName = FCKitMocks;
-		};
-		ED1A95E12B78999E006D2B71 /* ECKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = ED74033A28FF7297005BD155 /* XCRemoteSwiftPackageReference "ECKit" */;
-			productName = ECKit;
 		};
 		ED1B5CEE296B574B00122D7E /* ReceiptParser */ = {
 			isa = XCSwiftPackageProductDependency;
@@ -2973,6 +2997,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = EDC909142B77F58D005FEFC5 /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
 			productName = GoogleMobileAds;
+		};
+		EDE060BB2B88CF9B008E519D /* ECNetworking */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EDE060BA2B88CF9B008E519D /* XCRemoteSwiftPackageReference "ECNetworking" */;
+			productName = ECNetworking;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

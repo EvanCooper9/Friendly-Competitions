@@ -72,15 +72,6 @@
             ReferencedContainer = "container:FriendlyCompetitions.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "C1691DC226D55FCF006FFA30"
-            BuildableName = "Friendly Competitions.app"
-            BlueprintName = "Friendly Competitions"
-            ReferencedContainer = "container:Friendly Competitions.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
       <CommandLineArguments>
          <CommandLineArgument
             argument = "-FIRDebugEnabled"
@@ -112,8 +103,8 @@
       </AdditionalOptions>
    </LaunchAction>
    <ProfileAction
-      buildConfiguration = "Release"
-      shouldUseLaunchSchemeArgsEnv = "YES"
+      buildConfiguration = "Debug"
+      shouldUseLaunchSchemeArgsEnv = "NO"
       savedToolIdentifier = ""
       useCustomWorkingDirectory = "NO"
       debugDocumentVersioning = "YES">
@@ -122,20 +113,11 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "C1691DC226D55FCF006FFA30"
-            BuildableName = "Friendly Competitions.app"
-            BlueprintName = "Friendly Competitions"
-            ReferencedContainer = "container:Friendly Competitions.xcodeproj">
+            BuildableName = "FriendlyCompetitions.app"
+            BlueprintName = "FriendlyCompetitions"
+            ReferencedContainer = "container:FriendlyCompetitions.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
-      <MacroExpansion>
-         <BuildableReference
-            BuildableIdentifier = "primary"
-            BlueprintIdentifier = "C1691DC226D55FCF006FFA30"
-            BuildableName = "Friendly Competitions.app"
-            BlueprintName = "Friendly Competitions"
-            ReferencedContainer = "container:Friendly Competitions.xcodeproj">
-         </BuildableReference>
-      </MacroExpansion>
    </ProfileAction>
    <AnalyzeAction
       buildConfiguration = "Debug">

@@ -321,15 +321,15 @@ public class WidgetDataManagingMock: WidgetDataManaging {
     }
     public var dataForUserIDReceivedArguments: (competitionID: String, userID: String?)?
     public var dataForUserIDReceivedInvocations: [(competitionID: String, userID: String?)] = []
-    public var dataForUserIDReturnValue: AnyPublisher<WidgetCompetition, Never>!
-    public var dataForUserIDClosure: ((String, String?) -> AnyPublisher<WidgetCompetition, Never>)?
+    public var dataForUserIDReturnValue: WidgetCompetition!
+    public var dataForUserIDClosure: ((String, String?) async -> WidgetCompetition)?
 
-    public func data(for competitionID: String, userID: String?) -> AnyPublisher<WidgetCompetition, Never> {
+    public func data(for competitionID: String, userID: String?) async -> WidgetCompetition {
         dataForUserIDCallsCount += 1
         dataForUserIDReceivedArguments = (competitionID: competitionID, userID: userID)
         dataForUserIDReceivedInvocations.append((competitionID: competitionID, userID: userID))
         if let dataForUserIDClosure = dataForUserIDClosure {
-            return dataForUserIDClosure(competitionID, userID)
+            return await dataForUserIDClosure(competitionID, userID)
         } else {
             return dataForUserIDReturnValue
         }
