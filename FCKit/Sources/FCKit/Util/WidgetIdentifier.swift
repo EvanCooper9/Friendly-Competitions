@@ -1,14 +1,26 @@
-public enum WidgetIdentifier: String {
+import ECKit
+import Foundation
+
+public enum WidgetIdentifier {
+    private enum Constants {
+        static let widgetSuffix = ".FriendlyCompetitionsWidgets"
+        static let competitionStandingsWidgetSuffix = ".CompetitionStandingsWidget"
+    }
+
     case competitionStandings
 
-    public var rawValue: String {
+    public func id(bundleIdentifier: String = Bundle.main.id) -> String {
         switch self {
         case .competitionStandings:
-            #if DEBUG
-            return "com.evancooper.FriendlyCompetitions.debug.CompetitionStandingsWidget"
-            #else
-            return "com.evancooper.FriendlyCompetitions.CompetitionStandingsWidget"
-            #endif
+            if bundleIdentifier.hasSuffix(Constants.widgetSuffix) {
+                let value = "group." + bundleIdentifier + Constants.competitionStandingsWidgetSuffix
+                print(bundleIdentifier, value)
+                return value
+            } else {
+                let value = "group." + bundleIdentifier + Constants.widgetSuffix + Constants.competitionStandingsWidgetSuffix
+                print(bundleIdentifier, value)
+                return value
+            }
         }
     }
 }

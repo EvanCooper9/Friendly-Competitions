@@ -25,6 +25,8 @@ final class WelcomeViewModel: ObservableObject {
 
     @Published var navigationPath: [WelcomeNavigationDestination] = []
 
+    let showDeveloper: Bool
+
     // MARK: - Private Properties
 
     @Injected(\.authenticationManager) private var authenticationManager: AuthenticationManaging
@@ -36,6 +38,14 @@ final class WelcomeViewModel: ObservableObject {
     // MARK: - Lifecycle
 
     init() {
+        #if targetEnvironment(simulator)
+        showDeveloper = true
+        #elseif DEBUG
+        showDeveloper = true
+        #else
+        showDeveloper = false
+        #endif
+
         signInSubject
             .flatMapLatest(withUnretained: self) { strongSelf, authenticationMethod in
                 strongSelf.authenticationManager

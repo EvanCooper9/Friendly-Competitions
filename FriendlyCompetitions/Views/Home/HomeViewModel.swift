@@ -52,7 +52,9 @@ final class HomeViewModel: ObservableObject {
 
     init() {
 
-        #if DEBUG
+        #if targetEnvironment(simulator)
+        showDeveloper = true
+        #elseif DEBUG
         showDeveloper = true
         #else
         userManager.userPublisher

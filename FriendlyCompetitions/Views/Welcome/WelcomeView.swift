@@ -29,10 +29,10 @@ struct WelcomeView: View {
                 }
                 .maxHeight(.infinity)
 
-                #if DEBUG
-                DeveloperMenu()
-                    .font(.title)
-                #endif
+                if viewModel.showDeveloper {
+                    DeveloperMenu()
+                        .font(.title)
+                }
 
                 VStack {
                     buttons

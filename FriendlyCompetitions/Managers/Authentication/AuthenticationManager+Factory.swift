@@ -27,7 +27,7 @@ extension Container {
 
             let currentUser = auth.currentUser
             do {
-                try auth.useUserAccessGroup(AppGroup.id)
+                try auth.useUserAccessGroup(AppGroup.id())
             } catch {
                 print(error.localizedDescription)
                 print((error as NSError).userInfo)

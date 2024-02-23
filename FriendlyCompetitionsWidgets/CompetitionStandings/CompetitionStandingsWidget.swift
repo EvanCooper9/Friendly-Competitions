@@ -6,11 +6,11 @@ import SwiftUIX
 import WidgetKit
 
 struct CompetitionStandingsWidget: Widget {
-    let kind = WidgetIdentifier.competitionStandings.rawValue
+    let kind = WidgetIdentifier.competitionStandings.id()
 
     init() {
         FirebaseApp.configure()
-        try? Auth.auth().useUserAccessGroup(AppGroup.id)
+        try? Auth.auth().useUserAccessGroup(AppGroup.id())
     }
 
     var body: some WidgetConfiguration {
