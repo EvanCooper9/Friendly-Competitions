@@ -10,10 +10,6 @@
 	<string>ca-app-pub-9171629407679521~4136912327</string>
 	<key>GADNativeAdValidatorEnabled</key>
 	<false/>
-	<key>INIntentsSupported</key>
-	<array>
-		<string>FriendlyCompetitionsWidgetBundle</string>
-	</array>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>SKAdNetworkItems</key>
