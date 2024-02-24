@@ -35,7 +35,6 @@ struct CompetitionView: View {
 
             actions
         }
-        .background(.secondarySystemBackground)
         .navigationTitle(viewModel.competition.name)
         .toolbar {
             if viewModel.canEdit {

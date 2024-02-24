@@ -38,7 +38,6 @@ struct CompetitionContainerView: View {
                 .padding(.horizontal, 20)
             }
         }
-        .background(Color.listBackground)
         .navigationTitle(viewModel.competition.name)
     }
 }

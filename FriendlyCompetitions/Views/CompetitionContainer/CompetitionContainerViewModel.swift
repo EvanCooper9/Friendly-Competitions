@@ -1,3 +1,4 @@
+import Algorithms
 import Combine
 import CombineExt
 import ECKit
@@ -68,15 +69,17 @@ final class CompetitionContainerViewModel: ObservableObject {
                 blockedByPremium
             )
             .map { results, selectedIndex, blockedByPremium in
-                let resultsDateRanges = results.enumerated().map { index, result in
-                    CompetitionContainerDateRange(start: result.start,
-                                                  end: result.end,
-                                                  locked: index > 0 && blockedByPremium)
-                }
+                let resultsDateRanges = results.enumerated()
+                    .map { index, result in
+                        CompetitionContainerDateRange(start: result.start,
+                                                      end: result.end,
+                                                      locked: index > 0 && blockedByPremium)
+                    }
+                    .uniqued { $0.title }
 
                 let allDateRanges: [CompetitionContainerDateRange]
                 if competition.isActive {
-                    allDateRanges = [activeDateRange].appending(contentsOf: resultsDateRanges)
+                    allDateRanges = [activeDateRange] + resultsDateRanges
                 } else {
                     allDateRanges = resultsDateRanges
                 }

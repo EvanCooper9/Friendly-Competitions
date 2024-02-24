@@ -65,7 +65,7 @@ final class CompetitionStandingsProvider: AppIntentTimelineProvider {
     @Injected(\.network) private var network: Network
 
     func placeholder(in context: Context) -> CompetitionTimelineEntry {
-        CompetitionTimelineEntry(competition: .placeholder)
+        CompetitionTimelineEntry(data: .competition(.placeholder))
     }
 
     func snapshot(for configuration: CompetitionStandingsIntent, in context: Context) async -> CompetitionTimelineEntry {
@@ -110,9 +110,9 @@ final class CompetitionStandingsProvider: AppIntentTimelineProvider {
                     .sorted(by: \.rank)
             )
 
-            return CompetitionTimelineEntry(competition: data)
+            return CompetitionTimelineEntry(data: .competition(data))
         } catch {
-            return CompetitionTimelineEntry(competition: .placeholder)
+            return CompetitionTimelineEntry(data: .error(error, .now))
         }
     }
 
@@ -125,8 +125,21 @@ final class CompetitionStandingsProvider: AppIntentTimelineProvider {
 }
 
 struct CompetitionTimelineEntry: TimelineEntry {
-    var date: Date { competition.createdOn }
-    let competition: WidgetCompetition
+
+    enum Data {
+        case error(Error, Date)
+        case competition(WidgetCompetition)
+
+        var date: Date {
+            switch self {
+            case .error(_, let date): return date
+            case .competition(let widgetCompetition): return widgetCompetition.createdOn
+            }
+        }
+    }
+
+    var date: Date { data.date }
+    let data: Data
 
     var lastUpdated: String {
         date.formatted(date: date.isToday ? .omitted : .abbreviated, time: .shortened)

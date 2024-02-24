@@ -20,6 +20,7 @@ struct CompetitionStandingsWidget: Widget {
         }
         .configurationDisplayName("Competition Standings")
         .description("View your standings in a competition at a glace")
+        .supportedFamilies([.systemSmall, .systemMedium, .accessoryCircular, .accessoryInline, .accessoryRectangular])
     }
 }
 
@@ -30,61 +31,87 @@ struct CompetitionStandingsWidgetView: View {
     @Environment(\.widgetFamily) private var widgetFamily
 
     var body: some View {
-        Group {
-            switch widgetFamily {
-            case .systemSmall, .systemMedium, .systemLarge, .systemExtraLarge:
-                systemWidgetFamilyView
-            case .accessoryCircular, .accessoryInline, .accessoryRectangular:
-                accessoryWidgetFamilyView
-            @unknown default:
-                EmptyView()
-            }
-        }
-        .widgetURL(URL(string: "https://friendly-competitions.app/competition/\(entry.competition.id)"))
-    }
-
-    private var systemWidgetFamilyView: some View {
-        VStack(alignment: .leading, spacing: 0) {
-
-            HStack {
-                VStack(alignment: .leading) {
-                    Text(entry.competition.name)
-                        .multilineTextAlignment(.leading)
-
-                    Text(entry.competition.dateString)
-                        .font(.caption)
-                        .foregroundStyle(.secondary)
-                }
-
-                if widgetFamily.showIcon {
-                    Spacer()
-                    Image("icon")
-                        .resizable()
-                        .frame(width: 30, height: 30)
-                        .cornerRadius(30 * 0.2237)
-                }
-            }
-
-            Spacer()
-
-            VStack(spacing: 0) {
-                ForEach(entry.competition.standings, id: \.id) { standing in
-                    StandingRow(standing: standing)
-                        .foregroundStyle(standing.highlight ? Color.accentColor : .secondary)
-                }
-            }
-
-            Spacer()
-
-            Label(entry.lastUpdated, systemImage: .arrowClockwise)
-                .font(.caption)
-                .foregroundStyle(.tertiary)
+        switch entry.data {
+        case .competition(let competition):
+            view(for: competition)
+        case .error(let error, _):
+            view(for: error)
         }
     }
 
     @ViewBuilder
-    private var accessoryWidgetFamilyView: some View {
-        let standing = entry.competition.standings.highlighted
+    private func view(for competition: WidgetCompetition) -> some View {
+        Group {
+            switch widgetFamily {
+            case .systemSmall, .systemMedium, .systemLarge, .systemExtraLarge:
+                systemWidgetFamilyView(competition: competition)
+            case .accessoryCircular, .accessoryInline, .accessoryRectangular:
+                accessoryWidgetFamilyView(competition: competition)
+            @unknown default:
+                EmptyView()
+            }
+        }
+        .widgetURL(URL(string: "https://friendly-competitions.app/competition/\(competition.id)"))
+    }
+
+    @ViewBuilder
+    private func view(for error: Error) -> some View {
+        switch widgetFamily {
+        case .systemSmall, .systemMedium, .systemLarge, .systemExtraLarge:
+            VStack {
+                Text(error.localizedDescription)
+                Label(entry.lastUpdated, systemImage: .arrowClockwise)
+                    .font(.caption)
+                    .foregroundStyle(.tertiary)
+            }
+        case .accessoryCircular, .accessoryInline, .accessoryRectangular:
+            Image(systemName: .exclamationmarkCircle)
+                .resizable()
+                .scaledToFit()
+        @unknown default:
+            EmptyView()
+        }
+    }
+
+    private func systemWidgetFamilyView(competition: WidgetCompetition) -> some View {
+        VStack(alignment: .leading, spacing: 0) {
+            HStack {
+                VStack(alignment: .leading) {
+                    Text(competition.name)
+                        .multilineTextAlignment(.leading)
+
+                    Text(competition.dateString)
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                }
+            }
+
+            VStack(spacing: 0) {
+                Spacer()
+                ForEach(competition.standings, id: \.id) { standing in
+                    StandingRow(standing: standing)
+                        .foregroundStyle(standing.highlight ? Color.accentColor : .secondary)
+                }
+                Spacer()
+            }
+
+            HStack {
+                Label(entry.lastUpdated, systemImage: .arrowClockwise)
+                    .font(.caption)
+                    .foregroundStyle(.tertiary)
+                Spacer()
+                Image("icon")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 25, height: 25)
+                    .cornerRadius(25 * 0.2237)
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func accessoryWidgetFamilyView(competition: WidgetCompetition) -> some View {
+        let standing = competition.standings.highlighted
         if let standing {
             if widgetFamily == .accessoryCircular {
                 VStack(spacing: 6) {
@@ -124,14 +151,6 @@ struct StandingRow: View {
 }
 
 private extension WidgetFamily {
-    var showIcon: Bool {
-        switch self {
-        case .systemMedium, .systemLarge, .systemExtraLarge:
-            return true
-        default:
-            return false
-        }
-    }
     var showCompactPoints: Bool {
         switch self {
         case .systemSmall:
@@ -142,9 +161,25 @@ private extension WidgetFamily {
     }
 }
 
+#if DEBUG
+enum PreviewError: Error, LocalizedError {
+    case test
+
+    var errorDescription: String? {
+        localizedDescription
+    }
+
+    var localizedDescription: String {
+        switch self {
+        case .test:
+            return "Some test error"
+        }
+    }
+}
 //#Preview(as: .systemMedium) {
 #Preview(as: .systemSmall) {
     CompetitionStandingsWidget()
 } timeline: {
-    CompetitionTimelineEntry(competition: .placeholder)
+    CompetitionTimelineEntry(data: .error(PreviewError.test, .now))
 }
+#endif
