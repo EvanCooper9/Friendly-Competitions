@@ -12,6 +12,7 @@ private enum Dependencies {
     static let analyticsManager = AnalyticsManagingMock()
     static let authenticationManager = AuthenticationManagingMock()
     static let competitionsManager = CompetitionsManagingMock()
+    static let featureFlagManager = FeatureFlagManagingMock()
     static let friendsManager = FriendsManagingMock()
     static let healthKitManager = HealthKitManagingMock()
     static let healthStore = HealthStoringMock()
@@ -32,6 +33,7 @@ private enum Dependencies {
         Container.shared.analyticsManager.register { analyticsManager }
         Container.shared.authenticationManager.register { authenticationManager }
         Container.shared.competitionsManager.register { competitionsManager }
+        Container.shared.featureFlagManager.register { featureFlagManager }
         Container.shared.friendsManager.register { friendsManager }
         Container.shared.healthKitManager.register { healthKitManager }
         Container.shared.healthStore.register { healthStore }
@@ -92,6 +94,7 @@ extension PreviewProvider {
     static var analyticsManager: AnalyticsManagingMock { Dependencies.analyticsManager }
     static var authenticationManager: AuthenticationManagingMock { Dependencies.authenticationManager }
     static var competitionsManager: CompetitionsManagingMock { Dependencies.competitionsManager }
+    static var featureFlagManager: FeatureFlagManagingMock { Dependencies.featureFlagManager }
     static var friendsManager: FriendsManagingMock { Dependencies.friendsManager }
     static var healthKitManager: HealthKitManagingMock { Dependencies.healthKitManager }
     static var healthStore: HealthStoringMock { Dependencies.healthStore }

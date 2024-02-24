@@ -14,6 +14,9 @@ struct DeveloperMenu: View {
                         .tag(environment)
                 }
             }
+            Button(action: viewModel.featureFlagButtonTapped) {
+                Label("Feature flags", systemImage: .flagFill)
+            }
         } label: {
             Image(systemName: .hammerCircleFill)
         }
@@ -22,6 +25,9 @@ struct DeveloperMenu: View {
             TextField("Destination", text: $viewModel.destination)
                 .textInputAutocapitalization(.never)
                 .font(.body)
+        }
+        .sheet(isPresented: $viewModel.showFeatureFlag) {
+            FeatureFlagOverrideView()
         }
     }
 }

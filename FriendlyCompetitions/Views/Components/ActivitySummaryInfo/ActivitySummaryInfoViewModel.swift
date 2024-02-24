@@ -10,6 +10,8 @@ final class ActivitySummaryInfoViewModel: ObservableObject {
             .activitySummaryType,
             .activeEnergy,
             .appleExerciseTime,
+            .appleMoveTime,
+            .appleStandTime,
             .appleStandHour
         ]
     }
@@ -50,10 +52,17 @@ final class ActivitySummaryInfoViewModel: ObservableObject {
             self.activitySummary = activitySummary
         }
 
+        healthKitManager.permissionsChanged
+            .flatMapLatest(withUnretained: self) { strongSelf in
+                strongSelf.healthKitManager.shouldRequest(Constants.permissionTypes)
+                    .catchErrorJustReturn(false)
+            }
+            .receive(on: scheduler)
+            .assign(to: &$shouldRequestPermissions)
+
         requestPermissionsSubject
             .flatMapLatest(withUnretained: self) { $0.healthKitManager.request(Constants.permissionTypes) }
-            .receive(on: scheduler)
-            .sink(withUnretained: self) { $0.shouldRequestPermissions = false }
+            .sink()
             .store(in: &cancellables)
     }
 

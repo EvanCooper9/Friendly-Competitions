@@ -885,6 +885,11 @@ class FriendsManagingMock: FriendsManaging {
 class HealthKitManagingMock: HealthKitManaging {
 
 
+    var permissionsChanged: AnyPublisher<Void, Never> {
+        get { return underlyingPermissionsChanged }
+        set(value) { underlyingPermissionsChanged = value }
+    }
+    var underlyingPermissionsChanged: AnyPublisher<Void, Never>!
 
 
     //MARK: - execute

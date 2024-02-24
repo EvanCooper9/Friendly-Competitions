@@ -182,6 +182,8 @@
 		ED58C99329ABAE7300393468 /* ActivitySummary+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED58C99229ABAE7300393468 /* ActivitySummary+Extensions.swift */; };
 		ED58C99629ABAEA500393468 /* User+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED58C99529ABAEA500393468 /* User+Extensions.swift */; };
 		ED58C99829ABB2C200393468 /* RootViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED58C99729ABB2C200393468 /* RootViewModelTests.swift */; };
+		ED5A62972B8A4846002C820E /* FeatureFlagOverrideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED5A62952B8A4846002C820E /* FeatureFlagOverrideView.swift */; };
+		ED5A62982B8A4846002C820E /* FeatureFlagOverrideViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED5A62962B8A4846002C820E /* FeatureFlagOverrideViewModel.swift */; };
 		ED5C3DA12B18C5D700C7010C /* WelcomeNavigationDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED5C3DA02B18C5D700C7010C /* WelcomeNavigationDestination.swift */; };
 		ED6A6C8B296DDBB700615111 /* PaywallOffer.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED6A6C8A296DDBB700615111 /* PaywallOffer.swift */; };
 		ED71E2A328F70212001FED74 /* Files in Frameworks */ = {isa = PBXBuildFile; productRef = ED71E2A228F70212001FED74 /* Files */; };
@@ -487,6 +489,8 @@
 		ED58C99229ABAE7300393468 /* ActivitySummary+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ActivitySummary+Extensions.swift"; sourceTree = "<group>"; };
 		ED58C99529ABAEA500393468 /* User+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "User+Extensions.swift"; sourceTree = "<group>"; };
 		ED58C99729ABB2C200393468 /* RootViewModelTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootViewModelTests.swift; sourceTree = "<group>"; };
+		ED5A62952B8A4846002C820E /* FeatureFlagOverrideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureFlagOverrideView.swift; sourceTree = "<group>"; };
+		ED5A62962B8A4846002C820E /* FeatureFlagOverrideViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureFlagOverrideViewModel.swift; sourceTree = "<group>"; };
 		ED5C3DA02B18C5D700C7010C /* WelcomeNavigationDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeNavigationDestination.swift; sourceTree = "<group>"; };
 		ED6A6C8A296DDBB700615111 /* PaywallOffer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallOffer.swift; sourceTree = "<group>"; };
 		ED779D3929F019DA00317950 /* AuthenticationManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationManagerTests.swift; sourceTree = "<group>"; };
@@ -877,6 +881,7 @@
 				ED1B859F29C90490008DB1F6 /* RootView.swift */,
 				EDA61C0C2977276F00370C5C /* RootViewModel.swift */,
 				ED3C09DF29626A1D00ED4ACC /* NavigationDestination.swift */,
+				ED5A62942B8A4834002C820E /* FeatureFlagOverride */,
 				C1F7DFF226D7F77900B46F91 /* CompetitionContainer */,
 				C119B03026FE610100B56703 /* Components */,
 				ED1B85B029C904CC008DB1F6 /* Developer */,
@@ -1380,6 +1385,15 @@
 				C155CA6C27AC0BF8005F49F4 /* Foundation */,
 			);
 			path = Extensions;
+			sourceTree = "<group>";
+		};
+		ED5A62942B8A4834002C820E /* FeatureFlagOverride */ = {
+			isa = PBXGroup;
+			children = (
+				ED5A62952B8A4846002C820E /* FeatureFlagOverrideView.swift */,
+				ED5A62962B8A4846002C820E /* FeatureFlagOverrideViewModel.swift */,
+			);
+			path = FeatureFlagOverride;
 			sourceTree = "<group>";
 		};
 		ED6CB45A28BA829000436BBD /* HealthKit */ = {
@@ -2310,6 +2324,7 @@
 				ED47BA1129F2D1A7007A1D12 /* Workout+Mock.swift in Sources */,
 				EDC1A36F2B7ED1E9001948D9 /* GoogleAdViewModel.swift in Sources */,
 				ED3EF4B22A3E57F6004D2706 /* StepCountManager+Factory.swift in Sources */,
+				ED5A62982B8A4846002C820E /* FeatureFlagOverrideViewModel.swift in Sources */,
 				C155229E26E793C600FE0DA7 /* Competition+Mock.swift in Sources */,
 				C1C8B24226F3FB47008D6B1B /* HealthKitManager.swift in Sources */,
 				C1C1542326D5DFFD00C6FA9F /* HKActivitySummary+Extensions.swift in Sources */,
@@ -2339,6 +2354,7 @@
 				ED0E50022B83F1AE003BE7CB /* CompetitionResult.swift in Sources */,
 				C123C9C727A74C4100375F73 /* Button+Extensions.swift in Sources */,
 				EDA478292A815943000F8E1A /* CompetitionContainerViewModel.swift in Sources */,
+				ED5A62972B8A4846002C820E /* FeatureFlagOverrideView.swift in Sources */,
 				ED1F8DEE29E3933A0009B986 /* DeveloperAppService.swift in Sources */,
 				EDC5FC3F27FA7C1B00F2882D /* View+HUD.swift in Sources */,
 				ED48783228295A2100AC1E2C /* InviteFriendsAction.swift in Sources */,

@@ -12,7 +12,7 @@ struct ExploreView: View {
 
     var body: some View {
         NavigationStack(path: $viewModel.navigationDestinations) {
-            ScrollView {
+            CustomList {
                 VStack(spacing: 20) {
                     if viewModel.searchText.isEmpty {
                         ForEach(viewModel.appOwnedCompetitions) { competition in
@@ -52,8 +52,8 @@ struct ExploreView: View {
                         }
                     }
 
-                    if viewModel.showAds {
-                        GoogleAd(unit: .native)
+                    if let unit = viewModel.googleAdUnit {
+                        GoogleAd(unit: unit)
                             .padding(.horizontal)
                             .padding(.bottom)
                     }

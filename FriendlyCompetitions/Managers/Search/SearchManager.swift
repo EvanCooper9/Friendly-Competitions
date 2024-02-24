@@ -63,8 +63,9 @@ final class SearchManager: SearchManaging {
 
     // MARK: - Private
 
-    private func users(withIDs userIDs: [User.ID], from source: DatabaseSource) -> some Publisher<[User], Never> {
-        userIDs
+    private func users(withIDs userIDs: [User.ID], from source: DatabaseSource) -> AnyPublisher<[User], Never> {
+        guard userIDs.isNotEmpty else { return .just([]) }
+        return userIDs
             .map { userID in
                 database.document("users/\(userID)")
                     .get(as: User.self, source: source)
@@ -73,5 +74,6 @@ final class SearchManager: SearchManaging {
             }
             .combineLatest()
             .compactMapMany { $0 }
+            .eraseToAnyPublisher()
     }
 }

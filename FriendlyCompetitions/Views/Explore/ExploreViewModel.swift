@@ -14,7 +14,7 @@ final class ExploreViewModel: ObservableObject {
     @Published var searchResults = [Competition]()
     @Published var appOwnedCompetitions = [Competition]()
 
-    @Published private(set) var showAds = false
+    @Published private(set) var googleAdUnit: GoogleAdUnit?
 
     // MARK: - Private Properties
 
@@ -39,6 +39,8 @@ final class ExploreViewModel: ObservableObject {
             .receive(on: scheduler)
             .assign(to: &$searchResults)
 
-        showAds = featureFlagManager.value(forBool: .adsEnabled)
+        if featureFlagManager.value(forBool: .adsEnabled) {
+            googleAdUnit = .native(unit: featureFlagManager.value(forString: .googleAdsExploreScreenAdUnit))
+        }
     }
 }

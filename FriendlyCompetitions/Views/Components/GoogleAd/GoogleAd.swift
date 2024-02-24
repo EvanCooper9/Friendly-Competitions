@@ -183,7 +183,7 @@ struct GoogleAd_Previews: PreviewProvider {
     static var previews: some View {
         VStack {
             Text("Google Ad")
-            GoogleAd(unit: .native)
+            GoogleAd(unit: .native(unit: ""))
                 .padding()
         }
     }

@@ -13,13 +13,9 @@ public enum WidgetIdentifier {
         switch self {
         case .competitionStandings:
             if bundleIdentifier.hasSuffix(Constants.widgetSuffix) {
-                let value = "group." + bundleIdentifier + Constants.competitionStandingsWidgetSuffix
-                print(bundleIdentifier, value)
-                return value
+                return "group." + bundleIdentifier + Constants.competitionStandingsWidgetSuffix
             } else {
-                let value = "group." + bundleIdentifier + Constants.widgetSuffix + Constants.competitionStandingsWidgetSuffix
-                print(bundleIdentifier, value)
-                return value
+                return "group." + bundleIdentifier + Constants.widgetSuffix + Constants.competitionStandingsWidgetSuffix
             }
         }
     }

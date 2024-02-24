@@ -8,8 +8,6 @@ public enum AppGroup {
     }
 
     public static func id(bundleIdentifier: String = Bundle.main.id) -> String {
-        let value = "group." + (bundleIdentifier.before(suffix: Constants.widgetSuffix) ?? bundleIdentifier)
-        print(bundleIdentifier, value)
-        return value
+        "group." + (bundleIdentifier.before(suffix: Constants.widgetSuffix) ?? bundleIdentifier)
     }
 }

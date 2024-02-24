@@ -31,6 +31,7 @@ final class DeveloperMenuViewModel: ObservableObject {
     @Published var environment: UnderlyingEnvironment = .prod
     @Published var showDestinationAlert = false
     @Published var destination = ""
+    @Published var showFeatureFlag = false
 
     // MARK: - Private Properties
 
@@ -85,5 +86,9 @@ final class DeveloperMenuViewModel: ObservableObject {
             text += " (\(destination))"
         }
         return text
+    }
+
+    func featureFlagButtonTapped() {
+        showFeatureFlag = true
     }
 }

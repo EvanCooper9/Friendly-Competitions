@@ -119,12 +119,18 @@ extension Competition.ScoringModel {
         let healthKitPermissions: [Permission] = {
             switch self {
             case .activityRingCloseCount, .percentOfGoals, .rawNumbers:
-                return [.health(.activitySummaryType), .notifications]
+                return [
+                    .health(.activitySummaryType),
+                    .health(.activeEnergy),
+                    .health(.appleExerciseTime),
+                    .health(.appleMoveTime),
+                    .health(.appleStandTime),
+                    .health(.appleStandHour)
+                ]
             case .stepCount:
-                return [.health(.stepCount), .notifications]
+                return [.health(.stepCount)]
             case let .workout(workoutType, metrics):
                 return workoutType.requiredPermissions(for: metrics)
-                    .appending(.notifications)
             }
         }()
 

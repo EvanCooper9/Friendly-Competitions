@@ -37,8 +37,8 @@ struct HomeView: View {
                     friends
                 }
 
-                if viewModel.showAds {
-                    GoogleAd(unit: .native)
+                if let unit = viewModel.googleAdUnit {
+                    GoogleAd(unit: unit)
                         .padding()
                 }
             }

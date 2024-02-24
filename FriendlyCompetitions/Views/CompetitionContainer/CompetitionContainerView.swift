@@ -4,6 +4,7 @@ import SwiftUI
 struct CompetitionContainerView: View {
 
     @StateObject private var viewModel: CompetitionContainerViewModel
+    @Environment(\.colorScheme) private var colorScheme
 
     init(competition: Competition, result: CompetitionResult?) {
         _viewModel = .init(wrappedValue: .init(competition: competition, result: result))
@@ -39,6 +40,18 @@ struct CompetitionContainerView: View {
             }
         }
         .navigationTitle(viewModel.competition.name)
+        .background(background)
+    }
+
+    private var background: Color {
+        switch colorScheme {
+        case .dark:
+            return .systemBackground
+        case .light:
+            return .secondarySystemBackground
+        @unknown default:
+            return .secondarySystemBackground
+        }
     }
 }
 

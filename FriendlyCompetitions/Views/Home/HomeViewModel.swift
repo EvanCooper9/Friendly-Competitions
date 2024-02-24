@@ -27,7 +27,7 @@ final class HomeViewModel: ObservableObject {
     @Published var showNewCompetition = false
     @Published var showAddFriends = false
     @Published var showAnonymousAccountBlocker = false
-    @Published private(set) var showAds = false
+    @Published private(set) var googleAdUnit: GoogleAdUnit?
 
     // MARK: - Private Properties
 
@@ -105,7 +105,9 @@ final class HomeViewModel: ObservableObject {
             .receive(on: scheduler)
             .assign(to: &$friendRows)
 
-        showAds = featureFlagManager.value(forBool: .adsEnabled)
+        if featureFlagManager.value(forBool: .adsEnabled) {
+            googleAdUnit = .native(unit: featureFlagManager.value(forString: .googleAdsExploreScreenAdUnit))
+        }
 
         handlePremiumBanner()
         bindBanners()

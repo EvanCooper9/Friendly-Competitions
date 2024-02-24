@@ -11,6 +11,8 @@ typealias HealthKitBackgroundDeliveryTask = () -> AnyPublisher<Void, Never>
 
 // sourcery: AutoMockable
 protocol HealthKitManaging {
+    var permissionsChanged: AnyPublisher<Void, Never> { get }
+
     func execute(_ query: AnyHealthKitQuery)
     func registerBackgroundDeliveryTask(for permission: HealthKitPermissionType, task: @escaping HealthKitBackgroundDeliveryTask)
     func registerBackgroundDeliveryPublisher(for permission: HealthKitPermissionType, publisher: AnyPublisher<Void, Never>)
@@ -22,6 +24,8 @@ protocol HealthKitManaging {
 
 final class HealthKitManager: HealthKitManaging {
 
+    let permissionsChanged: AnyPublisher<Void, Never>
+
     // MARK: - Private Properties
 
     @Injected(\.analyticsManager) private var analyticsManager: AnalyticsManaging
@@ -30,9 +34,16 @@ final class HealthKitManager: HealthKitManaging {
     @Injected(\.healthStore) private var healthStore: HealthStoring
     @Injected(\.scheduler) private var scheduler: AnySchedulerOf<RunLoop>
 
+    private var permissionsChangedSubject = PassthroughSubject<Void, Never>()
     private var backgroundDeliveryTasks = [HealthKitPermissionType: [HealthKitBackgroundDeliveryTask]]()
     private var backgroundDeliveryPublishers = [HealthKitPermissionType: [AnyPublisher<Void, Never>]]()
     private var cancellables = Cancellables()
+
+    // MARK: - Lifecycle
+
+    init() {
+        permissionsChanged = permissionsChangedSubject.eraseToAnyPublisher()
+    }
 
     // MARK: - Public Methods
 
@@ -65,6 +76,7 @@ final class HealthKitManager: HealthKitManaging {
             .handleEvents(withUnretained: self, receiveOutput: { strongSelf, success in
                 guard success else { return }
                 strongSelf.registerPermissionsForBackgroundDelivery(permissions)
+                strongSelf.permissionsChangedSubject.send(())
             })
             .mapToVoid()
             .eraseToAnyPublisher()
