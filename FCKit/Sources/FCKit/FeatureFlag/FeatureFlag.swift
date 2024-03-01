@@ -15,6 +15,7 @@ public enum FeatureFlagBool: String, CaseIterable, FeatureFlag {
     case premiumEnabled = "premium_enabled"
     case newResultsBannerEnabled = "new_results_banner_enabled"
     case sharedBackgroundDeliveryPublishers = "shared_background_delivery_publishers"
+    case ignoreManuallyEnteredHealthKitData = "ignore_manually_entered_health_kit_data"
 
     public var defaultValue: Data { false }
 }

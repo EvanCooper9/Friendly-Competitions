@@ -41,10 +41,13 @@ final class StepCountManager: StepCountManaging {
     func stepCounts(in dateInterval: DateInterval) -> AnyPublisher<[StepCount], Error> {
         guard let days = Calendar.current.dateComponents([.day], from: dateInterval.start, to: dateInterval.end).day else { return .just([]) }
         return (0 ..< days)
-            .map { offset -> AnyPublisher<StepCount?, Never> in
+            .compactMap { offset -> AnyPublisher<StepCount?, Never>? in
                 let start = Calendar.current
                     .startOfDay(for: dateInterval.start)
                     .addingTimeInterval(TimeInterval(offset).days)
+
+                guard start <= .now else { return nil }
+
                 let end = Calendar.current
                     .startOfDay(for: start)
                     .addingTimeInterval(24.hours - 1.seconds)
