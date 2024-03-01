@@ -8,6 +8,12 @@ protocol HealthKitQuery {
     var underlyingQuery: HKQuery { get }
 }
 
+extension HealthKitQuery {
+    static var ignoreManuallyEnteredHealthKitData: Bool {
+        Container.shared.featureFlagManager.resolve().value(forBool: .ignoreManuallyEnteredHealthKitData)
+    }
+}
+
 /// Required typealias so that sourcery can generate mocks for type `any HealthKitQuery`
 typealias AnyHealthKitQuery = any HealthKitQuery
 
@@ -24,7 +30,7 @@ final class ActivitySummaryQuery: HealthKitQuery {
         self.resultsHandler = resultsHandler
 
         var predicate = predicate
-        if Container.shared.featureFlagManager.resolve().value(forBool: .ignoreManuallyEnteredHealthKitData) {
+        if Self.ignoreManuallyEnteredHealthKitData {
             predicate = predicate.removingManuallyEnteredData
         }
 
@@ -54,7 +60,7 @@ final class WorkoutQuery: HealthKitQuery {
         self.resultsHandler = resultsHandler
 
         var predicate = predicate
-        if Container.shared.featureFlagManager.resolve().value(forBool: .ignoreManuallyEnteredHealthKitData) {
+        if Self.ignoreManuallyEnteredHealthKitData {
             predicate = predicate.removingManuallyEnteredData
         }
 
@@ -88,7 +94,7 @@ final class StepsQuery: HealthKitQuery {
         self.resultsHandler = resultsHandler
 
         var predicate = predicate
-        if Container.shared.featureFlagManager.resolve().value(forBool: .ignoreManuallyEnteredHealthKitData) {
+        if Self.ignoreManuallyEnteredHealthKitData {
             predicate = predicate.removingManuallyEnteredData
         }
 
@@ -120,7 +126,7 @@ final class SampleQuery: HealthKitQuery {
         self.resultsHandler = resultsHandler
 
         var predicate = predicate
-        if Container.shared.featureFlagManager.resolve().value(forBool: .ignoreManuallyEnteredHealthKitData) {
+        if Self.ignoreManuallyEnteredHealthKitData {
             predicate = predicate.removingManuallyEnteredData
         }
 
