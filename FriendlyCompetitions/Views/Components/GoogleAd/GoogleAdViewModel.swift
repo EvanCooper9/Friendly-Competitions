@@ -1,3 +1,4 @@
+import ECKit
 import Factory
 import GoogleMobileAds
 
@@ -6,7 +7,10 @@ final class GoogleAdViewModel: NSObject, ObservableObject, GADNativeAdLoaderDele
     @Published var ad: GADNativeAd?
     private let adLoader: GADAdLoader
 
-    @Injected(\.analyticsManager) private var analyticsManager
+    @Injected(\.analyticsManager) private var analyticsManager: AnalyticsManaging
+    @Injected(\.appState) private var appState: AppStateProviding
+
+    private var cancellables = Cancellables()
 
     init(unit: GoogleAdUnit) {
         adLoader = GADAdLoader(
@@ -17,8 +21,16 @@ final class GoogleAdViewModel: NSObject, ObservableObject, GADNativeAdLoaderDele
         )
         super.init()
         adLoader.delegate = self
-        adLoader.load(GADRequest())
-        analyticsManager.log(event: .adLoadStarted)
+
+        appState.didBecomeActive
+            .filter { $0 }
+            .mapToVoid()
+            .first()
+            .sink { [adLoader, analyticsManager] in
+                adLoader.load(GADRequest())
+                analyticsManager.log(event: .adLoadStarted)
+            }
+            .store(in: &cancellables)
     }
 
     func adLoader(_ adLoader: GADAdLoader, didReceive nativeAd: GADNativeAd) {
