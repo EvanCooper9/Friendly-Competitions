@@ -126,6 +126,11 @@ class AppStateProvidingMock: AppStateProviding {
         set(value) { underlyingDidBecomeActive = value }
     }
     var underlyingDidBecomeActive: AnyPublisher<Bool, Never>!
+    var isActive: AnyPublisher<Bool, Never> {
+        get { return underlyingIsActive }
+        set(value) { underlyingIsActive = value }
+    }
+    var underlyingIsActive: AnyPublisher<Bool, Never>!
 
 
     //MARK: - push
