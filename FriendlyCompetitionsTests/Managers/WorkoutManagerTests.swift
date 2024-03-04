@@ -14,7 +14,7 @@ final class WorkoutManagerTests: FCTestCase {
     override func setUp() {
         super.setUp()
         userManager.user = .evan
-        featureFlagManager.valueForBoolClosure = { $0 == .sharedBackgroundDeliveryPublishers ? true : false }
+        featureFlagManager.valueForBoolFeatureFlagFeatureFlagBoolBoolClosure = { $0 == .sharedBackgroundDeliveryPublishers ? true : false }
     }
 
     func testThatItRefetchesWhenCompetitionsChange() {
@@ -50,7 +50,7 @@ final class WorkoutManagerTests: FCTestCase {
         setupCached(workouts: [])
 
         let workoutDocument = DocumentMock<Workout>()
-        database.documentClosure = { _ in workoutDocument }
+        database.documentDocumentPathStringDocumentClosure = { _ in workoutDocument }
 
         var seenWorkouts = Set<Workout>()
         let batch = BatchMock<Workout>()
@@ -59,7 +59,7 @@ final class WorkoutManagerTests: FCTestCase {
             self.setupCached(workouts: Array(seenWorkouts))
         }
         batch.commitClosure = { .just(()) }
-        database.batchReturnValue = batch
+        database.batchBatchReturnValue = batch
 
         let workoutManager = WorkoutManager()
         retainDuringTest(workoutManager)
@@ -97,7 +97,7 @@ final class WorkoutManagerTests: FCTestCase {
             return .just(workouts)
         }
 
-        database.collectionClosure = { path in
+        database.collectionCollectionPathStringCollectionClosure = { path in
             XCTAssertEqual(path, "users/\(self.userManager.user.id)/workouts")
             return cachedWorkoutCollection
         }
@@ -105,12 +105,12 @@ final class WorkoutManagerTests: FCTestCase {
 
     private func setupDatabaseForUpload() {
         let workoutDocument = DocumentMock<Workout>()
-        database.documentClosure = { _ in workoutDocument }
+        database.documentDocumentPathStringDocumentClosure = { _ in workoutDocument }
 
         let batch = BatchMock<Workout>()
         batch.setClosure = { _, _ in }
         batch.commitClosure = { .just(()) }
-        database.batchReturnValue = batch
+        database.batchBatchReturnValue = batch
     }
 }
 

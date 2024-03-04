@@ -7,7 +7,7 @@ final class ExploreViewModelTests: FCTestCase {
     override func setUp() {
         super.setUp()
         competitionsManager.appOwnedCompetitions = .never()
-        featureFlagManager.valueForBoolReturnValue = false
+        featureFlagManager.valueForBoolFeatureFlagFeatureFlagBoolBoolReturnValue = false
     }
 
     func testThatAppOwnedCompetitionsIsCorrect() {
