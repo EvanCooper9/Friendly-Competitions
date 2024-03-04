@@ -15,7 +15,7 @@ final class ActivitySummaryManagerTests: FCTestCase {
     override func setUp() {
         super.setUp()
         userManager.user = .evan
-        featureFlagManager.valueForBoolClosure = { $0 == .sharedBackgroundDeliveryPublishers ? true : false }
+        featureFlagManager.valueForBoolFeatureFlagFeatureFlagBoolBoolClosure = { $0 == .sharedBackgroundDeliveryPublishers ? true : false }
     }
     
     func testThatItFetchesActivitySummariesAndSetsCurrentOnSuccess() {
@@ -101,7 +101,7 @@ final class ActivitySummaryManagerTests: FCTestCase {
         setupCached(activitySummaries: [])
 
         let activitySummaryDocument = DocumentMock<ActivitySummary>()
-        database.documentClosure = { _ in activitySummaryDocument }
+        database.documentDocumentPathStringDocumentClosure = { _ in activitySummaryDocument }
 
         var seenActivitySummaries = Set<ActivitySummary>()
         let batch = BatchMock<ActivitySummary>()
@@ -110,7 +110,7 @@ final class ActivitySummaryManagerTests: FCTestCase {
             self.setupCached(activitySummaries: Array(seenActivitySummaries))
         }
         batch.commitClosure = { .just(()) }
-        database.batchReturnValue = batch
+        database.batchBatchReturnValue = batch
 
         let manager = ActivitySummaryManager()
         manager.activitySummary
@@ -144,7 +144,7 @@ final class ActivitySummaryManagerTests: FCTestCase {
             return .just(activitySummaries)
         }
 
-        database.collectionClosure = { path in
+        database.collectionCollectionPathStringCollectionClosure = { path in
             XCTAssertEqual(path, "users/\(self.userManager.user.id)/activitySummaries")
             return cachedActivitySummaryCollection
         }
@@ -152,11 +152,11 @@ final class ActivitySummaryManagerTests: FCTestCase {
 
     private func setupDatabaseForUpload() {
         let activitySummaryDocument = DocumentMock<ActivitySummary>()
-        database.documentClosure = { _ in activitySummaryDocument }
+        database.documentDocumentPathStringDocumentClosure = { _ in activitySummaryDocument }
 
         let batch = BatchMock<ActivitySummary>()
         batch.setClosure = { _, _ in }
         batch.commitClosure = { .just(()) }
-        database.batchReturnValue = batch
+        database.batchBatchReturnValue = batch
     }
 }

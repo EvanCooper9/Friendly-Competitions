@@ -65,7 +65,7 @@ public final class DocumentMock<Model: Codable>: Document {
     }
 
     public var getClosure: ((Model.Type, DatabaseSource) -> AnyPublisher<Model, Error>)?
-    public func get<T: Decodable>(as type: T.Type, source: DatabaseSource) -> AnyPublisher<T, Error> {
+    public func get<T: Decodable>(as type: T.Type, source: DatabaseSource, reportErrors: Bool) -> AnyPublisher<T, Error> {
         getClosure!(T.self as! Model.Type, source)
             .map { $0 as! T }
             .eraseToAnyPublisher()

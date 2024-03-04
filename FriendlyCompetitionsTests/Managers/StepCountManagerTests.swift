@@ -9,7 +9,7 @@ final class StepCountManagerTests: FCTestCase {
     override func setUp() {
         super.setUp()
         userManager.user = .evan
-        featureFlagManager.valueForBoolClosure = { $0 == .sharedBackgroundDeliveryPublishers ? true : false }
+        featureFlagManager.valueForBoolFeatureFlagFeatureFlagBoolBoolClosure = { $0 == .sharedBackgroundDeliveryPublishers ? true : false }
     }
 
     func testThatItRefetchesWhenCompetitionsChange() {
@@ -51,7 +51,7 @@ final class StepCountManagerTests: FCTestCase {
         setupCached(stepCounts: [])
 
         let stepCountDocument = DocumentMock<StepCount>()
-        database.documentClosure = { _ in stepCountDocument }
+        database.documentDocumentPathStringDocumentClosure = { _ in stepCountDocument }
 
         var seenStepCounts = Set<StepCount>()
         let batch = BatchMock<StepCount>()
@@ -60,7 +60,7 @@ final class StepCountManagerTests: FCTestCase {
             self.setupCached(stepCounts: Array(seenStepCounts))
         }
         batch.commitClosure = { .just(()) }
-        database.batchReturnValue = batch
+        database.batchBatchReturnValue = batch
 
         let manager = StepCountManager()
         retainDuringTest(manager)
@@ -102,7 +102,7 @@ final class StepCountManagerTests: FCTestCase {
             return .just(stepCounts)
         }
 
-        database.collectionClosure = { path in
+        database.collectionCollectionPathStringCollectionClosure = { path in
             XCTAssertEqual(path, "users/\(self.userManager.user.id)/steps")
             return cachedStepCountCollection
         }
@@ -110,11 +110,11 @@ final class StepCountManagerTests: FCTestCase {
 
     private func setupDatabaseForUpload() {
         let stepCountDocument = DocumentMock<StepCount>()
-        database.documentClosure = { _ in stepCountDocument }
+        database.documentDocumentPathStringDocumentClosure = { _ in stepCountDocument }
 
         let batch = BatchMock<StepCount>()
         batch.setClosure = { _, _ in }
         batch.commitClosure = { .just(()) }
-        database.batchReturnValue = batch
+        database.batchBatchReturnValue = batch
     }
 }

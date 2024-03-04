@@ -32,7 +32,8 @@ final class CompetitionViewModelTests: FCTestCase {
         let viewModel = CompetitionViewModel(competition: .mock)
         scheduler.advance(by: .seconds(1))
 
-        XCTAssertEqual(viewModel.banners, [.healthKitPermissionsMissing(permissions: [.activitySummaryType])])
+        let expectedBanner = Banner.healthKitPermissionsMissing(permissions: [.activitySummaryType, .activeEnergy, .appleExerciseTime, .appleMoveTime, .appleStandTime, .appleStandHour])
+        XCTAssertEqual(viewModel.banners, [expectedBanner])
     }
 
     func testThatBannersHasHealthKitDataMissing() {
@@ -44,7 +45,8 @@ final class CompetitionViewModelTests: FCTestCase {
         let viewModel = CompetitionViewModel(competition: .mock)
         scheduler.advance(by: .seconds(1))
 
-        XCTAssertEqual(viewModel.banners, [.healthKitDataMissing(dataType: [.activitySummaryType])])
+        let expectedBanner = Banner.healthKitDataMissing(dataType: [.activitySummaryType, .activeEnergy, .appleExerciseTime, .appleMoveTime, .appleStandTime, .appleStandHour])
+        XCTAssertEqual(viewModel.banners, [expectedBanner])
     }
 
     func testThatBannersHasNotificationPermissionsDenied() {
@@ -85,7 +87,13 @@ final class CompetitionViewModelTests: FCTestCase {
 
     func testThatTappingBannerRequestsHealthKitPermissions() {
         let expectation = self.expectation(description: #function)
-        let expected = [[], [Banner.healthKitPermissionsMissing(permissions: [.activitySummaryType])], []]
+
+        let healthKitBanner = Banner.healthKitPermissionsMissing(permissions: [.activitySummaryType, .activeEnergy, .appleExerciseTime, .appleMoveTime, .appleStandTime, .appleStandHour])
+        let expected = [
+            [],
+            [healthKitBanner],
+            []
+        ]
 
         activitySummaryManager.activitySummariesInReturnValue = .just([])
         appState.didBecomeActive = .just(true)
@@ -96,6 +104,7 @@ final class CompetitionViewModelTests: FCTestCase {
         let viewModel = CompetitionViewModel(competition: .mock)
         viewModel.$banners
             .removeDuplicates()
+            .print("BANNERS")
             .collect(expected.count)
             .expect(expected, expectation: expectation)
             .store(in: &cancellables)
@@ -106,7 +115,7 @@ final class CompetitionViewModelTests: FCTestCase {
         healthKitManager.shouldRequestReturnValue = .just(false)
         healthKitManager.requestReturnValue = .just(())
         
-        viewModel.tapped(banner: .healthKitPermissionsMissing(permissions: [.activitySummaryType]))
+        viewModel.tapped(banner: healthKitBanner)
         scheduler.advance()
 
         waitForExpectations(timeout: 1)
