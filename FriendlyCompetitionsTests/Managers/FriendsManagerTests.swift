@@ -22,14 +22,14 @@ final class FriendsManagerTests: FCTestCase {
         let friendsCollection = CollectionMock<User>()
 //        friendsCollection.filterOn
 //        friendsCollection.whereFieldInClosure = { friendsPublisher.eraseToAnyPublisher() }
-        database.collectionClosure = { collection in
+        database.collectionCollectionPathStringCollectionClosure = { collection in
             XCTAssertEqual(collection, "users")
             return friendsCollection
         }
 
         let activitySummaryDocument = DocumentMock<ActivitySummary>()
         activitySummaryDocument.getClosure = { _, _ in .just(.mock) }
-        database.documentClosure = { path in
+        database.documentDocumentPathStringDocumentClosure = { path in
             XCTAssertTrue(path.contains("activitySummaries"))
             return activitySummaryDocument
         }
@@ -41,6 +41,7 @@ final class FriendsManagerTests: FCTestCase {
         
         let manager = FriendsManager()
         manager.friends
+            .removeDuplicates()
             .collect(expected.count)
             .expect(expected, expectation: expectation)
             .store(in: &cancellables)
@@ -66,14 +67,14 @@ final class FriendsManagerTests: FCTestCase {
         let friendRequestsPublisher = PassthroughSubject<[User], Error>()
         let friendRequestsCollection = CollectionMock<User>()
 //        friendRequestsCollection.whereFieldInClosure = { friendRequestsPublisher.eraseToAnyPublisher() }
-        database.collectionClosure = { collection in
+        database.collectionCollectionPathStringCollectionClosure = { collection in
             XCTAssertEqual(collection, "users")
             return friendRequestsCollection
         }
 
         let activitySummaryDocument = DocumentMock<ActivitySummary>()
         activitySummaryDocument.getClosure = { _, _ in .just(.mock) }
-        database.documentClosure = { path in
+        database.documentDocumentPathStringDocumentClosure = { path in
             XCTAssertTrue(path.contains("activitySummaries"))
             return activitySummaryDocument
         }
@@ -85,6 +86,7 @@ final class FriendsManagerTests: FCTestCase {
         
         let manager = FriendsManager()
         manager.friendRequests
+            .removeDuplicates()
             .collect(expected.count)
             .expect(expected, expectation: expectation)
             .store(in: &cancellables)
@@ -101,7 +103,7 @@ final class FriendsManagerTests: FCTestCase {
         appState.didBecomeActive = .never()
         
         let collection = CollectionMock<User>()
-        database.collectionClosure = { _ in
+        database.collectionCollectionPathStringCollectionClosure = { _ in
             XCTFail("Should not be called")
             return collection
         }
@@ -117,11 +119,11 @@ final class FriendsManagerTests: FCTestCase {
     private func setupEmptyDatabase() {
         let usersCollection = CollectionMock<User>()
 //        usersCollection.whereFieldInClosure = { .just([]) }
-        database.collectionReturnValue = usersCollection
+        database.collectionCollectionPathStringCollectionReturnValue = usersCollection
         
         let activitySummariesCollection = CollectionMock<ActivitySummary>()
 //        activitySummariesCollection.whereFieldIsEqualToClosure = { activitySummariesCollection }
 //        activitySummariesCollection.whereFieldInClosure = { .just([]) }
-        database.collectionGroupReturnValue = activitySummariesCollection
+        database.collectionGroupCollectionGroupIDStringCollectionReturnValue = activitySummariesCollection
     }
 }

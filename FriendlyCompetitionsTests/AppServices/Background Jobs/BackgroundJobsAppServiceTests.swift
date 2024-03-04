@@ -7,7 +7,7 @@ final class BackgroundJobsAppServiceTests: FCTestCase {
         service.didReceiveRemoteNotification(with: [:])
             .sink()
             .store(in: &cancellables)
-        XCTAssertTrue(analyticsManager.logEventReceivedInvocations.contains(.backgroundNotificationReceived))
+        XCTAssertTrue(analyticsManager.logEventAnalyticsEventVoidReceivedInvocations.contains(.backgroundNotificationReceived))
     }
 
     func testThatBackgroundNotificationfailedToParseJobAnalyticEventIsLogged() {
@@ -28,7 +28,7 @@ final class BackgroundJobsAppServiceTests: FCTestCase {
             .sink()
             .store(in: &cancellables)
 
-        let failedCount = analyticsManager.logEventReceivedInvocations
+        let failedCount = analyticsManager.logEventAnalyticsEventVoidReceivedInvocations
             .filter { $0 == .backgroundNotificationFailedToParseJob }
             .count
 

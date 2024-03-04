@@ -21,7 +21,7 @@ final class HomeViewModelTests: FCTestCase {
         competitionsManager.competitions = .never()
         competitionsManager.invitedCompetitions = .never()
         competitionsManager.hasPremiumResults = .never()
-        featureFlagManager.valueForBoolReturnValue = false
+        featureFlagManager.valueForBoolFeatureFlagFeatureFlagBoolBoolReturnValue = false
         friendsManager.friends = .never()
         friendsManager.friendRequests = .never()
         friendsManager.friendActivitySummaries = .never()
@@ -44,7 +44,7 @@ final class HomeViewModelTests: FCTestCase {
         competitionDocument.getClosure = { _, _ in .just(competition) }
         let competitionResultDocument = DocumentMock<CompetitionResult>()
         competitionResultDocument.getClosure = { _, _ in .just(competitionResult) }
-        database.documentClosure = { path -> Document in
+        database.documentDocumentPathStringDocumentClosure = { path -> Document in
             path.contains("result") ? competitionResultDocument : competitionDocument
         }
 

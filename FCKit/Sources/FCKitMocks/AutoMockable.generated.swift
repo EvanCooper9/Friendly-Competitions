@@ -166,8 +166,6 @@ public class DatabaseMock: Database {
             return documentDocumentPathStringDocumentReturnValue
         }
     }
-
-
 }
 public class DatabaseSettingManagingMock: DatabaseSettingManaging {
 

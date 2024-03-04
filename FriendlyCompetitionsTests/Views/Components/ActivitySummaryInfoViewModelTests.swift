@@ -3,6 +3,11 @@ import XCTest
 
 final class ActivitySummaryInfoViewModelTests: FCTestCase {
 
+    override func setUp() {
+        super.setUp()
+        healthKitManager.permissionsChanged = .never()
+    }
+
     func testThatActivitySummaryIsCorrectForLocalSource() {
         let expectedActivitySummary = ActivitySummary.mock
         activitySummaryManager.activitySummary = .just(expectedActivitySummary)
@@ -29,6 +34,16 @@ final class ActivitySummaryInfoViewModelTests: FCTestCase {
         viewModel.requestPermissionsTapped()
         scheduler.advance()
         XCTAssertFalse(viewModel.shouldRequestPermissions)
-        XCTAssertEqual(healthKitManager.requestReceivedPermissions, [.activitySummaryType, .activeEnergy, .appleExerciseTime, .appleStandHour])
+
+        let expectedPermissions: [HealthKitPermissionType] = [
+            .activitySummaryType,
+            .activeEnergy,
+            .appleExerciseTime,
+            .appleMoveTime,
+            .appleStandTime,
+            .appleStandHour
+        ]
+
+        XCTAssertEqual(healthKitManager.requestReceivedPermissions, expectedPermissions)
     }
 }
