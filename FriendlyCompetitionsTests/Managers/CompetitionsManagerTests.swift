@@ -36,7 +36,7 @@ final class CompetitionsManagerTests: FCTestCase {
         collection.filterOnClosure = { _, _ in collection }
         collection.getDocumentsClosure = { _, _ in .never() }
 
-        database.collectionReturnValue = collection
+        database.collectionCollectionPathStringCollectionReturnValue = collection
 
         let user = User.evan
         userManager.user = user
@@ -79,7 +79,7 @@ final class CompetitionsManagerTests: FCTestCase {
             expectation.fulfill()
             return .just(())
         }
-        database.documentClosure = { id in
+        database.documentDocumentPathStringDocumentClosure = { id in
             XCTAssertEqual(id, "competitions/\(competition.id)")
             return document
         }
@@ -104,7 +104,7 @@ final class CompetitionsManagerTests: FCTestCase {
             expectation.fulfill()
             return .error(error)
         }
-        database.documentClosure = { id in
+        database.documentDocumentPathStringDocumentClosure = { id in
             XCTAssertEqual(id, "competitions/\(competition.id)")
             return document
         }
@@ -162,7 +162,7 @@ final class CompetitionsManagerTests: FCTestCase {
         resultsCollection.filterOnClosure = { _, _ in resultsCollection }
         resultsCollection.getDocumentsClosure = { _, _ in .never() }
 
-        database.collectionClosure = { path in
+        database.collectionCollectionPathStringCollectionClosure = { path in
             if path.hasSuffix("results") {
                 return resultsCollection
             } else {
