@@ -80,11 +80,10 @@ final class StepCountManager: StepCountManaging {
 
     private func fetchAndUpload() -> AnyPublisher<Void, Never> {
         competitionsManager.competitions
-            .filterMany { competition in
+            .filterMany { [weak self] competition in
+                guard let self else { return false }
                 let gracePeriod = self.featureFlagManager.value(forDouble: .dataUploadGracePeriodHours).hours
-                guard competition.canUploadData(gracePeriod: gracePeriod) else {
-                    return false
-                }
+                guard competition.canUploadData(gracePeriod: gracePeriod) else { return false }
                 switch competition.scoringModel {
                 case .stepCount:
                     return true

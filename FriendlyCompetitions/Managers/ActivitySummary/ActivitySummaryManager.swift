@@ -113,8 +113,10 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
 
     private func fetchAndUpload() -> AnyPublisher<Void, Never> {
         competitionsManager.competitions
-            .filterMany { competition in
-                guard competition.isActive else { return false }
+            .filterMany { [weak self] competition in
+                guard let self else { return false }
+                let gracePeriod = self.featureFlagManager.value(forDouble: .dataUploadGracePeriodHours).hours
+                guard competition.canUploadData(gracePeriod: gracePeriod) else { return false }
                 switch competition.scoringModel {
                 case .activityRingCloseCount, .percentOfGoals, .rawNumbers:
                     return true
