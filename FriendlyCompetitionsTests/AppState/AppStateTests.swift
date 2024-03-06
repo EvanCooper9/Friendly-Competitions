@@ -56,7 +56,7 @@ final class AppStateTests: FCTestCase {
 
     func testIsActive() {
         let expectation = expectation(description: #function)
-        let expected = [false, true, false, true]
+        let expected = [true, false, true]
 
         let appState = AppState()
         appState.isActive

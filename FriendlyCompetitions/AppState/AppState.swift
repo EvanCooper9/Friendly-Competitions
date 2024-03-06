@@ -45,11 +45,13 @@ final class AppState: AppStateProviding {
 
         isActive = Publishers
             .Merge(
-                UIApplication.didBecomeActiveNotification.publisher.mapToValue(true),
+                UIApplication.didBecomeActiveNotification.publisher.mapToValue(true)
+                    .print("> DEBUGGING didBecomeActiveNotification"),
                 UIApplication.didEnterBackgroundNotification.publisher.mapToValue(false)
+                    .print("> DEBUGGING didEnterBackgroundNotification")
             )
-            .prepend(false)
             .share(replay: 1)
+            .print("> DEBUGGING isActive")
             .eraseToAnyPublisher()
     }
 
