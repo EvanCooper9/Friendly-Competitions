@@ -10,6 +10,12 @@ final class StepCountManagerTests: FCTestCase {
         super.setUp()
         userManager.user = .evan
         featureFlagManager.valueForBoolFeatureFlagFeatureFlagBoolBoolClosure = { $0 == .sharedBackgroundDeliveryPublishers ? true : false }
+        featureFlagManager.valueForDoubleFeatureFlagFeatureFlagDoubleDoubleClosure = { flag in
+            switch flag {
+            case .dataUploadGracePeriodHours: return 12.0
+            default: return 0.0
+            }
+        }
     }
 
     func testThatItRefetchesWhenCompetitionsChange() {
@@ -22,11 +28,10 @@ final class StepCountManagerTests: FCTestCase {
         let manager = StepCountManager()
         retainDuringTest(manager)
 
-        let scoringModel = Competition.ScoringModel.stepCount
-
-        let start = Calendar.current.startOfDay(for: .now).addingTimeInterval(-5.days)
-        let competitionA = Competition(name: #function, owner: "owner", participants: [], pendingParticipants: [], scoringModel: scoringModel, start: start, end: .now.addingTimeInterval(1.days), repeats: true, isPublic: true, banner: nil)
-        let competitionB = Competition(name: #function, owner: "owner", participants: [], pendingParticipants: [], scoringModel: scoringModel, start: start, end: .now.addingTimeInterval(2.days), repeats: true, isPublic: true, banner: nil)
+        let start = Calendar.current.startOfDay(for: .now.addingTimeInterval(-5.days))
+        let end = start.addingTimeInterval(24.hours - 1.seconds)
+        let competitionA = Competition(name: #function, owner: "owner", participants: [], pendingParticipants: [], scoringModel: .stepCount, start: start, end: end.addingTimeInterval(7.days), repeats: true, isPublic: true, banner: nil)
+        let competitionB = Competition(name: #function, owner: "owner", participants: [], pendingParticipants: [], scoringModel: .stepCount, start: start, end: end.addingTimeInterval(8.days), repeats: true, isPublic: true, banner: nil)
         let expectedCompetitions = [
             [competitionA],
             [competitionA, competitionB]
@@ -37,9 +42,10 @@ final class StepCountManagerTests: FCTestCase {
         }
 
         let expectedQueryCount = expectedCompetitions.reduce(0) { partialResult, competitions in
-            let dateInterval = competitions.dateInterval!
-            let days = Calendar.current.dateComponents([.day], from: dateInterval.start, to: dateInterval.end).day ?? 0
-            return partialResult + days
+            let dateInterval = competitions.dateInterval!.combined(with: .dataFetchDefault)
+            let maxDate = min(dateInterval.end, .now)
+            let days = Calendar.current.dateComponents([.day], from: dateInterval.start, to: maxDate).day ?? 0
+            return partialResult + days + 1
         }
         XCTAssertEqual(healthKitManager.executeCallsCount, expectedQueryCount)
     }

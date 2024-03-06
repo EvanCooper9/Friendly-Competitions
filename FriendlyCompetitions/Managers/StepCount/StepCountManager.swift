@@ -46,7 +46,9 @@ final class StepCountManager: StepCountManaging {
                     .startOfDay(for: dateInterval.start)
                     .addingTimeInterval(TimeInterval(offset).days)
 
-                guard start <= .now else { return nil }
+                guard start <= .now else {
+                    return nil
+                }
 
                 let end = Calendar.current
                     .startOfDay(for: start)
@@ -79,7 +81,10 @@ final class StepCountManager: StepCountManaging {
     private func fetchAndUpload() -> AnyPublisher<Void, Never> {
         competitionsManager.competitions
             .filterMany { competition in
-                guard competition.isActive else { return false }
+                let gracePeriod = self.featureFlagManager.value(forDouble: .dataUploadGracePeriodHours).hours
+                guard competition.canUploadData(gracePeriod: gracePeriod) else {
+                    return false
+                }
                 switch competition.scoringModel {
                 case .stepCount:
                     return true
@@ -87,7 +92,13 @@ final class StepCountManager: StepCountManaging {
                     return false
                 }
             }
-            .map { $0.dateInterval?.combined(with: .dataFetchDefault) ?? .dataFetchDefault }
+            .map { competitions in
+                if let dateInterval = competitions.dateInterval {
+                    return dateInterval.combined(with: .dataFetchDefault)
+                } else {
+                    return .dataFetchDefault
+                }
+            }
             .removeDuplicates()
             .flatMapLatest(withUnretained: self) { strongSelf, dateInterval in
                 strongSelf.healthKitManager.shouldRequest([.stepCount])
