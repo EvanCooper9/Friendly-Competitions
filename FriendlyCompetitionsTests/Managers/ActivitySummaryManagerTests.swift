@@ -16,6 +16,12 @@ final class ActivitySummaryManagerTests: FCTestCase {
         super.setUp()
         userManager.user = .evan
         featureFlagManager.valueForBoolFeatureFlagFeatureFlagBoolBoolClosure = { $0 == .sharedBackgroundDeliveryPublishers ? true : false }
+        featureFlagManager.valueForDoubleFeatureFlagFeatureFlagDoubleDoubleClosure = { flag in
+            switch flag {
+            case .dataUploadGracePeriodHours: return 12.0
+            default: return 0.0
+            }
+        }
     }
     
     func testThatItFetchesActivitySummariesAndSetsCurrentOnSuccess() {

@@ -106,7 +106,12 @@ final class WorkoutManager: WorkoutManaging {
         }
 
         return competitionsManager.competitions
-            .filterMany(\.isActive)
+            .filterMany { [weak self] competition in
+                guard let self else { return false }
+                let gracePeriod = self.featureFlagManager.value(forDouble: .dataUploadGracePeriodHours).hours
+                guard competition.canUploadData(gracePeriod: gracePeriod) else { return false }
+                return true
+            }
             .compactMapMany { competition in
                 let dateInterval = DateInterval(start: competition.start, end: competition.end)
                 switch competition.scoringModel {
