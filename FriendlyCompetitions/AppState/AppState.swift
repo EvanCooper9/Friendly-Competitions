@@ -48,7 +48,6 @@ final class AppState: AppStateProviding {
                 UIApplication.didBecomeActiveNotification.publisher.mapToValue(true),
                 UIApplication.didEnterBackgroundNotification.publisher.mapToValue(false)
             )
-            .prepend(false)
             .share(replay: 1)
             .eraseToAnyPublisher()
     }
