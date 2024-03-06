@@ -1,12 +1,25 @@
+import Combine
+import CombineSchedulers
+import ECKit
 import Factory
+import FCKit
+import Foundation
 import GoogleMobileAds
 
 final class GoogleAdViewModel: NSObject, ObservableObject, GADNativeAdLoaderDelegate, GADNativeAdDelegate {
 
     @Published var ad: GADNativeAd?
-    private let adLoader: GADAdLoader
 
-    @Injected(\.analyticsManager) private var analyticsManager
+    // MARK: - Private Properties
+
+    @Injected(\.analyticsManager) private var analyticsManager: AnalyticsManaging
+    @Injected(\.appState) private var appState: AppStateProviding
+    @Injected(\.scheduler) private var scheduler: AnySchedulerOf<RunLoop>
+
+    private let adLoader: GADAdLoader
+    private var cancellables = Cancellables()
+
+    // MARK: - Lifecycle
 
     init(unit: GoogleAdUnit) {
         adLoader = GADAdLoader(
@@ -17,9 +30,21 @@ final class GoogleAdViewModel: NSObject, ObservableObject, GADNativeAdLoaderDele
         )
         super.init()
         adLoader.delegate = self
-        adLoader.load(GADRequest())
-        analyticsManager.log(event: .adLoadStarted)
+
+        appState.isActive
+            .debounce(for: .seconds(1), scheduler: scheduler)
+            .filter { $0 }
+            .mapToVoid()
+            .first()
+            .sink { [adLoader, analyticsManager] in
+                print("> DEBUGGING loading ad")
+                adLoader.load(GADRequest())
+                analyticsManager.log(event: .adLoadStarted)
+            }
+            .store(in: &cancellables)
     }
+
+    // MARK: - GADNativeAdLoaderDelegate
 
     func adLoader(_ adLoader: GADAdLoader, didReceive nativeAd: GADNativeAd) {
         ad?.delegate = self
@@ -31,7 +56,7 @@ final class GoogleAdViewModel: NSObject, ObservableObject, GADNativeAdLoaderDele
         analyticsManager.log(event: .adLoadError(error: error.localizedDescription))
     }
 
-    // MARK: - GADNativeAdDelegate methods
+    // MARK: - GADNativeAdDelegate
 
     func nativeAdDidRecordClick(_ nativeAd: GADNativeAd) {
         analyticsManager.log(event: .adClick)

@@ -41,7 +41,7 @@ final class AppStateTests: FCTestCase {
     func testThatDidBecomeActiveIsSent() {
         let expectation = expectation(description: #function)
 
-        let expected = [false, true]
+        let expected = [true]
 
         let appState = AppState()
         appState.didBecomeActive
@@ -49,6 +49,23 @@ final class AppStateTests: FCTestCase {
             .expect(expected, expectation: expectation)
             .store(in: &cancellables)
 
+        NotificationCenter.default.post(name: UIApplication.didBecomeActiveNotification, object: nil)
+
+        waitForExpectations(timeout: 1)
+    }
+
+    func testIsActive() {
+        let expectation = expectation(description: #function)
+        let expected = [false, true, false, true]
+
+        let appState = AppState()
+        appState.isActive
+            .collect(expected.count)
+            .expect(expected, expectation: expectation)
+            .store(in: &cancellables)
+
+        NotificationCenter.default.post(name: UIApplication.didBecomeActiveNotification, object: nil)
+        NotificationCenter.default.post(name: UIApplication.didEnterBackgroundNotification, object: nil)
         NotificationCenter.default.post(name: UIApplication.didBecomeActiveNotification, object: nil)
 
         waitForExpectations(timeout: 1)

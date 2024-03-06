@@ -8,6 +8,7 @@ protocol AppStateProviding {
     var deepLink: AnyPublisher<DeepLink?, Never> { get }
     var hud: AnyPublisher<HUD?, Never> { get }
     var didBecomeActive: AnyPublisher<Bool, Never> { get }
+    var isActive: AnyPublisher<Bool, Never> { get }
 
     func push(hud: HUD)
     func push(deepLink: DeepLink)
@@ -22,13 +23,13 @@ final class AppState: AppStateProviding {
     let deepLink: AnyPublisher<DeepLink?, Never>
     let hud: AnyPublisher<HUD?, Never>
     let didBecomeActive: AnyPublisher<Bool, Never>
+    let isActive: AnyPublisher<Bool, Never>
 
     // MARK: - Private Properties
 
     private let rootTabSubject = PassthroughSubject<RootTab, Never>()
     private let deepLinkSubject = CurrentValueSubject<DeepLink?, Never>(nil)
     private let hudSubject = CurrentValueSubject<HUD?, Never>(nil)
-    private let didBecomeActiveSubject = CurrentValueSubject<Bool, Never>(false)
     private var cancellabes = Cancellables()
 
     // MARK: - Lifecycle
@@ -37,12 +38,19 @@ final class AppState: AppStateProviding {
         rootTab = rootTabSubject.share().eraseToAnyPublisher()
         deepLink = deepLinkSubject.share(replay: 1).eraseToAnyPublisher()
         hud = hudSubject.share(replay: 1).eraseToAnyPublisher()
-        didBecomeActive = didBecomeActiveSubject.share(replay: 1).eraseToAnyPublisher()
 
-        UIApplication.didBecomeActiveNotification.publisher
+        didBecomeActive = UIApplication.didBecomeActiveNotification.publisher
             .mapToValue(true)
-            .sink(withUnretained: self) { $0.didBecomeActiveSubject.send($1) }
-            .store(in: &cancellabes)
+            .eraseToAnyPublisher()
+
+        isActive = Publishers
+            .Merge(
+                UIApplication.didBecomeActiveNotification.publisher.mapToValue(true),
+                UIApplication.didEnterBackgroundNotification.publisher.mapToValue(false)
+            )
+            .prepend(false)
+            .share(replay: 1)
+            .eraseToAnyPublisher()
     }
 
     // MARK: - Public Methods
