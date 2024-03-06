@@ -37,7 +37,6 @@ final class GoogleAdViewModel: NSObject, ObservableObject, GADNativeAdLoaderDele
             .mapToVoid()
             .first()
             .sink { [adLoader, analyticsManager] in
-                print("> DEBUGGING loading ad")
                 adLoader.load(GADRequest())
                 analyticsManager.log(event: .adLoadStarted)
             }
