@@ -1,4 +1,5 @@
 import ECKit
+import Factory
 import FCKit
 import Foundation
 import HealthKit
@@ -26,6 +27,10 @@ extension Competition {
     var ended: Bool { end < .now }
     var isActive: Bool { started && !ended }
     var appOwned: Bool { owner == Bundle.main.id }
+
+    func canUploadData(gracePeriod: TimeInterval) -> Bool {
+        isActive || end.addingTimeInterval(gracePeriod) >= .now
+    }
 }
 
 extension Array where Element == Competition {

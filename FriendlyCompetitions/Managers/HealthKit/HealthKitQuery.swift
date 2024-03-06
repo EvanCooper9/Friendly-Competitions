@@ -1,3 +1,4 @@
+import Factory
 import FCKit
 import HealthKit
 
@@ -5,6 +6,12 @@ protocol HealthKitQuery {
     associatedtype Data
     var resultsHandler: (Result<Data, Error>) -> Void { get }
     var underlyingQuery: HKQuery { get }
+}
+
+extension HealthKitQuery {
+    static var ignoreManuallyEnteredHealthKitData: Bool {
+        Container.shared.featureFlagManager.resolve().value(forBool: .ignoreManuallyEnteredHealthKitData)
+    }
 }
 
 /// Required typealias so that sourcery can generate mocks for type `any HealthKitQuery`
@@ -21,6 +28,11 @@ final class ActivitySummaryQuery: HealthKitQuery {
 
     init(predicate: NSPredicate, resultsHandler: @escaping (Result<Data, Error>) -> Void) {
         self.resultsHandler = resultsHandler
+
+        var predicate = predicate
+        if Self.ignoreManuallyEnteredHealthKitData {
+            predicate = predicate.removingManuallyEnteredData
+        }
 
         underlyingQuery = HKActivitySummaryQuery(predicate: predicate, resultsHandler: { _, results, error in
             if let error {
@@ -46,6 +58,11 @@ final class WorkoutQuery: HealthKitQuery {
 
     init(predicate: NSPredicate, dateInterval: DateInterval, resultsHandler: @escaping (Result<Data, Error>) -> Void) {
         self.resultsHandler = resultsHandler
+
+        var predicate = predicate
+        if Self.ignoreManuallyEnteredHealthKitData {
+            predicate = predicate.removingManuallyEnteredData
+        }
 
         let sampleType = HKSampleType.workoutType()
         let startDateSort = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: true)
@@ -76,6 +93,11 @@ final class StepsQuery: HealthKitQuery {
     init(predicate: NSPredicate, resultsHandler: @escaping (Result<Data, Error>) -> Void) {
         self.resultsHandler = resultsHandler
 
+        var predicate = predicate
+        if Self.ignoreManuallyEnteredHealthKitData {
+            predicate = predicate.removingManuallyEnteredData
+        }
+
         underlyingQuery = HKStatisticsQuery(
             quantityType: HKQuantityType(.stepCount),
             quantitySamplePredicate: predicate) { _, stats, error in
@@ -102,6 +124,11 @@ final class SampleQuery: HealthKitQuery {
 
     init(sampleType: HKSampleType, unit: HKUnit, predicate: NSPredicate, resultsHandler: @escaping (Result<Data, Error>) -> Void) {
         self.resultsHandler = resultsHandler
+
+        var predicate = predicate
+        if Self.ignoreManuallyEnteredHealthKitData {
+            predicate = predicate.removingManuallyEnteredData
+        }
 
         underlyingQuery = HKSampleQuery(sampleType: sampleType, predicate: predicate, limit: 0, sortDescriptors: nil) { _, samples, error in
             if let error {
@@ -156,5 +183,12 @@ final class ObserverQuery: HealthKitQuery {
                 resultsHandler(.success(completion))
             }
         }
+    }
+}
+
+private extension NSPredicate {
+    var removingManuallyEnteredData: NSPredicate {
+        let ignoreManualEntryPredicate = HKQuery.predicateForObjects(withMetadataKey: HKMetadataKeyWasUserEntered, operatorType: .notEqualTo, value: true)
+        return NSCompoundPredicate(type: .and, subpredicates: [self, ignoreManualEntryPredicate])
     }
 }
