@@ -69,7 +69,6 @@ extension Competition {
         return [healthKitBanner, notificationsBanner, calculatingBanner]
             .combineLatest()
             .compactMapMany { $0 }
-            .print("> DEBUGGING banners")
             .eraseToAnyPublisher()
     }
 

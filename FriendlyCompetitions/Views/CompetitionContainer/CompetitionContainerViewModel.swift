@@ -7,7 +7,7 @@ import Factory
 final class CompetitionContainerViewModel: ObservableObject {
 
     enum Content {
-        case current(calculating: Bool)
+        case current
         case result(current: CompetitionResult, previous: CompetitionResult?)
         case locked
     }
@@ -16,7 +16,7 @@ final class CompetitionContainerViewModel: ObservableObject {
 
     let competition: Competition
     @Published private(set) var dateRanges: [CompetitionContainerDateRange]
-    @Published private(set) var content = Content.current(calculating: false)
+    @Published private(set) var content = Content.current
 
     // MARK: - Private Properties
 
@@ -105,7 +105,7 @@ final class CompetitionContainerViewModel: ObservableObject {
             .compactMap { dateRanges, selectedResult, previousResult in
                 guard let dateRange = dateRanges.first(where: \.selected) else { return nil }
                 if dateRange.id == currentDateRange.id {
-                    return .current(calculating: true)
+                    return .current
                 } else if dateRange.locked {
                     return .locked
                 } else if let selectedResult {
