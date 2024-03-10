@@ -41,6 +41,7 @@ final class AppState: AppStateProviding {
 
         didBecomeActive = UIApplication.didBecomeActiveNotification.publisher
             .mapToValue(true)
+            .share(replay: 1)
             .eraseToAnyPublisher()
 
         isActive = Publishers

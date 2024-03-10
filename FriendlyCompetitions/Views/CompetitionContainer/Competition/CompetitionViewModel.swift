@@ -69,7 +69,7 @@ final class CompetitionViewModel: ObservableObject {
     init(competition: Competition) {
         self.competition = competition
 
-        checkForPermissions()
+        bindBanners()
         bindStandings()
 
         userManager.userPublisher
@@ -194,6 +194,17 @@ final class CompetitionViewModel: ObservableObject {
 
     // MARK: - Private Methods
 
+    private func bindBanners() {
+        Publishers
+            .CombineLatest3(appState.didBecomeActive, $competition, didRequestPermissions)
+            .flatMapLatest { result in
+                let (_, competition, _) = result
+                return competition.banners
+            }
+            .delay(for: .seconds(1), scheduler: scheduler)
+            .assign(to: &$banners)
+    }
+
     private func bindStandings() {
         $currentStandingsMaximum
             .handleEvents(
@@ -248,16 +259,5 @@ final class CompetitionViewModel: ObservableObject {
         $standings
             .map { [weak self] standings in standings.count < (self?.competition.participants.count ?? 0) }
             .assign(to: &$showShowMoreButton)
-    }
-
-    private func checkForPermissions() {
-        Publishers
-            .CombineLatest3(appState.didBecomeActive, $competition, didRequestPermissions)
-            .flatMapLatest { result in
-                let (_, competition, _) = result
-                return competition.banners
-            }
-            .delay(for: .seconds(1), scheduler: scheduler)
-            .assign(to: &$banners)
     }
 }

@@ -222,6 +222,7 @@ final class HomeViewModel: ObservableObject {
                     .uniqued(on: \.id)
                     .sorted()
             }
+            .filterMany { $0.showsOnHomeScreen }
             .delay(for: .seconds(1), scheduler: scheduler)
             .assign(to: &$banners)
     }

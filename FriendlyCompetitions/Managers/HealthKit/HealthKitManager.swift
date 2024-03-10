@@ -34,7 +34,7 @@ final class HealthKitManager: HealthKitManaging {
     @Injected(\.healthStore) private var healthStore: HealthStoring
     @Injected(\.scheduler) private var scheduler: AnySchedulerOf<RunLoop>
 
-    private var permissionsChangedSubject = PassthroughSubject<Void, Never>()
+    private var permissionsChangedSubject = CurrentValueSubject<Void, Never>(())
     private var backgroundDeliveryTasks = [HealthKitPermissionType: [HealthKitBackgroundDeliveryTask]]()
     private var backgroundDeliveryPublishers = [HealthKitPermissionType: [AnyPublisher<Void, Never>]]()
     private var cancellables = Cancellables()
