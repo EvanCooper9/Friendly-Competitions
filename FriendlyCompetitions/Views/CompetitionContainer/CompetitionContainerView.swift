@@ -23,7 +23,7 @@ struct CompetitionContainerView: View {
             }
 
             switch viewModel.content {
-            case .current(let calculating):
+            case .current:
                 CompetitionView(competition: viewModel.competition)
             case .result(let result, let previous):
                 CompetitionResultsView(competition: viewModel.competition, result: result, previousResult: previous)

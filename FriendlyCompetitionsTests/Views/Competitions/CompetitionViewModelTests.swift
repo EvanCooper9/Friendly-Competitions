@@ -17,6 +17,7 @@ final class CompetitionViewModelTests: FCTestCase {
         competitionsManager.resultsForReturnValue = .never()
         competitionsManager.standingsPublisherForLimitReturnValue = .never()
         competitionsManager.unseenResults = .never()
+        healthKitManager.permissionsChanged = .just(())
         healthKitManager.shouldRequestReturnValue = .never()
         notificationsManager.requestPermissionsReturnValue = .never()
         searchManager.searchForUsersWithIDsReturnValue = .never()
@@ -98,6 +99,7 @@ final class CompetitionViewModelTests: FCTestCase {
         activitySummaryManager.activitySummariesInReturnValue = .just([])
         appState.didBecomeActive = .just(true)
         competitionsManager.competitions = .just([])
+        healthKitManager.permissionsChanged = .just(())
         healthKitManager.shouldRequestReturnValue = .just(true)
         notificationsManager.permissionStatusReturnValue = .just(.authorized)
 
