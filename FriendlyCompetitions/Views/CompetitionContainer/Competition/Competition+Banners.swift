@@ -8,6 +8,7 @@ extension Competition {
     var banners: AnyPublisher<[Banner], Never> {
 
         let activitySummaryManager = Container.shared.activitySummaryManager.resolve()
+        let featureFlagManager = Container.shared.featureFlagManager.resolve()
         let healthKitManager = Container.shared.healthKitManager.resolve()
         let notificationsManager = Container.shared.notificationsManager.resolve()
         let stepCountManager = Container.shared.stepCountManager.resolve()
@@ -61,7 +62,8 @@ extension Competition {
 
         let calculatingBanner = Just(())
             .map { _ -> Banner? in
-                guard ended && end.addingTimeInterval(12.hours) > .now else { return nil }
+                let gracePeriod = featureFlagManager.value(forDouble: .dataUploadGracePeriodHours).hours
+                guard ended && canUploadData(gracePeriod: gracePeriod) else { return nil }
                 return .competitionResultsCalculating
             }
             .eraseToAnyPublisher()
