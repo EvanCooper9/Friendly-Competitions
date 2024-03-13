@@ -12,6 +12,6 @@ public enum AppGroup {
             .split(separator: ".")
             .filter { $0 != Constants.widgetIdentifier }
             .joined(separator: ".")
-        return "group" + withoutWidgetIdentifier
+        return "group." + withoutWidgetIdentifier
     }
 }
