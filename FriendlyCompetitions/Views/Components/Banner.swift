@@ -165,9 +165,9 @@ enum Banner: Comparable, Equatable, Identifiable {
 
     private var rank: Int {
         switch self {
-        case .newCompetitionResults:
-            return 1
         case .healthKitPermissionsMissing:
+            return 1
+        case .newCompetitionResults:
             return 2
         case .healthKitDataMissing:
             return 3

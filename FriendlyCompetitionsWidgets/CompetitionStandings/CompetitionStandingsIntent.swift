@@ -105,9 +105,9 @@ final class CompetitionStandingsProvider: AppIntentTimelineProvider {
                 name: competition.name,
                 start: competition.start,
                 end: competition.end,
-                standings: widgetStandings
-                    .values
-                    .sorted(by: \.rank)
+                standings: widgetStandings.values
+                    .sorted(by: \.points)
+                    .reversed()
             )
 
             return CompetitionTimelineEntry(data: .competition(data))
