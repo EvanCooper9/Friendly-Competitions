@@ -50,7 +50,6 @@ final class WelcomeViewModelTests: FCTestCase {
             .store(in: &cancellables)
 
         viewModel.signInWithAppleTapped()
-
         viewModel.signInAnonymouslyTapped()
         viewModel.confirmAnonymousSignIn()
 

@@ -27,6 +27,7 @@ final class CompetitionViewModelTests: FCTestCase {
 
     func testThatBannerHasHealthKitPermissionsMissing() {
         appState.didBecomeActive = .just(true)
+        featureFlagManager.valueForDoubleFeatureFlagFeatureFlagDoubleDoubleReturnValue = 0
         healthKitManager.shouldRequestReturnValue = .just(true)
         notificationsManager.permissionStatusReturnValue = .just(.authorized)
 
@@ -39,6 +40,7 @@ final class CompetitionViewModelTests: FCTestCase {
 
     func testThatBannersHasHealthKitDataMissing() {
         appState.didBecomeActive = .just(true)
+        featureFlagManager.valueForDoubleFeatureFlagFeatureFlagDoubleDoubleReturnValue = 0
         healthKitManager.shouldRequestReturnValue = .just(false)
         activitySummaryManager.activitySummariesInReturnValue = .just([])
         notificationsManager.permissionStatusReturnValue = .just(.authorized)
@@ -52,6 +54,7 @@ final class CompetitionViewModelTests: FCTestCase {
 
     func testThatBannersHasNotificationPermissionsDenied() {
         appState.didBecomeActive = .just(true)
+        featureFlagManager.valueForDoubleFeatureFlagFeatureFlagDoubleDoubleReturnValue = 0
         healthKitManager.shouldRequestReturnValue = .just(false)
         activitySummaryManager.activitySummariesInReturnValue = .just([.mock])
         notificationsManager.permissionStatusReturnValue = .just(.denied)
@@ -64,6 +67,7 @@ final class CompetitionViewModelTests: FCTestCase {
 
     func testThatBannersHasNotificationPermissionsMissing() {
         appState.didBecomeActive = .just(true)
+        featureFlagManager.valueForDoubleFeatureFlagFeatureFlagDoubleDoubleReturnValue = 0
         healthKitManager.shouldRequestReturnValue = .just(false)
         activitySummaryManager.activitySummariesInReturnValue = .just([.mock])
         notificationsManager.permissionStatusReturnValue = .just(.notDetermined)
@@ -76,6 +80,7 @@ final class CompetitionViewModelTests: FCTestCase {
 
     func testThatBannerIsNil() {
         appState.didBecomeActive = .just(true)
+        featureFlagManager.valueForDoubleFeatureFlagFeatureFlagDoubleDoubleReturnValue = 0
         healthKitManager.shouldRequestReturnValue = .just(false)
         activitySummaryManager.activitySummariesInReturnValue = .just([.mock])
         notificationsManager.permissionStatusReturnValue = .just(.authorized)
@@ -99,6 +104,7 @@ final class CompetitionViewModelTests: FCTestCase {
         activitySummaryManager.activitySummariesInReturnValue = .just([])
         appState.didBecomeActive = .just(true)
         competitionsManager.competitions = .just([])
+        featureFlagManager.valueForDoubleFeatureFlagFeatureFlagDoubleDoubleReturnValue = 0
         healthKitManager.permissionsChanged = .just(())
         healthKitManager.shouldRequestReturnValue = .just(true)
         notificationsManager.permissionStatusReturnValue = .just(.authorized)
@@ -129,6 +135,7 @@ final class CompetitionViewModelTests: FCTestCase {
         let expected = [[], [Banner.notificationPermissionsMissing], []]
 
         appState.didBecomeActive = .just(true)
+        featureFlagManager.valueForDoubleFeatureFlagFeatureFlagDoubleDoubleReturnValue = 0
         healthKitManager.shouldRequestReturnValue = .just(false)
         activitySummaryManager.activitySummariesInReturnValue = .just([.mock])
         notificationsManager.permissionStatusReturnValue = .just(.notDetermined)
