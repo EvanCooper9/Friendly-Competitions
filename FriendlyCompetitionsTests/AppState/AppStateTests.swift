@@ -40,7 +40,6 @@ final class AppStateTests: FCTestCase {
 
     func testThatDidBecomeActiveIsSent() {
         let expectation = expectation(description: #function)
-
         let expected = [true]
 
         let appState = AppState()

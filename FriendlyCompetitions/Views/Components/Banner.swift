@@ -30,6 +30,7 @@ enum Banner: Comparable, Equatable, Identifiable {
 
     // New competition results
     case newCompetitionResults(competition: Competition, resultID: CompetitionResult.ID)
+    case competitionResultsCalculating
 
     var id: String {
         switch self {
@@ -37,6 +38,7 @@ enum Banner: Comparable, Equatable, Identifiable {
         case .healthKitDataMissing: return "healthKitDataMissing"
         case .notificationPermissionsMissing: return "notificationPermissionsMissing"
         case .notificationPermissionsDenied: return "notificationPermissionsDenied"
+        case .competitionResultsCalculating: return "competitionResultsCalculating"
         case .newCompetitionResults(let competition, let resultID):
             return ["newCompetitionResults", competition.id, resultID].joined(separator: "_")
         }
@@ -59,6 +61,28 @@ enum Banner: Comparable, Equatable, Identifiable {
         case .newCompetitionResults(let competition, _):
             return .success(message: "New results posted for \(competition.name)",
                             cta: "View")
+        case .competitionResultsCalculating:
+            if let targetDate = Calendar.current.date(bySettingHour: 12, minute: 0, second: 0, of: .now),
+               targetDate.timeIntervalSinceNow > 0 {
+                let formatter = RelativeDateTimeFormatter()
+                let date = formatter.localizedString(for: targetDate, relativeTo: .now)
+                return .info(message: "Results are being calculated. Check back \(date).")
+            } else {
+                return .info(message: "Results are being calculated. Check back soon.")
+            }
+        }
+    }
+
+    var showsOnHomeScreen: Bool {
+        switch self {
+        case .healthKitPermissionsMissing,
+             .healthKitDataMissing,
+             .notificationPermissionsMissing,
+             .notificationPermissionsDenied,
+             .newCompetitionResults:
+            return true
+        case .competitionResultsCalculating:
+            return false
         }
     }
 
@@ -130,6 +154,8 @@ enum Banner: Comparable, Equatable, Identifiable {
             let appState = Container.shared.appState.resolve()
             appState.push(deepLink: .competitionResult(id: competition.id, resultID: resultID))
             return .just(())
+        case .competitionResultsCalculating:
+            return .just(())
         }
     }
 
@@ -149,6 +175,8 @@ enum Banner: Comparable, Equatable, Identifiable {
             return 4
         case .notificationPermissionsMissing:
             return 5
+        case .competitionResultsCalculating:
+            return 6
         }
     }
 }
@@ -189,6 +217,14 @@ extension Banner.Configuration {
                      foreground: .white,
                      background: .orange)
     }
+
+    static func info(message: String) -> Banner.Configuration {
+        .init(icon: .infoCircleFill,
+              message: message,
+              action: nil,
+              foreground: .white,
+              background: .lightGray)
+    }
 }
 
 #if DEBUG
@@ -199,7 +235,8 @@ struct Banner_Previews: PreviewProvider {
         .healthKitPermissionsMissing(permissions: []),
         .notificationPermissionsMissing,
         .notificationPermissionsDenied,
-        .newCompetitionResults(competition: .mock, resultID: "123")
+        .newCompetitionResults(competition: .mock, resultID: "123"),
+        .competitionResultsCalculating
     ]
 
     static var previews: some View {

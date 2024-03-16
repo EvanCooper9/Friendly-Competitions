@@ -33,14 +33,8 @@ final class CompetitionContainerViewModel: ObservableObject {
     init(competition: Competition, result: CompetitionResult?) {
         self.competition = competition
 
-        let activeDateRange = CompetitionContainerDateRange(start: competition.start, end: competition.end, active: true)
-        if competition.isActive {
-            // showing current standings
-            dateRanges = [activeDateRange]
-        } else {
-            // showing results only
-            dateRanges = []
-        }
+        let currentDateRange = CompetitionContainerDateRange(start: competition.start, end: competition.end, active: true)
+        dateRanges = [currentDateRange]
 
         if let result {
             let resultDateRange = CompetitionContainerDateRange(start: result.start, end: result.end)
@@ -75,14 +69,8 @@ final class CompetitionContainerViewModel: ObservableObject {
                                                       end: result.end,
                                                       locked: index > 0 && blockedByPremium)
                     }
-                    .uniqued { $0.title }
 
-                let allDateRanges: [CompetitionContainerDateRange]
-                if competition.isActive {
-                    allDateRanges = [activeDateRange] + resultsDateRanges
-                } else {
-                    allDateRanges = resultsDateRanges
-                }
+                let allDateRanges = ([currentDateRange] + resultsDateRanges).uniqued { $0.title }
 
                 return allDateRanges.enumerated().map { index, dateRange in
                     var dateRange = dateRange
@@ -116,7 +104,7 @@ final class CompetitionContainerViewModel: ObservableObject {
             )
             .compactMap { dateRanges, selectedResult, previousResult in
                 guard let dateRange = dateRanges.first(where: \.selected) else { return nil }
-                if dateRange.id == activeDateRange.id, competition.isActive {
+                if dateRange.id == currentDateRange.id {
                     return .current
                 } else if dateRange.locked {
                     return .locked

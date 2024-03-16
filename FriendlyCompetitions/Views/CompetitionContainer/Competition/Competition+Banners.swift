@@ -8,6 +8,7 @@ extension Competition {
     var banners: AnyPublisher<[Banner], Never> {
 
         let activitySummaryManager = Container.shared.activitySummaryManager.resolve()
+        let featureFlagManager = Container.shared.featureFlagManager.resolve()
         let healthKitManager = Container.shared.healthKitManager.resolve()
         let notificationsManager = Container.shared.notificationsManager.resolve()
         let stepCountManager = Container.shared.stepCountManager.resolve()
@@ -59,31 +60,42 @@ extension Competition {
             }
             .eraseToAnyPublisher()
 
-        return [healthKitBanner, notificationsBanner]
+        let calculatingBanner = Just(())
+            .map { _ -> Banner? in
+                let gracePeriod = featureFlagManager.value(forDouble: .dataUploadGracePeriodHours).hours
+                guard ended && canUploadData(gracePeriod: gracePeriod) else { return nil }
+                return .competitionResultsCalculating
+            }
+            .eraseToAnyPublisher()
+
+        return [healthKitBanner, notificationsBanner, calculatingBanner]
             .combineLatest()
             .compactMapMany { $0 }
             .eraseToAnyPublisher()
     }
 
     private func healthKitBanner<Data>(for permissions: [HealthKitPermissionType], dataPublisher: AnyPublisher<[Data], Error>, healthKitManager: HealthKitManaging) -> AnyPublisher<Banner?, Never> {
-        permissions
-            .map { permission in
-                healthKitManager.shouldRequest([permission])
-                    .catchErrorJustReturn(false)
-                    .flatMapLatest { shouldRequest -> AnyPublisher<Banner?, Never> in
-                        if shouldRequest {
-                            return .just(.healthKitPermissionsMissing(permissions: [permission]))
-                        } else if isActive {
-                            return dataPublisher
-                                .map { $0.isEmpty ? .healthKitDataMissing(dataType: [permission]) : nil }
-                                .catchErrorJustReturn(.healthKitDataMissing(dataType: [permission]))
-                                .eraseToAnyPublisher()
-                        } else {
-                            return .just(nil)
+        healthKitManager.permissionsChanged
+            .mapToValue(permissions)
+            .flatMapLatest { permissions in
+                permissions.map { permission in
+                    healthKitManager.shouldRequest([permission])
+                        .catchErrorJustReturn(false)
+                        .flatMapLatest { shouldRequest -> AnyPublisher<Banner?, Never> in
+                            if shouldRequest {
+                                return .just(.healthKitPermissionsMissing(permissions: [permission]))
+                            } else if isActive {
+                                return dataPublisher
+                                    .map { $0.isEmpty ? .healthKitDataMissing(dataType: [permission]) : nil }
+                                    .catchErrorJustReturn(.healthKitDataMissing(dataType: [permission]))
+                                    .eraseToAnyPublisher()
+                            } else {
+                                return .just(nil)
+                            }
                         }
-                    }
+                }
+                .combineLatest()
             }
-            .combineLatest()
             .map { banners in
                 var missingPermissions = [HealthKitPermissionType]()
                 var missingData = [HealthKitPermissionType]()
