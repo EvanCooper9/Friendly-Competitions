@@ -1,6 +1,5 @@
 import moment = require("moment");
 import { Competition } from "../../Models/Competition";
-import { Standing } from "../../Models/Standing";
 import { User } from "../../Models/User";
 import { Constants } from "../../Utilities/Constants";
 import { getFirestore } from "../../Utilities/firestore";
@@ -36,7 +35,7 @@ async function completeCompetitionsForDate(date: string): Promise<void> {
         .where("end", "==", date)
         .get()
         .then(query => query.docs.map(doc => new Competition(doc)));
-    await Promise.allSettled(competitions.map(async competition => await completeCompetition(competition)));
+    await Promise.allSettled(competitions.map(async competition => await completeCompetition(competition, date)));
 }
 
 /**
@@ -47,18 +46,15 @@ async function completeCompetitionsForDate(date: string): Promise<void> {
  * - Resetting standings
  * - Resetting dates (if repeating)
  * @param {Competition} competition The competition to complete
+ * @param {string} date the end date of the competition
  * @return {Promise<void>} A promise that resolves when complete
  */
-async function completeCompetition(competition: Competition): Promise<void> {
+async function completeCompetition(competition: Competition, date: string): Promise<void> {
     const firestore = getFirestore();
 
-    await competition.recordResults();
-    await competition.kickInactiveUsers();
-    await competition.updateRepeatingCompetition();
-
-    await Promise.allSettled(competition.participants.map(async userID => {
-        const user = await firestore.doc(`users/${userID}`).get().then(doc => new User(doc));
-        const standing = await firestore.doc(`competitions/${competition.id}/standings/${userID}`).get().then(doc => new Standing(doc));
+    const results = await competition.recordResults();
+    results.forEach(async standing => {
+        const user = await firestore.doc(`users/${standing.userId}`).get().then(doc => new User(doc));
         const rank = standing.rank;
         const ordinal = ["st", "nd", "rd"][((rank+90)%100-10)%10-1] || "th";
         const yesterday = moment().utc().subtract(1, "day").format("YYYY-MM-DD");
@@ -76,9 +72,10 @@ async function completeCompetition(competition: Competition): Promise<void> {
             }
         );
         await user.updateStatisticsWithNewRank(rank);
-    }));
+    });
 
-    await competition.resetStandings();
+    await competition.kickInactiveUsers();
+    await competition.updateRepeatingCompetition();
 }
 
 export {
