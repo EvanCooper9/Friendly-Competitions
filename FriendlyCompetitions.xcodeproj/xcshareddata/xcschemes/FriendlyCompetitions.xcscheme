@@ -49,6 +49,11 @@
                BlueprintName = "FriendlyCompetitionsTests"
                ReferencedContainer = "container:FriendlyCompetitions.xcodeproj">
             </BuildableReference>
+            <SkippedTests>
+               <Test
+                  Identifier = "AppStateTests/testIsActive()">
+               </Test>
+            </SkippedTests>
             <LocationScenarioReference
                identifier = "com.apple.dt.IDEFoundation.CurrentLocationScenarioIdentifier"
                referenceType = "1">

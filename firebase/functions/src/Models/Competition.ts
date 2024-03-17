@@ -29,7 +29,7 @@ class Competition {
 
     private path: string;
     private standingsPath: string;
-    private resultsPath: string; 
+    resultsPath: string; 
 
     /**
      * Builds a competition from a firestore document
@@ -126,7 +126,7 @@ class Competition {
         let newEnd = competitionEnd;
         if (competitionStart.day() == 1 && competitionEnd.day() == competitionEnd.daysInMonth()) {
             newStart = moment(this.end).add(1, "days");
-            newEnd = newStart.endOf("month");
+            newEnd = moment(newStart.format(dateFormat)).endOf("month");
         } else {
             const diff = competitionEnd.diff(competitionStart, "days");
             newStart = moment(this.end).add(1, "days");
@@ -188,7 +188,7 @@ class Competition {
     /**
      * Record current standings in results
      */
-    async recordResults(): Promise<void> {
+    async recordResults(): Promise<Standing[]> {
         const firestore = getFirestore();
         const standingsRef = await firestore.collection(this.standingsPath).get();
         const standings = standingsRef.docs.map(doc => new Standing(doc));
@@ -210,6 +210,8 @@ class Competition {
             batch.set(ref, prepareForFirestore(standing));
         });
         await batch.commit();
+
+        return standings;
     }
 
     /**
