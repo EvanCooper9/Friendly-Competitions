@@ -2,9 +2,5 @@
   "scripts": {
     "build-functions": "cd functions && npm run build",
     "serve": "npm run build-functions && firebase emulators:start --import=exported-dev-data --export-on-exit=exported-dev-data"
-  },
-  "dependencies": {
-    "tsc": "^2.0.4",
-    "typescript": "^5.1.3"
   }
 }
