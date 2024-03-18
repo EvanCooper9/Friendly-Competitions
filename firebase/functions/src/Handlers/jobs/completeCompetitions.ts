@@ -4,6 +4,7 @@ import { User } from "../../Models/User";
 import { Constants } from "../../Utilities/Constants";
 import { getFirestore } from "../../Utilities/firestore";
 import * as notifications from "../notifications/notifications";
+import { recalculateStandings } from "./handleCompetitionUpdate";
 
 /**
  * Completes all competitions that ended yesterday
@@ -51,7 +52,11 @@ async function completeCompetitionsForDate(date: string): Promise<void> {
 async function completeCompetition(competition: Competition): Promise<void> {
     const firestore = getFirestore();
 
+    console.log(`completing competition ${competition.id}`);
+
     const results = await competition.recordResults();
+    console.log(`recorded results ${competition.id}`);
+
     results.forEach(async standing => {
         const user = await firestore.doc(`users/${standing.userId}`).get().then(doc => new User(doc));
         const rank = standing.rank;
@@ -72,9 +77,16 @@ async function completeCompetition(competition: Competition): Promise<void> {
         );
         await user.updateStatisticsWithNewRank(rank);
     });
+    console.log(`sent notifications ${competition.id}`);
 
     await competition.kickInactiveUsers();
+    console.log(`kicked inactive users ${competition.id}`);
+
     await competition.updateRepeatingCompetition();
+    console.log(`updated dates ${competition.id}`);
+
+    await recalculateStandings(competition);
+    console.log(`recalculated standings ${competition.id}`);
 }
 
 export {

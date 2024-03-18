@@ -50,7 +50,7 @@ async function sendBackgroundNotificationToUser(user: User, backgroundJob?: any)
             // error likely due to invalid token... so remove it.
             // not the end of the world if the error is something else, 
             // token will be re-uploaded from the app at some point.
-            console.error(`error sending notification to user ${user.id}: ${error}`);
+            console.error(`error sending background notification to user ${user.id}: ${error}`);
             tokensToDelete.push(token);
         }
     });
@@ -107,8 +107,7 @@ async function sendBackgroundNotification(fcmToken: string, backgroundJob?: any)
             }
         }
     };
-    const id = await admin.messaging().send(notificationPayload);
-    console.log(`background notification response id: ${id}`);
+    await admin.messaging().send(notificationPayload);
 }
 
 export {
