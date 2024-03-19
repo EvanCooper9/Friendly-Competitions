@@ -40,40 +40,39 @@ final class StepCountManager: StepCountManaging {
 
     func stepCounts(in dateInterval: DateInterval) -> AnyPublisher<[StepCount], Error> {
         guard let days = Calendar.current.dateComponents([.day], from: dateInterval.start, to: dateInterval.end).day else { return .just([]) }
-        return (0 ..< days)
-            .compactMap { offset -> AnyPublisher<StepCount?, Never>? in
-                let start = Calendar.current
-                    .startOfDay(for: dateInterval.start)
-                    .addingTimeInterval(TimeInterval(offset).days)
+        return (0 ... days).compactMap { offset -> AnyPublisher<StepCount?, Never>? in
+            let start = Calendar.current
+                .startOfDay(for: dateInterval.start)
+                .addingTimeInterval(TimeInterval(offset).days)
 
-                guard start <= .now else {
-                    return nil
-                }
-
-                let end = Calendar.current
-                    .startOfDay(for: start)
-                    .addingTimeInterval(24.hours - 1.seconds)
-
-                let predicate = HKQuery.predicateForSamples(withStart: start, end: end)
-                return Future<StepCount?, Error> { [weak self] promise in
-                    let query = StepsQuery(predicate: predicate) { result in
-                        switch result {
-                        case .failure(let error):
-                            promise(Result<StepCount?, Error>.failure(error))
-                        case .success(let steps):
-                            let count = StepCount(count: Int(steps), date: start)
-                            promise(.success(count))
-                        }
-                    }
-                    self?.healthKitManager.execute(query)
-                }
-                .catchErrorJustReturn(nil)
-                .eraseToAnyPublisher()
+            guard start <= .now else {
+                return nil
             }
-            .combineLatest()
-            .compactMapMany { $0 }
-            .setFailureType(to: Error.self)
+
+            let end = Calendar.current
+                .startOfDay(for: start)
+                .addingTimeInterval(24.hours - 1.seconds)
+
+            let predicate = HKQuery.predicateForSamples(withStart: start, end: end)
+            return Future<StepCount?, Error> { [weak self] promise in
+                let query = StepsQuery(predicate: predicate) { result in
+                    switch result {
+                    case .failure(let error):
+                        promise(Result<StepCount?, Error>.failure(error))
+                    case .success(let steps):
+                        let count = StepCount(count: Int(steps), date: start)
+                        promise(.success(count))
+                    }
+                }
+                self?.healthKitManager.execute(query)
+            }
+            .catchErrorJustReturn(nil)
             .eraseToAnyPublisher()
+        }
+        .combineLatest()
+        .compactMapMany { $0 }
+        .setFailureType(to: Error.self)
+        .eraseToAnyPublisher()
     }
 
     // MARK: - Private Methods
