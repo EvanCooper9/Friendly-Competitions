@@ -21,7 +21,9 @@ async function updateScores(
     const firestore = getFirestore();
 
     await Promise.allSettled(competitions.map(async competition => {
-        if (!competition.isActive()) return;
+        const endTime = competition.end.getTime();
+        const gracePeriodMS = 43200000;
+        if (endTime + gracePeriodMS > Date.now()) return;
 
         let previousScore = 0;
         let newScore = 0;
