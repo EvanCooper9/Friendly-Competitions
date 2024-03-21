@@ -13,8 +13,8 @@ import { prepareForFirestore } from "../../Utilities/prepareForFirestore";
  * @param generateSinglePointsBreakdown function to return a single day's points in a competition.
  */
 async function updateScores(
-    userID: string, 
-    competitions: Competition[], 
+    userID: string,
+    competitions: Competition[],
     generateEntirePointsBreakdown: (competition: Competition) => Promise<StringKeyDictionary<string, number>>,
     generateSinglePointsBreakdown: (competition: Competition) => { id: string, points: number }
 ): Promise<void> {
@@ -23,7 +23,7 @@ async function updateScores(
     await Promise.allSettled(competitions.map(async competition => {
         const endTime = competition.end.getTime();
         const gracePeriodMS = 43200000;
-        if (endTime + gracePeriodMS > Date.now()) return;
+        if (endTime + gracePeriodMS < Date.now()) return;
 
         let previousScore = 0;
         let newScore = 0;
@@ -33,7 +33,7 @@ async function updateScores(
             const standingDoc = await transaction.get(standingRef);
             let standing = Standing.new(0, userID);
             if (standingDoc.exists) standing = new Standing(standingDoc);
-    
+
             let pointsBreakdown = standing.pointsBreakdown ?? {};
             if (Object.keys(pointsBreakdown).length == 0) {
                 pointsBreakdown = await generateEntirePointsBreakdown(competition);
@@ -41,7 +41,7 @@ async function updateScores(
                 const singlePointsBreakdown = generateSinglePointsBreakdown(competition);
                 pointsBreakdown[singlePointsBreakdown.id] = singlePointsBreakdown.points;
             }
-            
+
             previousScore = standing.points;
             standing.pointsBreakdown = pointsBreakdown;
             standing.points = 0;
@@ -60,6 +60,6 @@ async function updateScores(
     }
 }
 
-export { 
-    updateScores 
+export {
+    updateScores
 };
