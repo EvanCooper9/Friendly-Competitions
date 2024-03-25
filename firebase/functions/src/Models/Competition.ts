@@ -133,6 +133,9 @@ class Competition {
             newEnd = moment(newStart.format(dateFormat)).add(diff, "days");
         }
 
+        this.start = newStart.toDate();
+        this.end = newEnd.toDate();
+
         const obj = { start: newStart.format(dateFormat), end: newEnd.format(dateFormat) };
         await firestore.doc(`competitions/${this.id}`).update(obj);
     }

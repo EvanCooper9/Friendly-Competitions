@@ -82,11 +82,13 @@ async function completeCompetition(competition: Competition): Promise<void> {
     await competition.kickInactiveUsers();
     console.log(`kicked inactive users ${competition.id}`);
 
-    await competition.updateRepeatingCompetition();
-    console.log(`updated dates ${competition.id}`);
+    if (competition.repeats) {
+        await competition.updateRepeatingCompetition();
+        console.log(`updated dates ${competition.id}`);
 
-    await recalculateStandings(competition);
-    console.log(`recalculated standings ${competition.id}`);
+        await recalculateStandings(competition);
+        console.log(`recalculated standings ${competition.id}`);
+    }
 }
 
 export {
