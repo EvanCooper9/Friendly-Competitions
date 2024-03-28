@@ -79,8 +79,10 @@ async function completeCompetition(competition: Competition): Promise<void> {
     });
     console.log(`sent notifications ${competition.id}`);
 
-    await competition.kickInactiveUsers();
-    console.log(`kicked inactive users ${competition.id}`);
+    if (competition.owner == "com.evancooper.FriendlyCompetitions") {
+        await competition.kickInactiveUsers();
+        console.log(`kicked inactive users ${competition.id}`);
+    }
 
     if (competition.repeats) {
         await competition.updateRepeatingCompetition();
