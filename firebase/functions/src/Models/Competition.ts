@@ -133,6 +133,9 @@ class Competition {
             newEnd = moment(newStart.format(dateFormat)).add(diff, "days");
         }
 
+        this.start = newStart.toDate();
+        this.end = newEnd.toDate();
+
         const obj = { start: newStart.format(dateFormat), end: newEnd.format(dateFormat) };
         await firestore.doc(`competitions/${this.id}`).update(obj);
     }
@@ -141,8 +144,6 @@ class Competition {
      * Kicks and notifies users who scored 0 points in a competition.
      */
     async kickInactiveUsers(): Promise<void> {
-        if (this.owner != "com.evancooper.FriendlyCompetitions") return;
-
         const firestore = getFirestore();
         const standingsRef = await firestore.collection(this.standingsPath).get();
         const standings = standingsRef.docs.map(doc => new Standing(doc));

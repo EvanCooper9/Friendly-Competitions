@@ -79,14 +79,18 @@ async function completeCompetition(competition: Competition): Promise<void> {
     });
     console.log(`sent notifications ${competition.id}`);
 
-    await competition.kickInactiveUsers();
-    console.log(`kicked inactive users ${competition.id}`);
+    if (competition.owner == "com.evancooper.FriendlyCompetitions") {
+        await competition.kickInactiveUsers();
+        console.log(`kicked inactive users ${competition.id}`);
+    }
 
-    await competition.updateRepeatingCompetition();
-    console.log(`updated dates ${competition.id}`);
+    if (competition.repeats) {
+        await competition.updateRepeatingCompetition();
+        console.log(`updated dates ${competition.id}`);
 
-    await recalculateStandings(competition);
-    console.log(`recalculated standings ${competition.id}`);
+        await recalculateStandings(competition);
+        console.log(`recalculated standings ${competition.id}`);
+    }
 }
 
 export {
