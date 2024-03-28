@@ -71,6 +71,7 @@ final class CompetitionsManager: CompetitionsManaging {
                 return competitions
                     .map { competition in
                         strongSelf.database.collection("competitions/\(competition.id)/results")
+                            .filter(.arrayContains(value: strongSelf.userManager.user.id), on: "participants")
                             .sorted(by: "end", direction: .descending)
                             .limit(1)
                             .getDocuments(ofType: CompetitionResult.self)

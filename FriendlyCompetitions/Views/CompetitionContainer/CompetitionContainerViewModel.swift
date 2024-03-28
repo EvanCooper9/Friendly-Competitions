@@ -80,29 +80,22 @@ final class CompetitionContainerViewModel: ObservableObject {
             }
             .assign(to: &$dateRanges)
 
-        let selectedResult = Publishers
-            .CombineLatest(selectedDateRangeIndex, results)
-            .map { selectedIndex, results -> CompetitionResult? in
-                let resultsIndex = competition.isActive ? selectedIndex - 1 : selectedIndex
-                guard resultsIndex >= 0, resultsIndex < results.count else { return nil }
-                return results[resultsIndex]
-            }
-
-        let previousResult = Publishers
-            .CombineLatest(selectedDateRangeIndex, results)
-            .map { selectedIndex, results -> CompetitionResult? in
-                let resultsIndex = (competition.isActive ? selectedIndex - 1 : selectedIndex) + 1
-                guard resultsIndex >= 0, resultsIndex < results.count else { return nil }
-                return results[resultsIndex]
-            }
-
         Publishers
-            .CombineLatest3(
-                $dateRanges,
-                selectedResult,
-                previousResult
-            )
-            .compactMap { dateRanges, selectedResult, previousResult in
+            .CombineLatest3($dateRanges, selectedDateRangeIndex, results)
+            .compactMap { dateRanges, selectedIndex, results -> Content? in
+
+                let selectedResult: CompetitionResult? = {
+                    let resultsIndex = competition.isActive ? selectedIndex - 1 : selectedIndex
+                    guard resultsIndex >= 0, resultsIndex < results.count else { return nil }
+                    return results[resultsIndex]
+                }()
+
+                let previousResult: CompetitionResult? = {
+                    let resultsIndex = (competition.isActive ? selectedIndex - 1 : selectedIndex) + 1
+                    guard resultsIndex >= 0, resultsIndex < results.count else { return nil }
+                    return results[resultsIndex]
+                }()
+
                 guard let dateRange = dateRanges.first(where: \.selected) else { return nil }
                 if dateRange.id == currentDateRange.id {
                     return .current
@@ -114,7 +107,6 @@ final class CompetitionContainerViewModel: ObservableObject {
                     return nil
                 }
             }
-            .unwrap()
             .assign(to: &$content)
     }
 
