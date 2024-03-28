@@ -1,8 +1,12 @@
-name: Run unit tests
+name: Run iOS unit tests
 
 on:
   pull_request:
-    branches: [main, release/*]
+    paths:
+      - 'FriendlyCompetitions/**'
+      - 'FriendlyCompetitionsWidgets/**'
+      - 'FriendlyCompetitionsTests/**'
+      - 'FCKit/**'
 
 concurrency: 
   group: ${{ github.ref }}
