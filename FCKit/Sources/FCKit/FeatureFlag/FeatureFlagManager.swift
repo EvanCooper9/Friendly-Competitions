@@ -29,7 +29,7 @@ final class FeatureFlagManager: FeatureFlagManaging {
     private var overrides
 
     init() {
-        remoteConfig.fetch { status, error -> Void in
+        remoteConfig.fetch(withExpirationDuration: 0) { status, error -> Void in
             if let error {
                 error.reportToCrashlytics()
             } else if status == .success {

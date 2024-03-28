@@ -71,6 +71,7 @@ final class CompetitionsManager: CompetitionsManaging {
                 return competitions
                     .map { competition in
                         strongSelf.database.collection("competitions/\(competition.id)/results")
+                            .filter(.arrayContains(value: strongSelf.userManager.user.id), on: "participants")
                             .sorted(by: "end", direction: .descending)
                             .limit(1)
                             .getDocuments(ofType: CompetitionResult.self)
@@ -159,9 +160,7 @@ final class CompetitionsManager: CompetitionsManaging {
                     return .just(cachedResults)
                 }
                 return query
-                    .limit(diff)
                     .getDocuments(ofType: CompetitionResult.self, source: .server)
-                    .map { $0.appending(contentsOf: cachedResults) }
                     .eraseToAnyPublisher()
             }
             .map { $0.sorted(by: \.end).reversed() }
