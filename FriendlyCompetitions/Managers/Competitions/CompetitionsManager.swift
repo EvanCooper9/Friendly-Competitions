@@ -159,9 +159,7 @@ final class CompetitionsManager: CompetitionsManaging {
                     return .just(cachedResults)
                 }
                 return query
-                    .limit(diff)
                     .getDocuments(ofType: CompetitionResult.self, source: .server)
-                    .map { $0.appending(contentsOf: cachedResults) }
                     .eraseToAnyPublisher()
             }
             .map { $0.sorted(by: \.end).reversed() }
