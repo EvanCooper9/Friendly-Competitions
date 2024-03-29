@@ -33,9 +33,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "C1691DC226D55FCF006FFA30"
-            BuildableName = "Friendly Competitions.app"
-            BlueprintName = "Friendly Competitions"
-            ReferencedContainer = "container:Friendly Competitions.xcodeproj">
+            BuildableName = "FriendlyCompetitions.app"
+            BlueprintName = "FriendlyCompetitions"
+            ReferencedContainer = "container:FriendlyCompetitions.xcodeproj">
          </BuildableReference>
       </CodeCoverageTargets>
       <Testables>
