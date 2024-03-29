@@ -442,6 +442,7 @@
 		ED1E08D628DF4C6600497E20 /* View+RemovingMargin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+RemovingMargin.swift"; sourceTree = "<group>"; };
 		ED1F8DED29E3933A0009B986 /* DeveloperAppService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeveloperAppService.swift; sourceTree = "<group>"; };
 		ED1F8DF129E5F7A20009B986 /* AppLauncher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppLauncher.swift; sourceTree = "<group>"; };
+		ED25834C2BB6403A00B3335A /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		ED25A65E2B83CB94004D9AB5 /* FCKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = FCKit; sourceTree = "<group>"; };
 		ED268B552A1126AF00A4A50B /* DataUploadingAppService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataUploadingAppService.swift; sourceTree = "<group>"; };
 		ED2B88EB2A1E9E770043AD87 /* CreateAccountView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CreateAccountView.swift; sourceTree = "<group>"; };
@@ -805,6 +806,7 @@
 			isa = PBXGroup;
 			children = (
 				C163E30026F2344D00C9EC30 /* Info.plist */,
+				ED25834C2BB6403A00B3335A /* PrivacyInfo.xcprivacy */,
 				C1E6406226F4395200E3E70A /* FriendlyCompetitions.entitlements */,
 				ED1F8DF129E5F7A20009B986 /* AppLauncher.swift */,
 				C1691DC626D55FCF006FFA30 /* FriendlyCompetitions.swift */,
@@ -2722,7 +2724,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 1.0.4;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.evancooper.FriendlyCompetitions.debug.FriendlyCompetitionsWidgets;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
@@ -2762,7 +2764,7 @@
 					"@executable_path/../../Frameworks",
 				);
 				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
-				MARKETING_VERSION = 1.0.4;
+				MARKETING_VERSION = 1.0.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.evancooper.FriendlyCompetitions.FriendlyCompetitionsWidgets;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "";
