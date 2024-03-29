@@ -80,8 +80,10 @@ internal enum L10n {
     internal enum HealthKitDataMissing {
       /// Check
       internal static let cta = L10n.tr("Localizable", "Banner.HealthKitDataMissing.cta", fallback: "Check")
-      /// Can't find any data. Check HealthKit permissions.
-      internal static let message = L10n.tr("Localizable", "Banner.HealthKitDataMissing.message", fallback: "Can't find any data. Check HealthKit permissions.")
+      /// Can't find any data for %@. Check the Health App.
+      internal static func message(_ p1: Any) -> String {
+        return L10n.tr("Localizable", "Banner.HealthKitDataMissing.message", String(describing: p1), fallback: "Can't find any data for %@. Check the Health App.")
+      }
     }
     internal enum HealthKitPermissionsMissing {
       /// Request
@@ -333,14 +335,16 @@ internal enum L10n {
     internal static let title = L10n.tr("Localizable", "Home.title", fallback: "Home")
     internal enum Section {
       internal enum Activity {
-        /// Have you worn your watch today? We can't find any activity summaries yet. If this is a mistake, please make sure that permissions are enabled in the Health app.
-        internal static let missing = L10n.tr("Localizable", "Home.Section.Activity.missing", fallback: "Have you worn your watch today? We can't find any activity summaries yet. If this is a mistake, please make sure that permissions are enabled in the Health app.")
-        /// Activity
-        internal static let title = L10n.tr("Localizable", "Home.Section.Activity.title", fallback: "Activity")
+        /// Today's Activity
+        internal static let title = L10n.tr("Localizable", "Home.Section.Activity.title", fallback: "Today's Activity")
+        internal enum Steps {
+          /// Request
+          internal static let request = L10n.tr("Localizable", "Home.Section.Activity.Steps.request", fallback: "Request")
+          /// Steps
+          internal static let steps = L10n.tr("Localizable", "Home.Section.Activity.Steps.steps", fallback: "Steps")
+        }
       }
       internal enum Competitions {
-        /// Start a competition against your friends!
-        internal static let createPrompt = L10n.tr("Localizable", "Home.Section.Competitions.createPrompt", fallback: "Start a competition against your friends!")
         /// Competitions
         internal static let title = L10n.tr("Localizable", "Home.Section.Competitions.title", fallback: "Competitions")
         internal enum Empty {
@@ -353,8 +357,6 @@ internal enum L10n {
         }
       }
       internal enum Friends {
-        /// Add friends to get started!
-        internal static let addPrompt = L10n.tr("Localizable", "Home.Section.Friends.addPrompt", fallback: "Add friends to get started!")
         /// Invited
         internal static let invited = L10n.tr("Localizable", "Home.Section.Friends.invited", fallback: "Invited")
         /// Friends

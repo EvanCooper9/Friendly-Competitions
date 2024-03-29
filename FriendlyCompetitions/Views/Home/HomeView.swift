@@ -22,6 +22,19 @@ struct HomeView: View {
 
                 CustomListSection {
                     ActivitySummaryInfoView(source: .local)
+                    HStack {
+                        Text(L10n.Home.Section.Activity.Steps.steps)
+                        Spacer()
+                        switch viewModel.steps {
+                        case .value(let steps):
+                            Text(steps.formatted())
+                                .monospaced()
+                                .foregroundStyle(.secondary)
+                        case .requiresPermission:
+                            Button(L10n.Home.Section.Activity.Steps.request, action: viewModel.tappedStepsButton)
+                                .buttonStyle(.borderedProminent)
+                        }
+                    }
                 } header: {
                     Text(L10n.Home.Section.Activity.title)
                 }
@@ -202,7 +215,7 @@ struct HomeView_Previews: PreviewProvider {
         healthKitManager.shouldRequestReturnValue = .just(false)
 
 //        competitionsManager.competitions = .just([.mockOld, .mockPublic])
-        competitionsManager.standingsPublisherForLimitReturnValue = .just([.mock(for: .evan)])
+//        competitionsManager.standingsPublisherForLimitReturnValue = .just([.mock(for: .evan)])
         competitionsManager.unseenResults = .just([])
 
 //        friendsManager.friends = .just([.gabby])
@@ -210,6 +223,8 @@ struct HomeView_Previews: PreviewProvider {
         friendsManager.friendActivitySummaries = .just([User.gabby.id: .mock])
 
         searchManager.searchForUsersWithIDsReturnValue = .just([.evan])
+
+        stepCountManager.stepCountsInReturnValue = .just([.init(count: 12345, date: .now)])
 
         notificationsManager.permissionStatusReturnValue = .just(.notDetermined)
     }

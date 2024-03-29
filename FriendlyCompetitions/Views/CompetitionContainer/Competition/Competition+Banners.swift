@@ -86,8 +86,8 @@ extension Competition {
                                 return .just(.healthKitPermissionsMissing(permissions: [permission]))
                             } else if isActive {
                                 return dataPublisher
-                                    .map { $0.isEmpty ? .healthKitDataMissing(dataType: [permission]) : nil }
-                                    .catchErrorJustReturn(.healthKitDataMissing(dataType: [permission]))
+                                    .map { $0.isEmpty ? .healthKitDataMissing(competition: self, dataType: [permission]) : nil }
+                                    .catchErrorJustReturn(.healthKitDataMissing(competition: self, dataType: [permission]))
                                     .eraseToAnyPublisher()
                             } else {
                                 return .just(nil)
@@ -104,7 +104,7 @@ extension Competition {
                     switch banner {
                     case .healthKitPermissionsMissing(let permissions):
                         missingPermissions.append(contentsOf: permissions)
-                    case .healthKitDataMissing(let permissions):
+                    case .healthKitDataMissing(let competition, let permissions):
                         missingData.append(contentsOf: permissions)
                     default:
                         break
@@ -114,7 +114,7 @@ extension Competition {
                 if missingPermissions.isNotEmpty {
                     return Banner.healthKitPermissionsMissing(permissions: missingPermissions)
                 } else if missingData.isNotEmpty {
-                    return Banner.healthKitDataMissing(dataType: missingData)
+                    return Banner.healthKitDataMissing(competition: self, dataType: missingData)
                 }
                 return nil
             }

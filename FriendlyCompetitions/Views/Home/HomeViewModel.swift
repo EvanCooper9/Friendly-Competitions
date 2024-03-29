@@ -1,7 +1,9 @@
 import Combine
 import CombineExt
+import CombineSchedulers
 import ECKit
 import Factory
+import FCKit
 import Foundation
 import UIKit
 
@@ -14,9 +16,15 @@ final class HomeViewModel: ObservableObject {
         let isInvitation: Bool
     }
 
+    enum Steps {
+        case value(Int)
+        case requiresPermission
+    }
+
     @Published var navigationDestinations = [NavigationDestination]()
     @Published var deepLinkedNavigationDestination: NavigationDestination?
     @Published private(set) var banners = [Banner]()
+    @Published private(set) var steps = Steps.requiresPermission
     @Published private(set) var competitions = [Competition]()
     @Published private(set) var friendRows = [FriendRow]()
     @Published private(set) var invitedCompetitions = [Competition]()
@@ -31,17 +39,18 @@ final class HomeViewModel: ObservableObject {
 
     // MARK: - Private Properties
 
-    @Injected(\.appState) private var appState
-    @Injected(\.activitySummaryManager) private var activitySummaryManager
-    @Injected(\.analyticsManager) private var analyticsManager
-    @Injected(\.competitionsManager) private var competitionsManager
-    @Injected(\.featureFlagManager) private var featureFlagManager
-    @Injected(\.friendsManager) private var friendsManager
-    @Injected(\.healthKitManager) private var healthKitManager
-    @Injected(\.notificationsManager) private var notificationsManager
-    @LazyInjected(\.premiumManager) private var premiumManager
-    @Injected(\.scheduler) private var scheduler
-    @Injected(\.userManager) private var userManager
+    @Injected(\.appState) private var appState: AppStateProviding
+    @Injected(\.activitySummaryManager) private var activitySummaryManager: ActivitySummaryManaging
+    @Injected(\.analyticsManager) private var analyticsManager: AnalyticsManaging
+    @Injected(\.competitionsManager) private var competitionsManager: CompetitionsManaging
+    @Injected(\.featureFlagManager) private var featureFlagManager: FeatureFlagManaging
+    @Injected(\.friendsManager) private var friendsManager: FriendsManaging
+    @Injected(\.healthKitManager) private var healthKitManager: HealthKitManaging
+    @Injected(\.notificationsManager) private var notificationsManager: NotificationsManaging
+    @LazyInjected(\.premiumManager) private var premiumManager: PremiumManaging
+    @Injected(\.scheduler) private var scheduler: AnySchedulerOf<RunLoop>
+    @Injected(\.stepCountManager) private var stepCountManager: StepCountManaging
+    @Injected(\.userManager) private var userManager: UserManaging
 
     @UserDefault("dismissedPremiumBanner", defaultValue: false) private var dismissedPremiumBanner
 
@@ -77,6 +86,31 @@ final class HomeViewModel: ObservableObject {
                 strongSelf.showNewCompetition = false
             }
             .store(in: &cancellables)
+
+        Publishers
+            .CombineLatest(healthKitManager.permissionsChanged, appState.isActive.filter { $0 })
+            .mapToVoid()
+            .prepend(())
+            .flatMapLatest { [healthKitManager] in
+                healthKitManager
+                    .shouldRequest([.stepCount])
+                    .catchErrorJustReturn(false)
+            }
+            .flatMapLatest { [stepCountManager] shouldRequest -> AnyPublisher<Steps, Never> in
+                if shouldRequest {
+                    return .just(.requiresPermission)
+                } else {
+                    let dateInterval = DateInterval(start: Calendar.current.startOfDay(for: .now), end: .now)
+                    return stepCountManager.stepCounts(in: dateInterval)
+                        .mapMany(\.count)
+                        .map { $0.reduce(0, +) }
+                        .map { Steps.value($0) }
+                        .catchErrorJustReturn(Steps.value(0))
+                        .eraseToAnyPublisher()
+                }
+            }
+            .receive(on: scheduler)
+            .assign(to: &$steps)
 
         competitionsManager.competitions
             .removeDuplicates()
@@ -155,6 +189,17 @@ final class HomeViewModel: ObservableObject {
             .store(in: &cancellables)
     }
 
+    func tappedStepsButton() {
+        switch steps {
+        case .value(let int):
+            UIApplication.shared.open(.health)
+        case .requiresPermission:
+            healthKitManager.request([.stepCount])
+                .sink()
+                .store(in: &cancellables)
+        }
+    }
+
     // MARK: - Private Methods
 
     private func handlePremiumBanner() {
@@ -176,6 +221,7 @@ final class HomeViewModel: ObservableObject {
         Publishers
             .CombineLatest(didHandleBannerTap, appState.didBecomeActive)
             .mapToVoid()
+            .prepend(())
             .flatMapLatest(withUnretained: self) { strongSelf in
                 let competitionBanners = strongSelf.$competitions
                     .flatMapLatest { competitions -> AnyPublisher<[Banner], Never> in
