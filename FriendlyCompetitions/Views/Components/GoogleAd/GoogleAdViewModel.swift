@@ -22,13 +22,17 @@ final class GoogleAdViewModel: NSObject, ObservableObject, GADNativeAdLoaderDele
     // MARK: - Lifecycle
 
     init(unit: GoogleAdUnit) {
+        let nativeOptions = GADNativeAdMediaAdLoaderOptions()
+        nativeOptions.mediaAspectRatio = .landscape
+
         adLoader = GADAdLoader(
             adUnitID: unit.identifier,
             rootViewController: nil,
             adTypes: unit.adTypes,
-            options: nil
+            options: [nativeOptions]
         )
         super.init()
+
         adLoader.delegate = self
 
         appState.isActive
