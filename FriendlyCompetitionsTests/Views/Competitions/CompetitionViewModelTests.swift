@@ -45,10 +45,11 @@ final class CompetitionViewModelTests: FCTestCase {
         activitySummaryManager.activitySummariesInReturnValue = .just([])
         notificationsManager.permissionStatusReturnValue = .just(.authorized)
 
-        let viewModel = CompetitionViewModel(competition: .mock)
+        let competition = Competition.mock
+        let viewModel = CompetitionViewModel(competition: competition)
         scheduler.advance(by: .seconds(1))
 
-        let expectedBanner = Banner.healthKitDataMissing(dataType: [.activitySummaryType, .activeEnergy, .appleExerciseTime, .appleMoveTime, .appleStandTime, .appleStandHour])
+        let expectedBanner = Banner.healthKitDataMissing(competition: competition, dataType: [.activitySummaryType, .activeEnergy, .appleExerciseTime, .appleMoveTime, .appleStandTime, .appleStandHour])
         XCTAssertEqual(viewModel.banners, [expectedBanner])
     }
 
