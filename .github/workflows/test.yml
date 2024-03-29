@@ -11,7 +11,7 @@ concurrency:
 jobs:
   build:
     name: Test
-    runs-on: macos-13
+    runs-on: [self-hosted, macOS, ARM64]
     env:
       BUILDCACHE_DEBUG: 2
     steps:
