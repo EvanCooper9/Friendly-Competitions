@@ -19,6 +19,7 @@ private enum Dependencies {
     static let notificationsManager = NotificationsManagingMock()
     static let searchManager = SearchManagingMock()
     static let scheduler = AnySchedulerOf<RunLoop>.main
+    static let stepCountManager = StepCountManagingMock()
     static let storageManager = StorageManagingMock()
     static let premiumManager = PremiumManagingMock()
     static let userManager = UserManagingMock()
@@ -40,6 +41,7 @@ private enum Dependencies {
         Container.shared.notificationsManager.register { notificationsManager }
         Container.shared.searchManager.register { searchManager }
         Container.shared.scheduler.register { scheduler }
+        Container.shared.stepCountManager.register { stepCountManager }
         Container.shared.storageManager.register { storageManager }
         Container.shared.premiumManager.register { premiumManager }
         Container.shared.userManager.register { userManager }
@@ -65,9 +67,15 @@ private enum Dependencies {
         competitionsManager.resultsForReturnValue = .just([])
         competitionsManager.hasPremiumResults = .just(false)
 
+        featureFlagManager.valueForBoolFeatureFlagFeatureFlagBoolBoolReturnValue = false
+        featureFlagManager.valueForDoubleFeatureFlagFeatureFlagDoubleDoubleReturnValue = 0
+        featureFlagManager.valueForStringFeatureFlagFeatureFlagStringStringReturnValue = ""
+
         friendsManager.friends = .just([])
         friendsManager.friendActivitySummaries = .just([:])
         friendsManager.friendRequests = .just([])
+
+        healthKitManager.permissionsChanged = .just(())
 
         searchManager.searchForCompetitionsByNameReturnValue = .just([])
         searchManager.searchForUsersByNameReturnValue = .just([])
@@ -101,6 +109,7 @@ extension PreviewProvider {
     static var notificationsManager: NotificationsManagingMock { Dependencies.notificationsManager }
     static var searchManager: SearchManagingMock { Dependencies.searchManager }
     static var scheduler: AnySchedulerOf<RunLoop> { Dependencies.scheduler }
+    static var stepCountManager: StepCountManagingMock { Dependencies.stepCountManager }
     static var storageManager: StorageManagingMock { Dependencies.storageManager }
     static var premiumManager: PremiumManagingMock { Dependencies.premiumManager }
     static var userManager: UserManagingMock { Dependencies.userManager }

@@ -45,14 +45,9 @@ final class StepCountManager: StepCountManaging {
                 .startOfDay(for: dateInterval.start)
                 .addingTimeInterval(TimeInterval(offset).days)
 
-            guard start <= .now else {
-                return nil
-            }
-
-            let end = Calendar.current
-                .startOfDay(for: start)
-                .addingTimeInterval(24.hours - 1.seconds)
-
+            guard start <= .now else { return nil }
+            let endOfStart = Calendar.current.startOfDay(for: start).addingTimeInterval(24.hours - 1.seconds)
+            let end = min(endOfStart, .now)
             let predicate = HKQuery.predicateForSamples(withStart: start, end: end)
             return Future<StepCount?, Error> { [weak self] promise in
                 let query = StepsQuery(predicate: predicate) { result in

@@ -196,11 +196,10 @@ final class CompetitionViewModel: ObservableObject {
 
     private func bindBanners() {
         Publishers
-            .CombineLatest3(appState.didBecomeActive, $competition, didRequestPermissions)
-            .flatMapLatest { result in
-                let (_, competition, _) = result
-                return competition.banners
-            }
+            .CombineLatest(appState.didBecomeActive, didRequestPermissions)
+            .mapToVoid()
+            .prepend(())
+            .flatMapLatest { [competition] in competition.banners.eraseToAnyPublisher() }
             .delay(for: .seconds(1), scheduler: scheduler)
             .assign(to: &$banners)
     }

@@ -22,7 +22,7 @@ enum Banner: Comparable, Equatable, Identifiable {
 
     // HealthKit Permissions & Data
     case healthKitPermissionsMissing(permissions: [HealthKitPermissionType])
-    case healthKitDataMissing(dataType: [HealthKitPermissionType])
+    case healthKitDataMissing(competition: Competition, dataType: [HealthKitPermissionType])
 
     // Notification Permissions
     case notificationPermissionsMissing
@@ -35,7 +35,8 @@ enum Banner: Comparable, Equatable, Identifiable {
     var id: String {
         switch self {
         case .healthKitPermissionsMissing: return "healthKitPermissionsMissing"
-        case .healthKitDataMissing: return "healthKitDataMissing"
+        case .healthKitDataMissing(let competition, _):
+            return "healthKitDataMissing-\(competition.id)"
         case .notificationPermissionsMissing: return "notificationPermissionsMissing"
         case .notificationPermissionsDenied: return "notificationPermissionsDenied"
         case .competitionResultsCalculating: return "competitionResultsCalculating"
@@ -49,8 +50,8 @@ enum Banner: Comparable, Equatable, Identifiable {
         case .healthKitPermissionsMissing:
             return .error(message: L10n.Banner.HealthKitPermissionsMissing.message,
                           cta: L10n.Banner.HealthKitPermissionsMissing.cta)
-        case .healthKitDataMissing:
-            return .warning(message: L10n.Banner.HealthKitDataMissing.message,
+        case .healthKitDataMissing(let competition, _):
+            return .warning(message: L10n.Banner.HealthKitDataMissing.message(competition.name),
                             cta: UIApplication.shared.canOpenURL(.health) ? L10n.Banner.HealthKitDataMissing.cta : nil)
         case .notificationPermissionsMissing:
             return .warning(message: L10n.Banner.NotificationPermissionsMissing.message,
@@ -231,7 +232,7 @@ extension Banner.Configuration {
 struct Banner_Previews: PreviewProvider {
 
     private static let banners: [Banner] = [
-        .healthKitDataMissing(dataType: []),
+        .healthKitDataMissing(competition: .mock, dataType: []),
         .healthKitPermissionsMissing(permissions: []),
         .notificationPermissionsMissing,
         .notificationPermissionsDenied,
