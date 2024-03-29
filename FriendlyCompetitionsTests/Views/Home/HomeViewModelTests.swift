@@ -18,13 +18,17 @@ final class HomeViewModelTests: FCTestCase {
         activitySummaryManager.activitySummariesInReturnValue = .never()
         appState.deepLink = .never()
         appState.didBecomeActive = .never()
+        appState.isActive = .never()
         competitionsManager.competitions = .never()
         competitionsManager.invitedCompetitions = .never()
         competitionsManager.hasPremiumResults = .never()
+        competitionsManager.unseenResults = .never()
         featureFlagManager.valueForBoolFeatureFlagFeatureFlagBoolBoolReturnValue = false
+        featureFlagManager.valueForDoubleFeatureFlagFeatureFlagDoubleDoubleReturnValue = 0.0
         friendsManager.friends = .never()
         friendsManager.friendRequests = .never()
         friendsManager.friendActivitySummaries = .never()
+        healthKitManager.permissionsChanged = .never()
         healthKitManager.shouldRequestReturnValue = .never()
         notificationsManager.permissionStatusReturnValue = .never()
         premiumManager.premium = .never()
