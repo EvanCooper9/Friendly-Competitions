@@ -31,7 +31,7 @@ struct HomeView: View {
                                 .monospaced()
                                 .foregroundStyle(.secondary)
                         case .requiresPermission:
-                            Button(L10n.Home.Section.Activity.Steps.request, action: viewModel.tappedStepsButton)
+                            Button(L10n.Home.Section.Activity.Steps.request, action: viewModel.requestPermissionsForSteps)
                                 .buttonStyle(.borderedProminent)
                         }
                     }

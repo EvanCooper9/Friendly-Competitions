@@ -189,15 +189,10 @@ final class HomeViewModel: ObservableObject {
             .store(in: &cancellables)
     }
 
-    func tappedStepsButton() {
-        switch steps {
-        case .value(let int):
-            UIApplication.shared.open(.health)
-        case .requiresPermission:
-            healthKitManager.request([.stepCount])
-                .sink()
-                .store(in: &cancellables)
-        }
+    func requestPermissionsForSteps() {
+        healthKitManager.request([.stepCount])
+            .sink()
+            .store(in: &cancellables)
     }
 
     // MARK: - Private Methods
