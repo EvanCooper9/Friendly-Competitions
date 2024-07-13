@@ -7,7 +7,8 @@ import { joinCompetition } from "../competitions/joinCompetition";
 async function accountSetup(userID: string): Promise<void> {
     const competitionIDs = [
         "V7AJuKqhek6kVcrSWwRa", // weekly
-        "xdsAs5bEIiOKh12nqxdy" // monthly
+        "xdsAs5bEIiOKh12nqxdy", // monthly
+        "ZkFLFkAdMWWhgF2FIUqu" // steps
     ];
 
     const joinCompetitions = competitionIDs.map(competitionID => {
