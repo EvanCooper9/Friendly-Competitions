@@ -86,27 +86,23 @@ final class ActivitySummaryManager: ActivitySummaryManaging {
         ]
 
         permissionTypes.forEach { permission in
-            if featureFlagManager.value(forBool: .sharedBackgroundDeliveryPublishers) {
-                healthKitManager.registerBackgroundDeliveryTask(for: permission) { [weak self] in
-                    guard let self else { return .just(()) }
-                    if let fetchAndUploadPublisher = self.fetchAndUploadPublisher {
-                        return fetchAndUploadPublisher
-                    } else {
-                        let publisher = fetchAndUpload()
-                            .first()
-                            .handleEvents(receiveCompletion: { _ in
-                                self.fetchAndUploadPublisher = nil
-                            }, receiveCancel: {
-                                self.fetchAndUploadPublisher = nil
-                            })
-                            .share()
-                            .eraseToAnyPublisher()
-                        self.fetchAndUploadPublisher = publisher
-                        return publisher
-                    }
+            healthKitManager.registerBackgroundDeliveryTask(for: permission) { [weak self] in
+                guard let self else { return .just(()) }
+                if let fetchAndUploadPublisher = self.fetchAndUploadPublisher {
+                    return fetchAndUploadPublisher
+                } else {
+                    let publisher = fetchAndUpload()
+                        .first()
+                        .handleEvents(receiveCompletion: { _ in
+                            self.fetchAndUploadPublisher = nil
+                        }, receiveCancel: {
+                            self.fetchAndUploadPublisher = nil
+                        })
+                        .share()
+                        .eraseToAnyPublisher()
+                    self.fetchAndUploadPublisher = publisher
+                    return publisher
                 }
-            } else {
-                healthKitManager.registerBackgroundDeliveryPublisher(for: permission, publisher: fetchAndUpload())
             }
         }
     }
