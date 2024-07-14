@@ -15,7 +15,6 @@ final class ActivitySummaryManagerTests: FCTestCase {
     override func setUp() {
         super.setUp()
         userManager.user = .evan
-        featureFlagManager.valueForBoolFeatureFlagFeatureFlagBoolBoolClosure = { $0 == .sharedBackgroundDeliveryPublishers ? true : false }
         featureFlagManager.valueForDoubleFeatureFlagFeatureFlagDoubleDoubleClosure = { flag in
             switch flag {
             case .dataUploadGracePeriodHours: return 12.0

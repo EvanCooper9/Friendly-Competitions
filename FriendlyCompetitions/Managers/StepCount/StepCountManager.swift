@@ -25,11 +25,7 @@ final class StepCountManager: StepCountManaging {
     // MARK: - Lifecycle
 
     init() {
-        if featureFlagManager.value(forBool: .sharedBackgroundDeliveryPublishers) {
-            healthKitManager.registerBackgroundDeliveryTask(for: .stepCount, task: fetchAndUpload)
-        } else {
-            healthKitManager.registerBackgroundDeliveryPublisher(for: .stepCount, publisher: fetchAndUpload())
-        }
+        healthKitManager.registerBackgroundDeliveryTask(for: .stepCount, task: fetchAndUpload)
 
         fetchAndUpload()
             .sink()
