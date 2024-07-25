@@ -63,7 +63,6 @@ final class CompetitionViewModel: ObservableObject {
     private let confirmActionSubject = PassthroughSubject<Void, Error>()
     private let performActionSubject = PassthroughSubject<CompetitionViewAction, Error>()
     private let fetchParticipantsSubject = PassthroughSubject<[String], Never>()
-    private let didRequestPermissions = CurrentValueSubject<Void, Never>(())
     private var cancellables = Cancellables()
 
     // MARK: - Lifecycle
@@ -186,11 +185,8 @@ final class CompetitionViewModel: ObservableObject {
     }
 
     func tapped(_ banner: Banner) {
-        banner.tapped()
-            .sink(withUnretained: self) { strongSelf in
-                strongSelf.banners.remove(banner)
-                strongSelf.didRequestPermissions.send()
-            }
+        bannerManager.tapped(banner)
+            .sink()
             .store(in: &cancellables)
     }
 

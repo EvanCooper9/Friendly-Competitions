@@ -7,7 +7,7 @@ import XCTest
 
 final class CreateAccountViewModelTests: FCTestCase {
 
-    private let anonymousUser = User(id: "123", name: "Anonymous", isAnonymous: true)
+    private let anonymousUser = User(id: "123", name: "Anonymous", email: "evan@mail.com", isAnonymous: true)
 
     func testThatSignInWithAppleIsTriggered() {
         authenticationManager.signInWithReturnValue = .just(())
