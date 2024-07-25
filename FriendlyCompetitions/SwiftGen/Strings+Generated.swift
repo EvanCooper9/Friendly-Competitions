@@ -146,8 +146,8 @@ internal enum L10n {
       internal static let ends = L10n.tr("Localizable", "Competition.Details.ends", fallback: "Ends")
       /// Repeats
       internal static let repeats = L10n.tr("Localizable", "Competition.Details.repeats", fallback: "Repeats")
-      /// Scoring model
-      internal static let scoringModel = L10n.tr("Localizable", "Competition.Details.scoringModel", fallback: "Scoring model")
+      /// Scoring
+      internal static let scoringModel = L10n.tr("Localizable", "Competition.Details.scoringModel", fallback: "Scoring")
       /// Started
       internal static let started = L10n.tr("Localizable", "Competition.Details.started", fallback: "Started")
       /// Starts

@@ -11,7 +11,7 @@ final class AboutViewModel: ObservableObject {
 
     // MARK: - Private
 
-    @Injected(\.userManager) private var userManager
+    @Injected(\.userManager) private var userManager: UserManaging
 
     // MARK: - Lifecycle
 

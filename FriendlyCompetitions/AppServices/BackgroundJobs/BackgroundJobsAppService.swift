@@ -1,6 +1,7 @@
 import Combine
 import ECKit
 import Factory
+import FCKit
 import Foundation
 
 final class BackgroundJobsAppService: AppService {
@@ -17,7 +18,7 @@ final class BackgroundJobsAppService: AppService {
 
     private let decoder = JSONDecoder()
 
-    @Injected(\.analyticsManager) private var analyticsManager
+    @Injected(\.analyticsManager) private var analyticsManager: AnalyticsManaging
 
     func didReceiveRemoteNotification(with data: [AnyHashable: Any]) -> AnyPublisher<Void, Never> {
         analyticsManager.log(event: .backgroundNotificationReceived)

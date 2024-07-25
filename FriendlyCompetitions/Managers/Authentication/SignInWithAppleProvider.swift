@@ -3,6 +3,7 @@ import AuthenticationServices
 import Combine
 import ECKit
 import Factory
+import FCKit
 import FirebaseAuth
 
 // sourcery: AutoMockable
@@ -71,9 +72,9 @@ private final class SignInWithAppleDelegate: NSObject, ASAuthorizationController
 
     // MARK: - Private Properties
 
-    @Injected(\.api) private var api
-    @Injected(\.auth) private var auth
-    @Injected(\.environmentManager) private var environmentManager
+    @Injected(\.api) private var api: API
+    @Injected(\.auth) private var auth: AuthProviding
+    @Injected(\.environmentManager) private var environmentManager: EnvironmentManaging
 
     private let linkedSubject = PassthroughSubject<AuthUser, Error>()
     private let signedInSubject = PassthroughSubject<AuthUser, Error>()

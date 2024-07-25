@@ -1,4 +1,5 @@
 import Algorithms
+import FCKit
 import Combine
 import CombineExt
 import ECKit
@@ -20,9 +21,9 @@ final class CompetitionContainerViewModel: ObservableObject {
 
     // MARK: - Private Properties
 
-    @Injected(\.competitionsManager) private var competitionsManager
-    @Injected(\.featureFlagManager) private var featureFlagManager
-    @LazyInjected(\.premiumManager) private var premiumManager
+    @Injected(\.competitionsManager) private var competitionsManager: CompetitionsManaging
+    @Injected(\.featureFlagManager) private var featureFlagManager: FeatureFlagManaging
+    @LazyInjected(\.premiumManager) private var premiumManager: PremiumManaging
 
     private let selectedDateRangeIndex = CurrentValueSubject<Int, Never>(0)
 

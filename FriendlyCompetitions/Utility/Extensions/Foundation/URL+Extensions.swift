@@ -10,6 +10,7 @@ extension URL {
     static let gitHub = URL(string: "https://github.com/EvanCooper9/Friendly-Competitions")!
     static let health = URL(string: "x-apple-health://")!
     static let notificationSettings = URL(string: UIApplication.openNotificationSettingsURLString)!
+    static let settings = URL(string: UIApplication.openSettingsURLString)!
 
     static func featureRequest(with userID: User.ID) -> URL {
         URL(string: "mailto:ideas@friendly-competitions.app")!

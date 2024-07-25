@@ -13,26 +13,13 @@ struct CompetitionView: View {
     }
 
     var body: some View {
-        CustomList {
+        List {
             if viewModel.banners.isNotEmpty {
-                ItemStack(models: viewModel.banners) { banner in
-                    banner.view {
-                        viewModel.tapped(banner: banner)
-                    }
-                }
-                .padding(.horizontal)
+                banners
             }
 
             standings
-
-            CustomListSection {
-                ForEach(viewModel.details, id: \.value) { detail in
-                    ImmutableListItemView(value: detail.value, valueType: detail.valueType)
-                }
-            } header: {
-                Text("Details")
-            }
-
+            details
             actions
         }
         .navigationTitle(viewModel.competition.name)
@@ -56,8 +43,26 @@ struct CompetitionView: View {
         .onChange(of: viewModel.dismiss) { _ in dismiss() }
     }
 
+    private var banners: some View {
+        Section {
+            ItemStack(models: viewModel.banners) { banner in
+                banner
+                    .view {
+                        viewModel.tapped(banner)
+                    }
+                    .swipeActions {
+                        Button(systemImage: .xCircle) {
+                            viewModel.dismissed(banner)
+                        }
+                    }
+            }
+        }
+        .listRowInsets(.zero)
+        .listRowBackground(Color.clear)
+    }
+
     private var standings: some View {
-        CustomListSection {
+        Section {
             if viewModel.loadingStandings {
                 ProgressView()
             } else {
@@ -77,8 +82,18 @@ struct CompetitionView: View {
         }
     }
 
+    private var details: some View {
+        Section {
+            ForEach(viewModel.details, id: \.value) { detail in
+                ImmutableListItemView(value: detail.value, valueType: detail.valueType)
+            }
+        } header: {
+            Text("Details")
+        }
+    }
+
     private var actions: some View {
-        CustomListSection {
+        Section {
             ForEach(viewModel.actions, id: \.self) { action in
                 Button {
                     viewModel.perform(action)

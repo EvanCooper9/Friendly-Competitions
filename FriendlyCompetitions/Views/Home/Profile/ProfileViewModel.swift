@@ -2,6 +2,7 @@ import Combine
 import CombineExt
 import ECKit
 import Factory
+import FCKit
 
 final class ProfileViewModel: ObservableObject {
 
@@ -17,10 +18,10 @@ final class ProfileViewModel: ObservableObject {
 
     // MARK: - Private Properties
 
-    @Injected(\.authenticationManager) private var authenticationManager
-    @Injected(\.featureFlagManager) private var featureFlagManager
-    @LazyInjected(\.premiumManager) private var premiumManager
-    @Injected(\.userManager) private var userManager
+    @Injected(\.authenticationManager) private var authenticationManager: AuthenticationManaging
+    @Injected(\.featureFlagManager) private var featureFlagManager: FeatureFlagManaging
+    @LazyInjected(\.premiumManager) private var premiumManager: PremiumManaging
+    @Injected(\.userManager) private var userManager: UserManaging
 
     private let deleteAccountSubject = PassthroughSubject<Void, Never>()
     private let signOutSubject = PassthroughSubject<Void, Never>()
