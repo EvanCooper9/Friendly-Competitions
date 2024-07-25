@@ -39,7 +39,7 @@ extension FirebaseAppService: MessagingDelegate {
             .mapToVoid()
             .flatMapLatest { [userManager] in userManager.userPublisher }
             .flatMapLatest { [database] user -> AnyPublisher<Void, Never> in
-                guard user.notificationTokens.contains(fcmToken) else { return .never() }
+                guard !user.notificationTokens.contains(fcmToken) else { return .never() }
                 return database
                     .document("users/\(user.id)")
                     .update(fields: ["notificationTokens": user.notificationTokens.appending(fcmToken)])
