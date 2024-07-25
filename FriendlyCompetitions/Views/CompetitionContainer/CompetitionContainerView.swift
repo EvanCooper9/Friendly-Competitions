@@ -11,7 +11,7 @@ struct CompetitionContainerView: View {
     }
 
     var body: some View {
-        ScrollView {
+        VStack {
             if viewModel.dateRanges.count > 1 {
                 CompetitionContainerDateRangeSelector(
                     ranges: viewModel.dateRanges,

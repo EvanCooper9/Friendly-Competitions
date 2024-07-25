@@ -30,18 +30,25 @@ enum Banner: Comparable, Equatable, Identifiable {
 
     // New competition results
     case newCompetitionResults(competition: Competition, resultID: CompetitionResult.ID)
-    case competitionResultsCalculating
+    case competitionResultsCalculating(competition: Competition)
+
+    // Background refresh
+    case backgroundRefreshDenied
 
     var id: String {
         switch self {
-        case .healthKitPermissionsMissing: return "healthKitPermissionsMissing"
+        case .healthKitPermissionsMissing(let permissions):
+            let permissionIDs = permissions.map(\.rawValue).joined(separator: "-")
+            return "healthKitPermissionsMissing-\(permissionIDs)"
         case .healthKitDataMissing(let competition, _):
             return "healthKitDataMissing-\(competition.id)"
         case .notificationPermissionsMissing: return "notificationPermissionsMissing"
         case .notificationPermissionsDenied: return "notificationPermissionsDenied"
-        case .competitionResultsCalculating: return "competitionResultsCalculating"
+        case .competitionResultsCalculating(let competition):
+            return "competitionResultsCalculating-\(competition.id)"
         case .newCompetitionResults(let competition, let resultID):
             return ["newCompetitionResults", competition.id, resultID].joined(separator: "_")
+        case .backgroundRefreshDenied: return "backgroundRefreshDenied"
         }
     }
 
@@ -71,23 +78,27 @@ enum Banner: Comparable, Equatable, Identifiable {
             } else {
                 return .info(message: "Results are being calculated. Check back soon.")
             }
+        case .backgroundRefreshDenied:
+            return .warning(message: "Background refresh is disabled. Your data might not upload",
+                            cta: "Enable")
         }
     }
 
     var showsOnHomeScreen: Bool {
         switch self {
         case .healthKitPermissionsMissing,
-             .healthKitDataMissing,
              .notificationPermissionsMissing,
              .notificationPermissionsDenied,
-             .newCompetitionResults:
+             .backgroundRefreshDenied:
             return true
-        case .competitionResultsCalculating:
+        case .competitionResultsCalculating,
+             .newCompetitionResults,
+             .healthKitDataMissing:
             return false
         }
     }
 
-    func view(_ tapped: @escaping () -> Void, file: String = #file) -> some View {
+    func view(shadow: Bool = true, _ tapped: @escaping () -> Void, file: String = #file) -> some View {
         let fileName = (file as NSString).lastPathComponent
         return HStack(spacing: 10) {
             if let icon = configuration.icon {
@@ -121,7 +132,9 @@ enum Banner: Comparable, Equatable, Identifiable {
         .padding(12)
         .background(configuration.background)
         .cornerRadius(10)
-        .shadow(color: .gray.opacity(0.25), radius: 10)
+        .if(shadow) { view in
+            view.shadow(color: .gray.opacity(0.25), radius: 10)
+        }
         .onAppear {
             let analyticsManager = Container.shared.analyticsManager.resolve()
             analyticsManager.log(event: .bannerViewed(bannerID: id, file: fileName))
@@ -139,8 +152,9 @@ enum Banner: Comparable, Equatable, Identifiable {
                 .catchErrorJustReturn(())
                 .receive(on: scheduler)
                 .eraseToAnyPublisher()
-        case .healthKitDataMissing:
-            UIApplication.shared.open(.health)
+        case .healthKitDataMissing(_, let dataTypes):
+            let url = dataTypes.first?.url ?? .health
+            UIApplication.shared.open(url)
             return .just(())
         case .notificationPermissionsMissing:
             return notificationsManager.requestPermissions()
@@ -157,6 +171,9 @@ enum Banner: Comparable, Equatable, Identifiable {
             return .just(())
         case .competitionResultsCalculating:
             return .just(())
+        case .backgroundRefreshDenied:
+            UIApplication.shared.open(.settings)
+            return .just(())
         }
     }
 
@@ -168,16 +185,18 @@ enum Banner: Comparable, Equatable, Identifiable {
         switch self {
         case .healthKitPermissionsMissing:
             return 1
-        case .newCompetitionResults:
+        case .backgroundRefreshDenied:
             return 2
-        case .healthKitDataMissing:
+        case .newCompetitionResults:
             return 3
-        case .notificationPermissionsDenied:
+        case .healthKitDataMissing:
             return 4
-        case .notificationPermissionsMissing:
+        case .notificationPermissionsDenied:
             return 5
-        case .competitionResultsCalculating:
+        case .notificationPermissionsMissing:
             return 6
+        case .competitionResultsCalculating:
+            return 7
         }
     }
 }
@@ -237,7 +256,7 @@ struct Banner_Previews: PreviewProvider {
         .notificationPermissionsMissing,
         .notificationPermissionsDenied,
         .newCompetitionResults(competition: .mock, resultID: "123"),
-        .competitionResultsCalculating
+        .competitionResultsCalculating(competition: .mock)
     ]
 
     static var previews: some View {

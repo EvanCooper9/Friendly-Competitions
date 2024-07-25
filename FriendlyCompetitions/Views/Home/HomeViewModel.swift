@@ -28,12 +28,15 @@ final class HomeViewModel: ObservableObject {
     @Published private(set) var competitions = [Competition]()
     @Published private(set) var friendRows = [FriendRow]()
     @Published private(set) var invitedCompetitions = [Competition]()
+    @Published private(set) var hasNotifications = false
+
     @Published var showAbout = false
     @Published private(set) var showDeveloper = false
     @Published private(set) var loadingDeepLink = false
     @Published var showNewCompetition = false
     @Published var showAddFriends = false
     @Published var showAnonymousAccountBlocker = false
+    @Published var showNotifications = false
     @Published private(set) var googleAdUnit: GoogleAdUnit?
 
     // MARK: - Private Properties
@@ -41,6 +44,8 @@ final class HomeViewModel: ObservableObject {
     @Injected(\.appState) private var appState: AppStateProviding
     @Injected(\.activitySummaryManager) private var activitySummaryManager: ActivitySummaryManaging
     @Injected(\.analyticsManager) private var analyticsManager: AnalyticsManaging
+    @Injected(\.backgroundRefreshManager) private var backgroundRefreshManager: BackgroundRefreshManaging
+    @Injected(\.bannerManager) private var bannerManager: BannerManaging
     @Injected(\.competitionsManager) private var competitionsManager: CompetitionsManaging
     @Injected(\.featureFlagManager) private var featureFlagManager: FeatureFlagManaging
     @Injected(\.friendsManager) private var friendsManager: FriendsManaging
@@ -139,7 +144,13 @@ final class HomeViewModel: ObservableObject {
             googleAdUnit = .native(unit: featureFlagManager.value(forString: .googleAdsExploreScreenAdUnit))
         }
 
-        bindBanners()
+        bannerManager.banners
+            .map(\.isNotEmpty)
+            .assign(to: &$hasNotifications)
+
+        bannerManager.banners
+            .filterMany(\.showsOnHomeScreen)
+            .assign(to: &$banners)
     }
 
     // MARK: - Public Methods
@@ -170,12 +181,18 @@ final class HomeViewModel: ObservableObject {
         showAbout = true
     }
 
-    func tapped(banner: Banner) {
-        banner.tapped()
+    func tapped(_ banner: Banner) {
+        bannerManager.tapped(banner)
             .sink(withUnretained: self) { strongSelf in
                 strongSelf.banners.remove(banner)
                 strongSelf.didHandleBannerTap.send()
             }
+            .store(in: &cancellables)
+    }
+
+    func dismissed(_ banner: Banner) {
+        bannerManager.dismissed(banner)
+            .sink()
             .store(in: &cancellables)
     }
 
@@ -185,62 +202,8 @@ final class HomeViewModel: ObservableObject {
             .store(in: &cancellables)
     }
 
-    // MARK: - Private Methods
-
-    private func bindBanners() {
-        Publishers
-            .CombineLatest(didHandleBannerTap, appState.didBecomeActive)
-            .mapToVoid()
-            .prepend(())
-            .flatMapLatest(withUnretained: self) { strongSelf in
-                let competitionBanners = strongSelf.$competitions
-                    .flatMapLatest { competitions -> AnyPublisher<[Banner], Never> in
-                        guard competitions.isNotEmpty else { return .just([]) }
-                        return competitions
-                            .map { $0.banners }
-                            .combineLatest()
-                            .map { $0.flattened() }
-                            .eraseToAnyPublisher()
-                    }
-
-                let notificationBanner = strongSelf.notificationsManager
-                    .permissionStatus()
-                    .map { permissionStatus -> Banner? in
-                        switch permissionStatus {
-                        case .authorized, .done:
-                            return nil
-                        case .denied:
-                            return .notificationPermissionsDenied
-                        case .notDetermined:
-                            return .notificationPermissionsMissing
-                        }
-                    }
-
-                let resultsBanners = strongSelf.competitionsManager
-                    .unseenResults
-                    .mapMany { competition, resultID in
-                        Banner.newCompetitionResults(competition: competition, resultID: resultID)
-                    }
-
-                return Publishers
-                    .CombineLatest3(competitionBanners, notificationBanner, resultsBanners)
-                    .map { competitionBanners, notificationBanner, resultsBanners in
-                        var allBanners = competitionBanners + resultsBanners
-                        if let notificationBanner {
-                            allBanners.append(notificationBanner)
-                        }
-                        return allBanners
-                    }
-                    .eraseToAnyPublisher()
-            }
-            .map { banners in
-                banners
-                    .uniqued(on: \.id)
-                    .sorted()
-            }
-            .filterMany { $0.showsOnHomeScreen }
-            .delay(for: .seconds(1), scheduler: scheduler)
-            .assign(to: &$banners)
+    func notificationsTapped() {
+        showNotifications = true
     }
 }
 

@@ -11,8 +11,8 @@ final class CompetitionDetailsViewModel: ObservableObject {
 
     // MARK: - Private Properties
 
-    @Injected(\.competitionsManager) private var competitionsManager
-    @Injected(\.userManager) private var userManager
+    @Injected(\.competitionsManager) private var competitionsManager: CompetitionsManaging
+    @Injected(\.userManager) private var userManager: UserManaging
 
     // MARK: - Lifecycle
 

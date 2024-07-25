@@ -88,7 +88,7 @@
 "Competition.Details.starts" = "Starts";
 "Competition.Details.ended" = "Ended";
 "Competition.Details.ends" = "Ends";
-"Competition.Details.scoringModel" = "Scoring model";
+"Competition.Details.scoringModel" = "Scoring";
 "Competition.Details.repeats" = "Repeats";
 "Competition.ScoringModel.ActivityRingCloseCount.displayName" = "Ring Close Count";
 "Competition.ScoringModel.PercentOfGoals.displayName" = "Percent of Goals";

@@ -1,5 +1,6 @@
 import Combine
 import CombineExt
+import CombineSchedulers
 import ECKit
 import Factory
 import Foundation
@@ -24,12 +25,12 @@ final class InviteFriendsViewModel: ObservableObject {
 
     // MARK: - Private Properties
 
-    @Injected(\.api) private var api
-    @Injected(\.competitionsManager) private var competitionsManager
-    @Injected(\.friendsManager) private var friendsManager
-    @Injected(\.scheduler) private var scheduler
-    @Injected(\.searchManager) private var searchManager
-    @Injected(\.userManager) private var userManager
+    @Injected(\.api) private var api: API
+    @Injected(\.competitionsManager) private var competitionsManager: CompetitionsManaging
+    @Injected(\.friendsManager) private var friendsManager: FriendsManaging
+    @Injected(\.scheduler) private var scheduler: AnySchedulerOf<RunLoop>
+    @Injected(\.searchManager) private var searchManager: SearchManaging
+    @Injected(\.userManager) private var userManager: UserManaging
 
     private let acceptSubject = PassthroughSubject<User, Never>()
     private let inviteSubject = PassthroughSubject<User, Never>()

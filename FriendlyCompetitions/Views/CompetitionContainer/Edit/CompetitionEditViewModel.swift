@@ -46,9 +46,9 @@ final class CompetitionEditViewModel: ObservableObject {
 
     private let editState: EditState
 
-    @Injected(\.competitionsManager) private var competitionsManager
-    @Injected(\.searchManager) private var searchManager
-    @Injected(\.userManager) private var userManager
+    @Injected(\.competitionsManager) private var competitionsManager: CompetitionsManaging
+    @Injected(\.searchManager) private var searchManager: SearchManaging
+    @Injected(\.userManager) private var userManager: UserManaging
 
     private let createSubject = PassthroughSubject<Void, Never>()
     private let updateSubject = PassthroughSubject<Void, Never>()
@@ -145,7 +145,7 @@ final class CompetitionEditViewModel: ObservableObject {
             .store(in: &cancellables)
 
         $name
-            .map { $0.isEmpty }
+            .map(\.isEmpty)
             .assign(to: &$submitDisabled)
     }
 

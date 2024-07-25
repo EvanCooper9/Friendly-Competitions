@@ -174,6 +174,7 @@
 		ED5A62972B8A4846002C820E /* FeatureFlagOverrideView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED5A62952B8A4846002C820E /* FeatureFlagOverrideView.swift */; };
 		ED5A62982B8A4846002C820E /* FeatureFlagOverrideViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED5A62962B8A4846002C820E /* FeatureFlagOverrideViewModel.swift */; };
 		ED5C3DA12B18C5D700C7010C /* WelcomeNavigationDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED5C3DA02B18C5D700C7010C /* WelcomeNavigationDestination.swift */; };
+		ED5CD6B22C52CD81009C0EAA /* User+Tag.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED5CD6B12C52CD81009C0EAA /* User+Tag.swift */; };
 		ED71E2A328F70212001FED74 /* Files in Frameworks */ = {isa = PBXBuildFile; productRef = ED71E2A228F70212001FED74 /* Files */; };
 		ED779D3A29F019DA00317950 /* AuthenticationManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED779D3929F019DA00317950 /* AuthenticationManagerTests.swift */; };
 		ED7881AB2850F6C400C7F6CB /* AuthenticationMethod.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED7881AA2850F6C400C7F6CB /* AuthenticationMethod.swift */; };
@@ -185,6 +186,13 @@
 		ED82AB0F2A3E1E1700334F51 /* EmailSignInViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED82AB0D2A3E1E1700334F51 /* EmailSignInViewModel.swift */; };
 		ED848FD82AD223B500D6E848 /* FirebaseAppCheck in Frameworks */ = {isa = PBXBuildFile; productRef = ED848FD72AD223B500D6E848 /* FirebaseAppCheck */; };
 		ED848FDA2AD239B200D6E848 /* FCAppCheckProviderFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED848FD92AD239B200D6E848 /* FCAppCheckProviderFactory.swift */; };
+		ED85299F2C44395500113672 /* BackgroundRefreshManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED85299B2C44395500113672 /* BackgroundRefreshManager.swift */; };
+		ED8529A02C44395500113672 /* BackgroundRefreshManager+Factory.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED85299C2C44395500113672 /* BackgroundRefreshManager+Factory.swift */; };
+		ED8529A12C44395500113672 /* BackgroundRefreshStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED85299D2C44395500113672 /* BackgroundRefreshStatus.swift */; };
+		ED8529A52C443FFB00113672 /* NotificationsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED8529A32C443FFB00113672 /* NotificationsView.swift */; };
+		ED8529A62C443FFB00113672 /* NotificationsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED8529A42C443FFB00113672 /* NotificationsViewModel.swift */; };
+		ED8529A92C44414D00113672 /* BannerManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED8529A82C44414D00113672 /* BannerManager.swift */; };
+		ED8529AB2C4441E000113672 /* BannerManager+Factory.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED8529AA2C4441E000113672 /* BannerManager+Factory.swift */; };
 		ED879BFB29A06AAB0007DB91 /* ActivitySummaryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED879BFA29A06AAB0007DB91 /* ActivitySummaryTests.swift */; };
 		ED879C0729A13C250007DB91 /* HealthKitQuery.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED879C0629A13C250007DB91 /* HealthKitQuery.swift */; };
 		ED879C0929A1494A0007DB91 /* MockError.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED879C0829A1494A0007DB91 /* MockError.swift */; };
@@ -238,7 +246,7 @@
 		EDAF6C47285277FF002BC0DD /* Nonce.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDAF6C46285277FF002BC0DD /* Nonce.swift */; };
 		EDBF030829F755810010CF90 /* FriendlyCompetitionsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBF030729F755810010CF90 /* FriendlyCompetitionsTests.swift */; };
 		EDBFB4062A5B8C88005D15BF /* Competition+Banners.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBFB4052A5B8C88005D15BF /* Competition+Banners.swift */; };
-		EDC1A36A2B7EC9E6001948D9 /* App.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC1A3692B7EC9E6001948D9 /* App.swift */; };
+		EDC1A36A2B7EC9E6001948D9 /* AppInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC1A3692B7EC9E6001948D9 /* AppInfo.swift */; };
 		EDC1A36D2B7ED1BE001948D9 /* GoogleAdUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC1A36C2B7ED1BE001948D9 /* GoogleAdUnit.swift */; };
 		EDC1A36F2B7ED1E9001948D9 /* GoogleAdViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC1A36E2B7ED1E9001948D9 /* GoogleAdViewModel.swift */; };
 		EDC5FC3F27FA7C1B00F2882D /* View+HUD.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDC5FC3E27FA7C1B00F2882D /* View+HUD.swift */; };
@@ -467,6 +475,7 @@
 		ED5A62952B8A4846002C820E /* FeatureFlagOverrideView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureFlagOverrideView.swift; sourceTree = "<group>"; };
 		ED5A62962B8A4846002C820E /* FeatureFlagOverrideViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeatureFlagOverrideViewModel.swift; sourceTree = "<group>"; };
 		ED5C3DA02B18C5D700C7010C /* WelcomeNavigationDestination.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WelcomeNavigationDestination.swift; sourceTree = "<group>"; };
+		ED5CD6B12C52CD81009C0EAA /* User+Tag.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "User+Tag.swift"; sourceTree = "<group>"; };
 		ED779D3929F019DA00317950 /* AuthenticationManagerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationManagerTests.swift; sourceTree = "<group>"; };
 		ED7881AA2850F6C400C7F6CB /* AuthenticationMethod.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationMethod.swift; sourceTree = "<group>"; };
 		ED7881AC2850F6DF00C7F6CB /* AuthenticationError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AuthenticationError.swift; sourceTree = "<group>"; };
@@ -475,6 +484,13 @@
 		ED82AB0C2A3E1E1700334F51 /* EmailSignInView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailSignInView.swift; sourceTree = "<group>"; };
 		ED82AB0D2A3E1E1700334F51 /* EmailSignInViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmailSignInViewModel.swift; sourceTree = "<group>"; };
 		ED848FD92AD239B200D6E848 /* FCAppCheckProviderFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FCAppCheckProviderFactory.swift; sourceTree = "<group>"; };
+		ED85299B2C44395500113672 /* BackgroundRefreshManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackgroundRefreshManager.swift; sourceTree = "<group>"; };
+		ED85299C2C44395500113672 /* BackgroundRefreshManager+Factory.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "BackgroundRefreshManager+Factory.swift"; sourceTree = "<group>"; };
+		ED85299D2C44395500113672 /* BackgroundRefreshStatus.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BackgroundRefreshStatus.swift; sourceTree = "<group>"; };
+		ED8529A32C443FFB00113672 /* NotificationsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsView.swift; sourceTree = "<group>"; };
+		ED8529A42C443FFB00113672 /* NotificationsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationsViewModel.swift; sourceTree = "<group>"; };
+		ED8529A82C44414D00113672 /* BannerManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BannerManager.swift; sourceTree = "<group>"; };
+		ED8529AA2C4441E000113672 /* BannerManager+Factory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "BannerManager+Factory.swift"; sourceTree = "<group>"; };
 		ED879BFA29A06AAB0007DB91 /* ActivitySummaryTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActivitySummaryTests.swift; sourceTree = "<group>"; };
 		ED879C0629A13C250007DB91 /* HealthKitQuery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitQuery.swift; sourceTree = "<group>"; };
 		ED879C0829A1494A0007DB91 /* MockError.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MockError.swift; sourceTree = "<group>"; };
@@ -524,7 +540,7 @@
 		EDAF6C46285277FF002BC0DD /* Nonce.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Nonce.swift; sourceTree = "<group>"; };
 		EDBF030729F755810010CF90 /* FriendlyCompetitionsTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FriendlyCompetitionsTests.swift; sourceTree = "<group>"; };
 		EDBFB4052A5B8C88005D15BF /* Competition+Banners.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Competition+Banners.swift"; sourceTree = "<group>"; };
-		EDC1A3692B7EC9E6001948D9 /* App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = App.swift; sourceTree = "<group>"; };
+		EDC1A3692B7EC9E6001948D9 /* AppInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppInfo.swift; sourceTree = "<group>"; };
 		EDC1A36C2B7ED1BE001948D9 /* GoogleAdUnit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleAdUnit.swift; sourceTree = "<group>"; };
 		EDC1A36E2B7ED1E9001948D9 /* GoogleAdViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GoogleAdViewModel.swift; sourceTree = "<group>"; };
 		EDC5FC3E27FA7C1B00F2882D /* View+HUD.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+HUD.swift"; sourceTree = "<group>"; };
@@ -631,6 +647,7 @@
 			children = (
 				EDA035B92917FE050091E7A6 /* Foundation */,
 				C1C1542126D5DFEA00C6FA9F /* HealthKit */,
+				ED5CD6B32C52D2AF009C0EAA /* StdLib */,
 				C12D63EE27A4D5A700259237 /* SwiftUI */,
 			);
 			path = Extensions;
@@ -775,10 +792,10 @@
 				ED25834C2BB6403A00B3335A /* PrivacyInfo.xcprivacy */,
 				C1E6406226F4395200E3E70A /* FriendlyCompetitions.entitlements */,
 				ED1F8DF129E5F7A20009B986 /* AppLauncher.swift */,
+				C1B2F4E3272B505C0028449F /* AppDelegate.swift */,
 				C1691DC626D55FCF006FFA30 /* FriendlyCompetitions.swift */,
 				EDBF030729F755810010CF90 /* FriendlyCompetitionsTests.swift */,
 				EDA61C0E2977317E00370C5C /* FriendlyCompetitionsAppModel.swift */,
-				C1B2F4E3272B505C0028449F /* AppDelegate.swift */,
 				ED879C1B29A3BB580007DB91 /* API */,
 				ED4F721629C92FBE007C5864 /* AppServices */,
 				ED879C6029A416A70007DB91 /* AppState */,
@@ -876,6 +893,8 @@
 			children = (
 				ED879C2729A40D070007DB91 /* ActivitySummary */,
 				ED7881A92850F6B400C7F6CB /* Authentication */,
+				ED85299E2C44395500113672 /* BackgroundRefresh */,
+				ED8529A72C44413B00113672 /* Banner */,
 				ED879C2A29A40D660007DB91 /* Competitions */,
 				ED879C4629A4118C0007DB91 /* Friends */,
 				ED6CB45A28BA829000436BBD /* HealthKit */,
@@ -960,9 +979,9 @@
 			isa = PBXGroup;
 			children = (
 				ED0E4FE62B83F000003BE7CB /* User.swift */,
+				ED5CD6B12C52CD81009C0EAA /* User+Tag.swift */,
 				ED0E4FE72B83F000003BE7CB /* User+Statistics.swift */,
 				ED0E4FE82B83F000003BE7CB /* User+Visibility.swift */,
-				ED0E4FE92B83F000003BE7CB /* String+AnonymousName.swift */,
 			);
 			path = User;
 			sourceTree = "<group>";
@@ -1091,6 +1110,7 @@
 				ED1B85B429C904CC008DB1F6 /* HomeView.swift */,
 				ED1B85B329C904CC008DB1F6 /* HomeViewModel.swift */,
 				ED1B85B929C904CC008DB1F6 /* About */,
+				ED8529A22C443FDF00113672 /* Notifications */,
 				ED1B85BC29C904CC008DB1F6 /* Profile */,
 				ED1B85B529C904CC008DB1F6 /* User */,
 			);
@@ -1322,6 +1342,14 @@
 			path = FeatureFlagOverride;
 			sourceTree = "<group>";
 		};
+		ED5CD6B32C52D2AF009C0EAA /* StdLib */ = {
+			isa = PBXGroup;
+			children = (
+				ED0E4FE92B83F000003BE7CB /* String+AnonymousName.swift */,
+			);
+			path = StdLib;
+			sourceTree = "<group>";
+		};
 		ED6CB45A28BA829000436BBD /* HealthKit */ = {
 			isa = PBXGroup;
 			children = (
@@ -1338,7 +1366,7 @@
 		ED7881A52850380700C7F6CB /* Utility */ = {
 			isa = PBXGroup;
 			children = (
-				EDC1A3692B7EC9E6001948D9 /* App.swift */,
+				EDC1A3692B7EC9E6001948D9 /* AppInfo.swift */,
 				ED879C6329A417670007DB91 /* Utility+Factory.swift */,
 				C11193AD26E7C5C6003B7EB3 /* Extensions */,
 				ED1F8DF029E5A9AF0009B986 /* Nonce */,
@@ -1394,6 +1422,34 @@
 				ED82AB0D2A3E1E1700334F51 /* EmailSignInViewModel.swift */,
 			);
 			path = EmailSignIn;
+			sourceTree = "<group>";
+		};
+		ED85299E2C44395500113672 /* BackgroundRefresh */ = {
+			isa = PBXGroup;
+			children = (
+				ED85299B2C44395500113672 /* BackgroundRefreshManager.swift */,
+				ED85299C2C44395500113672 /* BackgroundRefreshManager+Factory.swift */,
+				ED85299D2C44395500113672 /* BackgroundRefreshStatus.swift */,
+			);
+			path = BackgroundRefresh;
+			sourceTree = "<group>";
+		};
+		ED8529A22C443FDF00113672 /* Notifications */ = {
+			isa = PBXGroup;
+			children = (
+				ED8529A32C443FFB00113672 /* NotificationsView.swift */,
+				ED8529A42C443FFB00113672 /* NotificationsViewModel.swift */,
+			);
+			path = Notifications;
+			sourceTree = "<group>";
+		};
+		ED8529A72C44413B00113672 /* Banner */ = {
+			isa = PBXGroup;
+			children = (
+				ED8529A82C44414D00113672 /* BannerManager.swift */,
+				ED8529AA2C4441E000113672 /* BannerManager+Factory.swift */,
+			);
+			path = Banner;
 			sourceTree = "<group>";
 		};
 		ED879BF829A06A850007DB91 /* Deep lInk */ = {
@@ -2120,6 +2176,7 @@
 				EDBFB4062A5B8C88005D15BF /* Competition+Banners.swift in Sources */,
 				ED3EF4B42A3E58EF004D2706 /* StepCount.swift in Sources */,
 				EDC976362A3E326D00DE7ABE /* TextFieldWithSecureToggle.swift in Sources */,
+				ED5CD6B22C52CD81009C0EAA /* User+Tag.swift in Sources */,
 				ED0E4FFC2B83F1A4003BE7CB /* Workout.swift in Sources */,
 				ED0E50062B83F1B2003BE7CB /* Permission.swift in Sources */,
 				C12D640727A5F2FC00259237 /* CompetitionsManager.swift in Sources */,
@@ -2133,6 +2190,7 @@
 				ED802B58298CB8B200155B8B /* Strings+Generated.swift in Sources */,
 				EDA61C0D2977276F00370C5C /* RootViewModel.swift in Sources */,
 				ED4F721D29C930C5007C5864 /* FirebaseAppService.swift in Sources */,
+				ED8529AB2C4441E000113672 /* BannerManager+Factory.swift in Sources */,
 				ED0E4FFA2B83F1A4003BE7CB /* WorkoutMetric.swift in Sources */,
 				ED879C5D29A413ED0007DB91 /* Storage+Firebase.swift in Sources */,
 				ED1B85C229C904CC008DB1F6 /* HomeViewModel.swift in Sources */,
@@ -2178,6 +2236,7 @@
 				C1F9D7CD26FF871A00B25651 /* NotificationsManager.swift in Sources */,
 				EDA4781D2A767CBA000F8E1A /* CompetitionEditViewModel.swift in Sources */,
 				EDC7849D28035A67001FE005 /* HKWorkoutActivityType+Extensions.swift in Sources */,
+				ED8529A12C44395500113672 /* BackgroundRefreshStatus.swift in Sources */,
 				ED879C4329A411550007DB91 /* HealthKitManager+Factory.swift in Sources */,
 				ED3EF4B02A3E568E004D2706 /* StepCountManager.swift in Sources */,
 				ED1B85A029C90490008DB1F6 /* RootView.swift in Sources */,
@@ -2207,6 +2266,7 @@
 				ED7881AB2850F6C400C7F6CB /* AuthenticationMethod.swift in Sources */,
 				ED130764295FFA5C00E0AC87 /* CompetitionResultsDataPoint.swift in Sources */,
 				C1930E4527C55EF500DB45C1 /* AppState.swift in Sources */,
+				ED8529A02C44395500113672 /* BackgroundRefreshManager+Factory.swift in Sources */,
 				ED879C3B29A410D70007DB91 /* API+Factory.swift in Sources */,
 				ED82AB0F2A3E1E1700334F51 /* EmailSignInViewModel.swift in Sources */,
 				ED82AB0E2A3E1E1700334F51 /* EmailSignInView.swift in Sources */,
@@ -2224,6 +2284,7 @@
 				ED47BA1129F2D1A7007A1D12 /* Workout+Mock.swift in Sources */,
 				EDC1A36F2B7ED1E9001948D9 /* GoogleAdViewModel.swift in Sources */,
 				ED3EF4B22A3E57F6004D2706 /* StepCountManager+Factory.swift in Sources */,
+				ED85299F2C44395500113672 /* BackgroundRefreshManager.swift in Sources */,
 				ED5A62982B8A4846002C820E /* FeatureFlagOverrideViewModel.swift in Sources */,
 				C155229E26E793C600FE0DA7 /* Competition+Mock.swift in Sources */,
 				C1C8B24226F3FB47008D6B1B /* HealthKitManager.swift in Sources */,
@@ -2231,7 +2292,7 @@
 				ED879C5B29A413970007DB91 /* Storage.swift in Sources */,
 				ED1B85CB29C904CC008DB1F6 /* ProfileViewModel.swift in Sources */,
 				ED48782E282747BD00AC1E2C /* InviteFriendsView.swift in Sources */,
-				EDC1A36A2B7EC9E6001948D9 /* App.swift in Sources */,
+				EDC1A36A2B7EC9E6001948D9 /* AppInfo.swift in Sources */,
 				C123C9D427A88D3200375F73 /* UserInfoSection.swift in Sources */,
 				ED879C5429A412250007DB91 /* SearchManager+Factory.swift in Sources */,
 				C132945627DF6D9E00117548 /* Binding+Extensions.swift in Sources */,
@@ -2254,6 +2315,8 @@
 				EDA478292A815943000F8E1A /* CompetitionContainerViewModel.swift in Sources */,
 				ED5A62972B8A4846002C820E /* FeatureFlagOverrideView.swift in Sources */,
 				ED1F8DEE29E3933A0009B986 /* DeveloperAppService.swift in Sources */,
+				ED8529A52C443FFB00113672 /* NotificationsView.swift in Sources */,
+				ED8529A62C443FFB00113672 /* NotificationsViewModel.swift in Sources */,
 				EDC5FC3F27FA7C1B00F2882D /* View+HUD.swift in Sources */,
 				ED48783228295A2100AC1E2C /* InviteFriendsAction.swift in Sources */,
 				C1C8B24326F3FB47008D6B1B /* ActivitySummaryManager.swift in Sources */,
@@ -2270,6 +2333,7 @@
 				ED879C1F29A3BB850007DB91 /* API+Firebase.swift in Sources */,
 				ED2B88ED2A1E9E770043AD87 /* CreateAccountView.swift in Sources */,
 				ED879C1D29A3BB720007DB91 /* API.swift in Sources */,
+				ED8529A92C44414D00113672 /* BannerManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

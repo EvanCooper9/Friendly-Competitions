@@ -7,7 +7,7 @@ struct ProfileView: View {
     @StateObject private var viewModel = ProfileViewModel()
 
     var body: some View {
-        Form {
+        List {
             UserInfoSection(user: viewModel.user)
 
             if !viewModel.isAnonymousAccount {
@@ -15,7 +15,7 @@ struct ProfileView: View {
             }
 
             Section {
-                MedalsView(statistics: viewModel.user.statistics ?? .zero)
+                MedalsView(statistics: viewModel.user.statistics)
             } header: {
                 Text(L10n.Profile.Medals.title)
             }
@@ -62,7 +62,7 @@ struct ProfileView: View {
     @ViewBuilder
     private var privacy: some View {
         Section {
-            Toggle(L10n.Profile.Privacy.Searchable.title, isOn: $viewModel.user.searchable ?? true)
+            Toggle(L10n.Profile.Privacy.Searchable.title, isOn: $viewModel.user.searchable)
         } header: {
             Text(L10n.Profile.Privacy.title)
         } footer: {
@@ -70,7 +70,7 @@ struct ProfileView: View {
         }
 
         Section {
-            Toggle(L10n.Profile.Privacy.HideName.title, isOn: $viewModel.user.showRealName ?? true)
+            Toggle(L10n.Profile.Privacy.HideName.title, isOn: $viewModel.user.showRealName)
         } footer: {
             Group {
                 Text(L10n.Profile.Privacy.HideName.description) +
@@ -80,7 +80,7 @@ struct ProfileView: View {
             .onTapGesture(perform: viewModel.hideNameLearnMoreTapped)
         }
         .sheet(isPresented: $viewModel.showHideNameLearnMore) {
-            HideNameLearnMoreView(showName: $viewModel.user.showRealName ?? true)
+            HideNameLearnMoreView(showName: $viewModel.user.showRealName)
         }
     }
 }

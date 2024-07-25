@@ -16,10 +16,10 @@ final class SearchManager: SearchManaging {
 
     // MARK: - Private Properties
 
-    @Injected(\.database) private var database
-    @Injected(\.environmentManager) private var environmentManager
-    @Injected(\.searchClient) private var searchClient
-    @Injected(\.userManager) private var userManager
+    @Injected(\.database) private var database: Database
+    @Injected(\.environmentManager) private var environmentManager: EnvironmentManaging
+    @Injected(\.searchClient) private var searchClient: SearchClient
+    @Injected(\.userManager) private var userManager: UserManaging
 
     private lazy var competitionsIndex = searchClient.index(withName: "competitions")
     private lazy var userIndex = searchClient.index(withName: "users")
