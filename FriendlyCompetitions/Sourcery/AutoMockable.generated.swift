@@ -1,4 +1,4 @@
-// Generated using Sourcery 2.1.7 — https://github.com/krzysztofzablocki/Sourcery
+// Generated using Sourcery 2.2.5 — https://github.com/krzysztofzablocki/Sourcery
 // DO NOT EDIT
 // swiftlint:disable line_length
 // swiftlint:disable variable_name
@@ -610,6 +610,85 @@ class AuthenticationManagingMock: AuthenticationManaging {
         } else {
             return sendPasswordResetToReturnValue
         }
+    }
+
+}
+class BackgroundRefreshManagingMock: BackgroundRefreshManaging {
+
+
+    var status: AnyPublisher<BackgroundRefreshStatus, Never> {
+        get { return underlyingStatus }
+        set(value) { underlyingStatus = value }
+    }
+    var underlyingStatus: AnyPublisher<BackgroundRefreshStatus, Never>!
+
+
+}
+class BannerManagingMock: BannerManaging {
+
+
+    var banners: AnyPublisher<[Banner], Never> {
+        get { return underlyingBanners }
+        set(value) { underlyingBanners = value }
+    }
+    var underlyingBanners: AnyPublisher<[Banner], Never>!
+
+
+    //MARK: - tapped
+
+    var tappedCallsCount = 0
+    var tappedCalled: Bool {
+        return tappedCallsCount > 0
+    }
+    var tappedReceivedBanner: Banner?
+    var tappedReceivedInvocations: [Banner] = []
+    var tappedReturnValue: AnyPublisher<Void, Never>!
+    var tappedClosure: ((Banner) -> AnyPublisher<Void, Never>)?
+
+    func tapped(_ banner: Banner) -> AnyPublisher<Void, Never> {
+        tappedCallsCount += 1
+        tappedReceivedBanner = banner
+        tappedReceivedInvocations.append(banner)
+        if let tappedClosure = tappedClosure {
+            return tappedClosure(banner)
+        } else {
+            return tappedReturnValue
+        }
+    }
+
+    //MARK: - dismissed
+
+    var dismissedCallsCount = 0
+    var dismissedCalled: Bool {
+        return dismissedCallsCount > 0
+    }
+    var dismissedReceivedBanner: Banner?
+    var dismissedReceivedInvocations: [Banner] = []
+    var dismissedReturnValue: AnyPublisher<Void, Never>!
+    var dismissedClosure: ((Banner) -> AnyPublisher<Void, Never>)?
+
+    func dismissed(_ banner: Banner) -> AnyPublisher<Void, Never> {
+        dismissedCallsCount += 1
+        dismissedReceivedBanner = banner
+        dismissedReceivedInvocations.append(banner)
+        if let dismissedClosure = dismissedClosure {
+            return dismissedClosure(banner)
+        } else {
+            return dismissedReturnValue
+        }
+    }
+
+    //MARK: - resetDismissed
+
+    var resetDismissedCallsCount = 0
+    var resetDismissedCalled: Bool {
+        return resetDismissedCallsCount > 0
+    }
+    var resetDismissedClosure: (() -> Void)?
+
+    func resetDismissed() {
+        resetDismissedCallsCount += 1
+        resetDismissedClosure?()
     }
 
 }

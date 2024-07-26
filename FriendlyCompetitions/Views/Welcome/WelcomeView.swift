@@ -6,53 +6,52 @@ struct WelcomeView: View {
     @StateObject private var viewModel = WelcomeViewModel()
 
     var body: some View {
-        NavigationStack(path: $viewModel.navigationPath) {
-            VStack {
-                VStack(alignment: .leading, spacing: 15) {
-                    AppIcon()
-                    VStack(alignment: .leading) {
-                        Text(L10n.Welcome.welcomeTo)
-                            .font(.title)
-                            .bold()
-                        Text(AppInfo.name)
-                            .foregroundLinearGradient(.init(colors: [
-                                Asset.Colors.Branded.red.swiftUIColor,
-                                Asset.Colors.Branded.green.swiftUIColor,
-                                Asset.Colors.Branded.blue.swiftUIColor
-                            ]))
-                            .font(.title)
-                            .bold()
-                    }
-                    Text(L10n.Welcome.description)
-                        .font(.title3)
-                        .foregroundColor(.secondaryLabel)
-                }
-                .maxHeight(.infinity)
-
-                if viewModel.showDeveloper {
-                    DeveloperMenu()
+        VStack {
+            VStack(alignment: .leading, spacing: 15) {
+                AppIcon()
+                VStack(alignment: .leading) {
+                    Text(L10n.Welcome.welcomeTo)
                         .font(.title)
+                        .bold()
+                    Text(AppInfo.name)
+                        .foregroundLinearGradient(.init(colors: [
+                            Asset.Colors.Branded.red.swiftUIColor,
+                            Asset.Colors.Branded.green.swiftUIColor,
+                            Asset.Colors.Branded.blue.swiftUIColor
+                        ]))
+                        .font(.title)
+                        .bold()
                 }
-
-                VStack {
-                    buttons
-                }
-                .padding(.top)
-                .padding(.horizontal)
-                .padding(.bottom, .extraLarge)
-                .background(.tertiarySystemBackground)
-                .cornerRadius(25, corners: [.topLeft, .topRight])
-                .shadow(color: .gray.opacity(0.25), radius: 10)
+                Text(L10n.Welcome.description)
+                    .font(.title3)
+                    .foregroundColor(.secondaryLabel)
             }
-            .ignoresSafeArea()
-            .animation(.default, value: viewModel.signInOptions)
-            .navigationDestination(for: WelcomeNavigationDestination.self) { destination in
-                VStack {
-                    destination.view
-                    Spacer()
-                }
+            .maxHeight(.infinity)
+
+            if viewModel.showDeveloper {
+                DeveloperMenu()
+                    .font(.title)
+            }
+
+            VStack {
+                buttons
+            }
+            .padding(.top)
+            .padding(.horizontal)
+            .padding(.bottom, .extraLarge)
+            .background(.tertiarySystemBackground)
+            .cornerRadius(25, corners: [.topLeft, .topRight])
+            .shadow(color: .gray.opacity(0.25), radius: 10)
+        }
+        .ignoresSafeArea()
+        .animation(.default, value: viewModel.signInOptions)
+        .navigationDestination(for: WelcomeNavigationDestination.self) { destination in
+            VStack {
+                destination.view
+                Spacer()
             }
         }
+        .embeddedInNavigationStack(path: $viewModel.navigationPath)
         .confirmationDialog(L10n.Confirmation.areYouSure, isPresented: $viewModel.showAnonymousSignInConfirmation, titleVisibility: .visible) {
             Button(L10n.Generics.continue, action: viewModel.confirmAnonymousSignIn)
         } message: {
@@ -63,7 +62,6 @@ struct WelcomeView: View {
 
     @ViewBuilder
     private var buttons: some View {
-
         ForEach(enumerated: viewModel.signInOptions) { index, option in
             switch option {
             case .anonymous:

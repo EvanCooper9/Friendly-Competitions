@@ -2,14 +2,36 @@
 
 extension User {
     func with(friends: [User.ID]) -> User {
-        var user = self
-        user.friends = friends
-        return user
+        User(
+            id: id,
+            name: name,
+            email: email,
+            friends: friends,
+            incomingFriendRequests: incomingFriendRequests,
+            outgoingFriendRequests: outgoingFriendRequests,
+            notificationTokens: notificationTokens,
+            statistics: statistics,
+            searchable: searchable,
+            showRealName: showRealName,
+            isAnonymous: isAnonymous,
+            tags: tags
+        )
     }
     
     func with(friendRequests: [User.ID]) -> User {
-        var user = self
-        user.incomingFriendRequests = friendRequests
-        return user
+        User(
+            id: id,
+            name: name,
+            email: email,
+            friends: friends,
+            incomingFriendRequests: friendRequests,
+            outgoingFriendRequests: outgoingFriendRequests,
+            notificationTokens: notificationTokens,
+            statistics: statistics,
+            searchable: searchable,
+            showRealName: showRealName,
+            isAnonymous: isAnonymous,
+            tags: tags
+        )
     }
 }

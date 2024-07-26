@@ -2,6 +2,7 @@ import Combine
 import CombineExt
 import ECKit
 import Factory
+import FCKit
 import Foundation
 
 final class PaywallViewModel: ObservableObject {
@@ -15,8 +16,8 @@ final class PaywallViewModel: ObservableObject {
 
     // MARK: - Private Properties
 
-    @Injected(\.analyticsManager) private var analyticsManager
-    @Injected(\.premiumManager) private var premiumManager
+    @Injected(\.analyticsManager) private var analyticsManager: AnalyticsManaging
+    @Injected(\.premiumManager) private var premiumManager: PremiumManaging
 
     private let selectedIndex = CurrentValueSubject<Int, Never>(0)
     private let purchaseSubject = PassthroughSubject<Void, Never>()

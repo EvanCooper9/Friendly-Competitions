@@ -64,7 +64,7 @@ extension Competition {
             .map { _ -> Banner? in
                 let gracePeriod = featureFlagManager.value(forDouble: .dataUploadGracePeriodHours).hours
                 guard ended && canUploadData(gracePeriod: gracePeriod) else { return nil }
-                return .competitionResultsCalculating
+                return .competitionResultsCalculating(competition: self)
             }
             .eraseToAnyPublisher()
 

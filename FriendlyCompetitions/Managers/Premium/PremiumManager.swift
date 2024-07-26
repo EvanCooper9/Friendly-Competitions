@@ -2,6 +2,7 @@ import Combine
 import CombineExt
 import ECKit
 import Factory
+import FCKit
 import Foundation
 import RevenueCat
 import StoreKit
@@ -30,10 +31,10 @@ final class PremiumManager: PremiumManaging {
 
     // MARK: - Private Properties
 
-    @Injected(\.analyticsManager) private var analyticsManager
-    @Injected(\.competitionsManager) private var competitionsManager
-    @Injected(\.featureFlagManager) private var featureFlagManager
-    @Injected(\.userManager) private var userManager
+    @Injected(\.analyticsManager) private var analyticsManager: AnalyticsManaging
+    @Injected(\.competitionsManager) private var competitionsManager: CompetitionsManaging
+    @Injected(\.featureFlagManager) private var featureFlagManager: FeatureFlagManaging
+    @Injected(\.userManager) private var userManager: UserManaging
 
     private let premiumSubject = ReplaySubject<Premium?, Never>(bufferSize: 1)
     private let productsSubject = ReplaySubject<[Product], Never>(bufferSize: 1)

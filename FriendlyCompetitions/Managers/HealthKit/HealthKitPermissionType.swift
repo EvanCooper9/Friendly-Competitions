@@ -44,4 +44,33 @@ enum HealthKitPermissionType: String, CaseIterable, Codable {
             return HKQuantityType(.distanceSwimming)
         }
     }
+
+    var url: URL {
+        switch self {
+        case .activeEnergy:
+            URL(string: "x-apple-health://SampleType/HKQuantityTypeIdentifierActiveEnergyBurned")!
+        case .appleExerciseTime:
+            URL(string: "x-apple-health://SampleType/HKQuantityTypeIdentifierAppleExerciseTime")!
+        case .appleMoveTime:
+            URL(string: "x-apple-health://SampleType/HKQuantityTypeIdentifierAppleMoveTime")!
+        case .appleStandTime:
+            URL(string: "x-apple-health://SampleType/HKQuantityTypeIdentifierAppleStandTime")!
+        case .appleStandHour:
+            URL(string: "x-apple-health://SampleType/HKCategoryTypeIdentifierAppleStandHour")!
+        case .activitySummaryType:
+            .health
+        case .workoutType:
+            .health
+        case .distanceCycling:
+            URL(string: "x-apple-health://SampleType/HKQuantityTypeIdentifierDistanceCycling")!
+        case .heartRate:
+            URL(string: "x-apple-health://SampleType/HKQuantityTypeIdentifierHeartRate")!
+        case .distanceWalkingRunning:
+            URL(string: "x-apple-health://SampleType/HKQuantityTypeIdentifierDistanceWalkingRunning")!
+        case .stepCount:
+            URL(string: "x-apple-health://SampleType/HKQuantityTypeIdentifierStepCount")!
+        case .distanceSwimming:
+            URL(string: "x-apple-health://SampleType/HKQuantityTypeIdentifierDistanceSwimming")!
+        }
+    }
 }
