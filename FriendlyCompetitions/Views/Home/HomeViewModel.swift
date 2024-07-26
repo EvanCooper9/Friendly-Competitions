@@ -68,7 +68,7 @@ final class HomeViewModel: ObservableObject {
         showDeveloper = true
         #else
         userManager.userPublisher
-            .map { ["evan.cooper@rogers.com", "evancmcooper@gmail.com"].contains($0.email) }
+            .map { $0.tags.contains(.admin) }
             .assign(to: &$showDeveloper)
         #endif
 
