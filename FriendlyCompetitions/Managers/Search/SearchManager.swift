@@ -42,7 +42,7 @@ final class SearchManager: SearchManaging {
                 .filterMany { [weak self] user in
                     guard let self else { return false }
                     guard user.id != self.userManager.user.id else { return false }
-                    return user.searchable ?? false
+                    return user.searchable
                 }
         }
     }

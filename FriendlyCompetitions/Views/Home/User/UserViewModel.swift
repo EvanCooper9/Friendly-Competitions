@@ -32,7 +32,7 @@ final class UserViewModel: ObservableObject {
 
     init(user: User) {
         title = user.name
-        medals = user.statistics ?? .zero
+        medals = user.statistics
 
         friendsManager.friendActivitySummaries
             .compactMap { $0[user.id] }

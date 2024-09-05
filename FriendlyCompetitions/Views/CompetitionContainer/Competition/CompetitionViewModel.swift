@@ -202,7 +202,7 @@ final class CompetitionViewModel: ObservableObject {
         bannerManager.banners
             .filterMany { banner in
                 switch banner {
-                case .healthKitPermissionsMissing(let permissions):
+                case .healthKitPermissionsMissing:
                     return true
                 case .healthKitDataMissing(let competition, _):
                     return competition.id == self.competition.id

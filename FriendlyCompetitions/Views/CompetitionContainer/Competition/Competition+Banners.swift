@@ -104,7 +104,7 @@ extension Competition {
                     switch banner {
                     case .healthKitPermissionsMissing(let permissions):
                         missingPermissions.append(contentsOf: permissions)
-                    case .healthKitDataMissing(let competition, let permissions):
+                    case .healthKitDataMissing(_, let permissions):
                         missingData.append(contentsOf: permissions)
                     default:
                         break

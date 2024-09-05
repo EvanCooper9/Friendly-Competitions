@@ -1834,9 +1834,8 @@
 				C1691DC026D55FCF006FFA30 /* Frameworks */,
 				C1691DC126D55FCF006FFA30 /* Resources */,
 				C1DB3B5C27AA0CF40074BED1 /* Copy GoogleService-Info.plist (App) */,
-				EDA0E0C12994203400868AF1 /* Crashlytics */,
-				EDC06FC129903F4E00923730 /* Firebase XCFrameworks Copy Resource Bundles */,
 				ED1A95C12B788D12006D2B71 /* Embed Foundation Extensions */,
+				EDA0E0C12994203400868AF1 /* Crashlytics */,
 			);
 			buildRules = (
 			);
@@ -2074,25 +2073,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
 			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n# \"${BUILD_DIR%Build/*}/SourcePackages/checkouts/firebase-ios-sdk-xcframeworks/Sources/FirebaseCrashlytics/run\"\n\"${BUILD_DIR%Build/*}/SourcePackages/checkouts/firebase-ios-sdk/Crashlytics/run\"\n";
-		};
-		EDC06FC129903F4E00923730 /* Firebase XCFrameworks Copy Resource Bundles */ = {
-			isa = PBXShellScriptBuildPhase;
-			alwaysOutOfDate = 1;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-			);
-			name = "Firebase XCFrameworks Copy Resource Bundles";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\n# sh \"${BUILD_DIR%Build/*}SourcePackages/checkouts/firebase-ios-sdk-xcframeworks/.scripts/resources.sh\"\n";
 		};
 /* End PBXShellScriptBuildPhase section */
 
