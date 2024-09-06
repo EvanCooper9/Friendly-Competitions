@@ -98,6 +98,11 @@
 		ED1A95BC2B788D12006D2B71 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = ED1A95BB2B788D12006D2B71 /* Assets.xcassets */; };
 		ED1A95C02B788D12006D2B71 /* FriendlyCompetitionsWidgets.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = ED1A95AD2B788D11006D2B71 /* FriendlyCompetitionsWidgets.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		ED1B5CEA296A574800122D7E /* URL+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1B5CE9296A574800122D7E /* URL+Extensions.swift */; };
+		ED1B5CF3296C7A4F00122D7E /* Premium.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1B5CF2296C7A4F00122D7E /* Premium.swift */; };
+		ED1B5CF7296D1CF600122D7E /* PaywallPrimerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1B5CF5296D1CF600122D7E /* PaywallPrimerView.swift */; };
+		ED1B5CFE296DBD2400122D7E /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1B5CFC296DBD2400122D7E /* PaywallView.swift */; };
+		ED1B5CFF296DBD2400122D7E /* PaywallViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1B5CFD296DBD2400122D7E /* PaywallViewModel.swift */; };
+		ED1B5D01296DBD3100122D7E /* PaywallStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1B5D00296DBD3100122D7E /* PaywallStep.swift */; };
 		ED1B85A029C90490008DB1F6 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1B859F29C90490008DB1F6 /* RootView.swift */; };
 		ED1B85AC29C9049E008DB1F6 /* ExploreView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1B85A629C9049E008DB1F6 /* ExploreView.swift */; };
 		ED1B85AD29C9049E008DB1F6 /* ExploreViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED1B85A729C9049E008DB1F6 /* ExploreViewModel.swift */; };
@@ -606,8 +611,6 @@
 				ED07572F29CA65FC00141AD4 /* FirebaseFunctions in Frameworks */,
 				ED07572729CA65FC00141AD4 /* FirebaseCrashlytics in Frameworks */,
 				ED8C324C2911BFD300339988 /* ECKit in Frameworks */,
-				ED07573729CA65FC00141AD4 /* FirebaseStorageCombine-Community in Frameworks */,
-				ED07572529CA65FC00141AD4 /* FirebaseAuthCombine-Community in Frameworks */,
 				ED0E500E2B84198E003BE7CB /* FCKitMocks in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
