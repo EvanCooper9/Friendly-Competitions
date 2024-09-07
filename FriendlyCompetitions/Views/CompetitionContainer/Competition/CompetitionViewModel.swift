@@ -196,12 +196,6 @@ final class CompetitionViewModel: ObservableObject {
             .store(in: &cancellables)
     }
 
-    func dismissed(_ banner: Banner) {
-        bannerManager.dismissed(banner)
-            .sink()
-            .store(in: &cancellables)
-    }
-
     // MARK: - Private Methods
 
     private func bindBanners() {
