@@ -21,6 +21,13 @@ final class ActivitySummaryManagerTests: FCTestCase {
             default: return 0.0
             }
         }
+        featureFlagManager.valueForBoolFeatureFlagFeatureFlagBoolBoolClosure = { flag in
+            switch flag {
+            case .ignoreManuallyEnteredHealthKitData: return true
+            case .adsEnabled: return true
+            case .newResultsBannerEnabled: return true
+            }
+        }
     }
     
     func testThatItFetchesActivitySummariesAndSetsCurrentOnSuccess() {

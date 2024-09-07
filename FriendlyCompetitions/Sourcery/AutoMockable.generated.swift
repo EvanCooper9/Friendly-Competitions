@@ -998,23 +998,6 @@ class HealthKitManagingMock: HealthKitManaging {
         registerBackgroundDeliveryTaskForTaskClosure?(permission, task)
     }
 
-    //MARK: - registerBackgroundDeliveryPublisher
-
-    var registerBackgroundDeliveryPublisherForPublisherCallsCount = 0
-    var registerBackgroundDeliveryPublisherForPublisherCalled: Bool {
-        return registerBackgroundDeliveryPublisherForPublisherCallsCount > 0
-    }
-    var registerBackgroundDeliveryPublisherForPublisherReceivedArguments: (permission: HealthKitPermissionType, publisher: AnyPublisher<Void, Never>)?
-    var registerBackgroundDeliveryPublisherForPublisherReceivedInvocations: [(permission: HealthKitPermissionType, publisher: AnyPublisher<Void, Never>)] = []
-    var registerBackgroundDeliveryPublisherForPublisherClosure: ((HealthKitPermissionType, AnyPublisher<Void, Never>) -> Void)?
-
-    func registerBackgroundDeliveryPublisher(for permission: HealthKitPermissionType, publisher: AnyPublisher<Void, Never>) {
-        registerBackgroundDeliveryPublisherForPublisherCallsCount += 1
-        registerBackgroundDeliveryPublisherForPublisherReceivedArguments = (permission: permission, publisher: publisher)
-        registerBackgroundDeliveryPublisherForPublisherReceivedInvocations.append((permission: permission, publisher: publisher))
-        registerBackgroundDeliveryPublisherForPublisherClosure?(permission, publisher)
-    }
-
     //MARK: - registerForBackgroundDelivery
 
     var registerForBackgroundDeliveryCallsCount = 0
