@@ -54,8 +54,4 @@ jobs:
     - name: Fastlane
       run: bundle exec fastlane test
       env:
-        CC: "clang" 
-        CPLUSPLUS: "clang++" 
-        LD: "clang" 
-        LDPLUSPLUS: "clang++"
         FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: 120
