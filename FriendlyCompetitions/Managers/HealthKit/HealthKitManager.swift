@@ -15,7 +15,6 @@ protocol HealthKitManaging {
 
     func execute(_ query: AnyHealthKitQuery)
     func registerBackgroundDeliveryTask(for permission: HealthKitPermissionType, task: @escaping HealthKitBackgroundDeliveryTask)
-    func registerBackgroundDeliveryPublisher(for permission: HealthKitPermissionType, publisher: AnyPublisher<Void, Never>)
     func registerForBackgroundDelivery()
 
     func shouldRequest(_ permissions: [HealthKitPermissionType]) -> AnyPublisher<Bool, Error>
@@ -54,11 +53,6 @@ final class HealthKitManager: HealthKitManaging {
     func registerBackgroundDeliveryTask(for permission: HealthKitPermissionType, task: @escaping HealthKitBackgroundDeliveryTask) {
         let tasks = backgroundDeliveryTasks[permission] ?? []
         backgroundDeliveryTasks[permission] = tasks.appending(task)
-    }
-
-    func registerBackgroundDeliveryPublisher(for permission: HealthKitPermissionType, publisher: AnyPublisher<Void, Never>) {
-        let publishers = backgroundDeliveryPublishers[permission] ?? []
-        backgroundDeliveryPublishers[permission] = publishers.appending(publisher)
     }
 
     func shouldRequest(_ permissions: [HealthKitPermissionType]) -> AnyPublisher<Bool, Error> {
@@ -118,7 +112,6 @@ final class HealthKitManager: HealthKitManaging {
 
                     if error.isHealthKitAuthorizationError {
                         backgroundDeliveryTasks[permission]?.removeAll()
-                        backgroundDeliveryPublishers[permission]?.removeAll()
                         healthStore.disableBackgroundDelivery(for: permission)
                             .sink()
                             .store(in: &cancellables)
@@ -128,11 +121,7 @@ final class HealthKitManager: HealthKitManaging {
                 case .success(let backgroundDeliveryCompletion):
                     let publishers: [AnyPublisher<Void, Never>]
 
-                    if featureFlagManager.value(forBool: .sharedBackgroundDeliveryPublishers) {
-                        publishers = backgroundDeliveryTasks[permission]?.map { $0() } ?? []
-                    } else {
-                        publishers = backgroundDeliveryPublishers[permission] ?? []
-                    }
+                    publishers = backgroundDeliveryTasks[permission]?.map { $0() } ?? []
 
                     guard publishers.isNotEmpty else {
                         analyticsManager.log(event: .healthKitBGDelieveryMissingPublisher(permission: permission.rawValue))

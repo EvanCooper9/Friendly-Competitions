@@ -14,11 +14,17 @@ final class WorkoutManagerTests: FCTestCase {
     override func setUp() {
         super.setUp()
         userManager.user = .evan
-        featureFlagManager.valueForBoolFeatureFlagFeatureFlagBoolBoolClosure = { $0 == .sharedBackgroundDeliveryPublishers ? true : false }
         featureFlagManager.valueForDoubleFeatureFlagFeatureFlagDoubleDoubleClosure = { flag in
             switch flag {
             case .dataUploadGracePeriodHours: return 12.0
             default: return 0.0
+            }
+        }
+        featureFlagManager.valueForBoolFeatureFlagFeatureFlagBoolBoolClosure = { flag in
+            switch flag {
+            case .ignoreManuallyEnteredHealthKitData: return true
+            case .adsEnabled: return true
+            case .newResultsBannerEnabled: return true
             }
         }
     }
