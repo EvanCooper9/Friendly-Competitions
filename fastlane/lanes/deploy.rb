@@ -31,8 +31,7 @@ lane :deploy do
 
     build_app(
         scheme: "FriendlyCompetitions",
-        export_method: "app-store",
-        xcode_version: "15.4"
+        export_method: "app-store"
     )
 
     upload_to_testflight(
