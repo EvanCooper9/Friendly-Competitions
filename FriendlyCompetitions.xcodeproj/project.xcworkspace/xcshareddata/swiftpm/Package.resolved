@@ -51,7 +51,7 @@
       "location" : "https://github.com/EvanCooper9/ECKit",
       "state" : {
         "branch" : "main",
-        "revision" : "a92c28c02e4940166d24215d2e82917e978f59ed"
+        "revision" : "90d8dbdef6a5e4fbedc30959d65196b859390107"
       }
     },
     {
@@ -145,15 +145,6 @@
       }
     },
     {
-      "identity" : "keychainaccess",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/kishikawakatsumi/KeychainAccess",
-      "state" : {
-        "revision" : "84e546727d66f1adc5439debad16270d0fdd04e7",
-        "version" : "4.2.2"
-      }
-    },
-    {
       "identity" : "leveldb",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/firebase/leveldb.git",
@@ -169,15 +160,6 @@
       "state" : {
         "revision" : "b7e1104502eca3a213b46303391ca4d3bc8ddec1",
         "version" : "2.30910.0"
-      }
-    },
-    {
-      "identity" : "popovers",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/aheze/Popovers",
-      "state" : {
-        "branch" : "main",
-        "revision" : "a6895602c7db1683be1c68363564de4fb09521cd"
       }
     },
     {
@@ -239,17 +221,17 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-protobuf.git",
       "state" : {
-        "revision" : "e17d61f26df0f0e06f58f6977ba05a097a720106",
-        "version" : "1.27.1"
+        "revision" : "edb6ed4919f7756157fe02f2552b7e3850a538e5",
+        "version" : "1.28.1"
       }
     },
     {
       "identity" : "swiftuix",
       "kind" : "remoteSourceControl",
-      "location" : "https://github.com/SwiftUIX/SwiftUIX",
+      "location" : "https://github.com/EvanCooper9/SwiftUIX",
       "state" : {
         "branch" : "master",
-        "revision" : "b150b85c154f038bb0a25db06c6509766c446797"
+        "revision" : "e44437aac426353a22a9a9f2eb779b318fa9a91f"
       }
     },
     {
