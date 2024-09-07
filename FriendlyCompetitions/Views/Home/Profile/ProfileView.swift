@@ -7,7 +7,7 @@ struct ProfileView: View {
     @StateObject private var viewModel = ProfileViewModel()
 
     var body: some View {
-        Form {
+        List {
             UserInfoSection(user: viewModel.user)
 
             if !viewModel.isAnonymousAccount {
@@ -15,15 +15,12 @@ struct ProfileView: View {
             }
 
             Section {
-                MedalsView(statistics: viewModel.user.statistics ?? .zero)
+                MedalsView(statistics: viewModel.user.statistics)
             } header: {
                 Text(L10n.Profile.Medals.title)
             }
 
             if !viewModel.isAnonymousAccount {
-                if viewModel.showPremium {
-                    premium
-                }
                 privacy
             }
 
@@ -65,7 +62,7 @@ struct ProfileView: View {
     @ViewBuilder
     private var privacy: some View {
         Section {
-            Toggle(L10n.Profile.Privacy.Searchable.title, isOn: $viewModel.user.searchable ?? true)
+            Toggle(L10n.Profile.Privacy.Searchable.title, isOn: $viewModel.user.searchable)
         } header: {
             Text(L10n.Profile.Privacy.title)
         } footer: {
@@ -73,7 +70,7 @@ struct ProfileView: View {
         }
 
         Section {
-            Toggle(L10n.Profile.Privacy.HideName.title, isOn: $viewModel.user.showRealName ?? true)
+            Toggle(L10n.Profile.Privacy.HideName.title, isOn: $viewModel.user.showRealName)
         } footer: {
             Group {
                 Text(L10n.Profile.Privacy.HideName.description) +
@@ -83,39 +80,7 @@ struct ProfileView: View {
             .onTapGesture(perform: viewModel.hideNameLearnMoreTapped)
         }
         .sheet(isPresented: $viewModel.showHideNameLearnMore) {
-            HideNameLearnMoreView(showName: $viewModel.user.showRealName ?? true)
-        }
-    }
-
-    @ViewBuilder
-    private var premium: some View {
-        if let premium = viewModel.premium {
-            Section {
-                VStack(alignment: .leading) {
-                    HStack {
-                        Text(premium.title)
-                        Spacer()
-                        Text(premium.price)
-                            .foregroundColor(.secondaryLabel)
-                    }
-                    if let expiry = premium.expiry {
-                        let expiry = expiry.formatted(date: .long, time: .omitted)
-                        let title = premium.renews ?
-                            L10n.Profile.Premium.renewsOn(expiry) :
-                            L10n.Profile.Premium.expiresOn(expiry)
-                        Text(title)
-                            .foregroundColor(.secondaryLabel)
-                            .font(.caption)
-                    }
-                }
-                .padding(.vertical, .extraSmall)
-                Button(L10n.Profile.Premium.manage, action: viewModel.manageSubscriptionTapped)
-            } header: {
-                Text(L10n.Profile.Premium.title)
-            }
-        } else {
-            Section(content: PremiumBanner.init)
-                .listRowInsets(.zero)
+            HideNameLearnMoreView(showName: $viewModel.user.showRealName)
         }
     }
 }

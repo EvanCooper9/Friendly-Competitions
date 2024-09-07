@@ -1,4 +1,5 @@
 import Algorithms
+import FCKit
 import Combine
 import CombineExt
 import ECKit
@@ -9,7 +10,6 @@ final class CompetitionContainerViewModel: ObservableObject {
     enum Content {
         case current
         case result(current: CompetitionResult, previous: CompetitionResult?)
-        case locked
     }
 
     // MARK: - Public Properties
@@ -20,9 +20,8 @@ final class CompetitionContainerViewModel: ObservableObject {
 
     // MARK: - Private Properties
 
-    @Injected(\.competitionsManager) private var competitionsManager
-    @Injected(\.featureFlagManager) private var featureFlagManager
-    @LazyInjected(\.premiumManager) private var premiumManager
+    @Injected(\.competitionsManager) private var competitionsManager: CompetitionsManaging
+    @Injected(\.featureFlagManager) private var featureFlagManager: FeatureFlagManaging
 
     private let selectedDateRangeIndex = CurrentValueSubject<Int, Never>(0)
 
@@ -46,29 +45,12 @@ final class CompetitionContainerViewModel: ObservableObject {
             .prepend(Array([result].compacted()))
             .catchErrorJustReturn([])
 
-        let blockedByPremium: AnyPublisher<Bool, Never> = {
-            if featureFlagManager.value(forBool: .premiumEnabled) {
-                return premiumManager.premium
-                    .map(\.isNil)
-                    .eraseToAnyPublisher()
-            } else {
-                return .just(false)
-            }
-        }()
-
         Publishers
-            .CombineLatest3(
-                results,
-                selectedDateRangeIndex,
-                blockedByPremium
-            )
-            .map { results, selectedIndex, blockedByPremium in
-                let resultsDateRanges = results.enumerated()
-                    .map { index, result in
-                        CompetitionContainerDateRange(start: result.start,
-                                                      end: result.end,
-                                                      locked: index > 0 && blockedByPremium)
-                    }
+            .CombineLatest(results, selectedDateRangeIndex)
+            .map { results, selectedIndex in
+                let resultsDateRanges = results.map { result in
+                    CompetitionContainerDateRange(start: result.start, end: result.end)
+                }
 
                 let allDateRanges = ([currentDateRange] + resultsDateRanges).uniqued { $0.title }
 
@@ -99,8 +81,6 @@ final class CompetitionContainerViewModel: ObservableObject {
                 guard let dateRange = dateRanges.first(where: \.selected) else { return nil }
                 if dateRange.id == currentDateRange.id {
                     return .current
-                } else if dateRange.locked {
-                    return .locked
                 } else if let selectedResult {
                     return .result(current: selectedResult, previous: previousResult)
                 } else {

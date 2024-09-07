@@ -24,9 +24,6 @@ jobs:
       uses: webfactory/ssh-agent@v0.5.4
       with:
         ssh-private-key: ${{ secrets.SSH_KEY }}
-  
-    - name: Build Cache
-      uses: mikehardy/buildcache-action@v2
     
     - name: Cache Swift Packages
       uses: actions/cache@v3
@@ -54,8 +51,4 @@ jobs:
     - name: Fastlane
       run: bundle exec fastlane test
       env:
-        CC: "clang" 
-        CPLUSPLUS: "clang++" 
-        LD: "clang" 
-        LDPLUSPLUS: "clang++"
         FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT: 120

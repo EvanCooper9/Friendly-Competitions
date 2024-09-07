@@ -228,7 +228,7 @@ final class AuthenticationManager: AuthenticationManaging {
         let user = User(
             id: authUser.id,
             name: authUser.displayName.emptyIfNil.ifEmpty(.anonymousName),
-            email: authUser.email,
+            email: authUser.email ?? "",
             isAnonymous: authUser.isAnonymous
         )
 

@@ -1,6 +1,7 @@
 import Combine
 import ECKit
 import Factory
+import FCKit
 import Firebase
 import UIKit
 
@@ -20,10 +21,10 @@ final class UserManager: UserManaging {
 
     // MARK: - Private Properties
 
-    @Injected(\.appState) private var appState
-    @Injected(\.analyticsManager) private var analyticsManager
-    @Injected(\.authenticationManager) private var authenticationManager
-    @Injected(\.database) private var database
+    @Injected(\.appState) private var appState: AppStateProviding
+    @Injected(\.analyticsManager) private var analyticsManager: AnalyticsManaging
+    @Injected(\.authenticationManager) private var authenticationManager: AuthenticationManaging
+    @Injected(\.database) private var database: Database
 
     private let userSubject: CurrentValueSubject<User, Never>
 
@@ -53,7 +54,6 @@ final class UserManager: UserManaging {
     private func listenForUser() {
         database.document("users/\(user.id)")
             .publisher(as: User.self)
-            .removeDuplicates()
             .sink(withUnretained: self) { strongSelf, user in
                 strongSelf.analyticsManager.set(userId: user.id)
                 strongSelf.userSubject.send(user)

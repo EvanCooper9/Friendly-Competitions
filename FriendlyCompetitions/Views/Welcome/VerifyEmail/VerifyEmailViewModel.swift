@@ -1,5 +1,6 @@
 import Combine
 import CombineExt
+import CombineSchedulers
 import ECKit
 import Factory
 import Foundation
@@ -16,10 +17,10 @@ final class VerifyEmailViewModel: ObservableObject {
 
     // MARK: - Private Properties
 
-    @Injected(\.appState) private var appState
-    @Injected(\.authenticationManager) private var authenticationManager
-    @Injected(\.scheduler) private var scheduler
-    @Injected(\.userManager) private var userManager
+    @Injected(\.appState) private var appState: AppStateProviding
+    @Injected(\.authenticationManager) private var authenticationManager: AuthenticationManaging
+    @Injected(\.scheduler) private var scheduler: AnySchedulerOf<RunLoop>
+    @Injected(\.userManager) private var userManager: UserManaging
 
     private let hudSubject = PassthroughSubject<HUD, Never>()
     private let backSubject = PassthroughSubject<Void, Never>()

@@ -11,7 +11,7 @@ struct CompetitionContainerView: View {
     }
 
     var body: some View {
-        ScrollView {
+        VStack {
             if viewModel.dateRanges.count > 1 {
                 CompetitionContainerDateRangeSelector(
                     ranges: viewModel.dateRanges,
@@ -28,15 +28,6 @@ struct CompetitionContainerView: View {
             case .result(let result, let previous):
                 CompetitionResultsView(competition: viewModel.competition, result: result, previousResult: previous)
                     .id(result.id)
-            case .locked:
-                VStack(alignment: .leading, spacing: 15) {
-                    Text(L10n.Results.premiumRequred)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .font(.title)
-                    PremiumBanner()
-                        .cornerRadius(10)
-                }
-                .padding(.horizontal, 20)
             }
         }
         .navigationTitle(viewModel.competition.name)
@@ -105,8 +96,6 @@ struct CompetitionContainerView_Previews: PreviewProvider {
             ]
             return .just(standings)
         }
-
-        premiumManager.premium = .just(.init(id: "1", title: "", price: "", renews: true, expiry: .distantFuture))
     }
 
     static var previews: some View {

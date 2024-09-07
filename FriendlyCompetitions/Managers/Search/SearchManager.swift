@@ -16,10 +16,10 @@ final class SearchManager: SearchManaging {
 
     // MARK: - Private Properties
 
-    @Injected(\.database) private var database
-    @Injected(\.environmentManager) private var environmentManager
-    @Injected(\.searchClient) private var searchClient
-    @Injected(\.userManager) private var userManager
+    @Injected(\.database) private var database: Database
+    @Injected(\.environmentManager) private var environmentManager: EnvironmentManaging
+    @Injected(\.searchClient) private var searchClient: SearchClient
+    @Injected(\.userManager) private var userManager: UserManaging
 
     private lazy var competitionsIndex = searchClient.index(withName: "competitions")
     private lazy var userIndex = searchClient.index(withName: "users")
@@ -42,7 +42,7 @@ final class SearchManager: SearchManaging {
                 .filterMany { [weak self] user in
                     guard let self else { return false }
                     guard user.id != self.userManager.user.id else { return false }
-                    return user.searchable ?? false
+                    return user.searchable
                 }
         }
     }

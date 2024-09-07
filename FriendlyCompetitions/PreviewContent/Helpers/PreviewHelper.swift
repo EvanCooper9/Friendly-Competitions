@@ -11,6 +11,8 @@ private enum Dependencies {
     static let activitySummaryManager = ActivitySummaryManagingMock()
     static let analyticsManager = AnalyticsManagingMock()
     static let authenticationManager = AuthenticationManagingMock()
+    static let backgroundRefreshManager = BackgroundRefreshManagingMock()
+    static let bannerManager = BannerManagingMock()
     static let competitionsManager = CompetitionsManagingMock()
     static let featureFlagManager = FeatureFlagManagingMock()
     static let friendsManager = FriendsManagingMock()
@@ -21,7 +23,6 @@ private enum Dependencies {
     static let scheduler = AnySchedulerOf<RunLoop>.main
     static let stepCountManager = StepCountManagingMock()
     static let storageManager = StorageManagingMock()
-    static let premiumManager = PremiumManagingMock()
     static let userManager = UserManagingMock()
     static let workoutManager = WorkoutManagingMock()
 
@@ -33,6 +34,8 @@ private enum Dependencies {
         Container.shared.activitySummaryManager.register { activitySummaryManager }
         Container.shared.analyticsManager.register { analyticsManager }
         Container.shared.authenticationManager.register { authenticationManager }
+        Container.shared.backgroundRefreshManager.register { backgroundRefreshManager }
+        Container.shared.bannerManager.register { bannerManager }
         Container.shared.competitionsManager.register { competitionsManager }
         Container.shared.featureFlagManager.register { featureFlagManager }
         Container.shared.friendsManager.register { friendsManager }
@@ -43,7 +46,6 @@ private enum Dependencies {
         Container.shared.scheduler.register { scheduler }
         Container.shared.stepCountManager.register { stepCountManager }
         Container.shared.storageManager.register { storageManager }
-        Container.shared.premiumManager.register { premiumManager }
         Container.shared.userManager.register { userManager }
         Container.shared.workoutManager.register { workoutManager }
     }
@@ -54,9 +56,14 @@ private enum Dependencies {
 
         appState.deepLink = .just(nil)
         appState.didBecomeActive = .just(false)
+        appState.isActive = .just(true)
 
         authenticationManager.emailVerified = .just(true)
         authenticationManager.loggedIn = .just(true)
+
+        bannerManager.banners = .just([])
+
+        backgroundRefreshManager.status = .just(.available)
 
         competitionsManager.competitions = .just([])
         competitionsManager.competitionPublisherForClosure = { _ in .never() }
@@ -65,7 +72,6 @@ private enum Dependencies {
         competitionsManager.standingsForResultIDReturnValue = .just([])
         competitionsManager.appOwnedCompetitions = .just([.mockPublic])
         competitionsManager.resultsForReturnValue = .just([])
-        competitionsManager.hasPremiumResults = .just(false)
 
         featureFlagManager.valueForBoolFeatureFlagFeatureFlagBoolBoolReturnValue = false
         featureFlagManager.valueForDoubleFeatureFlagFeatureFlagDoubleDoubleReturnValue = 0
@@ -83,10 +89,6 @@ private enum Dependencies {
 
         storageManager.dataForReturnValue = .just(.init())
 
-        premiumManager.premium = .just(nil)
-        premiumManager.products = .just([])
-        premiumManager.purchaseReturnValue = .just(())
-
         userManager.user = .evan
         userManager.userPublisher = .just(.evan)
         userManager.updateWithReturnValue = .just(())
@@ -101,6 +103,8 @@ extension PreviewProvider {
     static var activitySummaryManager: ActivitySummaryManagingMock { Dependencies.activitySummaryManager }
     static var analyticsManager: AnalyticsManagingMock { Dependencies.analyticsManager }
     static var authenticationManager: AuthenticationManagingMock { Dependencies.authenticationManager }
+    static var backgroundRefreshManager: BackgroundRefreshManagingMock { Dependencies.backgroundRefreshManager }
+    static var bannerManager: BannerManagingMock { Dependencies.bannerManager }
     static var competitionsManager: CompetitionsManagingMock { Dependencies.competitionsManager }
     static var featureFlagManager: FeatureFlagManagingMock { Dependencies.featureFlagManager }
     static var friendsManager: FriendsManagingMock { Dependencies.friendsManager }
@@ -111,7 +115,6 @@ extension PreviewProvider {
     static var scheduler: AnySchedulerOf<RunLoop> { Dependencies.scheduler }
     static var stepCountManager: StepCountManagingMock { Dependencies.stepCountManager }
     static var storageManager: StorageManagingMock { Dependencies.storageManager }
-    static var premiumManager: PremiumManagingMock { Dependencies.premiumManager }
     static var userManager: UserManagingMock { Dependencies.userManager }
     static var workoutManager: WorkoutManagingMock { Dependencies.workoutManager }
 

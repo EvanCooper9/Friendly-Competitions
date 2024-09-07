@@ -19,9 +19,6 @@ struct CompetitionContainerDateRangeSelector: View {
                             }
                         } label: {
                             HStack {
-                                if range.locked {
-                                    Image(systemName: .lockFill).font(.footnote)
-                                }
                                 Text(range.title)
                                 if range.active {
                                     Circle()

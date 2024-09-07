@@ -1,5 +1,6 @@
 import Combine
 import CombineExt
+import CombineSchedulers
 import ECKit
 import Factory
 import Foundation
@@ -12,8 +13,8 @@ final class RootViewModel: ObservableObject {
 
     // MARK: - Private Properties
 
-    @Injected(\.appState) private var appState
-    @Injected(\.scheduler) private var scheduler
+    @Injected(\.appState) private var appState: AppStateProviding
+    @Injected(\.scheduler) private var scheduler: AnySchedulerOf<RunLoop>
 
     private var cancellables = Cancellables()
 

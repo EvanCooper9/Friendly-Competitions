@@ -7,101 +7,89 @@ struct HomeView: View {
     @StateObject private var viewModel = HomeViewModel()
 
     var body: some View {
-        NavigationStack(path: $viewModel.navigationDestinations) {
-            CustomList {
-                ItemStack(models: viewModel.banners) { banner in
-                    banner.view {
-                        viewModel.tapped(banner: banner)
-                    }
-                }
-                .padding(.horizontal)
+        List {
+            if viewModel.banners.isNotEmpty {
+                banners
+            }
 
-                if viewModel.showPremiumBanner {
-                    premiumBanner
-                }
+            activity
+            competitions
+            friends
 
-                CustomListSection {
-                    ActivitySummaryInfoView(source: .local)
-                    HStack {
-                        Text(L10n.Home.Section.Activity.Steps.steps)
-                        Spacer()
-                        switch viewModel.steps {
-                        case .value(let steps):
-                            Text(steps.formatted())
-                                .monospaced()
-                                .foregroundStyle(.secondary)
-                        case .requiresPermission:
-                            Button(L10n.Home.Section.Activity.Steps.request, action: viewModel.requestPermissionsForSteps)
-                                .buttonStyle(.borderedProminent)
-                        }
-                    }
-                } header: {
-                    Text(L10n.Home.Section.Activity.title)
-                }
-
-                if viewModel.competitions.isNotEmpty {
-                    competitions
-                    friends
-                } else if viewModel.friendRows.isNotEmpty {
-                    friends
-                    competitions
-                } else {
-                    competitions
-                    friends
-                }
-
-                if let unit = viewModel.googleAdUnit {
+            if let unit = viewModel.googleAdUnit {
+                Section {
                     GoogleAd(unit: unit)
-                        .padding()
                 }
+                .listRowInsets(.zero)
             }
-            .navigationBarTitle(L10n.Home.title)
-            .toolbar {
-                ToolbarItemGroup {
-                    // Text view workaround for SwiftUI bug
-                    // Keep toolbar items tappable after dismissing sheet
-                    let isShowingSheet = viewModel.showAbout || viewModel.navigationDestinations.contains(.profile)
-                    Text(isShowingSheet  ? " " : "")
-
-                    if viewModel.showDeveloper {
-                        DeveloperMenu()
-                    }
-                    Button(systemImage: .questionmarkCircle, action: viewModel.aboutTapped)
-
-                    NavigationLink(value: NavigationDestination.profile) {
-                        Image(systemName: .personCropCircle)
-                    }
-                }
-            }
-            .sheet(isPresented: $viewModel.showAbout, content: AboutView.init)
-            .sheet(isPresented: $viewModel.showAnonymousAccountBlocker, content: CreateAccountView.init)
-            .sheet(item: $viewModel.deepLinkedNavigationDestination) { destination in
-                destination.view
-                    .embeddedInNavigationView()
-            }
-            .sheet(isPresented: $viewModel.showNewCompetition) { CompetitionEditView(competition: nil) }
-            .sheet(isPresented: $viewModel.showAddFriends) { InviteFriendsView(action: .addFriend) }
-            .withLoadingOverlay(isLoading: viewModel.loadingDeepLink)
-            .navigationDestination(for: NavigationDestination.self) { $0.view }
-            .animation(.default, value: viewModel.banners)
-            .registerScreenView(name: "Home")
         }
+        .navigationBarTitle(L10n.Home.title)
+        .toolbar {
+            ToolbarItemGroup {
+                if viewModel.showDeveloper {
+                    DeveloperMenu()
+                }
+
+                Button(systemImage: .questionmarkCircle, action: viewModel.aboutTapped)
+                Button(systemImage: viewModel.hasNotifications ? .bellBadge : .bell, action: viewModel.notificationsTapped)
+                NavigationLink(value: NavigationDestination.profile) {
+                    Image(systemName: .personCropCircle)
+                }
+            }
+        }
+        .sheet(isPresented: $viewModel.showAbout, content: AboutView.init)
+        .sheet(isPresented: $viewModel.showAnonymousAccountBlocker, content: CreateAccountView.init)
+        .sheet(isPresented: $viewModel.showNewCompetition) { CompetitionEditView(competition: nil) }
+        .sheet(isPresented: $viewModel.showAddFriends) { InviteFriendsView(action: .addFriend) }
+        .sheet(isPresented: $viewModel.showNotifications) { NotificationsView() }
+        .sheet(item: $viewModel.deepLinkedNavigationDestination) { $0.view.embeddedInNavigationView() }
+        .withLoadingOverlay(isLoading: viewModel.loadingDeepLink)
+        .navigationDestination(for: NavigationDestination.self) { $0.view }
+        .embeddedInNavigationStack(path: $viewModel.navigationDestinations)
+        .registerScreenView(name: "Home")
     }
 
-    private var premiumBanner: some View {
-        CustomListSection {
-            PremiumBanner().overlay {
-                Button(systemImage: .xmark, action: viewModel.dismissPremiumBannerTapped)
-                    .padding(14)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
-                    .buttonStyle(.plain)
+    private var banners: some View {
+        Section {
+            ItemStack(models: viewModel.banners) { banner in
+                banner
+                    .view {
+                        viewModel.tapped(banner)
+                    }
+                    .swipeActions {
+                        Button(systemImage: .xCircle) {
+                            viewModel.dismissed(banner)
+                        }
+                    }
             }
         }
         .listRowInsets(.zero)
+        .listRowBackground(Color.clear)
+    }
+
+    private var activity: some View {
+        Section {
+            ActivitySummaryInfoView(source: .local)
+            HStack {
+                Text(L10n.Home.Section.Activity.Steps.steps)
+                Spacer()
+                switch viewModel.steps {
+                case .value(let steps):
+                    Text(steps.formatted())
+                        .monospaced()
+                        .foregroundStyle(.secondary)
+                case .requiresPermission:
+                    Button(L10n.Home.Section.Activity.Steps.request, action: viewModel.requestPermissionsForSteps)
+                        .buttonStyle(.borderedProminent)
+                }
+            }
+        } header: {
+            Text(L10n.Home.Section.Activity.title)
+        }
     }
 
     private var competitions: some View {
-        CustomListSection {
+        Section {
             if viewModel.competitions.isEmpty && viewModel.invitedCompetitions.isEmpty {
                 emptyContent(
                     title: L10n.Home.Section.Competitions.title,
@@ -123,7 +111,6 @@ struct HomeView: View {
         } header: {
             HStack(alignment: .bottom) {
                 Text(L10n.Home.Section.Competitions.title)
-                    .foregroundStyle(.secondary)
                 Spacer()
                 Button(systemImage: .plusCircle, action: viewModel.newCompetitionTapped)
                     .font(.title2)
@@ -132,7 +119,7 @@ struct HomeView: View {
     }
 
     private var friends: some View {
-        CustomListSection {
+        Section {
             if viewModel.friendRows.isEmpty {
                 emptyContent(
                     title: L10n.Home.Section.Friends.title,
@@ -161,7 +148,6 @@ struct HomeView: View {
         } header: {
             HStack(alignment: .bottom) {
                 Text(L10n.Home.Section.Friends.title)
-                    .foregroundStyle(.secondary)
                 Spacer()
                 Button(systemImage: .personCropCircleBadgePlus, action: viewModel.addFriendsTapped)
                     .font(.title2)
@@ -212,14 +198,15 @@ struct HomeView_Previews: PreviewProvider {
 
     private static func setupMocks() {
         activitySummaryManager.activitySummary = .just(nil)
+        backgroundRefreshManager.status = .just(.denied)
         healthKitManager.shouldRequestReturnValue = .just(false)
 
-//        competitionsManager.competitions = .just([.mockOld, .mockPublic])
-//        competitionsManager.standingsPublisherForLimitReturnValue = .just([.mock(for: .evan)])
+        competitionsManager.competitions = .just([.mockOld, .mockPublic])
+        competitionsManager.standingsPublisherForLimitReturnValue = .just([.mock(for: .evan)])
         competitionsManager.unseenResults = .just([])
 
-//        friendsManager.friends = .just([.gabby])
-//        friendsManager.friendRequests = .just([.andrew])
+        friendsManager.friends = .just([.gabby])
+        friendsManager.friendRequests = .just([.andrew])
         friendsManager.friendActivitySummaries = .just([User.gabby.id: .mock])
 
         searchManager.searchForUsersWithIDsReturnValue = .just([.evan])

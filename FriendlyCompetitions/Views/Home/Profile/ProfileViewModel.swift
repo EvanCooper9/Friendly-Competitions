@@ -2,12 +2,11 @@ import Combine
 import CombineExt
 import ECKit
 import Factory
+import FCKit
 
 final class ProfileViewModel: ObservableObject {
 
     @Published var user: User!
-    @Published private(set) var showPremium = false
-    @Published private(set) var premium: Premium?
     @Published var confirmationRequired = false
     @Published var loading = false
     @Published var showHideNameLearnMore = false
@@ -17,10 +16,9 @@ final class ProfileViewModel: ObservableObject {
 
     // MARK: - Private Properties
 
-    @Injected(\.authenticationManager) private var authenticationManager
-    @Injected(\.featureFlagManager) private var featureFlagManager
-    @LazyInjected(\.premiumManager) private var premiumManager
-    @Injected(\.userManager) private var userManager
+    @Injected(\.authenticationManager) private var authenticationManager: AuthenticationManaging
+    @Injected(\.featureFlagManager) private var featureFlagManager: FeatureFlagManaging
+    @Injected(\.userManager) private var userManager: UserManaging
 
     private let deleteAccountSubject = PassthroughSubject<Void, Never>()
     private let signOutSubject = PassthroughSubject<Void, Never>()
@@ -50,11 +48,6 @@ final class ProfileViewModel: ObservableObject {
             .removeDuplicates()
             .map(User?.init)
             .assign(to: &$user)
-
-        if featureFlagManager.value(forBool: .premiumEnabled) {
-            showPremium = true
-            premiumManager.premium.assign(to: &$premium)
-        }
 
         deleteAccountSubject
             .flatMapLatest(withUnretained: self) { strongSelf in
@@ -89,10 +82,6 @@ final class ProfileViewModel: ObservableObject {
 
     func shareInviteLinkTapped() {
         DeepLink.user(id: userManager.user.id).share()
-    }
-
-    func manageSubscriptionTapped() {
-        premiumManager.manageSubscription()
     }
 
     func signUpTapped() {

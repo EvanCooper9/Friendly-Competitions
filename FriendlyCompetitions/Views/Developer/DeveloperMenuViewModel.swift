@@ -35,7 +35,7 @@ final class DeveloperMenuViewModel: ObservableObject {
 
     // MARK: - Private Properties
 
-    @Injected(\.environmentManager) private var environmentManager
+    @Injected(\.environmentManager) private var environmentManager: EnvironmentManaging
 
     private let saveSubject = PassthroughSubject<Void, Never>()
 

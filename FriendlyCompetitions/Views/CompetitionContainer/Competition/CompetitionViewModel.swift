@@ -1,5 +1,6 @@
 import Combine
 import CombineExt
+import CombineSchedulers
 import ECKit
 import Factory
 import Foundation
@@ -46,22 +47,22 @@ final class CompetitionViewModel: ObservableObject {
         didSet { confirmationRequired = actionRequiringConfirmation != nil }
     }
 
-    @Injected(\.activitySummaryManager) private var activitySummaryManager
-    @Injected(\.api) private var api
-    @Injected(\.appState) private var appState
-    @Injected(\.competitionsManager) private var competitionsManager
-    @Injected(\.healthKitManager) private var healthKitManager
-    @Injected(\.notificationsManager) private var notificationManager
-    @Injected(\.scheduler) private var scheduler
-    @Injected(\.searchManager) private var searchManager
-    @Injected(\.stepCountManager) private var stepCountManager
-    @Injected(\.userManager) private var userManager
-    @Injected(\.workoutManager) private var workoutManager
+    @Injected(\.activitySummaryManager) private var activitySummaryManager: ActivitySummaryManaging
+    @Injected(\.api) private var api: API
+    @Injected(\.appState) private var appState: AppStateProviding
+    @Injected(\.bannerManager) private var bannerManager: BannerManaging
+    @Injected(\.competitionsManager) private var competitionsManager: CompetitionsManaging
+    @Injected(\.healthKitManager) private var healthKitManager: HealthKitManaging
+    @Injected(\.notificationsManager) private var notificationManager: NotificationsManaging
+    @Injected(\.scheduler) private var scheduler: AnySchedulerOf<RunLoop>
+    @Injected(\.searchManager) private var searchManager: SearchManaging
+    @Injected(\.stepCountManager) private var stepCountManager: StepCountManaging
+    @Injected(\.userManager) private var userManager: UserManaging
+    @Injected(\.workoutManager) private var workoutManager: WorkoutManaging
 
     private let confirmActionSubject = PassthroughSubject<Void, Error>()
     private let performActionSubject = PassthroughSubject<CompetitionViewAction, Error>()
     private let fetchParticipantsSubject = PassthroughSubject<[String], Never>()
-    private let didRequestPermissions = CurrentValueSubject<Void, Never>(())
     private var cancellables = Cancellables()
 
     // MARK: - Lifecycle
@@ -183,24 +184,38 @@ final class CompetitionViewModel: ObservableObject {
         currentStandingsMaximum += 10
     }
 
-    func tapped(banner: Banner) {
-        banner.tapped()
-            .sink(withUnretained: self) { strongSelf in
-                strongSelf.banners.remove(banner)
-                strongSelf.didRequestPermissions.send()
-            }
+    func tapped(_ banner: Banner) {
+        bannerManager.tapped(banner)
+            .sink()
+            .store(in: &cancellables)
+    }
+
+    func dismissed(_ banner: Banner) {
+        bannerManager.dismissed(banner)
+            .sink()
             .store(in: &cancellables)
     }
 
     // MARK: - Private Methods
 
     private func bindBanners() {
-        Publishers
-            .CombineLatest(appState.didBecomeActive, didRequestPermissions)
-            .mapToVoid()
-            .prepend(())
-            .flatMapLatest { [competition] in competition.banners.eraseToAnyPublisher() }
-            .delay(for: .seconds(1), scheduler: scheduler)
+        bannerManager.banners
+            .filterMany { banner in
+                switch banner {
+                case .healthKitPermissionsMissing:
+                    return true
+                case .healthKitDataMissing(let competition, _):
+                    return competition.id == self.competition.id
+                case .notificationPermissionsDenied,
+                    .notificationPermissionsMissing,
+                    .backgroundRefreshDenied:
+                    return true
+                case .newCompetitionResults(let competition, _):
+                    return competition.id == self.competition.id
+                case .competitionResultsCalculating(let competition):
+                    return competition.id == self.competition.id
+                }
+            }
             .assign(to: &$banners)
     }
 
@@ -230,13 +245,12 @@ final class CompetitionViewModel: ObservableObject {
                     }
                     .eraseToAnyPublisher()
             }
-            .flatMapLatest(withUnretained: self) { strongSelf, standings in
-                strongSelf.searchManager.searchForUsers(withIDs: standings.map(\.id))
+            .flatMapLatest { [searchManager] standings in
+                searchManager.searchForUsers(withIDs: standings.map(\.id))
                     .map { (standings, $0 ) }
                     .catchErrorJustReturn(([], []))
             }
-            .map { [weak self] (standings: [Competition.Standing], users: [User]) in
-                guard let self else { return [] }
+            .map { [userManager] (standings: [Competition.Standing], users: [User]) in
                 let currentUser = userManager.user
                 return standings
                     .sorted(by: \.rank)

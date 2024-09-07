@@ -11,7 +11,6 @@ final class ProfileViewModelTests: FCTestCase {
         super.setUp()
 
         featureFlagManager.valueForBoolFeatureFlagFeatureFlagBoolBoolReturnValue = false
-        premiumManager.premium = .never()
         userManager.updateWithReturnValue = .never()
     }
 
@@ -28,9 +27,9 @@ final class ProfileViewModelTests: FCTestCase {
             .expect(expected, expectation: expectation)
             .store(in: &cancellables)
 
-        userSubject.send(.init(id: #function, name: "name"))
-        userSubject.send(.init(id: #function, name: "name", isAnonymous: false))
-        userSubject.send(.init(id: #function, name: "name", isAnonymous: true))
+        userSubject.send(.init(id: #function, name: "name", email: "evan@mail.com"))
+        userSubject.send(.init(id: #function, name: "name", email: "evan@mail.com", isAnonymous: false))
+        userSubject.send(.init(id: #function, name: "name", email: "evan@mail.com", isAnonymous: true))
 
         waitForExpectations(timeout: 1)
     }

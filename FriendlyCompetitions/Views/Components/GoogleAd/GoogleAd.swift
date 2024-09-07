@@ -8,19 +8,40 @@ struct GoogleAd: View {
     @State private var height: CGFloat = 0
     @State private var width: CGFloat = 0
     @StateObject private var viewModel: GoogleAdViewModel
+    @Environment(\.colorScheme) private var colorScheme
+
+    private var aspectRatio: CGFloat {
+        guard width != 0 && height != 0 else { return 3/2 }
+        return width / height
+    }
 
     init(unit: GoogleAdUnit) {
         _viewModel = .init(wrappedValue: GoogleAdViewModel(unit: unit))
     }
 
     var body: some View {
-        if let ad = viewModel.ad {
-            GoogleAdWrapper(width: width, height: $height, ad: ad)
-                .frame(minHeight: height)
-                .onChangeOfFrame(perform: { size in
-                    width = size.width
-                })
-                .card(includeEdgePadding: false)
+        color
+            .aspectRatio(aspectRatio, contentMode: .fill)
+            .overlay {
+                if let ad = viewModel.ad {
+                    GoogleAdWrapper(width: width, height: $height, ad: ad)
+                } else {
+                    ProgressView()
+                }
+            }
+            .readSize { size in
+                width = size.width
+            }
+    }
+
+    @ViewBuilder
+    private var color: some View {
+        if viewModel.ad != nil {
+            Color.systemBackground
+        } else if colorScheme == .light {
+            Color(uiColor: .systemGray4)
+        } else {
+            Color.secondarySystemBackground
         }
     }
 }
@@ -35,6 +56,8 @@ struct GoogleAdWrapper: UIViewRepresentable {
         let view = GoogleAdUIView(ad: ad)
         view.setContentHuggingPriority(.defaultHigh, for: .horizontal)
         view.setContentHuggingPriority(.defaultHigh, for: .vertical)
+        view.setContentCompressionResistancePriority(.required, for: .horizontal)
+        view.setContentCompressionResistancePriority(.required, for: .vertical)
         return view
     }
 

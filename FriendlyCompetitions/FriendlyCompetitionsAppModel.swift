@@ -1,5 +1,6 @@
 import Combine
 import Factory
+import FCKit
 import Foundation
 
 final class FriendlyCompetitionsAppModel: ObservableObject {
@@ -12,9 +13,9 @@ final class FriendlyCompetitionsAppModel: ObservableObject {
 
     // MARK: - Private Properties
 
-    @Injected(\.analyticsManager) private var analyticsManager
-    @Injected(\.appState) private var appState
-    @Injected(\.authenticationManager) private var authenticationManager
+    @Injected(\.analyticsManager) private var analyticsManager: AnalyticsManaging
+    @Injected(\.appState) private var appState: AppStateProviding
+    @Injected(\.authenticationManager) private var authenticationManager: AuthenticationManaging
 
     // MARK: - Lifecycle
 
