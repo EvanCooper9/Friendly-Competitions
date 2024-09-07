@@ -8,8 +8,6 @@ lane :deploy do
         duration: 1200, # optional (maximum 1200)
         in_house: false # optional but may be required if using match/sigh
     ) if is_ci
-
-    xcode_select("/Applications/Xcode_15.4.app")
     
     certificates
 
