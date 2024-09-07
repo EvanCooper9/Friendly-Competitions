@@ -456,36 +456,6 @@ internal enum L10n {
     /// Permissions needed
     internal static let title = L10n.tr("Localizable", "Permissions.title", fallback: "Permissions needed")
   }
-  internal enum Premium {
-    internal enum Banner {
-      /// Learn more
-      internal static let learnMore = L10n.tr("Localizable", "Premium.Banner.learnMore", fallback: "Learn more")
-      /// Get instant access to all of your competition results. The latest results for all competitions are always free.
-      internal static let message = L10n.tr("Localizable", "Premium.Banner.message", fallback: "Get instant access to all of your competition results. The latest results for all competitions are always free.")
-      /// Friendly Competitions Premium
-      internal static let title = L10n.tr("Localizable", "Premium.Banner.title", fallback: "Friendly Competitions Premium")
-    }
-    internal enum Paywall {
-      /// Privacy Policy
-      internal static let pp = L10n.tr("Localizable", "Premium.Paywall.pp", fallback: "Privacy Policy")
-      /// Restore Purchases
-      internal static let restore = L10n.tr("Localizable", "Premium.Paywall.restore", fallback: "Restore Purchases")
-      /// Terms of Service
-      internal static let tos = L10n.tr("Localizable", "Premium.Paywall.tos", fallback: "Terms of Service")
-    }
-    internal enum Primer {
-      /// Get instant access to all of your competition results. The latest results for all competitions are always free.
-      internal static let message = L10n.tr("Localizable", "Premium.Primer.message", fallback: "Get instant access to all of your competition results. The latest results for all competitions are always free.")
-      /// Preimum
-      internal static let title = L10n.tr("Localizable", "Premium.Primer.title", fallback: "Preimum")
-    }
-    internal enum Purchase {
-      /// Auto-renews. Cancel Anytime.
-      internal static let autoRenews = L10n.tr("Localizable", "Premium.Purchase.autoRenews", fallback: "Auto-renews. Cancel Anytime.")
-      /// Premium
-      internal static let title = L10n.tr("Localizable", "Premium.Purchase.title", fallback: "Premium")
-    }
-  }
   internal enum Profile {
     /// Share invite link
     internal static let shareInviteLink = L10n.tr("Localizable", "Profile.shareInviteLink", fallback: "Share invite link")
@@ -507,20 +477,6 @@ internal enum L10n {
       /// Medals
       internal static let title = L10n.tr("Localizable", "Profile.Medals.title", fallback: "Medals")
     }
-    internal enum Premium {
-      /// Expires on %@
-      internal static func expiresOn(_ p1: Any) -> String {
-        return L10n.tr("Localizable", "Profile.Premium.expiresOn", String(describing: p1), fallback: "Expires on %@")
-      }
-      /// Manage
-      internal static let manage = L10n.tr("Localizable", "Profile.Premium.manage", fallback: "Manage")
-      /// Renews on %@
-      internal static func renewsOn(_ p1: Any) -> String {
-        return L10n.tr("Localizable", "Profile.Premium.renewsOn", String(describing: p1), fallback: "Renews on %@")
-      }
-      /// Friendly Competitions Premium
-      internal static let title = L10n.tr("Localizable", "Profile.Premium.title", fallback: "Friendly Competitions Premium")
-    }
     internal enum Privacy {
       /// Privacy
       internal static let title = L10n.tr("Localizable", "Profile.Privacy.title", fallback: "Privacy")
@@ -539,8 +495,6 @@ internal enum L10n {
     }
   }
   internal enum Results {
-    /// You need Friendly Competitions Premium to see older results
-    internal static let premiumRequred = L10n.tr("Localizable", "Results.premiumRequred", fallback: "You need Friendly Competitions Premium to see older results")
     /// Results
     internal static let title = L10n.tr("Localizable", "Results.title", fallback: "Results")
     internal enum ActivitySummaries {

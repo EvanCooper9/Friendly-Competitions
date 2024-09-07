@@ -21,9 +21,6 @@ struct ProfileView: View {
             }
 
             if !viewModel.isAnonymousAccount {
-                if viewModel.showPremium {
-                    premium
-                }
                 privacy
             }
 
@@ -84,38 +81,6 @@ struct ProfileView: View {
         }
         .sheet(isPresented: $viewModel.showHideNameLearnMore) {
             HideNameLearnMoreView(showName: $viewModel.user.showRealName ?? true)
-        }
-    }
-
-    @ViewBuilder
-    private var premium: some View {
-        if let premium = viewModel.premium {
-            Section {
-                VStack(alignment: .leading) {
-                    HStack {
-                        Text(premium.title)
-                        Spacer()
-                        Text(premium.price)
-                            .foregroundColor(.secondaryLabel)
-                    }
-                    if let expiry = premium.expiry {
-                        let expiry = expiry.formatted(date: .long, time: .omitted)
-                        let title = premium.renews ?
-                            L10n.Profile.Premium.renewsOn(expiry) :
-                            L10n.Profile.Premium.expiresOn(expiry)
-                        Text(title)
-                            .foregroundColor(.secondaryLabel)
-                            .font(.caption)
-                    }
-                }
-                .padding(.vertical, .extraSmall)
-                Button(L10n.Profile.Premium.manage, action: viewModel.manageSubscriptionTapped)
-            } header: {
-                Text(L10n.Profile.Premium.title)
-            }
-        } else {
-            Section(content: PremiumBanner.init)
-                .listRowInsets(.zero)
         }
     }
 }

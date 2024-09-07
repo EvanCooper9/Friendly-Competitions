@@ -21,7 +21,6 @@ final class HomeViewModelTests: FCTestCase {
         appState.isActive = .never()
         competitionsManager.competitions = .never()
         competitionsManager.invitedCompetitions = .never()
-        competitionsManager.hasPremiumResults = .never()
         competitionsManager.unseenResults = .never()
         featureFlagManager.valueForBoolFeatureFlagFeatureFlagBoolBoolReturnValue = false
         featureFlagManager.valueForDoubleFeatureFlagFeatureFlagDoubleDoubleReturnValue = 0.0
@@ -31,7 +30,6 @@ final class HomeViewModelTests: FCTestCase {
         healthKitManager.permissionsChanged = .never()
         healthKitManager.shouldRequestReturnValue = .never()
         notificationsManager.permissionStatusReturnValue = .never()
-        premiumManager.premium = .never()
         userManager.userPublisher = .never()
         userManager.user = .evan
     }

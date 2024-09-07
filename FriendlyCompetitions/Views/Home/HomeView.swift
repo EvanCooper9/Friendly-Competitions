@@ -16,10 +16,6 @@ struct HomeView: View {
                 }
                 .padding(.horizontal)
 
-                if viewModel.showPremiumBanner {
-                    premiumBanner
-                }
-
                 CustomListSection {
                     ActivitySummaryInfoView(source: .local)
                     HStack {
@@ -86,18 +82,6 @@ struct HomeView: View {
             .animation(.default, value: viewModel.banners)
             .registerScreenView(name: "Home")
         }
-    }
-
-    private var premiumBanner: some View {
-        CustomListSection {
-            PremiumBanner().overlay {
-                Button(systemImage: .xmark, action: viewModel.dismissPremiumBannerTapped)
-                    .padding(14)
-                    .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topTrailing)
-                    .buttonStyle(.plain)
-            }
-        }
-        .listRowInsets(.zero)
     }
 
     private var competitions: some View {

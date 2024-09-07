@@ -18,7 +18,6 @@ class FCTestCase: XCTestCase {
     let auth = AuthProvidingMock()
     let authenticationCache = AuthenticationCacheMock()
     let authenticationManager = AuthenticationManagingMock()
-    let competitionCache = CompetitionCacheMock()
     let competitionsManager = CompetitionsManagingMock()
     let database = DatabaseMock()
     let environmentCache = EnvironmentCacheMock()
@@ -34,7 +33,6 @@ class FCTestCase: XCTestCase {
     let signInWithAppleProvider = SignInWithAppleProvidingMock()
     let stepCountManager = StepCountManagingMock()
     let storageManager = StorageManagingMock()
-    let premiumManager = PremiumManagingMock()
     let userManager = UserManagingMock()
     let workoutManager = WorkoutManagingMock()
 
@@ -63,7 +61,6 @@ class FCTestCase: XCTestCase {
         Container.shared.auth.register { self.auth }
         Container.shared.authenticationCache.register { self.authenticationCache }
         Container.shared.authenticationManager.register { self.authenticationManager }
-        Container.shared.competitionCache.register { self.competitionCache }
         Container.shared.competitionsManager.register { self.competitionsManager }
         Container.shared.database.register { self.database }
         Container.shared.environmentCache.register { self.environmentCache }
@@ -73,7 +70,6 @@ class FCTestCase: XCTestCase {
         Container.shared.healthKitManager.register { self.healthKitManager }
         Container.shared.healthStore.register { self.healthStore }
         Container.shared.notificationsManager.register { self.notificationsManager }
-        Container.shared.premiumManager.register { self.premiumManager }
         Container.shared.scheduler.register { self.scheduler.eraseToAnyScheduler() }
         Container.shared.searchClient.register { self.searchClient }
         Container.shared.searchManager.register { self.searchManager }
