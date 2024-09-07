@@ -1,4 +1,4 @@
-// Generated using Sourcery 2.1.7 — https://github.com/krzysztofzablocki/Sourcery
+// Generated using Sourcery 2.2.5 — https://github.com/krzysztofzablocki/Sourcery
 // DO NOT EDIT
 // swiftlint:disable line_length
 // swiftlint:disable variable_name
@@ -613,13 +613,6 @@ class AuthenticationManagingMock: AuthenticationManaging {
     }
 
 }
-class CompetitionCacheMock: CompetitionCache {
-
-
-    var competitionsHasPremiumResults: HasPremiumResultsContainerCache?
-
-
-}
 class CompetitionsManagingMock: CompetitionsManaging {
 
 
@@ -638,11 +631,6 @@ class CompetitionsManagingMock: CompetitionsManaging {
         set(value) { underlyingAppOwnedCompetitions = value }
     }
     var underlyingAppOwnedCompetitions: AnyPublisher<[Competition], Never>!
-    var hasPremiumResults: AnyPublisher<Bool, Never> {
-        get { return underlyingHasPremiumResults }
-        set(value) { underlyingHasPremiumResults = value }
-    }
-    var underlyingHasPremiumResults: AnyPublisher<Bool, Never>!
     var unseenResults: AnyPublisher<[(Competition, CompetitionResult.ID)], Never> {
         get { return underlyingUnseenResults }
         set(value) { underlyingUnseenResults = value }
@@ -1169,75 +1157,6 @@ class NotificationsManagingMock: NotificationsManaging {
         } else {
             return requestPermissionsReturnValue
         }
-    }
-
-}
-class PremiumManagingMock: PremiumManaging {
-
-
-    var premium: AnyPublisher<Premium?, Never> {
-        get { return underlyingPremium }
-        set(value) { underlyingPremium = value }
-    }
-    var underlyingPremium: AnyPublisher<Premium?, Never>!
-    var products: AnyPublisher<[Product], Never> {
-        get { return underlyingProducts }
-        set(value) { underlyingProducts = value }
-    }
-    var underlyingProducts: AnyPublisher<[Product], Never>!
-
-
-    //MARK: - purchase
-
-    var purchaseCallsCount = 0
-    var purchaseCalled: Bool {
-        return purchaseCallsCount > 0
-    }
-    var purchaseReceivedProduct: Product?
-    var purchaseReceivedInvocations: [Product] = []
-    var purchaseReturnValue: AnyPublisher<Void, Error>!
-    var purchaseClosure: ((Product) -> AnyPublisher<Void, Error>)?
-
-    func purchase(_ product: Product) -> AnyPublisher<Void, Error> {
-        purchaseCallsCount += 1
-        purchaseReceivedProduct = product
-        purchaseReceivedInvocations.append(product)
-        if let purchaseClosure = purchaseClosure {
-            return purchaseClosure(product)
-        } else {
-            return purchaseReturnValue
-        }
-    }
-
-    //MARK: - restorePurchases
-
-    var restorePurchasesCallsCount = 0
-    var restorePurchasesCalled: Bool {
-        return restorePurchasesCallsCount > 0
-    }
-    var restorePurchasesReturnValue: AnyPublisher<Void, Error>!
-    var restorePurchasesClosure: (() -> AnyPublisher<Void, Error>)?
-
-    func restorePurchases() -> AnyPublisher<Void, Error> {
-        restorePurchasesCallsCount += 1
-        if let restorePurchasesClosure = restorePurchasesClosure {
-            return restorePurchasesClosure()
-        } else {
-            return restorePurchasesReturnValue
-        }
-    }
-
-    //MARK: - manageSubscription
-
-    var manageSubscriptionCallsCount = 0
-    var manageSubscriptionCalled: Bool {
-        return manageSubscriptionCallsCount > 0
-    }
-    var manageSubscriptionClosure: (() -> Void)?
-
-    func manageSubscription() {
-        manageSubscriptionCallsCount += 1
-        manageSubscriptionClosure?()
     }
 
 }

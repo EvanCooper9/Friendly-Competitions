@@ -53,10 +53,6 @@
 "Profile.title" = "Profile";
 "Profile.shareInviteLink" = "Share invite link";
 "Profile.Medals.title" = "Medals";
-"Profile.Premium.title" = "Friendly Competitions Premium";
-"Profile.Premium.renewsOn" = "Renews on %@";
-"Profile.Premium.expiresOn" = "Expires on %@";
-"Profile.Premium.manage" = "Manage";
 "Profile.Privacy.title" = "Privacy";
 "Profile.Privacy.Searchable.title" = "Searchable";
 "Profile.Privacy.Searchable.description" = "Turn this off to prevent your account from showing up in search. Other people will not be able to add you as a friend.";
@@ -136,7 +132,6 @@
 
 // Results
 "Results.title" = "Results";
-"Results.premiumRequred" = "You need Friendly Competitions Premium to see older results";
 "Results.Rank.title" = "Rank";
 "Results.Standings.title" = "Standings";
 "Results.Points.title" = "Points";
@@ -170,18 +165,6 @@
 // Confirmation Dialog
 "Confirmation.areYouSure" = "Are you sure?";
 "Confirmation.areYouSureCannotBeUndone" = "Are you sure? This cannot be undone.";
-
-// Premium
-"Premium.Banner.title" = "Friendly Competitions Premium";
-"Premium.Banner.message" = "Get instant access to all of your competition results. The latest results for all competitions are always free.";
-"Premium.Banner.learnMore" = "Learn more";
-"Premium.Primer.title" = "Preimum";
-"Premium.Primer.message" = "Get instant access to all of your competition results. The latest results for all competitions are always free.";
-"Premium.Paywall.restore" = "Restore Purchases";
-"Premium.Paywall.tos" = "Terms of Service";
-"Premium.Paywall.pp" = "Privacy Policy";
-"Premium.Purchase.title" = "Premium";
-"Premium.Purchase.autoRenews" = "Auto-renews. Cancel Anytime.";
 
 // Permissions
 "Permissions.title" = "Permissions needed";

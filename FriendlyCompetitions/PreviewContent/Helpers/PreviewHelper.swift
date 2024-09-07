@@ -21,7 +21,6 @@ private enum Dependencies {
     static let scheduler = AnySchedulerOf<RunLoop>.main
     static let stepCountManager = StepCountManagingMock()
     static let storageManager = StorageManagingMock()
-    static let premiumManager = PremiumManagingMock()
     static let userManager = UserManagingMock()
     static let workoutManager = WorkoutManagingMock()
 
@@ -43,7 +42,6 @@ private enum Dependencies {
         Container.shared.scheduler.register { scheduler }
         Container.shared.stepCountManager.register { stepCountManager }
         Container.shared.storageManager.register { storageManager }
-        Container.shared.premiumManager.register { premiumManager }
         Container.shared.userManager.register { userManager }
         Container.shared.workoutManager.register { workoutManager }
     }
@@ -65,7 +63,6 @@ private enum Dependencies {
         competitionsManager.standingsForResultIDReturnValue = .just([])
         competitionsManager.appOwnedCompetitions = .just([.mockPublic])
         competitionsManager.resultsForReturnValue = .just([])
-        competitionsManager.hasPremiumResults = .just(false)
 
         featureFlagManager.valueForBoolFeatureFlagFeatureFlagBoolBoolReturnValue = false
         featureFlagManager.valueForDoubleFeatureFlagFeatureFlagDoubleDoubleReturnValue = 0
@@ -82,10 +79,6 @@ private enum Dependencies {
         searchManager.searchForUsersWithIDsReturnValue = .just([])
 
         storageManager.dataForReturnValue = .just(.init())
-
-        premiumManager.premium = .just(nil)
-        premiumManager.products = .just([])
-        premiumManager.purchaseReturnValue = .just(())
 
         userManager.user = .evan
         userManager.userPublisher = .just(.evan)
@@ -111,7 +104,6 @@ extension PreviewProvider {
     static var scheduler: AnySchedulerOf<RunLoop> { Dependencies.scheduler }
     static var stepCountManager: StepCountManagingMock { Dependencies.stepCountManager }
     static var storageManager: StorageManagingMock { Dependencies.storageManager }
-    static var premiumManager: PremiumManagingMock { Dependencies.premiumManager }
     static var userManager: UserManagingMock { Dependencies.userManager }
     static var workoutManager: WorkoutManagingMock { Dependencies.workoutManager }
 

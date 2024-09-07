@@ -31,7 +31,6 @@ final class HomeViewModel: ObservableObject {
     @Published var showAbout = false
     @Published private(set) var showDeveloper = false
     @Published private(set) var loadingDeepLink = false
-    @Published private(set) var showPremiumBanner = false
     @Published var showNewCompetition = false
     @Published var showAddFriends = false
     @Published var showAnonymousAccountBlocker = false
@@ -47,12 +46,9 @@ final class HomeViewModel: ObservableObject {
     @Injected(\.friendsManager) private var friendsManager: FriendsManaging
     @Injected(\.healthKitManager) private var healthKitManager: HealthKitManaging
     @Injected(\.notificationsManager) private var notificationsManager: NotificationsManaging
-    @LazyInjected(\.premiumManager) private var premiumManager: PremiumManaging
     @Injected(\.scheduler) private var scheduler: AnySchedulerOf<RunLoop>
     @Injected(\.stepCountManager) private var stepCountManager: StepCountManaging
     @Injected(\.userManager) private var userManager: UserManaging
-
-    @UserDefault("dismissedPremiumBanner", defaultValue: false) private var dismissedPremiumBanner
 
     private let didHandleBannerTap = CurrentValueSubject<Void, Never>(())
     private var cancellables = Cancellables()
@@ -143,16 +139,10 @@ final class HomeViewModel: ObservableObject {
             googleAdUnit = .native(unit: featureFlagManager.value(forString: .googleAdsExploreScreenAdUnit))
         }
 
-        handlePremiumBanner()
         bindBanners()
     }
 
     // MARK: - Public Methods
-
-    func dismissPremiumBannerTapped() {
-        analyticsManager.log(event: .premiumBannerDismissed)
-        dismissedPremiumBanner.toggle()
-    }
 
     func newCompetitionTapped() {
         guard userManager.user.isAnonymous != true else {
@@ -196,21 +186,6 @@ final class HomeViewModel: ObservableObject {
     }
 
     // MARK: - Private Methods
-
-    private func handlePremiumBanner() {
-        guard featureFlagManager.value(forBool: .premiumEnabled) else { return }
-        Publishers
-            .CombineLatest3(
-                $dismissedPremiumBanner,
-                premiumManager.premium,
-                competitionsManager.hasPremiumResults
-            )
-            .map { dismissedPremiumBanner, premium, hasPremiumResults in
-                !dismissedPremiumBanner && premium == nil && hasPremiumResults
-            }
-            .receive(on: scheduler)
-            .assign(to: &$showPremiumBanner)
-    }
 
     private func bindBanners() {
         Publishers

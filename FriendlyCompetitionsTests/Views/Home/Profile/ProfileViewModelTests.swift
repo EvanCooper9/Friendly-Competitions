@@ -11,7 +11,6 @@ final class ProfileViewModelTests: FCTestCase {
         super.setUp()
 
         featureFlagManager.valueForBoolFeatureFlagFeatureFlagBoolBoolReturnValue = false
-        premiumManager.premium = .never()
         userManager.updateWithReturnValue = .never()
     }
 

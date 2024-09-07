@@ -15,15 +15,6 @@ public enum AnalyticsEvent: Codable, Equatable {
     case notificationPermissions(authorized: Bool)
     case healthKitPermissions(authorized: Bool)
 
-    // premium
-    case premiumPaywallPrimerViewed
-    case premiumPaywallViewed
-    case premiumSelected(id: String)
-    case premiumPurchaseStarted(id: String)
-    case premiumPurchaseCancelled(id: String)
-    case premiumPurchased(id: String)
-    case premiumBannerDismissed
-
     // database
     case databaseRead(path: String)
     case databaseWrite(path: String)
