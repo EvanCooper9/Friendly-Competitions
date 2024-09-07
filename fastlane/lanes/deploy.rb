@@ -8,6 +8,8 @@ lane :deploy do
         duration: 1200, # optional (maximum 1200)
         in_house: false # optional but may be required if using match/sigh
     ) if is_ci
+
+    xcode_select("/Applications/Xcode_15.4.app")
     
     certificates
 
@@ -31,7 +33,8 @@ lane :deploy do
 
     build_app(
         scheme: "FriendlyCompetitions",
-        export_method: "app-store"
+        export_method: "app-store",
+        xcode_version: "15.4"
     )
 
     upload_to_testflight(
