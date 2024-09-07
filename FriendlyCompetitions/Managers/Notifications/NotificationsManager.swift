@@ -1,5 +1,6 @@
 import Combine
 import Factory
+import FCKit
 import UserNotifications
 import UIKit
 
@@ -14,8 +15,8 @@ final class NotificationsManager: NSObject, NotificationsManaging {
 
     // MARK: - Private Properties
 
-    @Injected(\.appState) private var appState
-    @Injected(\.analyticsManager) private var analyticsManager
+    @Injected(\.appState) private var appState: AppStateProviding
+    @Injected(\.analyticsManager) private var analyticsManager: AnalyticsManaging
 
     // MARK: - Public Methods
 

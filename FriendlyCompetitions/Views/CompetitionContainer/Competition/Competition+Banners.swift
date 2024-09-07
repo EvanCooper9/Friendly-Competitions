@@ -64,7 +64,7 @@ extension Competition {
             .map { _ -> Banner? in
                 let gracePeriod = featureFlagManager.value(forDouble: .dataUploadGracePeriodHours).hours
                 guard ended && canUploadData(gracePeriod: gracePeriod) else { return nil }
-                return .competitionResultsCalculating
+                return .competitionResultsCalculating(competition: self)
             }
             .eraseToAnyPublisher()
 
@@ -104,7 +104,7 @@ extension Competition {
                     switch banner {
                     case .healthKitPermissionsMissing(let permissions):
                         missingPermissions.append(contentsOf: permissions)
-                    case .healthKitDataMissing(let competition, let permissions):
+                    case .healthKitDataMissing(_, let permissions):
                         missingData.append(contentsOf: permissions)
                     default:
                         break

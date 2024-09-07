@@ -6,7 +6,7 @@ import UIKit
 
 final class AppDelegate: NSObject, UIApplicationDelegate {
 
-    @Injected(\.appServices) private var appServices
+    @Injected(\.appServices) private var appServices: [AppService]
 
     private var cancellables = Cancellables()
 

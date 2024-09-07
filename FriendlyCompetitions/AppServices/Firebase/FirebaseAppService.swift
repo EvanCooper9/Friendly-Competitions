@@ -37,16 +37,14 @@ extension FirebaseAppService: MessagingDelegate {
         authenticationManager.loggedIn
             .filter { $0 }
             .mapToVoid()
-            .compactMap { [weak self] _ -> User? in
-                guard let user = self?.userManager.user,
-                      user.notificationTokens?.contains(fcmToken) != true else { return nil }
-                return user
-            }
-            .flatMapLatest(withUnretained: self) { strongSelf, user in
-                let tokens = user.notificationTokens ?? []
-                return strongSelf.database
+            .flatMapLatest { [userManager] in userManager.userPublisher }
+            .flatMapLatest { [database] user -> AnyPublisher<Void, Never> in
+                guard !user.notificationTokens.contains(fcmToken) else { return .never() }
+                return database
                     .document("users/\(user.id)")
-                    .update(fields: ["notificationTokens": tokens.appending(fcmToken)])
+                    .update(fields: ["notificationTokens": user.notificationTokens.appending(fcmToken)])
+                    .ignoreFailure()
+                    .eraseToAnyPublisher()
             }
             .first()
             .sink()

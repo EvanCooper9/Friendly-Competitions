@@ -172,9 +172,8 @@ final class InviteFriendsViewModelTests: FCTestCase {
     }
 
     func testAcceptFriendRequest() {
-        var currentUser = User.evan
         let searchResultUser = User.andrew
-        currentUser.incomingFriendRequests = [searchResultUser.id]
+        let currentUser = User(id: #function, name: "Evan", email: "evan@mail.com", incomingFriendRequests: [searchResultUser.id])
 
         userManager.userPublisher = .just(currentUser)
         searchManager.searchForUsersByNameReturnValue = .just([searchResultUser])

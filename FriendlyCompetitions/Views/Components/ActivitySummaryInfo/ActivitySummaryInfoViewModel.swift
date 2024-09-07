@@ -1,6 +1,9 @@
 import Combine
+import CombineExt
+import CombineSchedulers
 import ECKit
 import Factory
+import Foundation
 import UIKit
 
 final class ActivitySummaryInfoViewModel: ObservableObject {
@@ -23,9 +26,9 @@ final class ActivitySummaryInfoViewModel: ObservableObject {
 
     // MARK: - Private Properties
 
-    @LazyInjected(\.activitySummaryManager) private var activitySummaryManager
-    @Injected(\.healthKitManager) private var healthKitManager
-    @Injected(\.scheduler) private var scheduler
+    @LazyInjected(\.activitySummaryManager) private var activitySummaryManager: ActivitySummaryManaging
+    @Injected(\.healthKitManager) private var healthKitManager: HealthKitManaging
+    @Injected(\.scheduler) private var scheduler: AnySchedulerOf<RunLoop>
 
     private let requestPermissionsSubject = PassthroughSubject<Void, Error>()
 

@@ -18,6 +18,7 @@ class FCTestCase: XCTestCase {
     let auth = AuthProvidingMock()
     let authenticationCache = AuthenticationCacheMock()
     let authenticationManager = AuthenticationManagingMock()
+    let bannerManager = BannerManagingMock()
     let competitionsManager = CompetitionsManagingMock()
     let database = DatabaseMock()
     let environmentCache = EnvironmentCacheMock()
@@ -61,6 +62,7 @@ class FCTestCase: XCTestCase {
         Container.shared.auth.register { self.auth }
         Container.shared.authenticationCache.register { self.authenticationCache }
         Container.shared.authenticationManager.register { self.authenticationManager }
+        Container.shared.bannerManager.register { self.bannerManager }
         Container.shared.competitionsManager.register { self.competitionsManager }
         Container.shared.database.register { self.database }
         Container.shared.environmentCache.register { self.environmentCache }

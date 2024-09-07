@@ -19,6 +19,7 @@ final class HomeViewModelTests: FCTestCase {
         appState.deepLink = .never()
         appState.didBecomeActive = .never()
         appState.isActive = .never()
+        bannerManager.banners = .never()
         competitionsManager.competitions = .never()
         competitionsManager.invitedCompetitions = .never()
         competitionsManager.unseenResults = .never()

@@ -1,5 +1,6 @@
 import Combine
 import CombineExt
+import CombineSchedulers
 import Factory
 import Foundation
 
@@ -14,8 +15,8 @@ final class FirebaseImageViewModel: ObservableObject {
 
     private let path: String
 
-    @Injected(\.scheduler) private var scheduler
-    @Injected(\.storageManager) private var storageManager
+    @Injected(\.scheduler) private var scheduler: AnySchedulerOf<RunLoop>
+    @Injected(\.storageManager) private var storageManager: StorageManaging
 
     private let downloadImageSubject = PassthroughSubject<Void, Error>()
 
