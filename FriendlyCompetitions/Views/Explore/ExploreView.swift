@@ -11,14 +11,10 @@ struct ExploreView: View {
     @StateObject private var viewModel = ExploreViewModel()
 
     var body: some View {
-        List {
+        ScrollView {
             if viewModel.searchText.isEmpty {
                 ForEach(viewModel.appOwnedCompetitions) { competition in
-                    NavigationLink(value: NavigationDestination.competition(competition, nil)) {
-                        FeaturedCompetition(competition: competition)
-                            .padding(.horizontal)
-                    }
-                    .buttonStyle(.plain)
+                    featured(competition)
                 }
             } else {
                 if viewModel.searchResults.isEmpty {
@@ -30,11 +26,7 @@ struct ExploreView: View {
                         .frame(maxWidth: .infinity, alignment: .center)
                 } else {
                     ForEach(viewModel.searchResults.filter(\.appOwned)) { competition in
-                        NavigationLink(value: NavigationDestination.competition(competition, nil)) {
-                            FeaturedCompetition(competition: competition)
-                                .padding(.horizontal)
-                        }
-                        .buttonStyle(.plain)
+                        featured(competition)
                     }
                     ForEach(viewModel.searchResults.filter(\.appOwned.not)) { competition in
                         NavigationLink(value: NavigationDestination.competition(competition, nil)) {
@@ -57,8 +49,7 @@ struct ExploreView: View {
                 .listRowInsets(.zero)
             }
         }
-        .listRowInsets(.zero)
-        .listRowBackground(Color.clear)
+        .background(Color.listBackground)
         .searchable(text: $viewModel.searchText, placement: .navigationBarDrawer(displayMode: .always))
         .navigationTitle(L10n.Explore.title)
         .registerScreenView(name: "Explore")
@@ -66,6 +57,13 @@ struct ExploreView: View {
         .navigationDestination(for: NavigationDestination.self) { $0.view }
     }
 
+    private func featured(_ competition: Competition) -> some View {
+        NavigationLink(value: NavigationDestination.competition(competition, nil)) {
+            FeaturedCompetition(competition: competition)
+                .padding(.horizontal)
+        }
+        .buttonStyle(.plain)
+    }
 }
 
 #if DEBUG
