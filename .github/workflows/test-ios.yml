@@ -6,7 +6,7 @@ on:
     paths: 
       - FriendlyCompetitions.xcodeproj/**
       - FriendlyCompetitions/**
-      - FriendlyCOmpetitionsTests/**
+      - FriendlyCompetitionsTests/**
       - FriendlyCompetitionsWidgets/**
       - FCKit/**
 
