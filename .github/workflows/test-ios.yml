@@ -2,7 +2,13 @@ name: Run unit tests
 
 on:
   pull_request:
-    branches: [main, release/*]
+    branches: main
+    paths: 
+      - FriendlyCompetitions.xcodeproj/**
+      - FriendlyCompetitions/**
+      - FriendlyCOmpetitionsTests/**
+      - FriendlyCompetitionsWidgets/**
+      - FCKit/**
 
 concurrency: 
   group: ${{ github.ref }}
