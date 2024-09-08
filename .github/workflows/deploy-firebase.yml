@@ -1,0 +1,25 @@
+name: Deploy Firebase
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'firebase/**'
+
+jobs:
+  build:
+    name: Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@master
+      - name: Install firebase-tools
+        run: npm install -g firebase-tools
+      - name: Install dependencies
+        run: cd firebase && npm install
+      - name: Install functions dependencies
+        run: cd firebase/functions && npm install
+      - name: Build & deploy
+        run: cd firebase && firebase deploy --token "$FIREBASE_TOKEN" --non-interactive
+        env:
+          FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}

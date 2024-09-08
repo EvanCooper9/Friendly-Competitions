@@ -2,7 +2,13 @@ name: Run unit tests
 
 on:
   pull_request:
-    branches: [main, release/*]
+    branches: main
+    paths: 
+      - FriendlyCompetitions.xcodeproj/**
+      - FriendlyCompetitions/**
+      - FriendlyCompetitionsTests/**
+      - FriendlyCompetitionsWidgets/**
+      - FCKit/**
 
 concurrency: 
   group: ${{ github.ref }}
@@ -28,7 +34,7 @@ jobs:
     - name: Cache Swift Packages
       uses: actions/cache@v3
       with:
-        path: ~/Library/Developer/Xcode/DerivedData/**/SourcePackages/checkouts
+        path: ~/Library/Developer/Xcode/DerivedData/**/SourcePackages/
         key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
         restore-keys: |
           ${{ runner.os }}-spm-
