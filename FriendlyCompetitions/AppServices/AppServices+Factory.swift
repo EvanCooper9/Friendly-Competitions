@@ -10,6 +10,7 @@ extension Container {
                 NotificationsAppService()
                 BackgroundJobsAppService()
                 GoogleAdsAppService()
+                StorageAppService()
             }
         }
         .scope(.singleton)

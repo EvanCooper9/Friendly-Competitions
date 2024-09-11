@@ -30,7 +30,6 @@ final class HomeViewModel: ObservableObject {
     @Published private(set) var invitedCompetitions = [Competition]()
     @Published private(set) var hasNotifications = false
 
-    @Published var showAbout = false
     @Published private(set) var showDeveloper = false
     @Published private(set) var loadingDeepLink = false
     @Published var showNewCompetition = false
@@ -141,7 +140,7 @@ final class HomeViewModel: ObservableObject {
             .assign(to: &$friendRows)
 
         if featureFlagManager.value(forBool: .adsEnabled) {
-            googleAdUnit = .native(unit: featureFlagManager.value(forString: .googleAdsExploreScreenAdUnit))
+            googleAdUnit = .native(unit: featureFlagManager.value(forString: .googleAdsHomeScreenAdUnit))
         }
 
         bannerManager.banners
@@ -175,10 +174,6 @@ final class HomeViewModel: ObservableObject {
         }
 
         showAddFriends = true
-    }
-
-    func aboutTapped() {
-        showAbout = true
     }
 
     func tapped(_ banner: Banner) {

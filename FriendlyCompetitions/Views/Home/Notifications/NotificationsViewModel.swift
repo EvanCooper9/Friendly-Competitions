@@ -10,6 +10,8 @@ final class NotificationsViewModel: ObservableObject {
     // MARK: - Public Properties
 
     @Published private(set) var banners = [Banner]()
+    @Published private(set) var loading = false
+    @Published private(set) var dismiss = false
 
     // MARK: - Private Properties
 
@@ -27,7 +29,8 @@ final class NotificationsViewModel: ObservableObject {
 
     func tapped(_ banner: Banner) {
         bannerManager.tapped(banner)
-            .sink()
+            .isLoading { [weak self] in self?.loading = $0 }
+            .sink { [weak self] in self?.dismiss = true }
             .store(in: &cancellables)
     }
 

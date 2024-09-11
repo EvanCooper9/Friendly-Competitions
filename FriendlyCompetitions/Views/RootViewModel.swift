@@ -9,7 +9,7 @@ final class RootViewModel: ObservableObject {
 
     // MARK: - Public Properties
 
-    @Published var tab = RootTab.home
+    @Published var tab = RootTab.explore
 
     // MARK: - Private Properties
 

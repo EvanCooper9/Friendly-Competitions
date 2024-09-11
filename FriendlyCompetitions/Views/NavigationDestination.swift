@@ -30,7 +30,7 @@ extension NavigationDestination {
         case .user(let user):
             UserView(user: user)
         case .profile:
-            ProfileView()
+            SettingsView()
         }
     }
 }

@@ -7,8 +7,9 @@ final class FriendlyCompetitionsAppModel: ObservableObject {
 
     // MARK: - Public Properties
 
-    @Published private(set)var loggedIn = false
-    @Published private(set)var emailVerified = false
+    @Published private(set) var needsUpgrade = false
+    @Published private(set) var loggedIn = false
+    @Published private(set) var emailVerified = false
     @Published var hud: HUD?
 
     // MARK: - Private Properties
@@ -16,6 +17,7 @@ final class FriendlyCompetitionsAppModel: ObservableObject {
     @Injected(\.analyticsManager) private var analyticsManager: AnalyticsManaging
     @Injected(\.appState) private var appState: AppStateProviding
     @Injected(\.authenticationManager) private var authenticationManager: AuthenticationManaging
+    @Injected(\.featureFlagManager) private var featureFlagManager: FeatureFlagManaging
 
     // MARK: - Lifecycle
 
@@ -23,6 +25,7 @@ final class FriendlyCompetitionsAppModel: ObservableObject {
         authenticationManager.loggedIn.assign(to: &$loggedIn)
         authenticationManager.emailVerified.assign(to: &$emailVerified)
         appState.hud.assign(to: &$hud)
+        checkMinimumVersion()
     }
 
     // MARK: - Public Methods
@@ -35,5 +38,15 @@ final class FriendlyCompetitionsAppModel: ObservableObject {
 
     func opened(url: URL) {
         analyticsManager.log(event: .urlOpened(url: url))
+    }
+
+    // MARK: - Private Methods
+
+    private func checkMinimumVersion() {
+        #if RELEASE
+        let currentVersion = Bundle.main.version
+        let minimumVersion = featureFlagManager.value(forString: .minimumAppVersion)
+        needsUpgrade = currentVersion.compare(minimumVersion, options: .numeric) == .orderedAscending
+        #endif
     }
 }

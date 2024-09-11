@@ -1,6 +1,7 @@
 // Root
 "Root.home" = "Home";
 "Root.explore" = "Explore";
+"Root.settings" = "Settings";
 
 // Home
 "Home.title" = "Home";
@@ -26,22 +27,6 @@
 "ActivitySummaryInfo.NotFound.message" = "Couldn't find your rings for today. Check HealthKit permissions.";
 "ActivitySummaryInfo.NotFound.cta" = "Check";
 
-// About
-"About.title" = "About";
-"About.hey" = "Hey, thanks for using Friendly Competitions! I hope you're enjoying my app. Feel free to provide feedback below or reach out to me by visiting my website.\n\nEvan";
-"About.madeWithLove" = "Made with ❤️ in Toronto, Canada";
-"About.App.authoredBy" = "by Evan Cooper";
-"About.App.title" = "The App";
-"About.App.rate" = "Rate";
-"About.App.privacyPolicy" = "Privacy Policy";
-"About.App.featureRequest" = "Feature Request";
-"About.App.reportIssue" = "Report an Issue";
-"About.App.code" = "Code";
-"About.App.openSource" = "Did you know this app is completely open source? Tap above to find out more.";
-"About.App.version" = "Version";
-"About.Developer.website" = "My Website";
-"About.Developer.buyCoffee" = "Buy me a cofee";
-
 // Developer
 "Developer.title" = "Developer";
 "Developer.Environment.title" = "Firebase Environment";
@@ -49,20 +34,34 @@
 "Developer.Environment.Emulation.type" = "Emulation type";
 "Developer.Environment.Emulation.destination" = "Emulation destination";
 
-// Profile
-"Profile.title" = "Profile";
-"Profile.shareInviteLink" = "Share invite link";
-"Profile.Medals.title" = "Medals";
-"Profile.Privacy.title" = "Privacy";
-"Profile.Privacy.Searchable.title" = "Searchable";
-"Profile.Privacy.Searchable.description" = "Turn this off to prevent your account from showing up in search. Other people will not be able to add you as a friend.";
-"Profile.Privacy.HideName.title" = "Show name";
-"Profile.Privacy.HideName.description" = "Turn this off to hide your name in competitions. Your friends will still see your name.";
-"Profile.Account.title" = "Account";
-"Profile.Account.createAccount" = "Create account";
-"Profile.Account.signOut" = "Sign out";
-"Profile.Account.deleteAccount" = "Delete account";
-"Profile.Account.anonymous" = "You are using an anonymous account. Some features will be disabled until you create a real account.";
+// Settings
+"Settings.title" = "Settings";
+"Settings.inviteFriends" = "Invite friends";
+"Settings.Privacy.title" = "Privacy";
+"Settings.Privacy.Searchable.title" = "Searchable";
+"Settings.Privacy.Searchable.description" = "Turn this off to prevent your account from showing up in search. Other people will not be able to add you as a friend.";
+"Settings.Privacy.HideName.title" = "Show name";
+"Settings.Privacy.HideName.description" = "Turn this off to hide your name in competitions. Your friends will still see your name.";
+"Settings.Account.title" = "Account";
+"Settings.Account.createAccount" = "Create account";
+"Settings.Account.signOut" = "Sign out";
+"Settings.Account.deleteAccount" = "Delete account";
+"Settings.Account.anonymous" = "You are using an anonymous account. Some features will be disabled until you create a real account.";
+"Settings.About.title" = "About";
+"Settings.About.hey" = "Hey, thanks for using Friendly Competitions! I hope you're enjoying my app. Feel free to provide feedback below or reach out to me by visiting my website.\n\nEvan";
+"Settings.About.madeWithLove" = "Made with ❤️ in Toronto, Canada";
+"Settings.About.App.authoredBy" = "by Evan Cooper";
+"Settings.About.App.title" = "About the app";
+"Settings.About.App.rate" = "Rate";
+"Settings.About.App.privacyPolicy" = "Privacy Policy";
+"Settings.About.App.featureRequest" = "Feature Request";
+"Settings.About.App.reportIssue" = "Report an Issue";
+"Settings.About.App.code" = "Code";
+"Settings.About.App.openSource" = "Did you know this app is completely open source? Tap above to find out more.";
+"Settings.About.App.version" = "Version %s";
+"Settings.About.Developer.title" = "About the developer";
+"Settings.About.Developer.website" = "My Website";
+"Settings.About.Developer.buyCoffee" = "Buy me a cofee";
 
 // Create Account
 "CreateAccount.title" = "Create account";
@@ -106,7 +105,6 @@
 "Competition.Standings.showMore" = "Show more";
 "Competition.Standings.empty" = "Nothing here, yet.";
 "Competition.Results.results" = "Results";
-
 "Competition.Action.AcceptInvite.buttonTitle" = "Accept invite";
 "Competition.Action.DeclineInvite.buttonTitle" = "Decline invite";
 "Competition.Action.Delete.buttonTitle" = "Delete competition";
@@ -116,7 +114,6 @@
 "Competition.Action.Join.buttonTitle" = "Join competition";
 "Competition.Action.Leave.buttonTitle" = "Leave competition";
 "Competition.Action.Leave.confirmationTitle" = "Are you sure you want to leave?";
-
 "Competition.Edit.title" = "Details";
 "Competition.Edit.name" = "Name";
 "Competition.Edit.starts" = "Starts";
@@ -170,7 +167,6 @@
 "Permissions.title" = "Permissions needed";
 "Permissions.header" = "To get the best experience in Friendly Competitions, we need access to a few things.";
 "Permissions.footer" = "You can always change your responses in the settings app.";
-
 "Permission.Health.title" = "Health";
 "Permission.Health.description" = "So we can count score";
 "Permission.Notifications.titile" = "Notifications";

@@ -4,6 +4,7 @@ import SwiftUIX
 struct NotificationsView: View {
 
     @StateObject private var viewModel = NotificationsViewModel()
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         List {
@@ -41,6 +42,7 @@ struct NotificationsView: View {
             }
         }
         .embeddedInNavigationView()
+        .onChange(of: viewModel.dismiss) { _ in dismiss() }
     }
 }
 
