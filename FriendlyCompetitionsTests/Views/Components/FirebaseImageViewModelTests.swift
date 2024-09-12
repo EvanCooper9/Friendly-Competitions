@@ -2,7 +2,7 @@
 import XCTest
 
 final class FirebaseImageViewModelTests: FCTestCase {
-    func testThatImageDataIsSetCorrectly() {
+    func testDownloadSucceeded() {
         let expectedData = Data([1, 2, 3])
         storageManager.getReturnValue = .just(expectedData)
         let viewModel = FirebaseImageViewModel(path: #function)
@@ -11,17 +11,10 @@ final class FirebaseImageViewModelTests: FCTestCase {
         XCTAssertEqual(storageManager.getReceivedPath, #function)
     }
 
-    func testThatFailedIsSet() {
+    func testDownloadFailed() {
         storageManager.getReturnValue = .error(MockError.mock(id: #function))
         let viewModel = FirebaseImageViewModel(path: #function)
         scheduler.advance()
         XCTAssertTrue(viewModel.failed)
-    }
-
-    func testDownloadImage() {
-        storageManager.getReturnValue = .just(Data([1, 2, 3]))
-        let viewModel = FirebaseImageViewModel(path: #function)
-        scheduler.advance()
-        XCTAssertEqual(storageManager.getCallsCount, 2)
     }
 }

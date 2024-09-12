@@ -1978,7 +1978,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = " swiftgen is failing to install... disabling for now\nif [ \"${ENABLE_PREVIEWS}\" = \"YES\" ]; then\n  echo \"Previews enabled, quitting to prevent 'preview paused'.\"\n  exit 0\nfi\n\nif which swiftgen > /dev/null; then\n  swiftgen\nelse\n  echo \"warning: SwiftGen not installed\"\nfi\n";
+			shellScript = "if [ \"${ENABLE_PREVIEWS}\" = \"YES\" ]; then\n  echo \"Previews enabled, quitting to prevent 'preview paused'.\"\n  exit 0\nfi\n\nif which swiftgen > /dev/null; then\n  swiftgen\nelse\n  echo \"warning: SwiftGen not installed\"\nfi\n";
 		};
 		C1DB3B5C27AA0CF40074BED1 /* Copy GoogleService-Info.plist (App) */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -2016,7 +2016,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "if [ \"${ENABLE_PREVIEWS}\" = \"YES\" ]; then\n  echo \"Previews enabled, quitting to prevent 'preview paused'.\"\n  exit 0\nfi\n\nif which sourcery > /dev/null; then\n  swiftlint\nelse\n  echo \"warning: Sourcery not installed\"\nfi\n";
+			shellScript = "if [ \"${ENABLE_PREVIEWS}\" = \"YES\" ]; then\n  echo \"Previews enabled, quitting to prevent 'preview paused'.\"\n  exit 0\nfi\n\nif which sourcery > /dev/null; then\n  sourcery\nelse\n  echo \"warning: Sourcery not installed\"\nfi\n";
 		};
 		ED4F722729C962D2007C5864 /* SwiftLint */ = {
 			isa = PBXShellScriptBuildPhase;

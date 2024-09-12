@@ -35,7 +35,7 @@ final class FirebaseImageViewModel: ObservableObject {
                 self?.failed = true
                 return .just(nil)
             }
-            .receive(on: RunLoop.main)
+            .receive(on: scheduler)
             .assign(to: &$imageData)
     }
 }
