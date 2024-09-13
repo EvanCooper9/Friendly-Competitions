@@ -14,6 +14,7 @@ import { updateActivitySummaryScores } from "./Handlers/jobs/updateActivitySumma
 import { updateWorkoutScores } from "./Handlers/jobs/updateWorkoutScores";
 import { updateCompetitionRanks } from "./Handlers/competitions/updateCompetitionRanks";
 import { handleCompetitionUpdate } from "./Handlers/jobs/handleCompetitionUpdate";
+import { sendBackgroundNotification } from "./Handlers/notifications/notifications";
 import { updateStepCountScores } from "./Handlers/jobs/updateStepCountScores";
 import { handleCompetitionCreate } from "./Handlers/jobs/handleCompetitionCreate";
 import { saveSWAToken } from "./Handlers/account/signInWithAppleToken";
@@ -138,14 +139,6 @@ exports.handleCompetitionUpdate = functions.firestore
 
 // Friends
 
-exports.friendRequest = functions.https.onCall(async (data, context) => {
-    if (data.operation == "request") {
-        await handleFriendRequest(data.requesterID, data.requesteeID, FriendRequestAction.create);
-    } else if (data.operation == "respond") {
-        await handleFriendRequest(data.requesterID, data.requesteeID, data.accept ? FriendRequestAction.accept : FriendRequestAction.decline);
-    }
-});
-
 exports.sendFriendRequest = functions.https.onCall(async (data, context) => {
     const requesterID = context.auth?.uid;
     const requesteeID = data.userID;
@@ -199,6 +192,23 @@ exports.updateWorkoutScores = functions.firestore
 
 // Jobs
 
+// exports.cleanScoringData = functions.pubsub.schedule("every day 02:00")
+//     .timeZone("America/Toronto")
+//     .onRun(async () => {
+//         await cleanupActivitySummaries();
+//         await cleanupWorkouts();
+//     });
+
 exports.completeCompetitions = functions.pubsub.schedule("every day 12:00")
     .timeZone("America/Toronto")
     .onRun(async () => await completeCompetitionsForYesterday());
+
+exports.dev_sendBackgroundNotification = functions.https.onCall(async () => {
+    console.log("sending notification");
+    const token = "d8tiU6vZbU23uiIg1wdI5w:APA91bFOW4-w4VB4X7fx4mD5WwxMPwKtw1pegGUPquJt4jx2zK_95YKzv9G7Sx7hhNchS4iEw-GmFID4MsRP7x_e4CdRA1rzrWzDs6TGrCHA64NUZL-myuW16VyKu1FxPjBKO80OXCT-";
+    const competitionBackgroundJob = {
+        documentPath: "competitions/09FCAD9F-7A18-40B3-A2A5-3B497CAFCA80",
+        competitionIDForResults: "09FCAD9F-7A18-40B3-A2A5-3B497CAFCA80"
+    };
+    await sendBackgroundNotification(token, competitionBackgroundJob);
+});
