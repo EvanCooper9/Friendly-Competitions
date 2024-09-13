@@ -35,16 +35,10 @@ final class GoogleAdViewModel: NSObject, ObservableObject, GADNativeAdLoaderDele
 
         adLoader.delegate = self
 
-        appState.isActive
-            .debounce(for: .seconds(1), scheduler: scheduler)
-            .filter { $0 }
-            .mapToVoid()
-            .first()
-            .sink { [adLoader, analyticsManager] in
-                adLoader.load(GADRequest())
-                analyticsManager.log(event: .adLoadStarted)
-            }
-            .store(in: &cancellables)
+        Task { [adLoader, analyticsManager] in
+            adLoader.load(GADRequest())
+            analyticsManager.log(event: .adLoadStarted)
+        }
     }
 
     // MARK: - GADNativeAdLoaderDelegate

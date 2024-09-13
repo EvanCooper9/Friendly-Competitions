@@ -14,6 +14,7 @@ struct User: Codable, Equatable, Hashable, Identifiable {
     var showRealName: Bool
     let isAnonymous: Bool
     let tags: [Tag]
+    let profilePicturePath: String?
 
     var hashId: String {
         let endIndex = id.index(id.startIndex, offsetBy: 4)
@@ -36,7 +37,8 @@ struct User: Codable, Equatable, Hashable, Identifiable {
         searchable: Bool = true,
         showRealName: Bool = true,
         isAnonymous: Bool = false,
-        tags: [User.Tag] = []
+        tags: [User.Tag] = [],
+        profilePicturePath: String? = nil
     ) {
         self.id = id
         self.name = name
@@ -50,6 +52,7 @@ struct User: Codable, Equatable, Hashable, Identifiable {
         self.showRealName = showRealName
         self.isAnonymous = isAnonymous
         self.tags = tags
+        self.profilePicturePath = profilePicturePath
     }
 
     init(from decoder: any Decoder) throws {
@@ -66,6 +69,7 @@ struct User: Codable, Equatable, Hashable, Identifiable {
         self.showRealName = (try container.decodeIfPresent(Bool.self, forKey: .showRealName)) ?? true
         self.isAnonymous = (try container.decodeIfPresent(Bool.self, forKey: .isAnonymous)) ?? false
         self.tags = (try container.decodeIfPresent([User.Tag].self, forKey: .tags)) ?? []
+        self.profilePicturePath = try? container.decodeIfPresent(String.self, forKey: .profilePicturePath)
     }
 }
 

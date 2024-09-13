@@ -3,8 +3,13 @@ import CombineExt
 import ECKit
 import Factory
 import FCKit
+import Foundation
 
-final class ProfileViewModel: ObservableObject {
+final class SettingsViewModel: ObservableObject {
+
+    @Published var profilePictureImageData: Data? {
+        didSet { uploadProfilePicture(data: profilePictureImageData) }
+    }
 
     @Published var user: User!
     @Published var confirmationRequired = false
@@ -17,7 +22,9 @@ final class ProfileViewModel: ObservableObject {
     // MARK: - Private Properties
 
     @Injected(\.authenticationManager) private var authenticationManager: AuthenticationManaging
+    @Injected(\.database) private var database: Database
     @Injected(\.featureFlagManager) private var featureFlagManager: FeatureFlagManaging
+    @Injected(\.storageManager) private var storageManager: StorageManaging
     @Injected(\.userManager) private var userManager: UserManaging
 
     private let deleteAccountSubject = PassthroughSubject<Void, Never>()
@@ -64,10 +71,8 @@ final class ProfileViewModel: ObservableObject {
             .sink()
             .store(in: &cancellables)
 
-        signOutSubject
-            .flatMapAsync { [weak self] in try self?.authenticationManager.signOut() }
-            .sink()
-            .store(in: &cancellables)
+
+        getProfilePictureData()
     }
 
     // MARK: - Public Methods
@@ -89,10 +94,38 @@ final class ProfileViewModel: ObservableObject {
     }
 
     func signOutTapped() {
-        signOutSubject.send()
+        try? authenticationManager.signOut()
     }
 
     func hideNameLearnMoreTapped() {
         showHideNameLearnMore.toggle()
+    }
+
+    // MARK: - Private
+
+    private func getProfilePictureData() {
+        userManager.userPublisher
+            .map(\.profilePicturePath)
+            .removeDuplicates()
+            .flatMapLatest { [storageManager] path -> AnyPublisher<Data?, Never> in
+                guard let path else { return .just(nil) }
+                return storageManager.get(path)
+                    .asOptional()
+                    .ignoreFailure()
+                    .eraseToAnyPublisher()
+            }
+            .receive(on: RunLoop.main)
+            .assign(to: &$profilePictureImageData)
+    }
+
+    private func uploadProfilePicture(data: Data?) {
+        let path = "users/\(userManager.user.id)/profilePicture.jpg"
+        return storageManager.set(path, data: data)
+            .flatMapLatest { [database, userManager] in
+                return database.document("users/\(userManager.user.id)")
+                    .update(fields: ["profilePicturePath": data == nil ? nil : path as Any])
+            }
+            .sink()
+            .store(in: &cancellables)
     }
 }

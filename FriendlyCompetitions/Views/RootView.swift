@@ -13,6 +13,10 @@ struct RootView: View {
             ExploreView()
                 .tabItem { Label(L10n.Root.explore, systemImage: .sparkleMagnifyingglass) }
                 .tag(RootTab.explore)
+
+            SettingsView()
+                .tabItem { Label(L10n.Root.settings, systemImage: .gear) }
+                .tag(RootTab.settings)
         }
     }
 }

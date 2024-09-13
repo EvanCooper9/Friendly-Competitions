@@ -18,30 +18,24 @@ final class FirebaseImageViewModel: ObservableObject {
     @Injected(\.scheduler) private var scheduler: AnySchedulerOf<RunLoop>
     @Injected(\.storageManager) private var storageManager: StorageManaging
 
-    private let downloadImageSubject = PassthroughSubject<Void, Error>()
-
     // MARK: - Lifecycle
 
     init(path: String) {
         self.path = path
+        downloadImage()
+    }
 
-        downloadImageSubject
-            .handleEvents(withUnretained: self, receiveOutput: { $0.failed = false })
-            .flatMapLatest(withUnretained: self) { $0.storageManager.data(for: path) }
-            .map { $0 as Data? }
-            .receive(on: scheduler)
+    // MARK: - Private Methods
+
+    private func downloadImage() {
+        storageManager.get(path)
+            .asOptional()
+            .retry(3)
             .catch { [weak self] _ -> AnyPublisher<Data?, Never> in
                 self?.failed = true
                 return .just(nil)
             }
+            .receive(on: scheduler)
             .assign(to: &$imageData)
-
-        downloadImage()
-    }
-
-    // MARK: - Public Properties
-
-    func downloadImage() {
-        downloadImageSubject.send()
     }
 }

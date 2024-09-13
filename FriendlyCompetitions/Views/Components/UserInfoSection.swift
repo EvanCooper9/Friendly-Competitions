@@ -5,7 +5,7 @@ struct UserInfoSection: View {
     let user: User
 
     var body: some View {
-        Section(L10n.Profile.title) {
+        Section {
             HStack {
                 ImmutableListItemView(value: user.name, valueType: .name)
                 if user.isAnonymous != true {

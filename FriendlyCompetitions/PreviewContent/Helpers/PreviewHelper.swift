@@ -87,7 +87,7 @@ private enum Dependencies {
         searchManager.searchForUsersByNameReturnValue = .just([])
         searchManager.searchForUsersWithIDsReturnValue = .just([])
 
-        storageManager.dataForReturnValue = .just(.init())
+        storageManager.getReturnValue = .just(.init())
 
         userManager.user = .evan
         userManager.userPublisher = .just(.evan)

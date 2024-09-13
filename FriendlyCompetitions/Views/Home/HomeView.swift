@@ -17,10 +17,7 @@ struct HomeView: View {
             friends
 
             if let unit = viewModel.googleAdUnit {
-                Section {
-                    GoogleAd(unit: unit)
-                }
-                .listRowInsets(.zero)
+                ad(unit: unit)
             }
         }
         .navigationBarTitle(L10n.Home.title)
@@ -30,14 +27,12 @@ struct HomeView: View {
                     DeveloperMenu()
                 }
 
-                Button(systemImage: .questionmarkCircle, action: viewModel.aboutTapped)
-                Button(systemImage: viewModel.hasNotifications ? .bellBadge : .bell, action: viewModel.notificationsTapped)
-                NavigationLink(value: NavigationDestination.profile) {
-                    Image(systemName: .personCropCircle)
+                Button(action: viewModel.notificationsTapped) {
+                    Image(systemName: viewModel.hasNotifications ? .bellCircleFill : .bellCircle)
+                        .foregroundStyle(viewModel.hasNotifications ? .red : Color.accentColor)
                 }
             }
         }
-        .sheet(isPresented: $viewModel.showAbout, content: AboutView.init)
         .sheet(isPresented: $viewModel.showAnonymousAccountBlocker, content: CreateAccountView.init)
         .sheet(isPresented: $viewModel.showNewCompetition) { CompetitionEditView(competition: nil) }
         .sheet(isPresented: $viewModel.showAddFriends) { InviteFriendsView(action: .addFriend) }
@@ -91,8 +86,7 @@ struct HomeView: View {
     private var competitions: some View {
         Section {
             if viewModel.competitions.isEmpty && viewModel.invitedCompetitions.isEmpty {
-                emptyContent(
-                    title: L10n.Home.Section.Competitions.title,
+                HomeViewEmptyContent(
                     symbol: "trophy.fill",
                     message: L10n.Home.Section.Competitions.Empty.message,
                     buttons: [
@@ -121,8 +115,7 @@ struct HomeView: View {
     private var friends: some View {
         Section {
             if viewModel.friendRows.isEmpty {
-                emptyContent(
-                    title: L10n.Home.Section.Friends.title,
+                HomeViewEmptyContent(
                     symbol: "person.3.fill",
                     message: L10n.Home.Section.Friends.Empty.message,
                     buttons: [.init(title: L10n.Home.Section.Friends.Empty.add, action: viewModel.addFriendsTapped)]
@@ -155,41 +148,11 @@ struct HomeView: View {
         }
     }
 
-    private struct EmptyContentButtonConfiguration: Identifiable {
-        var id: String { title }
-        let title: String
-        let action: () -> Void
-    }
-
-    private func emptyContent(title: String, symbol: String, message: String, buttons: [EmptyContentButtonConfiguration]) -> some View {
-        VStack(alignment: .center, spacing: 20) {
-            Image(systemName: symbol)
-                .symbolRenderingMode(.hierarchical)
-                .resizable()
-                .scaledToFit()
-                .height(75)
-                .foregroundStyle(.secondary)
-
-            Text(message)
-                .multilineTextAlignment(.center)
-                .foregroundStyle(.secondary)
-                .fixedSize(horizontal: false, vertical: true)
-
-            HStack {
-                ForEach(enumerating: buttons) { index, button in
-                    let button = Button(button.title, action: button.action)
-                    switch index {
-                    case 0:
-                        button.buttonStyle(.borderedProminent)
-                    case 1:
-                        button.buttonStyle(.bordered)
-                    default:
-                        button
-                    }
-                }
-            }
+    private func ad(unit: GoogleAdUnit) -> some View {
+        Section {
+            GoogleAd(unit: unit)
         }
-        .padding(.vertical)
+        .listRowInsets(.zero)
     }
 }
 
@@ -199,6 +162,7 @@ struct HomeView_Previews: PreviewProvider {
     private static func setupMocks() {
         activitySummaryManager.activitySummary = .just(nil)
         backgroundRefreshManager.status = .just(.denied)
+        bannerManager.banners = .just([.competitionResultsCalculating(competition: .mock)])
         healthKitManager.shouldRequestReturnValue = .just(false)
 
         competitionsManager.competitions = .just([.mockOld, .mockPublic])

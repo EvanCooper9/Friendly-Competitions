@@ -10,42 +10,6 @@ import Foundation
 // swiftlint:disable explicit_type_interface function_parameter_count identifier_name line_length
 // swiftlint:disable nesting type_body_length type_name vertical_whitespace_opening_braces
 internal enum L10n {
-  internal enum About {
-    /// Hey, thanks for using Friendly Competitions! I hope you're enjoying my app. Feel free to provide feedback below or reach out to me by visiting my website.
-    /// 
-    /// Evan
-    internal static let hey = L10n.tr("Localizable", "About.hey", fallback: "Hey, thanks for using Friendly Competitions! I hope you're enjoying my app. Feel free to provide feedback below or reach out to me by visiting my website.\n\nEvan")
-    /// Made with ❤️ in Toronto, Canada
-    internal static let madeWithLove = L10n.tr("Localizable", "About.madeWithLove", fallback: "Made with ❤️ in Toronto, Canada")
-    /// About
-    internal static let title = L10n.tr("Localizable", "About.title", fallback: "About")
-    internal enum App {
-      /// by Evan Cooper
-      internal static let authoredBy = L10n.tr("Localizable", "About.App.authoredBy", fallback: "by Evan Cooper")
-      /// Code
-      internal static let code = L10n.tr("Localizable", "About.App.code", fallback: "Code")
-      /// Feature Request
-      internal static let featureRequest = L10n.tr("Localizable", "About.App.featureRequest", fallback: "Feature Request")
-      /// Did you know this app is completely open source? Tap above to find out more.
-      internal static let openSource = L10n.tr("Localizable", "About.App.openSource", fallback: "Did you know this app is completely open source? Tap above to find out more.")
-      /// Privacy Policy
-      internal static let privacyPolicy = L10n.tr("Localizable", "About.App.privacyPolicy", fallback: "Privacy Policy")
-      /// Rate
-      internal static let rate = L10n.tr("Localizable", "About.App.rate", fallback: "Rate")
-      /// Report an Issue
-      internal static let reportIssue = L10n.tr("Localizable", "About.App.reportIssue", fallback: "Report an Issue")
-      /// The App
-      internal static let title = L10n.tr("Localizable", "About.App.title", fallback: "The App")
-      /// Version
-      internal static let version = L10n.tr("Localizable", "About.App.version", fallback: "Version")
-    }
-    internal enum Developer {
-      /// Buy me a cofee
-      internal static let buyCoffee = L10n.tr("Localizable", "About.Developer.buyCoffee", fallback: "Buy me a cofee")
-      /// My Website
-      internal static let website = L10n.tr("Localizable", "About.Developer.website", fallback: "My Website")
-    }
-  }
   internal enum ActivitySummaryInfo {
     /// Exercise
     internal static let exercise = L10n.tr("Localizable", "ActivitySummaryInfo.exercise", fallback: "Exercise")
@@ -456,44 +420,6 @@ internal enum L10n {
     /// Permissions needed
     internal static let title = L10n.tr("Localizable", "Permissions.title", fallback: "Permissions needed")
   }
-  internal enum Profile {
-    /// Share invite link
-    internal static let shareInviteLink = L10n.tr("Localizable", "Profile.shareInviteLink", fallback: "Share invite link")
-    /// Profile
-    internal static let title = L10n.tr("Localizable", "Profile.title", fallback: "Profile")
-    internal enum Account {
-      /// You are using an anonymous account. Some features will be disabled until you create a real account.
-      internal static let anonymous = L10n.tr("Localizable", "Profile.Account.anonymous", fallback: "You are using an anonymous account. Some features will be disabled until you create a real account.")
-      /// Create account
-      internal static let createAccount = L10n.tr("Localizable", "Profile.Account.createAccount", fallback: "Create account")
-      /// Delete account
-      internal static let deleteAccount = L10n.tr("Localizable", "Profile.Account.deleteAccount", fallback: "Delete account")
-      /// Sign out
-      internal static let signOut = L10n.tr("Localizable", "Profile.Account.signOut", fallback: "Sign out")
-      /// Account
-      internal static let title = L10n.tr("Localizable", "Profile.Account.title", fallback: "Account")
-    }
-    internal enum Medals {
-      /// Medals
-      internal static let title = L10n.tr("Localizable", "Profile.Medals.title", fallback: "Medals")
-    }
-    internal enum Privacy {
-      /// Privacy
-      internal static let title = L10n.tr("Localizable", "Profile.Privacy.title", fallback: "Privacy")
-      internal enum HideName {
-        /// Turn this off to hide your name in competitions. Your friends will still see your name.
-        internal static let description = L10n.tr("Localizable", "Profile.Privacy.HideName.description", fallback: "Turn this off to hide your name in competitions. Your friends will still see your name.")
-        /// Show name
-        internal static let title = L10n.tr("Localizable", "Profile.Privacy.HideName.title", fallback: "Show name")
-      }
-      internal enum Searchable {
-        /// Turn this off to prevent your account from showing up in search. Other people will not be able to add you as a friend.
-        internal static let description = L10n.tr("Localizable", "Profile.Privacy.Searchable.description", fallback: "Turn this off to prevent your account from showing up in search. Other people will not be able to add you as a friend.")
-        /// Searchable
-        internal static let title = L10n.tr("Localizable", "Profile.Privacy.Searchable.title", fallback: "Searchable")
-      }
-    }
-  }
   internal enum Results {
     /// Results
     internal static let title = L10n.tr("Localizable", "Results.title", fallback: "Results")
@@ -541,6 +467,82 @@ internal enum L10n {
     internal static let explore = L10n.tr("Localizable", "Root.explore", fallback: "Explore")
     /// Home
     internal static let home = L10n.tr("Localizable", "Root.home", fallback: "Home")
+    /// Settings
+    internal static let settings = L10n.tr("Localizable", "Root.settings", fallback: "Settings")
+  }
+  internal enum Settings {
+    /// Invite friends
+    internal static let inviteFriends = L10n.tr("Localizable", "Settings.inviteFriends", fallback: "Invite friends")
+    /// Settings
+    internal static let title = L10n.tr("Localizable", "Settings.title", fallback: "Settings")
+    internal enum About {
+      /// Hey, thanks for using Friendly Competitions! I hope you're enjoying my app. Feel free to provide feedback below or reach out to me by visiting my website.
+      /// 
+      /// Evan
+      internal static let hey = L10n.tr("Localizable", "Settings.About.hey", fallback: "Hey, thanks for using Friendly Competitions! I hope you're enjoying my app. Feel free to provide feedback below or reach out to me by visiting my website.\n\nEvan")
+      /// Made with ❤️ in Toronto, Canada
+      internal static let madeWithLove = L10n.tr("Localizable", "Settings.About.madeWithLove", fallback: "Made with ❤️ in Toronto, Canada")
+      /// About
+      internal static let title = L10n.tr("Localizable", "Settings.About.title", fallback: "About")
+      internal enum App {
+        /// by Evan Cooper
+        internal static let authoredBy = L10n.tr("Localizable", "Settings.About.App.authoredBy", fallback: "by Evan Cooper")
+        /// Code
+        internal static let code = L10n.tr("Localizable", "Settings.About.App.code", fallback: "Code")
+        /// Feature Request
+        internal static let featureRequest = L10n.tr("Localizable", "Settings.About.App.featureRequest", fallback: "Feature Request")
+        /// Did you know this app is completely open source? Tap above to find out more.
+        internal static let openSource = L10n.tr("Localizable", "Settings.About.App.openSource", fallback: "Did you know this app is completely open source? Tap above to find out more.")
+        /// Privacy Policy
+        internal static let privacyPolicy = L10n.tr("Localizable", "Settings.About.App.privacyPolicy", fallback: "Privacy Policy")
+        /// Rate
+        internal static let rate = L10n.tr("Localizable", "Settings.About.App.rate", fallback: "Rate")
+        /// Report an Issue
+        internal static let reportIssue = L10n.tr("Localizable", "Settings.About.App.reportIssue", fallback: "Report an Issue")
+        /// About the app
+        internal static let title = L10n.tr("Localizable", "Settings.About.App.title", fallback: "About the app")
+        /// Version %s
+        internal static func version(_ p1: UnsafePointer<CChar>) -> String {
+          return L10n.tr("Localizable", "Settings.About.App.version", p1, fallback: "Version %s")
+        }
+      }
+      internal enum Developer {
+        /// Buy me a cofee
+        internal static let buyCoffee = L10n.tr("Localizable", "Settings.About.Developer.buyCoffee", fallback: "Buy me a cofee")
+        /// About the developer
+        internal static let title = L10n.tr("Localizable", "Settings.About.Developer.title", fallback: "About the developer")
+        /// My Website
+        internal static let website = L10n.tr("Localizable", "Settings.About.Developer.website", fallback: "My Website")
+      }
+    }
+    internal enum Account {
+      /// You are using an anonymous account. Some features will be disabled until you create a real account.
+      internal static let anonymous = L10n.tr("Localizable", "Settings.Account.anonymous", fallback: "You are using an anonymous account. Some features will be disabled until you create a real account.")
+      /// Create account
+      internal static let createAccount = L10n.tr("Localizable", "Settings.Account.createAccount", fallback: "Create account")
+      /// Delete account
+      internal static let deleteAccount = L10n.tr("Localizable", "Settings.Account.deleteAccount", fallback: "Delete account")
+      /// Sign out
+      internal static let signOut = L10n.tr("Localizable", "Settings.Account.signOut", fallback: "Sign out")
+      /// Account
+      internal static let title = L10n.tr("Localizable", "Settings.Account.title", fallback: "Account")
+    }
+    internal enum Privacy {
+      /// Privacy
+      internal static let title = L10n.tr("Localizable", "Settings.Privacy.title", fallback: "Privacy")
+      internal enum HideName {
+        /// Turn this off to hide your name in competitions. Your friends will still see your name.
+        internal static let description = L10n.tr("Localizable", "Settings.Privacy.HideName.description", fallback: "Turn this off to hide your name in competitions. Your friends will still see your name.")
+        /// Show name
+        internal static let title = L10n.tr("Localizable", "Settings.Privacy.HideName.title", fallback: "Show name")
+      }
+      internal enum Searchable {
+        /// Turn this off to prevent your account from showing up in search. Other people will not be able to add you as a friend.
+        internal static let description = L10n.tr("Localizable", "Settings.Privacy.Searchable.description", fallback: "Turn this off to prevent your account from showing up in search. Other people will not be able to add you as a friend.")
+        /// Searchable
+        internal static let title = L10n.tr("Localizable", "Settings.Privacy.Searchable.title", fallback: "Searchable")
+      }
+    }
   }
   internal enum SignIn {
     /// Sign in Anonymously

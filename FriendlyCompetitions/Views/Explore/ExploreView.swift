@@ -11,7 +11,7 @@ struct ExploreView: View {
     @StateObject private var viewModel = ExploreViewModel()
 
     var body: some View {
-        ScrollView {
+        List {
             if viewModel.searchText.isEmpty {
                 ForEach(viewModel.appOwnedCompetitions) { competition in
                     featured(competition)
@@ -29,40 +29,50 @@ struct ExploreView: View {
                         featured(competition)
                     }
                     ForEach(viewModel.searchResults.filter(\.appOwned.not)) { competition in
-                        NavigationLink(value: NavigationDestination.competition(competition, nil)) {
+                        Section {
                             CompetitionDetails(competition: competition, showParticipantCount: true, isFeatured: false)
-                                .padding(.vertical, .small)
-                                .padding(.horizontal)
-                                .background(.systemFill)
-                                .cornerRadius(10)
-                                .padding(.horizontal)
+                                .navigationLinked(to: NavigationDestination.competition(competition, nil))
                         }
-                        .buttonStyle(.plain)
                     }
                 }
             }
 
             if let unit = viewModel.googleAdUnit {
-                Section {
-                    GoogleAd(unit: unit)
-                }
-                .listRowInsets(.zero)
+                ad(unit: unit)
             }
         }
         .background(Color.listBackground)
         .searchable(text: $viewModel.searchText, placement: .navigationBarDrawer(displayMode: .always))
         .navigationTitle(L10n.Explore.title)
         .registerScreenView(name: "Explore")
-        .embeddedInNavigationStack(path: $viewModel.navigationDestinations)
         .navigationDestination(for: NavigationDestination.self) { $0.view }
+        .embeddedInNavigationStack(path: $viewModel.navigationDestinations)
     }
 
     private func featured(_ competition: Competition) -> some View {
-        NavigationLink(value: NavigationDestination.competition(competition, nil)) {
+        Section {
             FeaturedCompetition(competition: competition)
-                .padding(.horizontal)
+                .navigationLinked(to: NavigationDestination.competition(competition, nil))
         }
-        .buttonStyle(.plain)
+        .listRowInsets(.zero)
+    }
+
+    private func ad(unit: GoogleAdUnit) -> some View {
+        Section {
+            GoogleAd(unit: unit)
+        }
+        .listRowInsets(.zero)
+    }
+}
+
+extension View {
+    func navigationLinked<Destination: Hashable>(to destination: Destination) -> some View {
+        self.overlay {
+            NavigationLink(value: destination) {
+                Color.clear
+            }
+            .buttonStyle(.plain)
+        }
     }
 }
 

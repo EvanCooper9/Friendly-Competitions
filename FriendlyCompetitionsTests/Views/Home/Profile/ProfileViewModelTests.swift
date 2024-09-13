@@ -5,7 +5,7 @@ import XCTest
 
 @testable import FriendlyCompetitions
 
-final class ProfileViewModelTests: FCTestCase {
+final class SettingsViewModelTests: FCTestCase {
 
     override func setUp() {
         super.setUp()
@@ -21,7 +21,7 @@ final class ProfileViewModelTests: FCTestCase {
         let userSubject = PassthroughSubject<User, Never>()
         userManager.userPublisher = userSubject.eraseToAnyPublisher()
 
-        let viewModel = ProfileViewModel()
+        let viewModel = SettingsViewModel()
         viewModel.$isAnonymousAccount
             .collect(expected.count)
             .expect(expected, expectation: expectation)

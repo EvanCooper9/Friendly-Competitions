@@ -1396,59 +1396,70 @@ class StepCountManagingMock: StepCountManaging {
     }
 
 }
-class StorageMock: Storage {
-
-
-
-
-    //MARK: - data
-
-    var dataPathCallsCount = 0
-    var dataPathCalled: Bool {
-        return dataPathCallsCount > 0
-    }
-    var dataPathReceivedPath: String?
-    var dataPathReceivedInvocations: [String] = []
-    var dataPathReturnValue: AnyPublisher<Data, Error>!
-    var dataPathClosure: ((String) -> AnyPublisher<Data, Error>)?
-
-    func data(path: String) -> AnyPublisher<Data, Error> {
-        dataPathCallsCount += 1
-        dataPathReceivedPath = path
-        dataPathReceivedInvocations.append(path)
-        if let dataPathClosure = dataPathClosure {
-            return dataPathClosure(path)
-        } else {
-            return dataPathReturnValue
-        }
-    }
-
-}
 class StorageManagingMock: StorageManaging {
 
 
 
 
-    //MARK: - data
+    //MARK: - get
 
-    var dataForCallsCount = 0
-    var dataForCalled: Bool {
-        return dataForCallsCount > 0
+    var getCallsCount = 0
+    var getCalled: Bool {
+        return getCallsCount > 0
     }
-    var dataForReceivedStoragePath: String?
-    var dataForReceivedInvocations: [String] = []
-    var dataForReturnValue: AnyPublisher<Data, Error>!
-    var dataForClosure: ((String) -> AnyPublisher<Data, Error>)?
+    var getReceivedPath: String?
+    var getReceivedInvocations: [String] = []
+    var getReturnValue: AnyPublisher<Data, Error>!
+    var getClosure: ((String) -> AnyPublisher<Data, Error>)?
 
-    func data(for storagePath: String) -> AnyPublisher<Data, Error> {
-        dataForCallsCount += 1
-        dataForReceivedStoragePath = storagePath
-        dataForReceivedInvocations.append(storagePath)
-        if let dataForClosure = dataForClosure {
-            return dataForClosure(storagePath)
+    func get(_ path: String) -> AnyPublisher<Data, Error> {
+        getCallsCount += 1
+        getReceivedPath = path
+        getReceivedInvocations.append(path)
+        if let getClosure = getClosure {
+            return getClosure(path)
         } else {
-            return dataForReturnValue
+            return getReturnValue
         }
+    }
+
+    //MARK: - set
+
+    var setDataCallsCount = 0
+    var setDataCalled: Bool {
+        return setDataCallsCount > 0
+    }
+    var setDataReceivedArguments: (path: String, data: Data?)?
+    var setDataReceivedInvocations: [(path: String, data: Data?)] = []
+    var setDataReturnValue: AnyPublisher<Void, Error>!
+    var setDataClosure: ((String, Data?) -> AnyPublisher<Void, Error>)?
+
+    func set(_ path: String, data: Data?) -> AnyPublisher<Void, Error> {
+        setDataCallsCount += 1
+        setDataReceivedArguments = (path: path, data: data)
+        setDataReceivedInvocations.append((path: path, data: data))
+        if let setDataClosure = setDataClosure {
+            return setDataClosure(path, data)
+        } else {
+            return setDataReturnValue
+        }
+    }
+
+    //MARK: - clear
+
+    var clearTtlCallsCount = 0
+    var clearTtlCalled: Bool {
+        return clearTtlCallsCount > 0
+    }
+    var clearTtlReceivedTtl: TimeInterval?
+    var clearTtlReceivedInvocations: [TimeInterval] = []
+    var clearTtlClosure: ((TimeInterval) -> Void)?
+
+    func clear(ttl: TimeInterval) {
+        clearTtlCallsCount += 1
+        clearTtlReceivedTtl = ttl
+        clearTtlReceivedInvocations.append(ttl)
+        clearTtlClosure?(ttl)
     }
 
 }

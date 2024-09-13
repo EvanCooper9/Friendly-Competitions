@@ -7,10 +7,10 @@ struct HideNameLearnMoreView: View {
     var body: some View {
         VStack(alignment: .leading) {
 
-            Toggle(L10n.Profile.Privacy.HideName.title, isOn: $showName)
+            Toggle(L10n.Settings.Privacy.HideName.title, isOn: $showName)
                 .font(.title)
 
-            Text(L10n.Profile.Privacy.HideName.description)
+            Text(L10n.Settings.Privacy.HideName.description)
                 .foregroundColor(.secondaryLabel)
                 .padding(.vertical, .small)
 

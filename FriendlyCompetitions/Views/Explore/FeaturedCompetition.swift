@@ -36,7 +36,7 @@ struct FeaturedCompetitionView_Previews: PreviewProvider {
 
     private static func setupMocks() {
         competitionsManager.competitions = .just([competition])
-        storageManager.dataForReturnValue = .just(.init())
+        storageManager.getReturnValue = .just(.init())
     }
 
     static var previews: some View {
