@@ -17,7 +17,7 @@ concurrency:
 jobs:
   build:
     name: Test
-    runs-on: macos-latest
+    runs-on: macos-15
     env:
       BUILDCACHE_DEBUG: 2
     steps:
