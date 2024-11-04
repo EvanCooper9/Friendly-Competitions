@@ -1,3 +1,4 @@
+import ECKit
 import SwiftUI
 import SwiftUIX
 
@@ -7,23 +8,23 @@ struct NotificationsView: View {
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        List {
-            ForEach(viewModel.banners) { banner in
-                banner
-                    .view(shadow: false) {
-                        viewModel.tapped(banner)
-                    }
-                    .swipeActions {
-                        Button(systemImage: .xCircle) {
-                            viewModel.dismissed(banner)
+        ScrollView {
+            VStack(spacing: 10) {
+                ForEach(viewModel.banners) { banner in
+                    Swipeable {
+                        banner.view {
+                            viewModel.tapped(banner)
                         }
+                    } onDelete: {
+                        viewModel.dismissed(banner)
                     }
-                    .padding(.vertical, .small)
+                    .transition(.move(edge: .leading))
+                }
             }
-            .listRowInsets(.zero)
-            .listRowBackground(Color.clear)
-            .listRowSeparator(.hidden)
+            .padding(.horizontal)
         }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color.listBackground.ignoresSafeArea())
         .overlay {
             if #available(iOS 17, *), viewModel.banners.isEmpty {
                 ContentUnavailableView {

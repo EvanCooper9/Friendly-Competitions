@@ -7,7 +7,7 @@ struct HomeView: View {
     @StateObject private var viewModel = HomeViewModel()
 
     var body: some View {
-        List {
+        CustomList {
             if viewModel.banners.isNotEmpty {
                 banners
             }
@@ -45,25 +45,20 @@ struct HomeView: View {
     }
 
     private var banners: some View {
-        Section {
-            ItemStack(models: viewModel.banners) { banner in
-                banner
-                    .view {
-                        viewModel.tapped(banner)
-                    }
-                    .swipeActions {
-                        Button(systemImage: .xCircle) {
-                            viewModel.dismissed(banner)
-                        }
-                    }
+        ItemStack(models: viewModel.banners) { banner in
+            Swipeable {
+                banner.view {
+                    viewModel.tapped(banner)
+                }
+            } onDelete: {
+                viewModel.dismissed(banner)
             }
         }
-        .listRowInsets(.zero)
-        .listRowBackground(Color.clear)
+        .padding(.horizontal)
     }
 
     private var activity: some View {
-        Section {
+        CustomListSection {
             ActivitySummaryInfoView(source: .local)
             HStack {
                 Text(L10n.Home.Section.Activity.Steps.steps)
@@ -80,11 +75,12 @@ struct HomeView: View {
             }
         } header: {
             Text(L10n.Home.Section.Activity.title)
+                .foregroundStyle(.secondary)
         }
     }
 
     private var competitions: some View {
-        Section {
+        CustomListSection {
             if viewModel.competitions.isEmpty && viewModel.invitedCompetitions.isEmpty {
                 HomeViewEmptyContent(
                     symbol: "trophy.fill",
@@ -105,6 +101,7 @@ struct HomeView: View {
         } header: {
             HStack(alignment: .bottom) {
                 Text(L10n.Home.Section.Competitions.title)
+                    .foregroundStyle(.secondary)
                 Spacer()
                 Button(systemImage: .plusCircle, action: viewModel.newCompetitionTapped)
                     .font(.title2)
@@ -113,7 +110,7 @@ struct HomeView: View {
     }
 
     private var friends: some View {
-        Section {
+        CustomListSection {
             if viewModel.friendRows.isEmpty {
                 HomeViewEmptyContent(
                     symbol: "person.3.fill",
@@ -141,6 +138,7 @@ struct HomeView: View {
         } header: {
             HStack(alignment: .bottom) {
                 Text(L10n.Home.Section.Friends.title)
+                    .foregroundStyle(.secondary)
                 Spacer()
                 Button(systemImage: .personCropCircleBadgePlus, action: viewModel.addFriendsTapped)
                     .font(.title2)
@@ -149,10 +147,8 @@ struct HomeView: View {
     }
 
     private func ad(unit: GoogleAdUnit) -> some View {
-        Section {
-            GoogleAd(unit: unit)
-        }
-        .listRowInsets(.zero)
+        GoogleAd(unit: unit)
+            .padding(.horizontal)
     }
 }
 
