@@ -55,6 +55,15 @@
       }
     },
     {
+      "identity" : "eckit",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/EvanCooper9/ECKit",
+      "state" : {
+        "branch" : "main",
+        "revision" : "d8029faa7b5adf72cf4386e98b6ffe52b759d386"
+      }
+    },
+    {
       "identity" : "ecnetworking",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/EvanCooper9/ECNetworking",
