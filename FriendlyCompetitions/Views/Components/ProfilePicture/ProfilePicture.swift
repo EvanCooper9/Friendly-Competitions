@@ -97,7 +97,6 @@ struct ProfilePicture: View {
     }
 }
 
-
 private struct ProfileImage: Transferable {
     let data: Data
 

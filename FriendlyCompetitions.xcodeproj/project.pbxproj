@@ -83,6 +83,7 @@
 		ED25A65E2B83CB94004D9AB5 /* FCKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = FCKit; sourceTree = "<group>"; };
 		ED493E9627FDE47300A94F4A /* AuthenticationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AuthenticationServices.framework; path = System/Library/Frameworks/AuthenticationServices.framework; sourceTree = SDKROOT; };
 		EDA035CD2918619C0091E7A6 /* StoreKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = StoreKit.framework; path = System/Library/Frameworks/StoreKit.framework; sourceTree = SDKROOT; };
+		EDDF7CBF2D258E9C00FF348A /* ECKit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; name = ECKit; path = ../ECKit; sourceTree = SOURCE_ROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -169,6 +170,7 @@
 		C1691DBA26D55FCF006FFA30 = {
 			isa = PBXGroup;
 			children = (
+				EDDF7CBF2D258E9C00FF348A /* ECKit */,
 				ED3009CC2CD67BAE000CBA28 /* FriendlyCompetitions */,
 				ED300B262CD67BC2000CBA28 /* FriendlyCompetitionsWidgets */,
 				ED300ADF2CD67BB9000CBA28 /* FriendlyCompetitionsTests */,

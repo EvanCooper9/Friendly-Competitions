@@ -41,8 +41,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/combine-schedulers",
       "state" : {
-        "revision" : "9fa31f4403da54855f1e2aeaeff478f4f0e40b13",
-        "version" : "1.0.2"
+        "revision" : "5928286acce13def418ec36d05a001a9641086f2",
+        "version" : "1.0.3"
       }
     },
     {
@@ -52,15 +52,6 @@
       "state" : {
         "revision" : "d7b896fa9ca8b47fa7bcde6b43ef9b70bf8c1f56",
         "version" : "1.8.1"
-      }
-    },
-    {
-      "identity" : "eckit",
-      "kind" : "remoteSourceControl",
-      "location" : "https://github.com/EvanCooper9/ECKit",
-      "state" : {
-        "branch" : "main",
-        "revision" : "605809e5d53a755bcda994157b05f625cfd8c869"
       }
     },
     {
@@ -77,8 +68,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/hmlongco/Factory",
       "state" : {
-        "revision" : "f350e0d71ba241b392f70519a67e769d5e3858d4",
-        "version" : "2.4.1"
+        "revision" : "fb04a8918848e413d3921d346a23bae7f81088d9",
+        "version" : "2.4.3"
       }
     },
     {
@@ -86,8 +77,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/firebase/firebase-ios-sdk",
       "state" : {
-        "revision" : "8328630971a8fdd8072b36bb22bef732eb15e1f0",
-        "version" : "11.4.0"
+        "revision" : "2e02253fd1ce99145bcbf1bb367ccf61bd0ca46b",
+        "version" : "11.6.0"
       }
     },
     {
@@ -212,8 +203,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/swift-concurrency-extras",
       "state" : {
-        "revision" : "6054df64b55186f08b6d0fd87152081b8ad8d613",
-        "version" : "1.2.0"
+        "revision" : "82a4ae7170d98d8538ec77238b7eb8e7199ef2e8",
+        "version" : "1.3.1"
       }
     },
     {
@@ -239,8 +230,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/googleads/swift-package-manager-google-mobile-ads.git",
       "state" : {
-        "revision" : "e2aef402dc1698c06928719b49bb35bacc879ea1",
-        "version" : "11.11.0"
+        "revision" : "7778cc1ab037c10dbbe026959e51e616bd961be9",
+        "version" : "11.13.0"
       }
     },
     {
@@ -293,8 +284,8 @@
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/pointfreeco/xctest-dynamic-overlay",
       "state" : {
-        "revision" : "770f990d3e4eececb57ac04a6076e22f8c97daeb",
-        "version" : "1.4.2"
+        "revision" : "a3f634d1a409c7979cabc0a71b3f26ffa9fc8af1",
+        "version" : "1.4.3"
       }
     }
   ],

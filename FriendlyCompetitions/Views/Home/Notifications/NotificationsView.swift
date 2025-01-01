@@ -18,12 +18,12 @@ struct NotificationsView: View {
                     } onDelete: {
                         viewModel.dismissed(banner)
                     }
-                    .transition(.move(edge: .leading))
                 }
             }
+            .frame(maxWidth: .infinity)
             .padding(.horizontal)
+            .animation(.default, value: viewModel.banners)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
         .background(Color.listBackground.ignoresSafeArea())
         .overlay {
             if #available(iOS 17, *), viewModel.banners.isEmpty {
@@ -32,6 +32,12 @@ struct NotificationsView: View {
                 } description: {
                     Text("You're all caught up")
                 }
+            } else if viewModel.banners.isEmpty {
+                ContentUnavailableViewiOS16(
+                    icon: .bellSlash,
+                    title: "Nothing here",
+                    message: "You're all caught up"
+                )
             }
         }
         .navigationTitle("Notifications")
@@ -48,15 +54,29 @@ struct NotificationsView: View {
 }
 
 #if DEBUG
+import Combine
+
 struct NotificationsView_Previews: PreviewProvider {
-
-    private static func setupMocks() {
-        bannerManager.banners = .just([.backgroundRefreshDenied, .competitionResultsCalculating(competition: .mock)])
-    }
-
     static var previews: some View {
-        NotificationsView()
-            .setupMocks(setupMocks)
+        setupMocks {
+            var banners: [Banner] = [
+                .backgroundRefreshDenied,
+                .healthKitDataMissing(competition: .mock, dataType: [.activeEnergy]),
+                .healthKitPermissionsMissing(permissions: [.activeEnergy]),
+                .newCompetitionResults(competition: .mock, resultID: .init()),
+                .notificationPermissionsDenied,
+                .notificationPermissionsMissing,
+                .competitionResultsCalculating(competition: .mock)
+            ]
+            let bannersSubject = CurrentValueSubject<[Banner], Never>(banners)
+            bannerManager.banners = bannersSubject.eraseToAnyPublisher()
+            bannerManager.dismissedClosure = { banner in
+                banners.remove(banner)
+                bannersSubject.send(banners)
+                return .just(())
+            }
+        }
+        return NotificationsView()
     }
 }
 #endif
