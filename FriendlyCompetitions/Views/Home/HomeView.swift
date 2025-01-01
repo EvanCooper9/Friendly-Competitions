@@ -20,6 +20,7 @@ struct HomeView: View {
                 ad(unit: unit)
             }
         }
+        .animation(.default, value: viewModel.banners)
         .navigationBarTitle(L10n.Home.title)
         .toolbar {
             ToolbarItemGroup {
@@ -153,32 +154,47 @@ struct HomeView: View {
 }
 
 #if DEBUG
+import Combine
+
 struct HomeView_Previews: PreviewProvider {
-
-    private static func setupMocks() {
-        activitySummaryManager.activitySummary = .just(nil)
-        backgroundRefreshManager.status = .just(.denied)
-        bannerManager.banners = .just([.competitionResultsCalculating(competition: .mock)])
-        healthKitManager.shouldRequestReturnValue = .just(false)
-
-        competitionsManager.competitions = .just([.mockOld, .mockPublic])
-        competitionsManager.standingsPublisherForLimitReturnValue = .just([.mock(for: .evan)])
-        competitionsManager.unseenResults = .just([])
-
-        friendsManager.friends = .just([.gabby])
-        friendsManager.friendRequests = .just([.andrew])
-        friendsManager.friendActivitySummaries = .just([User.gabby.id: .mock])
-
-        searchManager.searchForUsersWithIDsReturnValue = .just([.evan])
-
-        stepCountManager.stepCountsInReturnValue = .just([.init(count: 12345, date: .now)])
-
-        notificationsManager.permissionStatusReturnValue = .just(.notDetermined)
-    }
-
     static var previews: some View {
-        HomeView()
-            .setupMocks(setupMocks)
+        setupMocks {
+            activitySummaryManager.activitySummary = .just(nil)
+            backgroundRefreshManager.status = .just(.denied)
+            healthKitManager.shouldRequestReturnValue = .just(false)
+
+            var banners: [Banner] = [
+                .backgroundRefreshDenied,
+                .healthKitDataMissing(competition: .mock, dataType: [.activeEnergy]),
+                .healthKitPermissionsMissing(permissions: [.activeEnergy]),
+                .newCompetitionResults(competition: .mock, resultID: .init()),
+                .notificationPermissionsDenied,
+                .notificationPermissionsMissing,
+                .competitionResultsCalculating(competition: .mock)
+            ]
+            let bannersSubject = CurrentValueSubject<[Banner], Never>(banners)
+            bannerManager.banners = bannersSubject.eraseToAnyPublisher()
+            bannerManager.dismissedClosure = { banner in
+                banners.remove(banner)
+                bannersSubject.send(banners)
+                return .just(())
+            }
+
+            competitionsManager.competitions = .just([.mockOld, .mockPublic])
+            competitionsManager.standingsPublisherForLimitReturnValue = .just([.mock(for: .evan)])
+            competitionsManager.unseenResults = .just([])
+
+            friendsManager.friends = .just([.gabby])
+            friendsManager.friendRequests = .just([.andrew])
+            friendsManager.friendActivitySummaries = .just([User.gabby.id: .mock])
+
+            searchManager.searchForUsersWithIDsReturnValue = .just([.evan])
+
+            stepCountManager.stepCountsInReturnValue = .just([.init(count: 12345, date: .now)])
+
+            notificationsManager.permissionStatusReturnValue = .just(.notDetermined)
+        }
+        return HomeView()
             .embeddedInNavigationView()
     }
 }
