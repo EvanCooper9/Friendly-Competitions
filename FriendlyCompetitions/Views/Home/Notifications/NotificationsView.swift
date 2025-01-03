@@ -1,3 +1,4 @@
+import ECKit
 import SwiftUI
 import SwiftUIX
 
@@ -7,23 +8,23 @@ struct NotificationsView: View {
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        List {
-            ForEach(viewModel.banners) { banner in
-                banner
-                    .view(shadow: false) {
-                        viewModel.tapped(banner)
-                    }
-                    .swipeActions {
-                        Button(systemImage: .xCircle) {
-                            viewModel.dismissed(banner)
+        ScrollView {
+            VStack(spacing: 10) {
+                ForEach(viewModel.banners) { banner in
+                    Swipeable {
+                        banner.view {
+                            viewModel.tapped(banner)
                         }
+                    } onDelete: {
+                        viewModel.dismissed(banner)
                     }
-                    .padding(.vertical, .small)
+                }
             }
-            .listRowInsets(.zero)
-            .listRowBackground(Color.clear)
-            .listRowSeparator(.hidden)
+            .frame(maxWidth: .infinity)
+            .padding(.horizontal)
+            .animation(.default, value: viewModel.banners)
         }
+        .background(Color.listBackground.ignoresSafeArea())
         .overlay {
             if #available(iOS 17, *), viewModel.banners.isEmpty {
                 ContentUnavailableView {
@@ -31,6 +32,12 @@ struct NotificationsView: View {
                 } description: {
                     Text("You're all caught up")
                 }
+            } else if viewModel.banners.isEmpty {
+                ContentUnavailableViewiOS16(
+                    icon: .bellSlash,
+                    title: "Nothing here",
+                    message: "You're all caught up"
+                )
             }
         }
         .navigationTitle("Notifications")
@@ -47,15 +54,29 @@ struct NotificationsView: View {
 }
 
 #if DEBUG
+import Combine
+
 struct NotificationsView_Previews: PreviewProvider {
-
-    private static func setupMocks() {
-        bannerManager.banners = .just([.backgroundRefreshDenied, .competitionResultsCalculating(competition: .mock)])
-    }
-
     static var previews: some View {
-        NotificationsView()
-            .setupMocks(setupMocks)
+        setupMocks {
+            var banners: [Banner] = [
+                .backgroundRefreshDenied,
+                .healthKitDataMissing(competition: .mock, dataType: [.activeEnergy]),
+                .healthKitPermissionsMissing(permissions: [.activeEnergy]),
+                .newCompetitionResults(competition: .mock, resultID: .init()),
+                .notificationPermissionsDenied,
+                .notificationPermissionsMissing,
+                .competitionResultsCalculating(competition: .mock)
+            ]
+            let bannersSubject = CurrentValueSubject<[Banner], Never>(banners)
+            bannerManager.banners = bannersSubject.eraseToAnyPublisher()
+            bannerManager.dismissedClosure = { banner in
+                banners.remove(banner)
+                bannersSubject.send(banners)
+                return .just(())
+            }
+        }
+        return NotificationsView()
     }
 }
 #endif

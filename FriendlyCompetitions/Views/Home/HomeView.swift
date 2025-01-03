@@ -7,7 +7,7 @@ struct HomeView: View {
     @StateObject private var viewModel = HomeViewModel()
 
     var body: some View {
-        List {
+        CustomList {
             if viewModel.banners.isNotEmpty {
                 banners
             }
@@ -20,6 +20,7 @@ struct HomeView: View {
                 ad(unit: unit)
             }
         }
+        .animation(.default, value: viewModel.banners)
         .navigationBarTitle(L10n.Home.title)
         .toolbar {
             ToolbarItemGroup {
@@ -45,25 +46,20 @@ struct HomeView: View {
     }
 
     private var banners: some View {
-        Section {
-            ItemStack(models: viewModel.banners) { banner in
-                banner
-                    .view {
-                        viewModel.tapped(banner)
-                    }
-                    .swipeActions {
-                        Button(systemImage: .xCircle) {
-                            viewModel.dismissed(banner)
-                        }
-                    }
+        ItemStack(models: viewModel.banners) { banner in
+            Swipeable {
+                banner.view {
+                    viewModel.tapped(banner)
+                }
+            } onDelete: {
+                viewModel.dismissed(banner)
             }
         }
-        .listRowInsets(.zero)
-        .listRowBackground(Color.clear)
+        .padding(.horizontal)
     }
 
     private var activity: some View {
-        Section {
+        CustomListSection {
             ActivitySummaryInfoView(source: .local)
             HStack {
                 Text(L10n.Home.Section.Activity.Steps.steps)
@@ -80,11 +76,12 @@ struct HomeView: View {
             }
         } header: {
             Text(L10n.Home.Section.Activity.title)
+                .foregroundStyle(.secondary)
         }
     }
 
     private var competitions: some View {
-        Section {
+        CustomListSection {
             if viewModel.competitions.isEmpty && viewModel.invitedCompetitions.isEmpty {
                 HomeViewEmptyContent(
                     symbol: "trophy.fill",
@@ -105,6 +102,7 @@ struct HomeView: View {
         } header: {
             HStack(alignment: .bottom) {
                 Text(L10n.Home.Section.Competitions.title)
+                    .foregroundStyle(.secondary)
                 Spacer()
                 Button(systemImage: .plusCircle, action: viewModel.newCompetitionTapped)
                     .font(.title2)
@@ -113,7 +111,7 @@ struct HomeView: View {
     }
 
     private var friends: some View {
-        Section {
+        CustomListSection {
             if viewModel.friendRows.isEmpty {
                 HomeViewEmptyContent(
                     symbol: "person.3.fill",
@@ -141,6 +139,7 @@ struct HomeView: View {
         } header: {
             HStack(alignment: .bottom) {
                 Text(L10n.Home.Section.Friends.title)
+                    .foregroundStyle(.secondary)
                 Spacer()
                 Button(systemImage: .personCropCircleBadgePlus, action: viewModel.addFriendsTapped)
                     .font(.title2)
@@ -149,40 +148,53 @@ struct HomeView: View {
     }
 
     private func ad(unit: GoogleAdUnit) -> some View {
-        Section {
-            GoogleAd(unit: unit)
-        }
-        .listRowInsets(.zero)
+        GoogleAd(unit: unit)
+            .padding(.horizontal)
     }
 }
 
 #if DEBUG
+import Combine
+
 struct HomeView_Previews: PreviewProvider {
-
-    private static func setupMocks() {
-        activitySummaryManager.activitySummary = .just(nil)
-        backgroundRefreshManager.status = .just(.denied)
-        bannerManager.banners = .just([.competitionResultsCalculating(competition: .mock)])
-        healthKitManager.shouldRequestReturnValue = .just(false)
-
-        competitionsManager.competitions = .just([.mockOld, .mockPublic])
-        competitionsManager.standingsPublisherForLimitReturnValue = .just([.mock(for: .evan)])
-        competitionsManager.unseenResults = .just([])
-
-        friendsManager.friends = .just([.gabby])
-        friendsManager.friendRequests = .just([.andrew])
-        friendsManager.friendActivitySummaries = .just([User.gabby.id: .mock])
-
-        searchManager.searchForUsersWithIDsReturnValue = .just([.evan])
-
-        stepCountManager.stepCountsInReturnValue = .just([.init(count: 12345, date: .now)])
-
-        notificationsManager.permissionStatusReturnValue = .just(.notDetermined)
-    }
-
     static var previews: some View {
-        HomeView()
-            .setupMocks(setupMocks)
+        setupMocks {
+            activitySummaryManager.activitySummary = .just(nil)
+            backgroundRefreshManager.status = .just(.denied)
+            healthKitManager.shouldRequestReturnValue = .just(false)
+
+            var banners: [Banner] = [
+                .backgroundRefreshDenied,
+                .healthKitDataMissing(competition: .mock, dataType: [.activeEnergy]),
+                .healthKitPermissionsMissing(permissions: [.activeEnergy]),
+                .newCompetitionResults(competition: .mock, resultID: .init()),
+                .notificationPermissionsDenied,
+                .notificationPermissionsMissing,
+                .competitionResultsCalculating(competition: .mock)
+            ]
+            let bannersSubject = CurrentValueSubject<[Banner], Never>(banners)
+            bannerManager.banners = bannersSubject.eraseToAnyPublisher()
+            bannerManager.dismissedClosure = { banner in
+                banners.remove(banner)
+                bannersSubject.send(banners)
+                return .just(())
+            }
+
+            competitionsManager.competitions = .just([.mockOld, .mockPublic])
+            competitionsManager.standingsPublisherForLimitReturnValue = .just([.mock(for: .evan)])
+            competitionsManager.unseenResults = .just([])
+
+            friendsManager.friends = .just([.gabby])
+            friendsManager.friendRequests = .just([.andrew])
+            friendsManager.friendActivitySummaries = .just([User.gabby.id: .mock])
+
+            searchManager.searchForUsersWithIDsReturnValue = .just([.evan])
+
+            stepCountManager.stepCountsInReturnValue = .just([.init(count: 12345, date: .now)])
+
+            notificationsManager.permissionStatusReturnValue = .just(.notDetermined)
+        }
+        return HomeView()
             .embeddedInNavigationView()
     }
 }
