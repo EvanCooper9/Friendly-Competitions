@@ -63,10 +63,10 @@ class ActivitySummary {
             return 0;
         }
         case RawScoringModel.activityRingCloseCount: {
-            const energy = this.activeEnergyBurned > this.activeEnergyBurnedGoal;
-            const exercise = this.appleExerciseTime > this.appleExerciseTimeGoal;
-            const stand = this.appleStandHours > this.appleExerciseTimeGoal;
-            return energy && exercise && stand ? 1 : 0;
+            const energy = this.activeEnergyBurned > this.activeEnergyBurnedGoal ? 0 : 1;
+            const exercise = this.appleExerciseTime > this.appleExerciseTimeGoal ? 0 : 1;
+            const stand = this.appleStandHours > this.appleExerciseTimeGoal ? 0 : 1;
+            return energy + exercise + stand;
         }
         case RawScoringModel.stepCount: {
             return 0;
