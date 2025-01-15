@@ -42,7 +42,6 @@ final class AuthenticationManager: AuthenticationManaging {
     private var emailVerifiedSubject = CurrentValueSubject<Bool, Never>(true)
     private var loggedInSubject = ReplaySubject<Bool, Never>(bufferSize: 1)
 
-    private var userListener: AnyCancellable?
     private var createdUserSubject = ReplaySubject<User, Error>(bufferSize: 1)
 
     private var cancellables = Cancellables()
@@ -209,10 +208,8 @@ final class AuthenticationManager: AuthenticationManaging {
 
     private func handle(user: User?) {
         if let user {
-            Container.shared.userManager.scope(.shared).register { [weak self] in
-                let userManager = UserManager(user: user)
-                self?.userListener = userManager.userPublisher.sink { self?.authenticationCache.currentUser = $0 }
-                return userManager
+            Container.shared.userManager.scope(.shared).register {
+                UserManager(user: user)
             }
         } else {
             Container.shared.userManager.scope(.shared).reset()

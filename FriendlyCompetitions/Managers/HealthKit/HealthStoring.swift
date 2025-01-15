@@ -65,6 +65,10 @@ extension HKHealthStore: HealthStoring {
                 return
             }
             let objectTypes = permissions.map(\.objectType)
+            guard objectTypes.isNotEmpty else {
+                promise(.success(false))
+                return
+            }
             getRequestStatusForAuthorization(toShare: [], read: .init(objectTypes)) { status, error in
                 if let error {
                     error.reportToCrashlytics()

@@ -144,8 +144,20 @@ final class CompetitionEditViewModel: ObservableObject {
             .sink(withUnretained: self) { $0.dismiss = true }
             .store(in: &cancellables)
 
-        $name
-            .map(\.isEmpty)
+        Publishers
+            .CombineLatest($name, $scoringModel)
+            .map { name, scoringModel in
+                guard name.isEmpty == false else { return true }
+                switch scoringModel {
+                case .activityRingCloseCount,
+                     .percentOfGoals,
+                     .rawNumbers,
+                     .stepCount:
+                    return false
+                case let .workout(_, metrics):
+                    return metrics.isEmpty
+                }
+            }
             .assign(to: &$submitDisabled)
     }
 
