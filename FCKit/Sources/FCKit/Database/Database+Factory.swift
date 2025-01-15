@@ -1,4 +1,5 @@
 import Factory
+import FirebaseCrashlytics
 import FirebaseFirestore
 
 public extension Container {
@@ -16,8 +17,9 @@ public extension Container {
             let environment = self.environmentManager().environment
             let databaseSettings = self.databaseSettings()
             let firestore = Firestore.firestore()
+            let didCrash = Crashlytics.crashlytics().didCrashDuringPreviousExecution()
 
-            if databaseSettings.shouldResetCache {
+            if didCrash || databaseSettings.shouldResetCache {
                 firestore.clearPersistence { error in
                     if let error {
                         error.reportToCrashlytics()
