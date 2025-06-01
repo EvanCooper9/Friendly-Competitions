@@ -21,10 +21,18 @@ async function updateScores(
     const firestore = getFirestore();
 
     await Promise.allSettled(competitions.map(async competition => {
-        const endTime = competition.end.getTime();
-        const gracePeriodMS = 43200000;
-        if (endTime + gracePeriodMS < Date.now()) return;
+        const endTime = competition.end.getTime() + 86400000; // end date @ midnight
+        const gracePeriodMS = 43200000; // 12 hours in milliseconds
+        if (endTime + gracePeriodMS < Date.now()) {
+            console.log(`competition ${competition.id} has ended, not updating scores`);
+            console.log(`competition end time: ${new Date(endTime).toISOString()}, current time: ${new Date().toISOString()}`);
+            console.log(`grace period end time: ${new Date(endTime + gracePeriodMS).toISOString()}`);
+            console.log(`current time: ${new Date().toISOString()}`);
+            return; // competition has ended, no need to update scores
+        }
 
+        console.log(`updating scores for competition ${competition.id} and user ${userID}`);
+        
         let previousScore = 0;
         let newScore = 0;
 
@@ -36,9 +44,12 @@ async function updateScores(
 
             let pointsBreakdown = standing.pointsBreakdown ?? {};
             if (Object.keys(pointsBreakdown).length == 0) {
+                console.log(`getting all activity summary scores for competition ${competition.id} and user ${userID}`);
                 pointsBreakdown = await generateEntirePointsBreakdown(competition);
             } else {
+                console.log(`getting activity summary score for competition ${competition.id} and user ${userID}`);
                 const singlePointsBreakdown = generateSinglePointsBreakdown(competition);
+                console.log(`activity summary score for competition ${competition.id} and user ${userID} for ${singlePointsBreakdown.id} is ${singlePointsBreakdown.points}`);
                 pointsBreakdown[singlePointsBreakdown.id] = singlePointsBreakdown.points;
             }
 
