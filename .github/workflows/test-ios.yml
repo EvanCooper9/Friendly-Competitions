@@ -22,17 +22,17 @@ jobs:
       BUILDCACHE_DEBUG: 2
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@latest
       with:
         fetch-depth: 0
     
     - name: Setup SSH
-      uses: webfactory/ssh-agent@v0.5.4
+      uses: webfactory/ssh-agent@latest
       with:
         ssh-private-key: ${{ secrets.SSH_KEY }}
     
     - name: Cache Swift Packages
-      uses: actions/cache@v3
+      uses: actions/cache@latest
       with:
         path: ~/Library/Developer/Xcode/DerivedData/**/SourcePackages/
         key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
@@ -40,7 +40,7 @@ jobs:
           ${{ runner.os }}-spm-
     
     - name: Setup Ruby
-      uses: ruby/setup-ruby@v1
+      uses: ruby/setup-ruby@latest
       with:
         bundler-cache: true
 
