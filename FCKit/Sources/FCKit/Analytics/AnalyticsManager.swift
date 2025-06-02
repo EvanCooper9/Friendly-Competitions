@@ -3,25 +3,23 @@ import FirebaseAnalytics
 import FirebaseCrashlytics
 import Foundation
 
+public struct AnalyticEventWrapper: Encodable {
+    public let date = Date()
+    public let event: AnalyticsEvent
+}
+
 // sourcery: AutoMockable
 public protocol AnalyticsManaging {
+    var events: [AnalyticEventWrapper] { get }
     func set(userId: String)
     func log(event: AnalyticsEvent)
 }
 
 final class AnalyticsManager: AnalyticsManaging {
 
-    private let encoder: JSONEncoder = {
-        let encoder = JSONEncoder()
-        encoder.keyEncodingStrategy = .convertToSnakeCase
-        return encoder
-    }()
+    // MARK: - AnalyticsManaging
 
-    private let decoder: JSONDecoder = {
-        let decoder = JSONDecoder()
-        decoder.keyDecodingStrategy = .convertFromSnakeCase
-        return decoder
-    }()
+    private(set) var events = [AnalyticEventWrapper]()
 
     func set(userId: String) {
         Analytics.setUserID(userId)
@@ -53,8 +51,23 @@ final class AnalyticsManager: AnalyticsManaging {
             }
         }
 
+        events.append(.init(event: event))
         Analytics.logEvent(eventName, parameters: firebaseCompatibleDictionary)
     }
+
+    // MARK: - Private
+
+    private let encoder: JSONEncoder = {
+        let encoder = JSONEncoder()
+        encoder.keyEncodingStrategy = .convertToSnakeCase
+        return encoder
+    }()
+
+    private let decoder: JSONDecoder = {
+        let decoder = JSONDecoder()
+        decoder.keyDecodingStrategy = .convertFromSnakeCase
+        return decoder
+    }()
 }
 
 /// A JSON value representation. This is a bit more useful than the naïve `[String:Any]` type

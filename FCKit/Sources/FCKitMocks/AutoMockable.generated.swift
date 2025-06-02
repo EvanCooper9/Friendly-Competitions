@@ -1,4 +1,4 @@
-// Generated using Sourcery 2.1.7 — https://github.com/krzysztofzablocki/Sourcery
+// Generated using Sourcery 2.2.7 — https://github.com/krzysztofzablocki/Sourcery
 // DO NOT EDIT
 // swiftlint:disable line_length
 // swiftlint:disable variable_name
@@ -39,6 +39,7 @@ public class AnalyticsManagingMock: AnalyticsManaging {
 
     public init() {}
 
+    public var events: [AnalyticEventWrapper] = []
 
 
     //MARK: - set

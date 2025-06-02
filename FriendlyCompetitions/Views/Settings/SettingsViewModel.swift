@@ -15,6 +15,7 @@ final class SettingsViewModel: ObservableObject {
     @Published var confirmationRequired = false
     @Published var loading = false
     @Published var showHideNameLearnMore = false
+    @Published var showNewIssueReportingForm = false
 
     @Published var showCreateAccount = false
     @Published var isAnonymousAccount = false
@@ -71,6 +72,7 @@ final class SettingsViewModel: ObservableObject {
             .sink()
             .store(in: &cancellables)
 
+        showNewIssueReportingForm = featureFlagManager.value(forBool: .newResultsBannerEnabled)
 
         getProfilePictureData()
     }

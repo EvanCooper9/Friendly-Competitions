@@ -123,9 +123,19 @@ struct SettingsView: View {
             Link(destination: .featureRequest(with: viewModel.user.id)) {
                 Label(L10n.Settings.About.App.featureRequest, systemImage: .lightbulbFill)
             }
-            Link(destination: .bugReport(with: viewModel.user.id)) {
-                Label(L10n.Settings.About.App.reportIssue, systemImage: .ladybugFill)
+
+            if viewModel.showNewIssueReportingForm {
+                NavigationLink {
+                    ReportIssueView()
+                } label: {
+                    Label(L10n.Settings.About.App.reportIssue, systemImage: .ladybugFill)
+                }
+            } else {
+                Link(destination: .bugReport(with: viewModel.user.id)) {
+                    Label(L10n.Settings.About.App.reportIssue, systemImage: .ladybugFill)
+                }
             }
+
             Link(destination: .gitHub) {
                 Label(L10n.Settings.About.App.code, systemImage: .chevronLeftForwardslashChevronRight)
             }

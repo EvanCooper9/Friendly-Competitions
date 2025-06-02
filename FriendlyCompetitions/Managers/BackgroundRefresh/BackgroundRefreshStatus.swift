@@ -1,6 +1,6 @@
 import UIKit
 
-enum BackgroundRefreshStatus {
+enum BackgroundRefreshStatus: String, Codable {
     case denied
     case restricted
     case available
