@@ -19,7 +19,7 @@ jobs:
         fetch-depth: 0
 
     - name: Setup SSH
-      uses: webfactory/ssh-agent@latest
+      uses: webfactory/ssh-agent@v0.5.4
       with:
         ssh-private-key: ${{ secrets.SSH_KEY }}
 
@@ -32,7 +32,7 @@ jobs:
         echo $VERSION_NUMBER
 
     - name: Setup Ruby
-      uses: ruby/setup-ruby@latest
+      uses: ruby/setup-ruby@v1
       with:
         bundler-cache: true
 
