@@ -120,24 +120,25 @@ class Competition {
     async updateRepeatingCompetition(): Promise<void> {
         if (!this.repeats) return;
         const firestore = getFirestore();
-        const competitionStart = moment(this.start);
-        const competitionEnd = moment(this.end);
-        let newStart = competitionStart;
-        let newEnd = competitionEnd;
-        if (competitionStart.day() == 1 && competitionEnd.day() == competitionEnd.daysInMonth()) {
-            newStart = moment(this.end).add(1, "days");
-            newEnd = moment(newStart.format(dateFormat)).endOf("month");
+        let start = this.start;
+        let end = this.end;
+
+        if (start.isFirstOfMonth() && end.isLastOfMonth()) {
+            start = new Date(end.getUTCFullYear(), end.getUTCMonth(), end.getUTCDate() + 1); // add one day
+            end = new Date(start.getUTCFullYear(), start.getUTCMonth() + 1, 0); // set end to be the last day of the next month
         } else {
-            const diff = competitionEnd.diff(competitionStart, "days");
-            newStart = moment(this.end).add(1, "days");
-            newEnd = moment(newStart.format(dateFormat)).add(diff, "days");
+            let diff = start.getTime() - end.getTime();
+            this.start = new Date(this.start.getTime() + 86400000); // add one day
+            this.end = new Date(this.start.getTime() + diff); // set end to be the same difference from start
         }
 
-        this.start = newStart.toDate();
-        this.end = newEnd.toDate();
+        function dateString(date: Date): string {
+            return date.getUTCFullYear()  + "-" + date.getUTCMonth() + "-" + date.getUTCDate();
+        }
 
-        const obj = { start: newStart.format(dateFormat), end: newEnd.format(dateFormat) };
+        const obj = { start: dateString(start), end: dateString(end) };
         await firestore.doc(`competitions/${this.id}`).update(obj);
+        console.log(`Updated repeating competition ${this.id} to start at ${obj.start} and end at ${obj.end}`);
     }
 
     /**
