@@ -21,6 +21,8 @@ final class DataUploadingAppService: AppService {
         // manager is only retained by the results screen, so workouts aren't uploaded unless the user visits
         // that screen
         authenticationManager.loggedIn
+            .removeDuplicates()
+            .debounce(for: .milliseconds(100), scheduler: RunLoop.main)
             .sink(withUnretained: self) { strongSelf, loggedIn in
                 if loggedIn {
                     strongSelf.activitySummaryManager = Container.shared.activitySummaryManager.resolve()

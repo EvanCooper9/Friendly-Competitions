@@ -44,6 +44,13 @@ public enum AnalyticsEvent: Codable, Equatable {
     case healthKitBGDeliveryTimeout(permission: String)
     case healthKitBGDeliverySuccess(permission: String)
 
+    // Authentication
+    case reauthenticationTriggered
+    case reauthenticationAttempted
+    case reauthenticationSuccess
+    case reauthenticationFailed(error: String?)
+    case reauthenticationSkipped(reason: String)
+
     // Ads
     case adLoadStarted
     case adLoadSuccess
