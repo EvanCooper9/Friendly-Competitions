@@ -32,6 +32,7 @@ final class AuthenticationManager: AuthenticationManaging {
 
     // MARK: - Private Properties
 
+    @Injected(\.analyticsManager) private var analyticsManager: AnalyticsManaging
     @Injected(\.api) private var api: API
     @Injected(\.appState) private var appState: AppStateProviding
     @Injected(\.auth) private var auth: AuthProviding
@@ -211,6 +212,7 @@ final class AuthenticationManager: AuthenticationManaging {
     private func listenForAppBecomeActive() {
         appState.didBecomeActive
             .sink(withUnretained: self) { strongSelf, _ in
+                strongSelf.analyticsManager.log(event: .reauthenticationTriggered)
                 strongSelf.attemptReauthenticationIfNeeded()
             }
             .store(in: &cancellables)
@@ -218,14 +220,38 @@ final class AuthenticationManager: AuthenticationManaging {
 
     private func attemptReauthenticationIfNeeded() {
         // Only attempt reauthentication if currently logged in and user needs reauthentication
-        guard authenticationCache.currentUser != nil else { return }
+        guard authenticationCache.currentUser != nil else { 
+            analyticsManager.log(event: .reauthenticationSkipped(reason: "not_logged_in"))
+            return 
+        }
         
         shouldReauthenticate()
-            .flatMapLatest(withUnretained: self) { strongSelf, shouldReauth in
-                guard shouldReauth else { return .just(()) }
-                return strongSelf.reauthenticate()
+            .catch { error -> AnyPublisher<Bool, Never> in
+                self.analyticsManager.log(event: .reauthenticationFailed(error: "shouldReauthenticate_check_failed: \(error.localizedDescription)"))
+                return .just(false)
             }
-            .ignoreFailure()
+            .flatMapLatest(withUnretained: self) { strongSelf, shouldReauth in
+                guard shouldReauth else { 
+                    strongSelf.analyticsManager.log(event: .reauthenticationSkipped(reason: "not_needed"))
+                    return .just(()) 
+                }
+                strongSelf.analyticsManager.log(event: .reauthenticationAttempted)
+                return strongSelf.reauthenticate()
+                    .handleEvents(
+                        withUnretained: strongSelf,
+                        receiveOutput: { $0.analyticsManager.log(event: .reauthenticationSuccess) },
+                        receiveCompletion: { strongSelf, completion in
+                            if case .failure(let error) = completion {
+                                strongSelf.analyticsManager.log(event: .reauthenticationFailed(error: error.localizedDescription))
+                            }
+                        }
+                    )
+                    .catch { error -> AnyPublisher<Void, Never> in
+                        // Log the error but don't propagate it to avoid crashing the app
+                        strongSelf.analyticsManager.log(event: .reauthenticationFailed(error: "reauthenticate_failed: \(error.localizedDescription)"))
+                        return .just(())
+                    }
+            }
             .sink()
             .store(in: &cancellables)
     }

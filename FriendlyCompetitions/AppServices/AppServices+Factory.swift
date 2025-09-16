@@ -6,6 +6,7 @@ extension Container {
             .build {
                 FirebaseAppService()
                 DeveloperAppService()
+                AuthenticationRefreshAppService()
                 DataUploadingAppService()
                 NotificationsAppService()
                 BackgroundJobsAppService()
