@@ -74,4 +74,31 @@ final class DataUploadingAppServiceTests: FCTestCase {
         loggedInSubject.send(false)
         XCTAssertNil(workoutManager)
     }
+
+    func testThatManagersAreNotRecreatedOnRapidLoginStateChanges() {
+        var managerCreationCount = 0
+        Container.shared.activitySummaryManager.register {
+            managerCreationCount += 1
+            return ActivitySummaryManagingMock()
+        }
+
+        let service = DataUploadingAppService()
+        retainDuringTest(service)
+        service.didFinishLaunching()
+
+        // Simulate rapid login state changes (as might happen during reauthentication)
+        loggedInSubject.send(true)
+        loggedInSubject.send(false)
+        loggedInSubject.send(true)
+
+        // Wait for debounce to settle
+        let expectation = self.expectation(description: "debounce")
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+            expectation.fulfill()
+        }
+        waitForExpectations(timeout: 1)
+
+        // Should only create manager once due to debouncing
+        XCTAssertEqual(managerCreationCount, 1)
+    }
 }

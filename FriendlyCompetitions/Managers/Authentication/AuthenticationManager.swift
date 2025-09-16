@@ -33,6 +33,7 @@ final class AuthenticationManager: AuthenticationManaging {
     // MARK: - Private Properties
 
     @Injected(\.api) private var api: API
+    @Injected(\.appState) private var appState: AppStateProviding
     @Injected(\.auth) private var auth: AuthProviding
     @Injected(\.authenticationCache) private var authenticationCache: AuthenticationCache
     @Injected(\.database) private var database: Database
@@ -51,6 +52,7 @@ final class AuthenticationManager: AuthenticationManaging {
     init() {
         handle(user: authenticationCache.currentUser)
         listenForAuth()
+        listenForAppBecomeActive()
     }
 
     // MARK: - Public Methods
@@ -203,6 +205,28 @@ final class AuthenticationManager: AuthenticationManaging {
                 .eraseToAnyPublisher()
             }
             .sink(withUnretained: self) { $0.handle(user: $1) }
+            .store(in: &cancellables)
+    }
+
+    private func listenForAppBecomeActive() {
+        appState.didBecomeActive
+            .sink(withUnretained: self) { strongSelf, _ in
+                strongSelf.attemptReauthenticationIfNeeded()
+            }
+            .store(in: &cancellables)
+    }
+
+    private func attemptReauthenticationIfNeeded() {
+        // Only attempt reauthentication if currently logged in and user needs reauthentication
+        guard authenticationCache.currentUser != nil else { return }
+        
+        shouldReauthenticate()
+            .flatMapLatest(withUnretained: self) { strongSelf, shouldReauth in
+                guard shouldReauth else { return .just(()) }
+                return strongSelf.reauthenticate()
+            }
+            .ignoreFailure()
+            .sink()
             .store(in: &cancellables)
     }
 
